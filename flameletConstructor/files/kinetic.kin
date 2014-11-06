@@ -1,0 +1,73 @@
+! CRECK Modeling Group
+! http://creckmodeling.chem.polimi.it/
+
+! How to cite the mechanism
+
+! E. Ranzi, A. Frassoldati, R. Grana, A. Cuoci, T. Faravelli, A.P. Kelley, C.K. Law
+! Hierarchical and comparative kinetic modeling of laminar flame speeds of hydrocarbon and oxygenated fuels
+! Progress in Energy and Combustion Science, 38 (4), pp. 468-501 (2012), DOI: 10.1016/j.pecs.2012.03.004   
+
+! Frassoldati, A., Cuoci, A., Faravelli, T., Niemann, U., Ranzi, E., Seiser, R., Seshadri, K.
+! An experimental and kinetic modeling study of n-propanol and iso-propanol combustion
+! Combustion and Flame, 157 (1), pp. 2-1 (2010), DOI: 10.1016/j.combustflame.2009.09.002   
+
+ELEMENTS
+C 
+H 
+CL
+O 
+N 
+AR
+HE
+END
+SPECIES
+HE             AR             N2             O2             H2 
+H2O            H2O2           CO             CO2            CH2O
+CH4            CH3OH          CH3OOH         C2H2           CH2CO        
+C2H4           CH3CHO         C2H4O          C2-OQOOH       C2H6          
+C2H5OH         C2H5OOH        C3H2           PC3H4          AC3H4          
+C2H3CHO        C3H6           C2H5CHO        CH3COCH3       C3H8          
+C4H2           C4H4           C4H6           NC4H8          IC4H8          
+CYC5H4O        CYC5H6         C6H6           MCPTD          CYC6H8         
+C7H8           C10H8          
+C434H2
+O              H              OH             HO2            C              
+CH             HCO            CH2            CH2S           CH3            
+CH2OH          CH3O           CH3OO          C2H            HCCO           
+C2H3           CH2CHO         CH3CO          C2H5           CH3CHOH        
+C2H4OH         C2H5OO         C2-QOOH        C2-OOQOOH      C3H3           
+CHCHCH3        CH2CCH3        CH2CHCH2       C2H4CHO        CH3COCH2       
+IC3H7          NC3H7          C4H3           C4H5           SC4H7          
+IC4H7          CH2C3H5        CYC5H5         C5H5O          C6H5           
+END
+REACTIONS
+H+O2=OH+O                                .2330E+15    .000  16650.0
+O+H2=OH+H                                .4330E+14    .000  10000.0
+H+O2(+M)=HO2(+M)                             .5580E+13   .400       .0
+ LOW/  .8400E+18   -.800       .0/
+TROE/     .5000        .1000E-29    .1000E+31            /
+H2O/ 18.00/H2/  2.50/N2/  1.26/AR/   .80/HE/   .80/O2/   .00/CO/  1.20/CO2/  2.40/
+H+O2+O2=HO2+O2                           .8900E+15    .000  -2822.0
+OH+HO2=H2O+O2                            .5000E+14    .000   1000.0
+H+HO2=OH+OH                              .2500E+15    .000   1900.0
+O+HO2=O2+OH                              .3250E+14    .000       .0
+OH+OH=O+H2O                              .3570E+05   2.400  -2110.0
+H2+M=H+H+M                               .2230E+15   .000  96081.0
+H2/  2.50/H2O/ 12.00/AR/   .50/HE/   .50/CO/  1.90/CO2/  3.80/
+O2+M=O+O+M                               .1550E+15   .000 115120.0
+H2/  2.50/H2O/ 12.00/AR/   .20/HE/   .20/CO/  1.90/CO2/  3.80/
+H+OH+M=H2O+M                             .4500E+23 -2.000       .0
+H2O/ 16.00/H2/  2.00/CO2/  1.90/
+H+HO2=H2+O2                              .2500E+14    .000    700.0
+HO2+HO2=H2O2+O2                          .2110E+13    .000       .0
+OH+OH(+M)=H2O2(+M)                           .7400E+14  -.370       .0
+! Pupu
+ LOW/  .2300E+19   -.900  -1700.0/
+TROE/     .7346        94.00        1756.        5182.    /
+H2/  2.00/H2O/  6.00/CH4/  2.00/CO/  1.50/CO2/  2.00/C2H6/  3.00/AR/   .70/HE/   .70/
+O+OH+M=HO2+M                             .1000E+17    .000       .0
+O2+CO=CO2+O                              .2530E+13    .000  47700.0
+O2+HCO=HO2+CO                            .1000E+13    .000       .0
+CO+O(+M)=CO2(+M)                             .9640E+11   .000   3800.0
+ LOW/  .2070E+27  -3.340   7610.0/
+END
