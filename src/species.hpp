@@ -23,8 +23,8 @@
 #include <iostream>
 //- user def. headers
 //#include "constantValues.hpp"
-#include "transportProperties.hpp"
-#include "thermodynamicProperties.hpp"
+#include "transport/transportProperties.hpp"
+#include "thermodynamic/thermodynamicProperties.hpp"
 
 class Species : public TransportProperties, public ThermodynamicProperties
 {

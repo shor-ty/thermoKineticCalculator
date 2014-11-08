@@ -21,7 +21,7 @@
 #define functions_hpp
 //- system headers
 //- user def. headers
-#include "species.hpp"
+#include "../species.hpp"
 #include "chemistry.hpp"
 
 //- function declaration
