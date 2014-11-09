@@ -2,4 +2,12 @@
 #
 # codeBlocks
 *.cbp
+*.layout
+*.depend
 
+#gcc 
+obj/
+bin/
+
+#gedit
+*~
