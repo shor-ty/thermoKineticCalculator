@@ -41,10 +41,14 @@ class Thermodynamic
     //- functions
     //-----------
 
-//        void checkThermoFile(const stringField&);
+
+        //- set phase
+        void setPhase( const normalString& );
 
         //- set temperature bounds
-        void setTemperatureBounds( const scalarField& );
+        void setPolyTemperature( const scalar&, const scalar&, const scalar& );
+
+
 //
 //        //- get low temperatur
 //        int lowTemperature() const;
@@ -65,7 +69,7 @@ class Thermodynamic
 //        void showValues() const;
 //
 //        //- set polyCoeffs
-          void setPolyCoeffs(const scalarField&);
+          void setPolyCoeffs( const scalarField& );
 //
 //        //- set second line of coefficents
 //        void setSecondLineOfCoefficients( const double&, const double&, const double&, const double&, const double& );
@@ -80,16 +84,25 @@ class Thermodynamic
 //        void highTemperatureCoefficents() const;
 //
         //- calculate heat capacity cp [kJ/kgK]
-        double calculateHeatCapacity(const double&);
+        scalar calculateHeatCapacity( const scalar& );
 
         //- calculate heat capacity H []
-        double calculateEnthalpy(const double&);
+        scalar calculateEnthalpy( const scalar& );
 
         //- calculate heat capacity S []
-        double calculateEntropy(const double&);
+        scalar calculateEntropy( const scalar& );
+
+        //- calculate free gibbs energy
+        scalar calculateFreeGibbsEnergy( const scalar& );
+
+        //- set thermodynamic status
+        void thermodynamicTrue();
+
+        //- return thermodynamic status
+        bool thermodynamicStatus() const;
 
         //- define the
-        void whichPolyCoeffs(const double&, int&);
+        void whichPolyCoeffs( const scalar&, int& );
 
 
     private:
@@ -97,14 +110,16 @@ class Thermodynamic
     //- variables
     //-----------
 
+        //- phase
+        normalString phase;
+
+        //- themodynamic values set
+        bool thermoBool{false};
 
         //- temperature bounds
-        //- [0] = lower
-        //- [1] = common
-        //- [2] = high
-        scalarField temperatureBounds;
-
-        int test{1000};
+        scalar lowTemp;
+        scalar comTemp;
+        scalar higTemp;
 
         //- polyCoeffs
         scalarField polyCoeffs;

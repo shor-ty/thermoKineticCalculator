@@ -19,6 +19,7 @@
 \*---------------------------------------------------------------------------*/
 //- system headers
 #include <string>
+#include <iostream>
 //- user def. headers
 
 //- IO section

@@ -6,43 +6,55 @@
 |    \\/                   |                                                  |
 \*---------------------------------------------------------------------------*/
 /*
-»
-»
-»
-»
-»
-»
-»
-»
-»
-»
+Â»
+Â» Description:
+Â»   This class contains information about the elements:
+Â»       + Name
+Â»       + Molecular weight
+Â»
+Â»
+Â» Used:
+Â»   For calculating the net rate of Elements
+Â»
 \*---------------------------------------------------------------------------*/
+#ifndef Elements_HPP
+#define Elements_HPP
 //- system headers
+#include <vector>
+#include <string>
 
 //- user def. headers
 #include "../definitions/typedef.hpp"
-//#include "../thermodynamic/thermodynamic.hpp"
-
-#ifndef FUNCTIONS_HPP_INCLUDED
-#define FUNCTIONS_HPP_INCLUDED
-
-//- for loop
 
 
+class Elements
+{
+    public:
 
-//- functions
+        //- constructor
+        Elements();
 
-    //- open file
-    const stringField openFile(const normalString&);
-
-    //- read kinetic file
-    void readChemKinThermo(const normalString&, const normalString&);
-
-    //- calc species molecular weight [kg/mol]
-    scalar calcMolecularWeight(const normalString&);
+        //- destructor
+        ~Elements();
 
 
-    //- create thermodynamic class objects
-//    std::vector<Thermodynamic> createThermodynamicObjects(const stringField&);
+    public:
 
-#endif // FUNCTIONS_HPP_INCLUDED
+        //- functions
+
+            //- return atomic mass of element [kg/mol]
+            scalar atomicWeight(const normalString);
+
+
+    private:
+
+        //- database array:
+
+            //- name of element
+            stringField elementName;
+
+            //- atomic mass of element
+            scalarField elementAM;
+};
+
+#endif // Elements_HPP

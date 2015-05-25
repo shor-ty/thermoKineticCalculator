@@ -35,17 +35,26 @@ Thermodynamic::~Thermodynamic()
 //- functions
 //-----------
 
-    //- checkThermoFile
-//    void checkThermoFile(const stringField& thermoFileName)
-//    {
-//        auto_ptr thermoFile = openFile(ther);
-//    }
+
+    //- set phase
+    void Thermodynamic::setPhase( const normalString& phase_ )
+    {
+        phase = phase_;
+    }
 
     //- set low temperature
-    void Thermodynamic::setTemperatureBounds( const scalarField& temperatureBounds_ )
+    void Thermodynamic::setPolyTemperature
+    (
+        const scalar& lowTemp_,
+        const scalar& comTemp_,
+        const scalar& higTemp_
+    )
     {
-        temperatureBounds = temperatureBounds_;
+        lowTemp = lowTemp_;
+        comTemp = comTemp_;
+        higTemp = higTemp_;
     }
+
 
     //- set the first line of coefficents (NASA)
 //    void Thermodynamic::setNASACoefficients( const double& a_1, const double& a_2, const double& a_3, const double& a_4, const double& a_5)
@@ -93,7 +102,7 @@ Thermodynamic::~Thermodynamic()
 //    }
 //
     //- calculate heat capacity cp in [kJ/kgK]
-    double Thermodynamic::calculateHeatCapacity(const double& T_)
+    scalar Thermodynamic::calculateHeatCapacity(const scalar& T_)
     {
         int i{0};
 
@@ -101,11 +110,16 @@ Thermodynamic::~Thermodynamic()
         whichPolyCoeffs(T_, i);
 
         // return heat capacity [J/(molK)]
-        return ((polyCoeffs[i] + polyCoeffs[i+1]*T_ + polyCoeffs[i+2]*pow(T_,2) + polyCoeffs[i+3]*pow(T_,3) + polyCoeffs[i+4]*pow(T_,4)) * R);
+        return ((   polyCoeffs[i]
+                  + polyCoeffs[i+1]*T_
+                  + polyCoeffs[i+2]*pow(T_,2)
+                  + polyCoeffs[i+3]*pow(T_,3)
+                  + polyCoeffs[i+4]*pow(T_,4) )
+                  * R);
     }
 
     //- calculate enthalpy
-    double Thermodynamic::calculateEnthalpy(const double& T_)
+    scalar Thermodynamic::calculateEnthalpy(const scalar& T_)
     {
         int i{0};
 
@@ -113,11 +127,17 @@ Thermodynamic::~Thermodynamic()
         whichPolyCoeffs(T_, i);
 
         // return enthalpy [J/(mol)]
-        return ((polyCoeffs[i] + polyCoeffs[i+1]*T_/2 + polyCoeffs[i+2]*pow(T_,2)/3 + polyCoeffs[i+3]*pow(T_,3)/4 + polyCoeffs[i+4]*pow(T_,4) + polyCoeffs[i+5]/T_)*T_*R);
+        return ((   polyCoeffs[i]
+                  + polyCoeffs[i+1]*T_/2
+                  + polyCoeffs[i+2]*pow(T_,2)/3
+                  + polyCoeffs[i+3]*pow(T_,3)/4
+                  + polyCoeffs[i+4]*pow(T_,4)
+                  + polyCoeffs[i+5]/T_)
+                  *T_*R);
     }
 
     //- calculate entropy
-    double Thermodynamic::calculateEntropy(const double& T_)
+    scalar Thermodynamic::calculateEntropy(const scalar& T_)
     {
         int i{0};
 
@@ -125,24 +145,44 @@ Thermodynamic::~Thermodynamic()
         whichPolyCoeffs(T_, i);
 
         // return entropy [J/(molK)]
-        return ((polyCoeffs[i]*log(T_) + polyCoeffs[i+1]*T_ + polyCoeffs[i+2]*pow(T_,2)/2 + polyCoeffs[i+3]*pow(T_,3)/3 + polyCoeffs[i+4]*pow(T_,4)/4 + polyCoeffs[i+6])*R);
+        return ((   polyCoeffs[i]*log(T_)
+                  + polyCoeffs[i+1]*T_
+                  + polyCoeffs[i+2]*pow(T_,2)/2
+                  + polyCoeffs[i+3]*pow(T_,3)/3
+                  + polyCoeffs[i+4]*pow(T_,4)/4
+                  + polyCoeffs[i+6])
+                  *R);
+    }
+
+
+    //- set thermodynamic bool to true
+    void Thermodynamic::thermodynamicTrue()
+    {
+        thermoBool = true;
+    }
+
+
+    //- return thermodynamic status
+    bool Thermodynamic::thermodynamicStatus() const
+    {
+        return thermoBool;
     }
 
     //- check temperature range
-    void Thermodynamic::whichPolyCoeffs(const double& T_, int& i)
+    void Thermodynamic::whichPolyCoeffs(const scalar& T_, int& i)
     {
         //- FIXME EXTEND TO WHICH SPECIES
-        if(T_ < temperatureBounds[0])
+        if(T_ < lowTemp)
         {
             std::cerr << "    - Warning: NASA-Polynomial is not defined for temperature  T=" << T_ << " K\n    \
                               - Warning: Using low temperature coefficents for calculation...\n";
             i = 7;
         }
-        else if(T_ >= temperatureBounds[0] && T_  <= temperatureBounds[1])
+        else if(T_ >= lowTemp && T_  <= comTemp)
         {
             i = 7;
         }
-        else if(T_ > temperatureBounds[1] && T_  <= temperatureBounds[2])
+        else if(T_ > comTemp && T_  <= higTemp)
         {
             i = 0;
         }

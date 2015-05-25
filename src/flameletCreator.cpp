@@ -18,32 +18,37 @@
 »
 \*---------------------------------------------------------------------------*/
 //- system headers
-#include <iostream>
-#include <fstream>
+
+
 //- user def. headers
-#include "thermodynamic/thermodynamic.hpp"
+
+//#include "thermodynamic/thermodynamic.hpp"
 #include "functions/functions.hpp"
+#include "database/elements.hpp"
+
 
 int main()
 {
+    normalString s = "../files/kinetics.kin";
+    normalString t = "../files/thermo.tdc";
     //- Some output definitions
-    std::cout.precision( 8 );
+//    std::cout.precision( 8 );
     //std::cout.setf( std::ios::scientific );
 
-    //- runtime include files
-    #include "definitions/IOStream.hpp"
+
+    //- Read kinetic file
+    readChemKinThermo(s, t);
+
+
+
 
     //- read thermodynamic file
-    const stringField thermoFileContent = openFile("../files/thermodynamic.tdc");
+//    const stringField thermoFileContent = openFile("../files/thermodynamic.tdc");
 
     //- create thermodynamic objects
-    std::vector<Thermodynamic> thermo = createThermodynamicObjects(thermoFileContent);
+//    std::vector<Thermodynamic> thermo = createThermodynamicObjects(thermoFileContent);
 
     //for(int i=0; i< 1000; i=i+50)
-    int i = 298;
-//    std::cout << "H bei " << i << "K" << " = " << (thermo[0].calculateEnthalpy(i))/1000 << "\n";
-//    std::cout << "C bei " << i << "K" << " = " << (thermo[0].calculateHeatCapacity(i)) << "\n";
-//    std::cout << "S bei " << i << "K" << " = " << (thermo[0].calculateEntropy(i)) << "\n";
 
 //    Info << "buba" ;
     return 0;

@@ -6,43 +6,25 @@
 |    \\/                   |                                                  |
 \*---------------------------------------------------------------------------*/
 /*
-»
-»
-»
-»
-»
-»
-»
-»
-»
-»
+Â»
+Â»
+Â»
+Â»
+Â»
+Â»
+Â»
+Â»
+Â»
+Â»
 \*---------------------------------------------------------------------------*/
 //- system headers
-#include <vector>
-#include <string>
-#include <iostream>
+
 //- user def. headers
+#include "../definitions/IOStream.hpp"
 
+//- IO section
 
-#ifndef TYPEDEF_HPP_INCLUDED
-#define TYPEDEF_HPP_INCLUDED
+    //- output stdout
+    std::ostream& Info = std::cout;
 
-
-//- typedefs of different fields
-typedef std::vector<double> scalarField;
-typedef std::vector<std::string> stringField;
-typedef std::string normalString;
-typedef double scalar;
-
-
-//- gas constant [J/molK]
-const double R = 8.314461175;
-
-//- Loops
-#define forAll(scalarField, i) for (unsigned int i=0; i<(scalarField).size(); i++)
-
-#endif // TYPEDEF_HPP_INCLUDED
-
-
-
-
+#endif // IOStream_HPP
