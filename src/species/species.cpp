@@ -23,7 +23,13 @@
 #include "species.hpp"
 
 //- standard constructor
-Species::Species() : MW_(0), Y_(0), X_(0), Con_(0)
+Species::Species() :
+    MW_(0),
+    Y_(0),
+    X_(0),
+    Con_(0),
+    fuel_(false),
+    oxidizer_(false)
 {
 }
 
@@ -49,13 +55,49 @@ void Species::setMW(const scalar MW)
     MW_ = MW;
 }
 
-const scalar Species::MW()
+//- set fuel
+void Species::setFuel()
+{
+    fuel_ = true;
+}
+
+//- set oxidizer
+void Species::setOxidizer()
+{
+    oxidizer_ = true;
+}
+
+//- return fuel
+const bool Species::fuel() const
+{
+    return fuel_;
+}
+
+//- return oxidizer
+const bool Species::oxidizer() const
+{
+    return oxidizer_;
+}
+
+//- set mol fraction X
+void Species::setMolFraction(const scalar& molFraction)
+{
+    X_ = molFraction;
+}
+
+//- return mol fraction X
+const scalar Species::molFraction() const
+{
+    return X_;
+}
+
+const scalar Species::MW() const
 {
     return MW_;
 }
 
 //- return name
-const normalString Species::name()
+const normalString Species::name() const
 {
     return name_;
 }

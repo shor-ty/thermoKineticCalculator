@@ -44,8 +44,10 @@
         //- check file
         if(!file.good())
         {
-            std::cerr << "\n ++ ERROR: Could not open file \"" << fileName << "\"...";
-            std::cerr << "\n ++ Error occur in file " << __FILE__ << " line " << __LINE__ << std::endl;
+            std::cerr<< "\n ++ ERROR: Could not open file \""
+                     << fileName << "\"..."
+                     << "\n ++ Error occur in file " << __FILE__
+                     << " line " << __LINE__ << std::endl;
             std::terminate();
         }
 
@@ -64,20 +66,15 @@
         return fileContent;
     }
 
-
     //- read chemical kinetic file
     void readChemKinThermo
     (
         const normalString& fileChemKin,
-        const normalString& fileThermo
+        const normalString& fileThermo,
+        std::vector<Species>& species,
+        std::vector<Reactions>& reactions
     )
     {
-        //- SPECIES class
-        std::vector<Species> species;
-
-        //- REACTION class
-        std::vector<Reactions> reactions;
-
         stringField fileContent = openFile(fileChemKin);
         int countI{0};
 
@@ -147,6 +144,7 @@
             //- reset count variable for reaction count
             countI = 0;
 
+            //- reactions
             if (fileContent[line] == "REACTIONS")
             {
                 for(;;line++)
@@ -155,10 +153,11 @@
                     if
                     (
                         fileContent[line] != "REACTIONS" &&
-                        fileContent[line] != "END"
+                        fileContent[line] != "END" &&
+                        !fileContent[line].empty()
                     )
                     {
-                        //- Split line into array
+                        //- split line into array
                         std::istringstream tmp(fileContent[line]);
 
                         stringField lineContent_
@@ -177,13 +176,45 @@
                             (
                                 lineContent_[0]
                             );
-//                                std::cout << lineContent_[0] << std::endl;
-//                            //- check out if forward and backward are used
-//                            if (lineContent_[0].find('>') != std::string::npos)
-//                            {
-//                                std::cout << lineContent_[0] << std::endl;
-//                                reactions[countI].set_kf();
-//                            }
+
+                            //- check out if only forward is used
+                            //  + sign =>
+                            if
+                            (
+                                lineContent_[0].find('>') != std::string::npos
+                                &&
+                                lineContent_[0].find('<') == std::string::npos
+                            )
+                            {
+                                reactions[countI].set_kf();
+                            }
+                            //  + sign <=>
+                            else if
+                            (
+                                lineContent_[0].find('>') != std::string::npos
+                                &&
+                                lineContent_[0].find('<') != std::string::npos
+                            )
+                            {
+                                reactions[countI].set_kf();
+                                reactions[countI].set_kb();
+                            }
+                            //  + sign <=
+                            else if
+                            (
+                                lineContent_[0].find('>') == std::string::npos
+                                &&
+                                lineContent_[0].find('<') != std::string::npos
+                            )
+                            {
+                                reactions[countI].set_kb();
+                            }
+                            //  + sign =
+                            else
+                            {
+                                reactions[countI].set_kf();
+                                reactions[countI].set_kb();
+                            }
 
                             //- set variable for arrhenius eqn.
                             reactions[countI].setArrheniusCoeffs
@@ -239,11 +270,6 @@
                                         Tss = stod(lineContent3_[4]);
                                     }
 
-                                    std::cout << "a: " << lineContent3_[1] << std::endl
-                                    << "T***: " << lineContent3_[2] << std::endl
-                                    << "T*: " << lineContent3_[3] << std::endl
-                                    << "T**: " << Tss << std::endl << std::endl;
-
                                     //- set TROE coeffs
                                     reactions[countI].setTROECoeffs
                                     (
@@ -267,23 +293,11 @@
             }
         //- chemKin
         }
-        forAll(reactions, i)
-        {
-            if(reactions[i].kf())
-            std::cout << reactions[i].elementarReaction() << " uses forward reaction ";
-
-            if(reactions[i].kb())
-            std::cout << "| uses backward reaction rate";
-
-            std::cout << std::endl << std::endl;
-
-        }
-
 
         //- Get thermodynamic data from NASA polynomials for each species
         fileContent = openFile(fileThermo);
         bool skip{true};
-        int speciesID{-1};
+        int id{-1};
 
         //- File description from chemkin
         //-------------------------------------------------------------------------------------------------
@@ -362,7 +376,7 @@
                         if (species[speciesI].name() == tmp)
                         {
                             skip = false;
-                            speciesID = speciesI;
+                            id = speciesI;
                         }
                     }
 
@@ -370,13 +384,13 @@
                     if (skip == false)
                     {
                         //- set thermodynamic bool to true
-                        species[speciesID].thermodynamicTrue();
+                        species[id].thermodynamicTrue();
 
                         scalar lowTemp = stod(fileContent[line].substr(45,54));
                         scalar comTemp = stod(fileContent[line].substr(65,72));
                         scalar higTemp = stod(fileContent[line].substr(55,64));
 
-                        species[speciesID].setPolyTemperature
+                        species[id].setPolyTemperature
                         (
                             lowTemp,
                             comTemp,
@@ -384,7 +398,7 @@
                         );
 
                         //- set phase
-                        species[speciesID].setPhase
+                        species[id].setPhase
                         (
                             fileContent[line].substr(45,1)
                         );
@@ -416,7 +430,7 @@
                     //- INTEGER 4 -> store polyCoeffs
                     if(fileContent[line][79] == '4')
                     {
-                        species[speciesID].setPolyCoeffs(polyCoeffs);
+                        species[id].setPolyCoeffs(polyCoeffs);
                         polyCoeffs.clear();
                     }
 
@@ -447,7 +461,175 @@
         }
     }
 
+    //- read afcDict
+    void readAFCDict
+    (
+        const normalString& fileAFCDict,
+        std::vector<Species>& species
+    )
+    {
+        stringField fileContent = openFile(fileAFCDict);
+        bool fuelFound{false};
+        bool oxidizerFound{false};
 
+        forAll(fileContent, line)
+        {
+
+            normalString lineContent = fileContent[line];
+
+            //- remove whitespaces
+            removeSpace(lineContent);
+
+
+            if
+            (
+                lineContent == "moleFractionFuel" ||
+                lineContent == "moleFractionOxidizer" ||
+                fuelFound == true ||
+                oxidizerFound == true
+            )
+            {
+                //- check next line and set bool to true (now in dictionary)
+                if (!fuelFound && !oxidizerFound)
+                {
+                    normalString tmp = fileContent[line+1];
+                    removeSpace(tmp);
+
+                    if ( tmp == "{")
+                    {
+                        if (lineContent == "moleFractionFuel")
+                        {
+                            fuelFound = true;
+                        }
+                        if (lineContent == "moleFractionOxidizer")
+                        {
+                            oxidizerFound = true;
+                        }
+                    }
+                    else
+                    {
+                        std::cerr<< "\n ++ ERROR: after moleFraction<F/O>"
+                                 << " >> { << missing, no dictionary found"
+                                 << "\n ++ Error occur in file " << __FILE__
+                                 << " line " << __LINE__ << std::endl;
+                        std::terminate();
+                    }
+                    line++;
+                }
+                //- dictionary end reached "}"
+                if (lineContent == "}")
+                {
+                    fuelFound = false;
+                    oxidizerFound = false;
+                }
+
+                //- get species of fuel
+                if (fuelFound || oxidizerFound)
+                {
+                    //- re-read due to removed whitespaces
+                    //  TODO, change this
+                    lineContent = fileContent[line];
+
+                    //- split line into array
+                    std::istringstream tmp(lineContent);
+
+                    stringField lineContent_
+                    {
+                        std::istream_iterator<std::string>{tmp},
+                        std::istream_iterator<std::string>{}
+                    };
+
+                    //- find species
+                    forAll(species, id)
+                    {
+                        if (species[id].name() == lineContent_[0])
+                        {
+                            if (fuelFound)
+                            {
+                                species[id].setFuel();
+                            }
+                            if (oxidizerFound)
+                            {
+                                species[id].setOxidizer();
+                            }
+                            species[id].setMolFraction
+                            (
+                                stod(lineContent_[1])
+                            );
+                        }
+                    }
+
+                }
+
+
+
+            }
+        }
+
+        //- check if X = 1
+        scalar X{0};
+        std::cout<< "Checking chemical composition of fuel:\n";
+        forAll(species, id)
+        {
+            if (species[id].fuel())
+            {
+                std::cout<< " ++ " << species[id].name() << "\t X = " << species[id].molFraction() << "\n";
+                X += species[id].molFraction();
+            }
+        }
+        std::cout<< "Fuel mol fraction = " << X << "\n";
+
+        //- if sum <> 1
+        if (X != 1)
+        {
+            std::cerr<< "\n" << "Fuel mol fraction "
+                     << "is not equal to 1\n"
+                     << "\n ++ Error occur in file " << __FILE__
+                     << " line " << __LINE__ << std::endl;
+        }
+
+        //- reset X
+        X = 0;
+        std::cout<< "Checking chemical composition of oxidizer:\n";
+        forAll(species, id)
+        {
+            if (species[id].oxidizer())
+            {
+                std::cout<< " ++ " << species[id].name() << "\t X = " << species[id].molFraction() << "\n";
+                X =+ species[id].molFraction();
+            }
+        }
+        std::cout<< "Oxidizer mol fraction = " << X << "\n";
+
+        //- if sum <> 1
+        if (X != 1)
+        {
+            std::cerr<< "\n" << "Oxidizer mol fraction "
+                     << "is not equal to 1\n"
+                     << "\n ++ Error occur in file " << __FILE__
+                     << " line " << __LINE__ << std::endl;
+        }
+    }
+
+    //- remove whitespace from string
+    void removeSpace(normalString& str)
+    {
+        str.erase
+        (
+            std::remove_if
+            (
+                str.begin(),
+                str.end(),
+                [](char c)
+                {
+                    return (c =='\r' || c =='\t' || c == ' ' || c == '\n');
+                }
+            ),
+            str.end()
+        );
+    }
+
+    //- calculate molecular weight
     scalar calcMolecularWeight(const normalString& species)
     {
         //- class of molecular weights
@@ -522,4 +704,13 @@
 
             //- return the molecular weight of species
             return mW;
+    }
+
+
+    //- calculate stoichiometric mixture fraction Zst
+    scalar stochiometricMF(const std::vector<Species>& species)
+    {
+        scalar Zst{0};
+
+        return Zst;
     }

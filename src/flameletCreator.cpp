@@ -31,14 +31,22 @@ int main()
 {
     normalString s = "../files/kinetics.kin";
     normalString t = "../files/thermo.tdc";
+    normalString f = "../files/afcDict";
     //- Some output definitions
 //    std::cout.precision( 8 );
     //std::cout.setf( std::ios::scientific );
 
+        //- SPECIES class
+        std::vector<Species> species;
+
+        //- REACTION class
+        std::vector<Reactions> reactions;
 
     //- Read kinetic file
-    readChemKinThermo(s, t);
+    readChemKinThermo(s, t, species, reactions);
 
+    //- Read afcDict
+    readAFCDict(f, species);
 
 
 

@@ -50,29 +50,50 @@ class Species : public Thermodynamic
             //- set the molecular weight of species
             void setMW(const scalar);
 
+            //- set fuel | set oxidizer
+            void setFuel();
+            void setOxidizer();
+
+            //- return fuel | oxidizer
+            const bool fuel() const;
+            const bool oxidizer() const;
+
+            //- set mol fraction X
+            void setMolFraction(const scalar&);
+
+            //- return mol fraction X
+            const scalar molFraction() const;
+
             //- return name of species
-            const normalString name();
+            const normalString name() const;
 
             //- retrun MW [mol/kg]
-            const scalar MW();
+            const scalar MW() const;
+
 
 
     private:
 
-        //- Name
+        //- name
         normalString name_;
 
-        //- Molecular weight [kg/mol]
+        //- molecular weight [kg/mol]
         scalar MW_;
 
-        //- Mass fraction [-]
+        //- mass fraction [-]
         scalar Y_;
 
-        //- Mol fraction [-]
+        //- mol fraction [-]
         scalar X_;
 
-        //- Concentration [-]
+        //- concentration [-]
         scalar Con_;
+
+        //- is part of fuel mixture
+        bool fuel_;
+
+        //- is part of oxidizer mixture
+        bool oxidizer_;
 };
 
 #endif // SPECIES_HPP

@@ -1,0 +1,11 @@
+
+    moleFractionOxidizer
+    {
+        O2      1
+    }
+
+    moleFractionFuel
+    {
+        H2   0.4
+        OH   0.6
+    }   
