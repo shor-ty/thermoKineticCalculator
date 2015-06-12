@@ -8,7 +8,7 @@ END
 SPECIES
 HE             AR             N2             O2             H2             
 H2O            H2O2            
-O              H              OH             HO2
+O              H              OH             HO2           
 END
 REACTIONS
 H+O2=OH+O                                .2210E+15    .000  16650.0
@@ -38,13 +38,26 @@ O+OH+M=HO2+M                             .1000E+17    .000       .0
 H+H2O=H2+OH                              .4000E+11   1.000  19000.0
 H2O2+H=H2O+OH                            .2410E+14    .000   3970.0
 H2O2+H=H2+HO2                            .6025E+14    .000   7950.0
+ !
+ ! ABSTRACTION REACTIONS
+ !
+ ! ABSTRACTION REACTION N.   1
+ ! R+H2>RH+H
+ ! NUMBER OF H ABSTRACTED:   2.0
+ ! TYPE OF H ABSTRACTED:     3
+H+H2=>H2+H  .3369E+08 2.0   7658.60
+ ! ABSTRACTION REACTION N.   2
+ ! R+H2O>RH+OH
+ ! NUMBER OF H ABSTRACTED:   2.0
+ ! TYPE OF H ABSTRACTED:     5
+OH+H2O=>H2O+OH  .3994E+07 2.0   2223.39
+HO2+H2O=>H2O2+OH  .5388E+06 2.0  28780.05
+ ! ABSTRACTION REACTION N.   3
+ ! R+H2O2>RH+HO2
+ ! NUMBER OF H ABSTRACTED:   2.0
 
-H       +H2=>H2      +H  .3369E+08 2.0   7658.60
-
-OH      +H2O=>H2O     +OH  .3994E+07 2.0   2223.39
-HO2     +H2O=>H2O2    +OH  .5388E+06 2.0  28780.05
-
-OH      +H2O2=>H2O     +HO2  .3195E+06 2.0  -4169.95
-O       +H2O2=>OH      +HO2  .1083E+07 2.0  -1657.32
-HO2     +H2O2=>H2O2    +HO2  .4310E+05 2.0   5529.49
+OH+H2O2=>H2O+HO2  .3195E+06 2.0  -4169.95
+O+H2O2=>OH+HO2  .1083E+07 2.0  -1657.32
+H4+2CO<=OC(+M)    342   342 123
+HO2+H2O2=>H2O2+HO2  .4310E+05 2.0   5529.49
 END
