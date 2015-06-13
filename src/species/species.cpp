@@ -26,7 +26,8 @@
 Species::Species() :
     MW_(0),
     Y_(0),
-    X_(0),
+    Xf_(0),
+    Xo_(0),
     Con_(0),
     fuel_(false),
     oxidizer_(false)
@@ -79,16 +80,28 @@ const bool Species::oxidizer() const
     return oxidizer_;
 }
 
-//- set mol fraction X
-void Species::setX(const scalar& molFraction)
+//- set mol fraction X in fuel
+void Species::setXf(const scalar& molFraction)
 {
-    X_ = molFraction;
+    Xf_ = molFraction;
 }
 
-//- return mol fraction X
-const scalar Species::X() const
+//- set mol fraction X in oxidizer
+void Species::setXo(const scalar& molFraction)
 {
-    return X_;
+    Xo_ = molFraction;
+}
+
+//- return mol fraction X in fuel
+const scalar Species::Xf() const
+{
+    return Xf_;
+}
+
+//- return mol fraction X in oxidizer
+const scalar Species::Xo() const
+{
+    return Xo_;
 }
 
 const scalar Species::MW() const

@@ -58,11 +58,17 @@ class Species : public Thermodynamic
             const bool fuel() const;
             const bool oxidizer() const;
 
-            //- set mol fraction X
-            void setX(const scalar&);
+            //- set mol fraction X in fuel
+            void setXf(const scalar&);
 
-            //- return mol fraction X
-            const scalar X() const;
+            //- set mol fraction X in oxidizer
+            void setXo(const scalar&);
+
+            //- return mol fraction X in fuel
+            const scalar Xf() const;
+
+            //- return mol fraction X in oxidizer
+            const scalar Xo() const;
 
             //- return name of species
             const normalString name() const;
@@ -83,8 +89,13 @@ class Species : public Thermodynamic
         //- mass fraction [-]
         scalar Y_;
 
-        //- mol fraction [-]
-        scalar X_;
+
+
+        //- mol fraction in fuel [-]
+        scalar Xf_;
+
+        //- mol fraction in oxidizer [-]
+        scalar Xo_;
 
         //- concentration [-]
         scalar Con_;

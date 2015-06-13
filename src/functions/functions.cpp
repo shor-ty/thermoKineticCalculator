@@ -547,7 +547,7 @@
                     //- bool for species
                     bool found{false};
 
-                    //- find species
+                    //- set mol fraction
                     forAll(species, id)
                     {
                         if (species[id].name() == lineContent_[0])
@@ -556,16 +556,20 @@
                             {
                                 species[id].setFuel();
                                 found = true;
+                                species[id].setXf
+                                (
+                                    stod(lineContent_[1])
+                                );
                             }
                             if (oxidizerFound)
                             {
                                 species[id].setOxidizer();
                                 found = true;
+                                species[id].setXo
+                                (
+                                    stod(lineContent_[1])
+                                );
                             }
-                            species[id].setX
-                            (
-                                stod(lineContent_[1])
-                            );
                         }
                     }
                     //- species not found in kinetic file
@@ -589,14 +593,14 @@
         //- check if X = 1
         scalar X{0};
         std::cout<< "Checking chemical composition of fuel:\n"
-                 << "---------------------------------------------------\n";
+                 << "------------------------------------------------------\n";
         forAll(species, id)
         {
             if (species[id].fuel())
             {
                 std::cout<< " ++ " << species[id].name() << "\t\t X = "
-                         << species[id].X() << "\t" << species[id].MW() << "\n";
-                X += species[id].X();
+                         << species[id].Xf() << "\t" << species[id].MW() << "\n";
+                X += species[id].Xf();
             }
         }
         std::cout<< " ++ Fuel mol fraction = " << X << "\n\n";
@@ -613,15 +617,15 @@
 
         //- reset X
         X = 0;
-        std::cout<< "Checking chemical composition of oxidizer:\n"
-                 << "---------------------------------------------------\n";
+        std::cout<< "\nChecking chemical composition of oxidizer:\n"
+                 << "------------------------------------------------------\n";
         forAll(species, id)
         {
             if (species[id].oxidizer())
             {
                 std::cout<< " ++ " << species[id].name() << "\t\t X = "
-                         << species[id].X() << "\n";
-                X =+ species[id].X();
+                         << species[id].Xo() << "\n";
+                X += species[id].Xo();
             }
         }
         std::cout<< " ++ Oxidizer mol fraction = " << X << "\n\n\n";
@@ -723,8 +727,10 @@
     //- calculate stoichiometric mixture fraction Zst
     scalar stochiometricMF(const std::vector<Species>& species)
     {
-        std::cout<< "Calculate stochiometric mixture fraction Zst:\n";
+        std::cout<< "Calculate stochiometric mixture fraction Zst:\n"
+                 << "------------------------------------------------------\n";
 
+        //- Mean mole fraction in [g/mol]
         scalar MMW_fuel{0};
         scalar MMW_oxidizer{0};
 
@@ -734,22 +740,27 @@
         {
             if (species[id].fuel())
             {
-               // std::cout << species[id].name() << " -> MW: " << species[id].MW() << "\n";
-                MMW_fuel += species[id].MW() * species[id].X();
+                MMW_fuel += species[id].MW() * species[id].Xf();
             }
             if (species[id].oxidizer())
             {
-                MMW_oxidizer += species[id].MW() * species[id].X();
+                MMW_oxidizer += species[id].MW() * species[id].Xo();
             }
         }
 
         std::cout<< "  ++ Mean molecular weight fuel: " << MMW_fuel << "\n"
-                 << "  ++ Mean molecular weight oxidizer: " << MMW_oxidizer << "\n";
+                 << "  ++ Mean molecular weight oxidizer: " << MMW_oxidizer << "\n\n";
 
+        //- element mass fraction in fuel stream
+        scalar Zc_F{0};
+        scalar Zh_F{0};
+        scalar Zo_F{0};
 
-        scalar Zc{0};
-        scalar Zh{0};
-        scalar Zo{0};
+        //- element mass fraction in oxidizer stream
+        scalar Zc_O{0};
+        scalar Zo_O{0};
+        scalar Zh_O{0};
+        scalar Zn_O{0};
 
 
         //- Step 2
@@ -760,17 +771,24 @@
         //      ++ a_ij: amount of element i in species j [-]
         //      ++ X_j:  mol fraction of species j [-]
 
-        std::cout<< "\nMolecule\tC\tH\tO\n"
-                 << "---------------------------------------------------\n";
+        std::cout<< "\nComposition \tC\tH\tO\tN\n"
+                 << "------------------------------------------------------\n";
         forAll(species, id)
         {
-            scalar nCAtoms{0};
-            scalar nHAtoms{0};
-            scalar nOAtoms{0};
+            //- TODO use inert and placeholder
+            scalar nCAtoms_F{0};
+            scalar nHAtoms_F{0};
+            scalar nOAtoms_F{0};
+            scalar nNAtoms_F{0};    // INERT not used
+
+            scalar nOAtoms_O{0};
+            scalar nNAtoms_O{0};    // INERT
+            scalar nCAtoms_O{0};    // placeholder
+            scalar nHAtoms_O{0};    // H in oxidizer
 
             normalString aP, nP;
 
-            if (species[id].fuel())
+            if (species[id].fuel() || species[id].oxidizer())
             {
                 //- TODO (two character elements)
                 normalString tmp = species[id].name();
@@ -789,126 +807,314 @@
                     {
                         nP = aP;
                     }
+                    //- only fuel
+                    if (species[id].fuel())
+                    {
+                        //- C atom
+                        if (aP == "C")
+                        {
+                            //- C is last character, no number
+                            //  one C atom
+                            if (aP == nP)
+                            {
+                                nCAtoms_F += 1;
+                            }
+                            //- after C there is a character
+                            else
+                            {
+                                //- if next char is a number its the amount of
+                                //  atoms of C
+                                if
+                                (
+                                    nP.find_first_of("0123456789") !=
+                                    std::string::npos
+                                )
+                                {
+                                    nCAtoms_F += stod(nP);
+                                }
+                                //- if next char is a character the atom is
+                                //  only used once
+                                else
+                                {
+                                    nCAtoms_F++;
+                                }
+                            }
+                        }
+                        //- H atom
+                        if (aP == "H")
+                        {
+                            //- H is last character, no number
+                            //  one H atom
+                            if (aP == nP)
+                            {
+                                nHAtoms_F++;
+                            }
+                            //- after H there is a character
+                            else
+                            {
+                                //- if next char is a number its the amount of
+                                //  atoms of H
+                                if
+                                (
+                                    nP.find_first_of("0123456789") !=
+                                    std::string::npos
+                                )
+                                {
+                                    nHAtoms_F += stod(nP);
+                                }
+                                //- if next char is a character the atom is
+                                //  only used once
+                                else
+                                {
+                                    nHAtoms_F++;
+                                }
+                            }
+                        }
+                        //- O atom
+                        if (aP == "O")
+                        {
+                            //- O is last character, no number
+                            //  one O atom
+                            if (aP == nP)
+                            {
+                                nOAtoms_F++;
+                            }
+                            //- after O there is a character
+                            else
+                            {
+                                //- if next char is a number its the amount of
+                                //  atoms of O
+                                if
+                                (
+                                    nP.find_first_of("0123456789") !=
+                                    std::string::npos
+                                )
+                                {
+                                    nOAtoms_F += stod(nP);
+                                }
+                                //- if next char is a character the atom is
+                                //  only used once
+                                else
+                                {
+                                    nOAtoms_F++;
+                                }
+                            }
+                        }
+                    }
+                    if (species[id].oxidizer())
+                    {
+                        //- C atom
+                        if (aP == "C")
+                        {
+                            //- C is last character, no number
+                            //  one C atom
+                            if (aP == nP)
+                            {
+                                nCAtoms_O += 1;
+                            }
+                            //- after C there is a character
+                            else
+                            {
+                                //- if next char is a number its the amount of
+                                //  atoms of C
+                                if
+                                (
+                                    nP.find_first_of("0123456789") !=
+                                    std::string::npos
+                                )
+                                {
+                                    nCAtoms_O += stod(nP);
+                                }
+                                //- if next char is a character the atom is
+                                //  only used once
+                                else
+                                {
+                                    nCAtoms_O++;
+                                }
+                            }
+                        }
+                        //- O atom
+                        if (aP == "O")
+                        {
+                            //- O is last character, no number
+                            //  one O atom
+                            if (aP == nP)
+                            {
+                                nOAtoms_O++;
+                            }
+                            //- after O there is a character
+                            else
+                            {
+                                //- if next char is a number its the amount of
+                                //  atoms of O
+                                if
+                                (
+                                    nP.find_first_of("0123456789") !=
+                                    std::string::npos
+                                )
+                                {
+                                    nOAtoms_O += stod(nP);
+                                }
+                                //- if next char is a character the atom is
+                                //  only used once
+                                else
+                                {
+                                    nOAtoms_O++;
+                                }
+                            }
+                        }
+                        //- H atom
+                        if (aP == "H")
+                        {
+                            //- H is last character, no number
+                            //  one H atom
+                            if (aP == nP)
+                            {
+                                nHAtoms_O++;
+                            }
+                            //- after H there is a character
+                            else
+                            {
+                                //- if next char is a number its the amount of
+                                //  atoms of H
+                                if
+                                (
+                                    nP.find_first_of("0123456789") !=
+                                    std::string::npos
+                                )
+                                {
+                                    nHAtoms_O += stod(nP);
+                                }
+                                //- if next char is a character the atom is
+                                //  only used once
+                                else
+                                {
+                                    nHAtoms_O++;
+                                }
+                            }
+                        }
+                        //- N atom
+                        if (aP == "N")
+                        {
+                            //- N is last character, no number
+                            //  one N atom
+                            if (aP == nP)
+                            {
+                                nNAtoms_O++;
+                            }
+                            //- after N there is a character
+                            else
+                            {
+                                //- if next char is a number its the amount of
+                                //  atoms of N
+                                if
+                                (
+                                    nP.find_first_of("0123456789") !=
+                                    std::string::npos
+                                )
+                                {
+                                    nNAtoms_O += stod(nP);
+                                }
+                                //- if next char is a character the atom is
+                                //  only used once
+                                else
+                                {
+                                    nNAtoms_O++;
+                                }
+                            }
+                        }
+                    }
 
-                    //- C atom
-                    if (aP == "C")
-                    {
-                        //- C is last character, no number
-                        //  one C atom
-                        if (aP == nP)
-                        {
-                            nCAtoms += 1;
-                        }
-                        //- after C there is a character
-                        else
-                        {
-                            //- if next char is a number its the amount of
-                            //  atoms of C
-                            if
-                            (
-                                nP.find_first_of("0123456789") !=
-                                std::string::npos
-                            )
-                            {
-                                nCAtoms += stod(nP);
-                            }
-                            //- if next char is a character the atom is
-                            //  only used once
-                            else
-                            {
-                                nCAtoms++;
-                            }
-                        }
-                    }
-                    //- H atom
-                    if (aP == "H")
-                    {
-                        //- H is last character, no number
-                        //  one H atom
-                        if (aP == nP)
-                        {
-                            nHAtoms++;
-                        }
-                        //- after H there is a character
-                        else
-                        {
-                            //- if next char is a number its the amount of
-                            //  atoms of H
-                            if
-                            (
-                                nP.find_first_of("0123456789") !=
-                                std::string::npos
-                            )
-                            {
-                                nHAtoms += stod(nP);
-                            }
-                            //- if next char is a character the atom is
-                            //  only used once
-                            else
-                            {
-                                nHAtoms++;
-                            }
-                        }
-                    }
-                    //- O atom
-                    if (aP == "O")
-                    {
-                        //- O is last character, no number
-                        //  one O atom
-                        if (aP == nP)
-                        {
-                            nOAtoms++;
-                        }
-                        //- after O there is a character
-                        else
-                        {
-                            //- if next char is a number its the amount of
-                            //  atoms of O
-                            if
-                            (
-                                nP.find_first_of("0123456789") !=
-                                std::string::npos
-                            )
-                            {
-                                nOAtoms += stod(nP);
-                            }
-                            //- if next char is a character the atom is
-                            //  only used once
-                            else
-                            {
-                                nOAtoms++;
-                            }
-                        }
-                    }
                 }
-                std::cout<< tmp << "\t\t" << nCAtoms << "\t" << nHAtoms << "\t" << nOAtoms << "\n";
+                //- output fuel composition
+                if (species[id].fuel())
+                {
+                    std::cout<< tmp << "\t\t" << nCAtoms_F << "\t"
+                             << nHAtoms_F << "\t" << nOAtoms_F << "\t"
+                             << nNAtoms_F << "\t (F)\n";
+                }
+
+                //- output oxidzier composition
+                if (species[id].oxidizer())
+                {
+                    std::cout<< tmp << "\t\t" << nCAtoms_O << "\t"
+                             << nHAtoms_O << "\t" << nOAtoms_O << "\t"
+                             << nNAtoms_O << "\t (O)\n";
+                }
 
                 //- element mass fraction (without M_i/M)
-
-                Zc += nCAtoms * species[id].X();
-                Zh += nHAtoms * species[id].X();
-                Zo += nOAtoms * species[id].X();
+                Zc_F += nCAtoms_F * species[id].Xf();
+                Zh_F += nHAtoms_F * species[id].Xf();
+                Zo_F += nOAtoms_F * species[id].Xf();
+                Zo_O += nOAtoms_O * species[id].Xo();
+                Zc_O += nCAtoms_O * species[id].Xo();
+                Zh_O += nHAtoms_O * species[id].Xo();
+                Zn_O += nNAtoms_O * species[id].Xo();
             }
         }
-
-        //- weighting with M_i/M
-        int id_O{-1};
-        int id_H{-1};
-        int id_C{-1};
 
         //- access to database
         Elements element;
 
-        Zc = Zc * element.atomicWeight("C") / MMW_fuel;
-        Zh = Zh * element.atomicWeight("H") / MMW_fuel;
-        Zo = Zo * element.atomicWeight("O") / MMW_fuel;
+        Zc_F *= element.atomicWeight("C") / MMW_fuel;
+        Zh_F *= element.atomicWeight("H") / MMW_fuel;
+        Zo_F *= element.atomicWeight("O") / MMW_fuel;
 
-        std::cout<< "Element mass fraction:\n"
-                 << "  ++ Zc: " << Zc << "\n"
-                 << "  ++ Zh: " << Zh << "\n"
-                 << "  ++ Zo: " << Zo << "\n";
+        Zc_O *= element.atomicWeight("C") / MMW_oxidizer;
+        Zh_O *= element.atomicWeight("H") / MMW_oxidizer;
+        Zo_O *= element.atomicWeight("O") / MMW_oxidizer;
+        Zn_O *= element.atomicWeight("N") / MMW_oxidizer;
 
+        std::cout<< "\n\nElement mass fraction:\n"
+                 << "------------------------------------------------------\n"
+                 << "  ++ Zc\t\t " << Zc_F << "\t\t (F)\n"
+                 << "  ++ Zh\t\t " << Zh_F << "\t\t (F)\n"
+                 << "  ++ Zo\t\t " << Zo_F << "\t\t (F)\n"
+                 << "  ++ Sum of element mass fraction: " << Zc_F + Zh_F + Zo_F
+                 << "\t (F)\n\n"
+                 << "  ++ Zc\t\t " << Zc_O << "\t\t (O)\n"
+                 << "  ++ Zh\t\t " << Zh_O << "\t\t (O)\n"
+                 << "  ++ Zo\t\t " << Zo_O << "\t\t (O)\n"
+                 << "  ++ Zn\t\t " << Zn_O << "\t\t (O)\n"
+                 << "\n";
 
-        scalar Zst{0};
-        return Zst;
+        //- step 3
+        //  calculate omin
+        scalar omin{0};
+        scalar factor_Zc{0};
+        scalar factor_Zh{0};
+
+        //- N. Peters
+        factor_Zc = element.atomicWeight("O")*2/element.atomicWeight("C");
+        factor_Zh = element.atomicWeight("O")*2/(element.atomicWeight("H")*4);
+
+        //- omin
+        //  [kgO2/kgF]
+        //  [gO2/gF]
+        //  TODO
+        //  >>> if H or C in oxidizer we need more O2 <<< ???
+        //  >>> also not included in libOpenSMOKE??? <<<
+        omin = factor_Zc * Zc_F + factor_Zh * Zh_F - Zo_F;
+        std::cout<< "  ++ omin: " << omin << "\n";
+
+        //- step 4
+        //- calculate the amount of moles O per
+        //  mole F at stochiometric condition
+        //  o_st [molO/molF]
+        scalar o_st = omin*MMW_fuel / (element.atomicWeight("O")*2) / Zo_O;
+
+        //- step 5
+        //  calculate mean moleculare weight of fuel and oxidizer
+        //  at stochiometric conditions
+        scalar MMW_st = MMW_fuel + o_st * element.atomicWeight("O")*2;
+
+        //- step 6
+        //  calculate elementar mass fraction Zo at stochiometric condition
+        scalar Zo_st = o_st * element.atomicWeight("O")*2 / MMW_st;
+
+        std::cout<< "  ++ Stochiometric mixture fraction Zst: " << Zo_st << "\n";
+
+        return 1;
     }
+
+    //-
