@@ -36,12 +36,12 @@ elementName(6), elementAM(6)
 
     //- Initialize atomic mass
 
-        elementAM[0] = 1.008;       // H
-        elementAM[1] = 15.999;      // O
-        elementAM[2] = 12.011;      // C
-        elementAM[3] = 14.007;      // N
-        elementAM[4] = 39.948;      // AR
-        elementAM[5] = 4.002602;    // HE
+        elementAM[0] = 1.0079;       // H
+        elementAM[1] = 15.9994;      // O
+        elementAM[2] = 12.011;       // C
+        elementAM[3] = 14.0067;      // N
+        elementAM[4] = 39.948;       // AR
+        elementAM[5] = 4.002602;     // HE
 }
 
 Elements::~Elements()

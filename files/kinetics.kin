@@ -8,7 +8,8 @@ END
 SPECIES
 HE             AR             N2             O2             H2             
 H2O            H2O2            
-O              H              OH             HO2           
+O              H              OH             HO2          CO
+CH3OH
 END
 REACTIONS
 H+O2=OH+O                                .2210E+15    .000  16650.0

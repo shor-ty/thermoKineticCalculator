@@ -6,6 +6,8 @@
 
     moleFractionFuel
     {
-        H2   0.4
-        OH   0.6
+        CH3OH 0.4
+        H2   0.1501
+        CO   0.2499
+        OH   0.20
     }   
