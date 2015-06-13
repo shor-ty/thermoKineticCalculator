@@ -83,17 +83,17 @@ class Thermodynamic
 //        //- get all high temperature coefficents (NASA-Polynomials)
 //        void highTemperatureCoefficents() const;
 //
-        //- calculate heat capacity cp [kJ/kgK]
-        scalar calculateHeatCapacity( const scalar& );
+        //- calculate heat capacity cp [J/(molK)]
+        scalar cp( const scalar ) const;
 
-        //- calculate heat capacity H []
-        scalar calculateEnthalpy( const scalar& );
+        //- calculate enthalpy [J/(mol)]
+        scalar h( const scalar ) const;
 
-        //- calculate heat capacity S []
-        scalar calculateEntropy( const scalar& );
+        //- calculate entropie S [J/(molK)]
+        scalar s( const scalar ) const;
 
         //- calculate free gibbs energy
-        scalar calculateFreeGibbsEnergy( const scalar& );
+        scalar G( const scalar ) const ;
 
         //- set thermodynamic status
         void thermodynamicTrue();
@@ -102,7 +102,7 @@ class Thermodynamic
         bool thermodynamicStatus() const;
 
         //- define the
-        void whichPolyCoeffs( const scalar&, int& );
+        void whichPolyCoeffs( const scalar&, int& ) const;
 
 
     private:
@@ -114,7 +114,7 @@ class Thermodynamic
         normalString phase;
 
         //- themodynamic values set
-        bool thermoBool{false};
+        bool thermoBool;
 
         //- temperature bounds
         scalar lowTemp;

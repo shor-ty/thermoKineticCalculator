@@ -26,6 +26,9 @@
 Species::Species() :
     MW_(0),
     Y_(0),
+    Yf_(0),
+    Yo_(0),
+    X_(0),
     Xf_(0),
     Xo_(0),
     Con_(0),
@@ -80,29 +83,108 @@ const bool Species::oxidizer() const
     return oxidizer_;
 }
 
-//- set mol fraction X in fuel
-void Species::setXf(const scalar& molFraction)
+//- mol fraction
+
+    //- set mol fraction X 0 < Z 1
+    void Species::setX(const scalar& molFraction)
+    {
+        X_ = molFraction;
+    }
+
+    //- set mol fraction X in pure fuel
+    void Species::setXf(const scalar& molFraction)
+    {
+        Xf_ = molFraction;
+    }
+
+    //- set mol fraction X in pure oxidizer
+    void Species::setXo(const scalar& molFraction)
+    {
+        Xo_ = molFraction;
+    }
+
+    //- return mol fraction X 0 < Z < 1
+    const scalar Species::X() const
+    {
+        return X_;
+    }
+
+    //- return mol fraction X in pure fuel
+    const scalar Species::Xf() const
+    {
+        return Xf_;
+    }
+
+    //- return mol fraction X in pure oxidizer
+    const scalar Species::Xo() const
+    {
+        return Xo_;
+    }
+
+
+//- mass fraction
+
+    //- set mass fraction Y 0 < Z < 1
+    void Species::setY(const scalar& massFraction)
+    {
+        Y_ = massFraction;
+    }
+
+    //- set mass fraction Y in pure fuel
+    void Species::setYf(const scalar& massFraction)
+    {
+        Yf_ = massFraction;
+    }
+
+    //- set mass fraction Y in pure oxidizer
+    void Species::setYo(const scalar& massFraction)
+    {
+        Yo_ = massFraction;
+    }
+
+    //- return mass fraction Y 0 < Z < 1
+    const scalar Species::Y() const
+    {
+        return Y_;
+    }
+
+    //- return mass fraction Y in pure fuel
+    const scalar Species::Yf() const
+    {
+        return Yf_;
+    }
+
+    //- return mass fraction Y in pure oxidizer
+    const scalar Species::Yo() const
+    {
+        return Yo_;
+    }
+
+
+//- set temperature of fuel
+void Species::setTf(const scalar& Tf)
 {
-    Xf_ = molFraction;
+    Tf_ = Tf;
 }
 
-//- set mol fraction X in oxidizer
-void Species::setXo(const scalar& molFraction)
+//- set temperature of oxidizer
+void Species::setTo(const scalar& To)
 {
-    Xo_ = molFraction;
+    To_ = To;
 }
 
-//- return mol fraction X in fuel
-const scalar Species::Xf() const
+//- get temperature of fuel
+const scalar Species::Tf() const
 {
-    return Xf_;
+    return Tf_;
 }
 
-//- return mol fraction X in oxidizer
-const scalar Species::Xo() const
+//- get temperature of oxidizer
+const scalar Species::To() const
 {
-    return Xo_;
+    return To_;
 }
+
 
 const scalar Species::MW() const
 {

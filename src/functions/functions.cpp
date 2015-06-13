@@ -23,6 +23,7 @@
 #include <iostream>
 #include <iterator>
 #include <sstream>
+#include <iomanip>
 
 //- user def. headers
 #include "functions.hpp"
@@ -590,50 +591,174 @@
             }
         }
 
-        //- check if X = 1
+        //- set temperature for fuel and oxidizer
+        //  could be solved in a better way
+        //  again loop through the file
+        bool Tf_set{false};
+        bool To_set{false};
+
+        forAll(fileContent, line)
+        {
+
+            normalString lineContent = fileContent[line];
+
+            //- split line into array
+            std::istringstream tmp(lineContent);
+
+            stringField lineContent_
+            {
+                std::istream_iterator<std::string>{tmp},
+                std::istream_iterator<std::string>{}
+            };
+
+            if (lineContent_.size())
+            {
+                //- set oxidizer temperature
+                if (lineContent_[0] == "temperatureOxidizer")
+                {
+                    //- redundand saved
+                    forAll(species, id)
+                    {
+                        if (species[id].oxidizer())
+                        {
+                            species[id].setTo(stod(lineContent_[1]));
+                            To_set = true;
+                        }
+                    }
+                }
+
+                //- set fuel temperature
+                if (lineContent_[0] == "temperatureFuel")
+                {                //- redundand saved
+                    forAll(species, id)
+                    {
+                        if (species[id].fuel())
+                        {
+                            species[id].setTf(stod(lineContent_[1]));
+                            Tf_set = true;
+                        }
+                    }
+                }
+            }
+        }
+
+        //- check if both temperatures set
+        if (!Tf_set || !To_set)
+        {
+            std::cerr<< "\n ++ " << "Temperature of ";
+            if (!Tf_set && To_set)
+            {
+                std::cerr<< "fuel ";
+            }
+            else if (!To_set && Tf_set)
+            {
+                std::cerr<< "oxidizer ";
+            }
+            else
+            {
+                std::cerr<< "fuel and oxidizer ";
+            }
+            std::cerr<< "is not set";
+            std::cerr<< "\n ++ Error occur in file " << __FILE__
+                     << " line " << __LINE__ << std::endl;
+            std::terminate();
+        }
+
+        //- set mass fraction for species
+        //  could be done in a better way
+        scalar MMW_fuel{0};
+        scalar MMW_oxidizer{0};
+
+        //- calculate mean molecular weight of fuel and oxidizer
+        forAll(species, id)
+        {
+            if (species[id].fuel())
+            {
+                MMW_fuel += species[id].MW() * species[id].Xf();
+            }
+            if (species[id].oxidizer())
+            {
+                MMW_oxidizer += species[id].MW() * species[id].Xo();
+            }
+        }
+
+        //- calculate mass fraction Y
+        forAll(species, id)
+        {
+            if (species[id].fuel())
+            {
+                species[id].setYf
+                (
+                    species[id].MW() /
+                    MMW_fuel *
+                    species[id].Xf()
+                );
+            }
+            if (species[id].oxidizer())
+            {
+                species[id].setYo
+                (
+                    species[id].MW() /
+                    MMW_oxidizer *
+                    species[id].Xo()
+                );
+            }
+        }
+
+        //- check if X = 1  and Y = 1
         scalar X{0};
+        scalar Y{0};
         std::cout<< "Checking chemical composition of fuel:\n"
                  << "------------------------------------------------------\n";
         forAll(species, id)
         {
             if (species[id].fuel())
             {
-                std::cout<< " ++ " << species[id].name() << "\t\t X = "
-                         << species[id].Xf() << "\t" << species[id].MW() << "\n";
+                std::cout<< " ++ " << species[id].name()
+                         << "\t\t X = " << species[id].Xf()
+                         << "\t Y = " << species[id].Yf()
+                         << "\t MW = " << species[id].MW() << "\n";
                 X += species[id].Xf();
+                Y += species[id].Yf();
             }
         }
-        std::cout<< " ++ Fuel mol fraction = " << X << "\n\n";
+        std::cout<< " ++ Fuel mol fraction = " << X << "\n";
+        std::cout<< " ++ Fuel mass fraction = " << Y << "\n\n";
 
         //- if sum <> 1
-        if (X != 1.)
+        if (X != 1. || Y != 1.)
         {
-            std::cerr<< "\n ++ " << "Fuel mol fraction "
+            std::cerr<< "\n ++ " << "Fuel mol/mass fraction "
                      << "is not equal to 1"
                      << "\n ++ Error occur in file " << __FILE__
                      << " line " << __LINE__ << std::endl;
             std::terminate();
         }
 
-        //- reset X
+        //- reset X and Y
         X = 0;
+        Y = 0;
         std::cout<< "\nChecking chemical composition of oxidizer:\n"
                  << "------------------------------------------------------\n";
         forAll(species, id)
         {
             if (species[id].oxidizer())
             {
-                std::cout<< " ++ " << species[id].name() << "\t\t X = "
-                         << species[id].Xo() << "\n";
+                std::cout<< " ++ " << species[id].name()
+                         << "\t\t X = " << species[id].Xo()
+                         << "\t Y = " << species[id].Yo()
+                         << "\t MW = " << species[id].MW() << "\n";
                 X += species[id].Xo();
+                Y += species[id].Yo();
             }
         }
-        std::cout<< " ++ Oxidizer mol fraction = " << X << "\n\n\n";
+        std::cout<< " ++ Oxidizer mol fraction = " << X << "\n";
+        std::cout<< " ++ Oxidizer mass fraction = " << Y << "\n\n\n";
 
         //- if sum <> 1
-        if (X != 1.)
+        if (X != 1. || Y != 1.)
         {
-            std::cerr<< "\n ++ " << "Oxidizer mol fraction "
+            std::cerr<< "\n ++ " << "Oxidizer mol/mass fraction "
                      << "is not equal to 1"
                      << "\n ++ Error occur in file " << __FILE__
                      << " line " << __LINE__ << std::endl;
@@ -641,96 +766,17 @@
         }
     }
 
-    //- remove whitespace from string
-    void removeSpace(normalString& str)
-    {
-        str.erase
-        (
-            std::remove_if
-            (
-                str.begin(),
-                str.end(),
-                [](char c)
-                {
-                    return (c =='\r' || c =='\t' || c == ' ' || c == '\n');
-                }
-            ),
-            str.end()
-        );
-    }
-
-    //- calculate molecular weight
-    scalar calcMolecularWeight(const normalString& species)
-    {
-        //- class of molecular weights
-        Elements element;
-
-        //- molecular weight [mol/kg]
-        scalar mW{0};
-
-        //- there should be a better way to perform that stuff | simple c style
-        //  get elements and the number
-
-            normalString tmp = species;
-            normalString lP, aP, nP;
-
-            //- inert gas
-            if (tmp == "HE" || tmp == "AR")
-            {
-                mW = element.atomicWeight(tmp);
-            }
-            else
-            {
-                for (unsigned int i=0; i<tmp.length(); i++)
-                {
-                    //- actual position
-                    aP = tmp[i];
-
-                    //- next position
-                    if (i+1 <= tmp.length())
-                    {
-                        nP = tmp[i+1];
-                    }
-                    else
-                    {
-                        nP = aP;
-                    }
-
-                    //- if aP is no number
-                    //- TODO add two numbered molecules like C4H12 <-- 12
-                    if (aP.find_first_of("0123456789") == std::string::npos)
-                    {
-                        if
-                        (
-                            nP.find_first_of("0123456789") != std::string::npos
-                        )
-                        {
-                            mW += element.atomicWeight(aP)
-                                * stod(nP);
-
-                            i++;
-                        }
-                        //- only one element
-                        else
-                        {
-                            mW += element.atomicWeight(aP);
-                        }
-                    }
-                }
-            }
-
-            //- return the molecular weight of species
-            return mW;
-    }
-
 
     //- calculate stoichiometric mixture fraction Zst
-    scalar stochiometricMF(const std::vector<Species>& species)
+    scalar stochiometricMF
+    (
+        const std::vector<Species>& species
+    )
     {
         std::cout<< "Calculate stochiometric mixture fraction Zst:\n"
                  << "------------------------------------------------------\n";
 
-        //- Mean mole fraction in [g/mol]
+        //- mean mol fraction in [g/mol]
         scalar MMW_fuel{0};
         scalar MMW_oxidizer{0};
 
@@ -1076,7 +1122,9 @@
                  << "  ++ Zh\t\t " << Zh_O << "\t\t (O)\n"
                  << "  ++ Zo\t\t " << Zo_O << "\t\t (O)\n"
                  << "  ++ Zn\t\t " << Zn_O << "\t\t (O)\n"
-                 << "\n";
+                 << "  ++ Sum of element mass fraction: "
+                 << Zc_O + Zh_O + Zo_O + Zn_O
+                 << "\n\n";
 
         //- step 3
         //  calculate omin
@@ -1114,7 +1162,370 @@
 
         std::cout<< "  ++ Stochiometric mixture fraction Zst: " << Zo_st << "\n";
 
+        return Zo_st;
+    }
+
+    //- calculate adiabatic enthalpy of fuel and oxidizer
+    //  + 0 mean fuel
+    //  + 1 mean oxidizer
+    //  [J/kg]
+    scalar adiabaticEnthalpy
+    (
+        const std::vector<Species>& species,
+        const int i
+    )
+    {
+        scalar hf_a{0};
+        scalar ho_a{0};
+
+        forAll(species, id)
+        {
+            // hf_a     [J/kg]
+            // h()      [J/mol]
+            // MW()     [g/mol]
+            // Xf()     [-]
+            // 1000     g/kg
+            if (species[id].fuel())
+            {
+                hf_a += species[id].h(species[id].Tf()) *
+                        species[id].Xf() /
+                        species[id].MW() *
+                        1000;
+            }
+            if (species[id].oxidizer())
+            {
+                ho_a += species[id].h(species[id].To()) *
+                        species[id].Xo() /
+                        species[id].MW() *
+                        1000;
+            }
+        }
+
+        //- fuel
+        if (i == 0)
+        {
+            return hf_a;
+        }
+        //- oxidizer
+        else if (i == 1)
+        {
+            return ho_a;
+        }
+        else
+        {
+            std::cerr<< "\n ++ ERROR: wrong value for quantifier <F=0/O=1>"
+                     << "\n ++ Error occur in file " << __FILE__
+                     << " line " << __LINE__ << std::endl;
+            std::terminate();
+        }
+    }
+
+    //- calculate adiabatic flame temperature [K]
+    //  for stochiometric conditions
+    scalar adiabateFlameTemperature
+    (
+        const scalar& Zst,
+        const std::vector<Species>& species
+    )
+    {
+        //- initial temperature
+        //  T1 < Tb
+        //  T2 > Tb
+        scalar T1{500};
+        scalar T2{3500};
+        scalar Tm = (T2 - T1)/2;
+
+        scalar hu_o{0};
+        scalar hu_f{0};
+        scalar hb1{0};
+        scalar hb2{0};
+        scalar hbm{0};
+        scalar cp{0};
+        scalar cp_f{0};
+        scalar cp_o{0};
+
+        int idH2O{-1};
+
+        forAll(species, id)
+        {
+            if (species[id].fuel())
+            {
+                hu_f += species[id].h(species[id].Tf())/species[id].MW()*1000*species[id].Xf();
+                cp += species[id].cp(species[id].Tf())/species[id].MW()*1000*species[id].Xf();
+                cp_f += species[id].cp(3083)/species[id].MW()*1000*species[id].Xf();
+            }
+            if (species[id].oxidizer())
+            {
+                hu_o += species[id].h(species[id].To())/species[id].MW()*1000*species[id].Xo();
+                cp += species[id].cp(species[id].To())/species[id].MW()*1000*species[id].Xo();
+                cp_o += species[id].cp(3083)/species[id].MW()*1000*species[id].Xo();
+            }
+            if (species[id].name() == "H2O")
+            {
+                hbm += species[id].h(3083)/species[id].MW()*1000;
+                cp += species[id].cp(3083)/species[id].MW();
+            }
+        }
+
+        std::cout << hu_f << "  " << hu_o << "  " << hbm<< ":  " << hu_f + hu_o + hbm <<"\n";
+
+        int a{0};
+        scalar hbm_old{0};
+
+//        do
+//        {
+//            Tm = (T2 - T1)/2;
+//
+//            hb1 = species[idH2O].h(T1)/species[idH2O].MW()*1000;
+//            hb2 = species[idH2O].h(T2)/species[idH2O].MW()*1000;
+//            hbm = species[idH2O].h(3082)/species[idH2O].MW()*1000;
+//
+//            std::cout << hbm << "\n";
+//
+//            if (hb1 < hu && hu < hbm)
+//            {
+//                T2 = Tm;
+//            }
+//            else
+//            {
+//                T1 = Tm;
+//            }
+//
+//
+//                break;
+//
+//            hbm_old = hbm;
+//            a++;
+//        }
+//        while (true);
+
         return 1;
     }
 
-    //-
+    //- discret points of mixture fraction points Z [-]
+    //  TODO --- move to read afcDict function
+    scalarField discretZ
+    (
+        const normalString& fileAFCDict
+    )
+    {
+        stringField fileContent = openFile(fileAFCDict);
+        scalarField Z;
+
+        //- first entry
+        Z.push_back(0);
+
+        forAll(fileContent, line)
+        {
+
+            normalString lineContent = fileContent[line];
+
+            //- split line into array
+            std::istringstream tmp(lineContent);
+
+            stringField lineContent_
+            {
+                std::istream_iterator<std::string>{tmp},
+                std::istream_iterator<std::string>{}
+            };
+
+            if (lineContent_.size())
+            {
+                if (lineContent_[0] == "mixtureFractionPoints")
+                {
+                    scalar deltaZ = 1/stod(lineContent_[1]);
+
+                    for(int i=1; i<atoi(lineContent_[1].c_str()); i++)
+                    {
+                        Z.push_back(Z[i-1]+deltaZ);
+                    }
+                }
+            }
+        }
+        //-last entry
+        Z.push_back(1);
+
+        return Z;
+    }
+
+    //- discret points of scalar dissipation rate [Hz]
+    //  TODO --- move to read afcDict function
+    scalarField discretChi
+    (
+        const normalString& fileAFCDict
+    )
+    {
+        stringField fileContent = openFile(fileAFCDict);
+        scalarField chi;
+        bool sDR{false};
+
+        //- first entry
+        chi.push_back(1e-8);
+
+        forAll(fileContent, line)
+        {
+
+            normalString lineContent = fileContent[line];
+
+            if (sDR)
+            {
+                removeSpace(lineContent);
+                //- dictionary end
+                if (lineContent == "}")
+                {
+                    sDR = false;
+                    break;
+                }
+
+                //- split line into array
+                //  reinitialize due to removed spaces
+                std::istringstream tmp(fileContent[line]);
+
+                stringField lineContent_
+                {
+                    std::istream_iterator<std::string>{tmp},
+                    std::istream_iterator<std::string>{}
+                };
+
+                forAll(lineContent_, num)
+                {
+                    chi.push_back(stod(lineContent_[num]));
+                }
+            }
+
+            //- remove whitespaces
+            removeSpace(lineContent);
+
+            if (lineContent == "scalarDissipationRates")
+            {
+                normalString tmp = fileContent[line+1];
+                removeSpace(tmp);
+
+                if (tmp == "{")
+                {
+                    sDR = true;
+                    line++;
+                }
+            }
+        }
+        return chi;
+    }
+
+    //- remove whitespace from string
+    void removeSpace(normalString& str)
+    {
+        str.erase
+        (
+            std::remove_if
+            (
+                str.begin(),
+                str.end(),
+                [](char c)
+                {
+                    return (c =='\r' || c =='\t' || c == ' ' || c == '\n');
+                }
+            ),
+            str.end()
+        );
+    }
+
+    //- calculate molecular weight
+    scalar calcMolecularWeight(const normalString& species)
+    {
+        //- class of molecular weights
+        Elements element;
+
+        //- molecular weight [mol/kg]
+        scalar mW{0};
+
+        //- there should be a better way to perform that stuff | simple c style
+        //  get elements and the number
+
+            normalString tmp = species;
+            normalString lP, aP, nP;
+
+            //- inert gas
+            if (tmp == "HE" || tmp == "AR")
+            {
+                mW = element.atomicWeight(tmp);
+            }
+            else
+            {
+                for (unsigned int i=0; i<tmp.length(); i++)
+                {
+                    //- actual position
+                    aP = tmp[i];
+
+                    //- next position
+                    if (i+1 <= tmp.length())
+                    {
+                        nP = tmp[i+1];
+                    }
+                    else
+                    {
+                        nP = aP;
+                    }
+
+                    //- if aP is no number
+                    //- TODO add two numbered molecules like C4H12 <-- 12
+                    if (aP.find_first_of("0123456789") == std::string::npos)
+                    {
+                        if
+                        (
+                            nP.find_first_of("0123456789") != std::string::npos
+                        )
+                        {
+                            mW += element.atomicWeight(aP)
+                                * stod(nP);
+
+                            i++;
+                        }
+                        //- only one element
+                        else
+                        {
+                            mW += element.atomicWeight(aP);
+                        }
+                    }
+                }
+            }
+
+            //- return the molecular weight of species
+            return mW;
+    }
+
+    //- summary
+    void summary
+    (
+        const scalar& hf_a,
+        const scalar& ho_a,
+        const scalar& Zst,
+        const scalarField& chi_dP,
+        const std::vector<Species>& species
+    )
+    {
+        scalar Tf{0};
+        scalar To{0};
+
+        forAll(species, id)
+        {
+            if (species[id].fuel())
+            {
+                Tf = species[id].Tf();
+            }
+            if (species[id].oxidizer())
+            {
+                To = species[id].To();
+            }
+        }
+
+        std::cout<< std::setiosflags(std::ios::left)
+                 << "\n\nSummary of important data\n"
+                 <<"------------------------------------------------------\n"
+                 << std::setw(25)<< "Temperature fuel: " << Tf << "\t [K]\n"
+                 << std::setw(25)<< "Enthalpy fuel: " << hf_a << "\t [J/kg]\n"
+                 << std::setw(25)<< "Temperature oxidizer: " << To << "\t [K]\n"
+                 << std::setw(25)<< "Enthalpy oxidizer: " << ho_a << "\t [J/kg]\n"
+                 << std::setw(25)<< "Stochiometric: " << Zst << "\t [-]\n"
+                 << "Discrete scalar dissipation rates: " << chi_dP.size() << "\t [-]\n"
+                 << "Range of scalar dissipation rates: " << chi_dP[0] << " - " << chi_dP[chi_dP.size()-1] << "\t [Hz]\n\n";
+    }

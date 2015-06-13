@@ -46,20 +46,71 @@
         std::vector<Reactions>&
     );
 
-    //- calc species molecular weight [kg/mol]
-    scalar calcMolecularWeight(const normalString&);
-
     //- read afcDict
-    void readAFCDict(const normalString&, std::vector<Species>&);
+    void readAFCDict
+    (
+        const normalString&,
+        std::vector<Species>&
+    );
 
-    //- remove white space
-    void removeSpace(normalString&);
 
     //- calculate stochiometric mixture fraction
-    scalar stochiometricMF(const std::vector<Species>&);
+    scalar stochiometricMF
+    (
+        const std::vector<Species>&
+    );
 
-    //- create thermodynamic class objects
-//    std::vector<Thermodynamic> createThermodynamicObjects(const stringField&);
+    //- calculate adiabatic enthalpy of fuel and oxidizer
+    //  + 0 mean fuel
+    //  + 1 mean oxidizer
+    //  [J/kg]
+    scalar adiabaticEnthalpy
+    (
+        const std::vector<Species>&,
+        const int
+    );
+
+    //- calculate adiabatic flame temperature at stochiometric
+    //  mixture in Kelvin
+    scalar adiabateFlameTemperature
+    (
+        const scalar&,
+        const std::vector<Species>&
+    );
+
+    //- discret points of mixture fraction points Z [-]
+    scalarField discretZ
+    (
+        const normalString&
+    );
+
+    //- discrete points of scalar dissipation rate [Hz]
+    scalarField discretChi
+    (
+        const normalString&
+    );
+
+    //- remove white space
+    void removeSpace
+    (
+        normalString&
+    );
+
+    //- calc species molecular weight [kg/mol]
+    scalar calcMolecularWeight
+    (
+        const normalString&
+    );
+
+    //- summary of data
+    void summary
+    (
+        const scalar&,
+        const scalar&,
+        const scalar&,
+        const scalarField&,
+        const std::vector<Species>&
+    );
 
 //---------------------------------------------------------------------------*/
 

@@ -24,6 +24,8 @@
 
 //- constructor
 Thermodynamic::Thermodynamic()
+:
+    thermoBool(false)
 {
 }
 
@@ -34,7 +36,6 @@ Thermodynamic::~Thermodynamic()
 
 //- functions
 //-----------
-
 
     //- set phase
     void Thermodynamic::setPhase( const normalString& phase_ )
@@ -56,53 +57,17 @@ Thermodynamic::~Thermodynamic()
     }
 
 
-    //- set the first line of coefficents (NASA)
-//    void Thermodynamic::setNASACoefficients( const double& a_1, const double& a_2, const double& a_3, const double& a_4, const double& a_5)
-//    {
-//
-//    }
-
 //- functions
 //-----------
 
-    //- get low temperature
-//    int Thermodynamic::lowTemperature() const
-//    {
-//        return T_low;
-//    }
-//
-//    //- get mid temperature
-//    int Thermodynamic::midTemperature() const
-//    {
-//        return T_mid;
-//    }
-//
-//    //- get high temperature
-//    int Thermodynamic::highTemperature() const
-//    {
-//        return T_high;
-//    }
-//
-    //- get high temperature coefficents
+    //- set NASA coefficents
     void Thermodynamic::setPolyCoeffs(const scalarField& polyCoeffs_)
     {
         polyCoeffs = polyCoeffs_;
     }
-//
-//    //- get low temperature coefficents
-//    void Thermodynamic::lowTemperatureCoefficents() const
-//    {
-//        std::cout << "b1: " << b1 << "\n";
-//        std::cout << "b2: " << b2 << "\n";
-//        std::cout << "b3: " << b3 << "\n";
-//        std::cout << "b4: " << b4 << "\n";
-//        std::cout << "b5: " << b5 << "\n";
-//        std::cout << "b6: " << b6 << "\n";
-//        std::cout << "b7: " << b7 << "\n";
-//    }
-//
-    //- calculate heat capacity cp in [kJ/kgK]
-    scalar Thermodynamic::calculateHeatCapacity(const scalar& T_)
+
+    //- calculate heat capacity cp [J/(molK)]
+    scalar Thermodynamic::cp(const scalar T_) const
     {
         int i{0};
 
@@ -118,8 +83,8 @@ Thermodynamic::~Thermodynamic()
                   * R);
     }
 
-    //- calculate enthalpy
-    scalar Thermodynamic::calculateEnthalpy(const scalar& T_)
+    //- calculate enthalpy [J/mol]
+    scalar Thermodynamic::h(const scalar T_) const
     {
         int i{0};
 
@@ -136,8 +101,8 @@ Thermodynamic::~Thermodynamic()
                   *T_*R);
     }
 
-    //- calculate entropy
-    scalar Thermodynamic::calculateEntropy(const scalar& T_)
+    //- calculate entropy [J/(molK)]
+    scalar Thermodynamic::s(const scalar T_) const
     {
         int i{0};
 
@@ -154,13 +119,11 @@ Thermodynamic::~Thermodynamic()
                   *R);
     }
 
-
     //- set thermodynamic bool to true
     void Thermodynamic::thermodynamicTrue()
     {
         thermoBool = true;
     }
-
 
     //- return thermodynamic status
     bool Thermodynamic::thermodynamicStatus() const
@@ -169,7 +132,7 @@ Thermodynamic::~Thermodynamic()
     }
 
     //- check temperature range
-    void Thermodynamic::whichPolyCoeffs(const scalar& T_, int& i)
+    void Thermodynamic::whichPolyCoeffs(const scalar& T_, int& i) const
     {
         //- FIXME EXTEND TO WHICH SPECIES
         if(T_ < lowTemp)
@@ -193,28 +156,3 @@ Thermodynamic::~Thermodynamic()
             i = 0;
         }
     }
-//    void Thermodynamic::showValues() const
-//    {
-//        std::cout << "\n - thermodynamic  (NASA) \n\n";
-//        std::cout << "   + T(low):     " << T_low << "\n";
-//        std::cout << "   + T(mid):     " << T_mid << "\n";
-//        std::cout << "   + T(high):    " << T_high << "\n\n";
-//        std::cout << "   + Coeff for [T(low),T(mid)]" << "\n";
-//        std::cout << "   ----------------------------\n";
-//        std::cout << "      b1:     " << b1 << "\n";
-//        std::cout << "      b2:     " << b2 << "\n";
-//        std::cout << "      b3:     " << b3 << "\n";
-//        std::cout << "      b4:     " << b4 << "\n";
-//        std::cout << "      b5:     " << b5 << "\n";
-//        std::cout << "      b6:     " << b6 << "\n";
-//        std::cout << "      b7:     " << b7 << "\n\n";
-//        std::cout << "   + Coeff for [T(mid),T(high)]" << "\n";
-//        std::cout << "   ----------------------------\n";
-//        std::cout << "      a1:     " << a1 << "\n";
-//        std::cout << "      a2:     " << a2 << "\n";
-//        std::cout << "      a3:     " << a3 << "\n";
-//        std::cout << "      a4:     " << a4 << "\n";
-//        std::cout << "      a5:     " << a5 << "\n";
-//        std::cout << "      a6:     " << a6 << "\n";
-//        std::cout << "      a7:     " << a7 << "\n";
-//    }

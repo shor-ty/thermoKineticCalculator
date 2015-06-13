@@ -29,39 +29,50 @@
 
 int main()
 {
-    normalString s = "../files/kinetics.kin";
-    normalString t = "../files/thermo.tdc";
-    normalString f = "../files/afcDict";
+    normalString fKinetic = "../files/kinetics.kin";
+    normalString fThermo  = "../files/thermo.tdc";
+    normalString fAFCDict = "../files/afcDict";
     //- Some output definitions
-//    std::cout.precision( 8 );
+    //std::cout.precision( 8 );
     //std::cout.setf( std::ios::scientific );
 
-        //- SPECIES class
-        std::vector<Species> species;
+    //- SPECIES class
+    std::vector<Species> species;
 
-        //- REACTION class
-        std::vector<Reactions> reactions;
+    //- REACTION class
+    std::vector<Reactions> reactions;
 
     //- Read kinetic file
-    readChemKinThermo(s, t, species, reactions);
+    readChemKinThermo(fKinetic, fThermo, species, reactions);
 
     //- Read afcDict
-    readAFCDict(f, species);
+    readAFCDict(fAFCDict, species);
 
     //- calculate stochiometric mixture fraction Zst
     scalar Zst = stochiometricMF(species);
 
+    //- adiabatic enthalpy of fuel and oxidizer
+    //  + 0 mean fuel
+    //  + 1 mean oxidizer
+    //  [J/kg]
+    scalar hf_a = adiabaticEnthalpy(species, 0);
+    scalar ho_a = adiabaticEnthalpy(species, 1);
+
+    //- calculate adiabatic flame temperature
+    //  for stochiometric conditions
+    scalar Tst_a = adiabateFlameTemperature(Zst, species);
+
+    //- mixture fraction Z (discrete points)
+    scalarField Z_dP = discretZ(fAFCDict);
+
+    //- scalar dissipation rates (discrete points)
+    scalarField chi_dP = discretChi(fAFCDict);
+
+    summary(hf_a, ho_a, Zst, chi_dP, species);
 
 
+    //- partial differential equation
+    //scalar t{0};
 
-    //- read thermodynamic file
-//    const stringField thermoFileContent = openFile("../files/thermodynamic.tdc");
-
-    //- create thermodynamic objects
-//    std::vector<Thermodynamic> thermo = createThermodynamicObjects(thermoFileContent);
-
-    //for(int i=0; i< 1000; i=i+50)
-
-//    Info << "buba" ;
     return 0;
 }

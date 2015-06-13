@@ -58,22 +58,67 @@ class Species : public Thermodynamic
             const bool fuel() const;
             const bool oxidizer() const;
 
-            //- set mol fraction X in fuel
-            void setXf(const scalar&);
+            //- mol fraction
 
-            //- set mol fraction X in oxidizer
-            void setXo(const scalar&);
+                //- set mol fraction X 0 < Z < 1
+                void setX(const scalar&);
 
-            //- return mol fraction X in fuel
-            const scalar Xf() const;
+                //- set mol fraction X in pure fuel
+                void setXf(const scalar&);
 
-            //- return mol fraction X in oxidizer
-            const scalar Xo() const;
+                //- set mol fraction X in pure oxidizer
+                void setXo(const scalar&);
+
+                //- return mol fraction X 0 < Z < 1
+                const scalar X() const;
+
+                //- return mol fraction X in pure fuel
+                const scalar Xf() const;
+
+                //- return mol fraction X in pure oxidizer
+                const scalar Xo() const;
+
+
+            //- mass fraction
+
+                //- set mass fraction Y 0 < Z < 1
+                void setY(const scalar&);
+
+                //- set mass fraction Y in pure fuel
+                void setYf(const scalar&);
+
+                //- set mass fraction Y in pure oxidizer
+                void setYo(const scalar&);
+
+                //- return mass fraction Y 0 < Z < 1
+                const scalar Y() const;
+
+                //- return mass fraction Y in pure fuel
+                const scalar Yf() const;
+
+                //- return mass fraction Y in pure oxider
+                const scalar Yo() const;
+
+
+            //- temperature
+
+                //- set temperature of pure fuel
+                void setTf(const scalar&);
+
+                //- set temperature of pure oxidizer
+                void setTo(const scalar&);
+
+                //- get temperature of pure fuel
+                const scalar Tf() const;
+
+                //- get temperature of pure oxidizer
+                const scalar To() const;
+
 
             //- return name of species
             const normalString name() const;
 
-            //- retrun MW [mol/kg]
+            //- retrun MW [g/mol]
             const scalar MW() const;
 
 
@@ -83,19 +128,42 @@ class Species : public Thermodynamic
         //- name
         normalString name_;
 
-        //- molecular weight [kg/mol]
+        //- molecular weight [g/mol]
         scalar MW_;
 
-        //- mass fraction [-]
-        scalar Y_;
+
+        //- mass fraction
+
+            //- mass fraction [-]
+            scalar Y_;
+
+            //- mass fraction in pure fuel [-]
+            scalar Yf_;
+
+            //- mass fraction in pure oxidizer [-]
+            scalar Yo_;
 
 
+        //- mol fraction
 
-        //- mol fraction in fuel [-]
-        scalar Xf_;
+            //- mol fraction [-]
+            scalar X_;
 
-        //- mol fraction in oxidizer [-]
-        scalar Xo_;
+            //- mol fraction in pure fuel [-]
+            scalar Xf_;
+
+            //- mol fraction in pure oxidizer [-]
+            scalar Xo_;
+
+
+        //- temperature [K]
+        scalar T_;
+
+        //- temperature of pure fuel
+        scalar Tf_;
+
+        //- temperature of pure oxidizer
+        scalar To_;
 
         //- concentration [-]
         scalar Con_;
