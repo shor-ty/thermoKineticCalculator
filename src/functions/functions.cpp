@@ -480,7 +480,6 @@
             //- remove whitespaces
             removeSpace(lineContent);
 
-
             if
             (
                 lineContent == "moleFractionFuel" ||
@@ -514,7 +513,6 @@
                                  << " line " << __LINE__ << std::endl;
                         std::terminate();
                     }
-                    line++;
                 }
                 //- dictionary end reached "}"
                 if (lineContent == "}")
@@ -524,7 +522,14 @@
                 }
 
                 //- get species of fuel
-                if (fuelFound || oxidizerFound)
+                if
+                (
+                    (fuelFound || oxidizerFound) &&
+                    lineContent != "}" &&
+                    lineContent != "{" &&
+                    lineContent != "moleFractionFuel" &&
+                    lineContent != "moleFractionOxidizer"
+                )
                 {
                     //- re-read due to removed whitespaces
                     //  TODO, change this
@@ -539,6 +544,9 @@
                         std::istream_iterator<std::string>{}
                     };
 
+                    //- bool for species
+                    bool found{false};
+
                     //- find species
                     forAll(species, id)
                     {
@@ -547,18 +555,30 @@
                             if (fuelFound)
                             {
                                 species[id].setFuel();
+                                found = true;
                             }
                             if (oxidizerFound)
                             {
                                 species[id].setOxidizer();
+                                found = true;
                             }
-                            species[id].setMolFraction
+                            species[id].setX
                             (
                                 stod(lineContent_[1])
                             );
                         }
                     }
-
+                    //- species not found in kinetic file
+                    if (!found)
+                    {
+                        std::cerr<< "\n ++ ERROR: Species "
+                                 << lineContent_[0] << " which is used in"
+                                 << " afcDict is not in kinetic file..."
+                                 << "\n ++ Error occur in file "
+                                 << __FILE__
+                                 << " line " << __LINE__ << std::endl;
+                        std::terminate();
+                    }
                 }
 
 
@@ -568,46 +588,52 @@
 
         //- check if X = 1
         scalar X{0};
-        std::cout<< "Checking chemical composition of fuel:\n";
+        std::cout<< "Checking chemical composition of fuel:\n"
+                 << "---------------------------------------------------\n";
         forAll(species, id)
         {
             if (species[id].fuel())
             {
-                std::cout<< " ++ " << species[id].name() << "\t X = " << species[id].molFraction() << "\n";
-                X += species[id].molFraction();
+                std::cout<< " ++ " << species[id].name() << "\t\t X = "
+                         << species[id].X() << "\t" << species[id].MW() << "\n";
+                X += species[id].X();
             }
         }
-        std::cout<< "Fuel mol fraction = " << X << "\n";
+        std::cout<< " ++ Fuel mol fraction = " << X << "\n\n";
 
         //- if sum <> 1
-        if (X != 1)
+        if (X != 1.)
         {
-            std::cerr<< "\n" << "Fuel mol fraction "
-                     << "is not equal to 1\n"
+            std::cerr<< "\n ++ " << "Fuel mol fraction "
+                     << "is not equal to 1"
                      << "\n ++ Error occur in file " << __FILE__
                      << " line " << __LINE__ << std::endl;
+            std::terminate();
         }
 
         //- reset X
         X = 0;
-        std::cout<< "Checking chemical composition of oxidizer:\n";
+        std::cout<< "Checking chemical composition of oxidizer:\n"
+                 << "---------------------------------------------------\n";
         forAll(species, id)
         {
             if (species[id].oxidizer())
             {
-                std::cout<< " ++ " << species[id].name() << "\t X = " << species[id].molFraction() << "\n";
-                X =+ species[id].molFraction();
+                std::cout<< " ++ " << species[id].name() << "\t\t X = "
+                         << species[id].X() << "\n";
+                X =+ species[id].X();
             }
         }
-        std::cout<< "Oxidizer mol fraction = " << X << "\n";
+        std::cout<< " ++ Oxidizer mol fraction = " << X << "\n\n\n";
 
         //- if sum <> 1
-        if (X != 1)
+        if (X != 1.)
         {
-            std::cerr<< "\n" << "Oxidizer mol fraction "
-                     << "is not equal to 1\n"
+            std::cerr<< "\n ++ " << "Oxidizer mol fraction "
+                     << "is not equal to 1"
                      << "\n ++ Error occur in file " << __FILE__
                      << " line " << __LINE__ << std::endl;
+            std::terminate();
         }
     }
 
@@ -666,38 +692,25 @@
                         nP = aP;
                     }
 
-                    //- last position
-                    if (i > 0)
-                    {
-                        lP = tmp[i-1];
-                    }
-                    else
-                    {
-                        lP = aP;
-                    }
-
-                    //- molecule
-                    if (aP.find_first_of("0123456789") != std::string::npos)
+                    //- if aP is no number
+                    //- TODO add two numbered molecules like C4H12 <-- 12
+                    if (aP.find_first_of("0123456789") == std::string::npos)
                     {
                         if
                         (
-                            nP.find_first_of("0123456789") != std::string::npos)
+                            nP.find_first_of("0123456789") != std::string::npos
+                        )
                         {
-                            mW =+ element.atomicWeight(lP)
-                                * stod(tmp.substr(i,i+1));
+                            mW += element.atomicWeight(aP)
+                                * stod(nP);
 
                             i++;
                         }
+                        //- only one element
                         else
                         {
-                            mW =+ element.atomicWeight(lP)
-                                * stod(aP);
+                            mW += element.atomicWeight(aP);
                         }
-                    }
-                    //- element
-                    else
-                    {
-                        mW = element.atomicWeight(aP);
                     }
                 }
             }
@@ -710,7 +723,192 @@
     //- calculate stoichiometric mixture fraction Zst
     scalar stochiometricMF(const std::vector<Species>& species)
     {
-        scalar Zst{0};
+        std::cout<< "Calculate stochiometric mixture fraction Zst:\n";
 
+        scalar MMW_fuel{0};
+        scalar MMW_oxidizer{0};
+
+        //- Step 1
+        //  Calculate mean molecular weight of fuel and oxidizer
+        forAll(species, id)
+        {
+            if (species[id].fuel())
+            {
+               // std::cout << species[id].name() << " -> MW: " << species[id].MW() << "\n";
+                MMW_fuel += species[id].MW() * species[id].X();
+            }
+            if (species[id].oxidizer())
+            {
+                MMW_oxidizer += species[id].MW() * species[id].X();
+            }
+        }
+
+        std::cout<< "  ++ Mean molecular weight fuel: " << MMW_fuel << "\n"
+                 << "  ++ Mean molecular weight oxidizer: " << MMW_oxidizer << "\n";
+
+
+        scalar Zc{0};
+        scalar Zh{0};
+        scalar Zo{0};
+
+
+        //- Step 2
+        //  Calculate element mass fraction Zc, Zh and Zo in fuel
+        //  Z_i = M_i / MMW_xxx * sum ( a_ij * X_j )
+        //      ++ Z_i:  element mass fraction of element i [-]
+        //      ++ M_i:  molecular weight of element i [g/mol]
+        //      ++ a_ij: amount of element i in species j [-]
+        //      ++ X_j:  mol fraction of species j [-]
+
+        std::cout<< "\nMolecule\tC\tH\tO\n"
+                 << "---------------------------------------------------\n";
+        forAll(species, id)
+        {
+            scalar nCAtoms{0};
+            scalar nHAtoms{0};
+            scalar nOAtoms{0};
+
+            normalString aP, nP;
+
+            if (species[id].fuel())
+            {
+                //- TODO (two character elements)
+                normalString tmp = species[id].name();
+
+                for (unsigned int i=0; i<tmp.length(); i++)
+                {
+                    //- actual position
+                    aP = tmp[i];
+
+                    //- next position
+                    if (i+1 <= tmp.length())
+                    {
+                        nP = tmp[i+1];
+                    }
+                    else
+                    {
+                        nP = aP;
+                    }
+
+                    //- C atom
+                    if (aP == "C")
+                    {
+                        //- C is last character, no number
+                        //  one C atom
+                        if (aP == nP)
+                        {
+                            nCAtoms += 1;
+                        }
+                        //- after C there is a character
+                        else
+                        {
+                            //- if next char is a number its the amount of
+                            //  atoms of C
+                            if
+                            (
+                                nP.find_first_of("0123456789") !=
+                                std::string::npos
+                            )
+                            {
+                                nCAtoms += stod(nP);
+                            }
+                            //- if next char is a character the atom is
+                            //  only used once
+                            else
+                            {
+                                nCAtoms++;
+                            }
+                        }
+                    }
+                    //- H atom
+                    if (aP == "H")
+                    {
+                        //- H is last character, no number
+                        //  one H atom
+                        if (aP == nP)
+                        {
+                            nHAtoms++;
+                        }
+                        //- after H there is a character
+                        else
+                        {
+                            //- if next char is a number its the amount of
+                            //  atoms of H
+                            if
+                            (
+                                nP.find_first_of("0123456789") !=
+                                std::string::npos
+                            )
+                            {
+                                nHAtoms += stod(nP);
+                            }
+                            //- if next char is a character the atom is
+                            //  only used once
+                            else
+                            {
+                                nHAtoms++;
+                            }
+                        }
+                    }
+                    //- O atom
+                    if (aP == "O")
+                    {
+                        //- O is last character, no number
+                        //  one O atom
+                        if (aP == nP)
+                        {
+                            nOAtoms++;
+                        }
+                        //- after O there is a character
+                        else
+                        {
+                            //- if next char is a number its the amount of
+                            //  atoms of O
+                            if
+                            (
+                                nP.find_first_of("0123456789") !=
+                                std::string::npos
+                            )
+                            {
+                                nOAtoms += stod(nP);
+                            }
+                            //- if next char is a character the atom is
+                            //  only used once
+                            else
+                            {
+                                nOAtoms++;
+                            }
+                        }
+                    }
+                }
+                std::cout<< tmp << "\t\t" << nCAtoms << "\t" << nHAtoms << "\t" << nOAtoms << "\n";
+
+                //- element mass fraction (without M_i/M)
+
+                Zc += nCAtoms * species[id].X();
+                Zh += nHAtoms * species[id].X();
+                Zo += nOAtoms * species[id].X();
+            }
+        }
+
+        //- weighting with M_i/M
+        int id_O{-1};
+        int id_H{-1};
+        int id_C{-1};
+
+        //- access to database
+        Elements element;
+
+        Zc = Zc * element.atomicWeight("C") / MMW_fuel;
+        Zh = Zh * element.atomicWeight("H") / MMW_fuel;
+        Zo = Zo * element.atomicWeight("O") / MMW_fuel;
+
+        std::cout<< "Element mass fraction:\n"
+                 << "  ++ Zc: " << Zc << "\n"
+                 << "  ++ Zh: " << Zh << "\n"
+                 << "  ++ Zo: " << Zo << "\n";
+
+
+        scalar Zst{0};
         return Zst;
     }

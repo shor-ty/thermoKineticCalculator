@@ -59,10 +59,10 @@ class Species : public Thermodynamic
             const bool oxidizer() const;
 
             //- set mol fraction X
-            void setMolFraction(const scalar&);
+            void setX(const scalar&);
 
             //- return mol fraction X
-            const scalar molFraction() const;
+            const scalar X() const;
 
             //- return name of species
             const normalString name() const;

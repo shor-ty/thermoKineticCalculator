@@ -80,13 +80,13 @@ const bool Species::oxidizer() const
 }
 
 //- set mol fraction X
-void Species::setMolFraction(const scalar& molFraction)
+void Species::setX(const scalar& molFraction)
 {
     X_ = molFraction;
 }
 
 //- return mol fraction X
-const scalar Species::molFraction() const
+const scalar Species::X() const
 {
     return X_;
 }

@@ -48,6 +48,10 @@ int main()
     //- Read afcDict
     readAFCDict(f, species);
 
+    //- calculate stochiometric mixture fraction Zst
+    scalar Zst = stochiometricMF(species);
+
+
 
 
     //- read thermodynamic file
