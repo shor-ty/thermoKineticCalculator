@@ -1,0 +1,15 @@
+#### NASA Polynomials ####
+
+cp()    --> J/(molK)
+h()     --> J/(mol)
+s()     --> J/(molK)
+G()     -->
+
+#### Other functions ####
+
+MW()    --> g/mol
+
+
+#### Other variables ####
+
+R       --> J/(molK)
