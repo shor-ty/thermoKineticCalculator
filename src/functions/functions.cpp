@@ -1222,85 +1222,112 @@
 
     //- calculate adiabatic flame temperature [K]
     //  for stochiometric conditions
-    scalar adiabateFlameTemperature
+    /*scalar adiabateFlameTemperature
     (
         const scalar& Zst,
         const std::vector<Species>& species
     )
     {
-        //- initial temperature
-        //  T1 < Tb
-        //  T2 > Tb
-        scalar T1{500};
-        scalar T2{3500};
-        scalar Tm = (T2 - T1)/2;
-
-        scalar hu_o{0};
-        scalar hu_f{0};
-        scalar hb1{0};
-        scalar hb2{0};
-        scalar hbm{0};
-        scalar cp{0};
-        scalar cp_f{0};
-        scalar cp_o{0};
-
+        scalar hu0{0};
         int idH2O{-1};
+        int idN2{-1};
 
         forAll(species, id)
         {
-            if (species[id].fuel())
+            if (species[id].name() == "O2")
             {
-                hu_f += species[id].h(species[id].Tf())/species[id].MW()*1000*species[id].Xf();
-                cp += species[id].cp(species[id].Tf())/species[id].MW()*1000*species[id].Xf();
-                cp_f += species[id].cp(3083)/species[id].MW()*1000*species[id].Xf();
+                idH2O = id;
             }
-            if (species[id].oxidizer())
+            if (species[id].name() == "N2")
             {
-                hu_o += species[id].h(species[id].To())/species[id].MW()*1000*species[id].Xo();
-                cp += species[id].cp(species[id].To())/species[id].MW()*1000*species[id].Xo();
-                cp_o += species[id].cp(3083)/species[id].MW()*1000*species[id].Xo();
-            }
-            if (species[id].name() == "H2O")
-            {
-                hbm += species[id].h(3083)/species[id].MW()*1000;
-                cp += species[id].cp(3083)/species[id].MW();
+                idN2 = id;
             }
         }
 
-        std::cout << hu_f << "  " << hu_o << "  " << hbm<< ":  " << hu_f + hu_o + hbm <<"\n";
+        std::cout << "---> " << species[idH2O].h(298)/1000 << "\n";
 
-        int a{0};
-        scalar hbm_old{0};
+        //- ref temperature
+        scalar Tref{298};
 
-//        do
-//        {
-//            Tm = (T2 - T1)/2;
-//
-//            hb1 = species[idH2O].h(T1)/species[idH2O].MW()*1000;
-//            hb2 = species[idH2O].h(T2)/species[idH2O].MW()*1000;
-//            hbm = species[idH2O].h(3082)/species[idH2O].MW()*1000;
-//
-//            std::cout << hbm << "\n";
-//
-//            if (hb1 < hu && hu < hbm)
-//            {
-//                T2 = Tm;
-//            }
-//            else
-//            {
-//                T1 = Tm;
-//            }
-//
-//
-//                break;
-//
-//            hbm_old = hbm;
-//            a++;
-//        }
-//        while (true);
+        //- point 1
+        scalar T1{500};
+        scalar Tm1{0};
+        scalar hb1{0};
+        scalar cpm1{0};
 
-        return 1;
-    }
+        //- point 2
+        scalar T2{5000};
+        scalar Tm2{0};
+        scalar hb2{0};
+        scalar cpm2{0};
+
+        //- mid point
+        scalar T3{0};
+        scalar Tm3{0};
+        scalar hb3{0};
+        scalar cpm3{0};
+
+        //- normalized values
+        scalar normalized1{0};
+        scalar normalized2{0};
+        scalar normalized3{0};
+
+        scalar href=545170.87;
+
+        int i{0};
+        scalar T{298};
+        do
+        { break;
+            //- arithmetic mean of T1 and T2
+            //  based on T=298K
+            Tm1 = (T1+Tref)/2;
+            Tm2 = (T2+Tref)/2;
+
+            //- mid point temperature
+            T3 = (T1+T2)/2;
+            Tm3 = (T3+Tref)/2;
+
+            //- enthalpy at T
+            hb1 = species[idH2O].h(T1)*0.276+species[idN2].h(T1)*0.724;
+            hb2 = species[idH2O].h(T2)*0.276+species[idN2].h(T2)*0.724;
+            hb3 = species[idH2O].h(T3)*0.276+species[idN2].h(T3)*0.724;
+
+            //- cp at arithmetic mean temperatures
+            cpm1 = species[idH2O].cp(Tm1)*0.276+species[idN2].cp(T1)*0.724;
+            cpm2 = species[idH2O].cp(Tm2)*0.276+species[idN2].cp(T2)*0.724;
+            cpm3 = species[idH2O].cp(Tm3)*0.276+species[idN2].cp(T3)*0.724;
+
+            //- normalize
+            //  if == 0 then enthalpy of unburned equal to burned
+            normalized1 = fabs((hb1 - cpm1 * T1 - href)/href);
+            normalized2 = fabs((hb2 - cpm2 * T2 - href)/href);
+            normalized3 = fabs((hb3 - cpm3 * T3 - href)/href);
+
+            if (normalized1 < 0 && normalized3 > 0)
+            {
+                //- in interval 1 to mid point
+                T2 = T3;
+            }
+
+            if (normalized2 > 0 && normalized3 < 0)
+            {
+                //- in interval mid point to 2
+                T1 = T3;
+            }
+
+            std::cout << normalized1 << "\t" << normalized3 << "\t" << normalized2 << "\n";
+            std::cout << T1 << "\t" << T3 << "\t" << T2 << "\n";
+
+            if (fabs(normalized3) < 1e-6 || i == 30)
+            {
+                break;
+            }
+            i++; T+=100;
+        }
+        while (true);
+        std::cout<< hb3;
+        return (T3+Tref);
+    }*/
 
     //- discret points of mixture fraction points Z [-]
     //  TODO --- move to read afcDict function
@@ -1500,6 +1527,7 @@
         const scalar& ho_a,
         const scalar& Zst,
         const scalarField& chi_dP,
+        //const scalar& Tst_a,
         const std::vector<Species>& species
     )
     {
@@ -1527,5 +1555,7 @@
                  << std::setw(25)<< "Enthalpy oxidizer: " << ho_a << "\t [J/kg]\n"
                  << std::setw(25)<< "Stochiometric: " << Zst << "\t [-]\n"
                  << "Discrete scalar dissipation rates: " << chi_dP.size() << "\t [-]\n"
-                 << "Range of scalar dissipation rates: " << chi_dP[0] << " - " << chi_dP[chi_dP.size()-1] << "\t [Hz]\n\n";
+                 << "Range of scalar dissipation rates: " << chi_dP[0] << " - " << chi_dP[chi_dP.size()-1] << "\t [Hz]\n"
+//                 << "Adiabatic flame temperature: " << Tst_a << "[K]\n"
+                 << "\n\n";
     }

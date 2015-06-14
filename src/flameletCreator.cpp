@@ -60,7 +60,7 @@ int main()
 
     //- calculate adiabatic flame temperature
     //  for stochiometric conditions
-    scalar Tst_a = adiabateFlameTemperature(Zst, species);
+    //scalar Tst_a = adiabateFlameTemperature(Zst, species);
 
     //- mixture fraction Z (discrete points)
     scalarField Z_dP = discretZ(fAFCDict);
