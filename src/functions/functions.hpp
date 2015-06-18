@@ -81,13 +81,22 @@
     //- discret points of mixture fraction points Z [-]
     scalarField discretZ
     (
-        const normalString&
+        const normalString&,
+        const scalar&
     );
 
     //- discrete points of scalar dissipation rate [Hz]
     scalarField discretChi
     (
         const normalString&
+    );
+
+    //- calculate the linear distribution of the mass fraction of
+    //  fuel and oxidizer at the discrete points
+    void initializeY
+    (
+        const scalarField&,
+        std::vector<std::vector<Species> >&
     );
 
     //- remove white space

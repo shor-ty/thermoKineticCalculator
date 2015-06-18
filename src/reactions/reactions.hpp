@@ -58,6 +58,14 @@ class Reactions
             //- return elementar reaction
             normalString elementarReaction() const;
 
+            //- add new stochiometric factors for new elementar reaction
+            //  + first int: reaction number
+            //  + second int: stochiometric
+            void addNu(const int&, const int&);
+
+            //- create matrixes
+            void createMatrix(const normalString);
+
 
             //- set arrhenius coefficients
             void setArrheniusCoeffs
@@ -120,6 +128,26 @@ class Reactions
 
 
     private:
+
+        //- stochiometric factors nu
+        //  as a matrix
+        //  maximal third body reaction means 3 reactants 3 products = 6
+        //  matrix is nx6 := n is the amount of elementar reactions
+        //
+        //     ---------------------------------------------------------------
+        //      elem1    ...    elem3          elem4        ... elem6
+        //     ---------------------------------------------------------------
+        //  1 | nu_i,j   ...    nu_i,j+2        nu_i,j+3    ... nu_i,j+5
+        //  2 | nu_i+1,j ...    nu_i+1,j+2      nu_i+1,j+3  ... nu_i+1,j+5
+        //  3 | nu_i+2,j ...        .               .               .
+        //  . |    .                .               .               .
+        //  . |    .                .               .               .
+        //  n |    .                .               .           nu_i+n,j+5
+        //     ---------------------------------------------------------------
+        matrix nu_;
+
+        //- amount of elementar reactions
+        int r_;
 
         //- elementar reaction
         normalString elementarReaction_;

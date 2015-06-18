@@ -101,6 +101,18 @@ Thermodynamic::~Thermodynamic()
                   *T_*R);
     }
 
+    //- return ref enthalpy h0 [J/mol]
+    scalar Thermodynamic::h0() const
+    {
+        int i{0};
+
+        //- get information of temperature range
+        whichPolyCoeffs(298, i);
+
+        // return ref enthalpy h0 [J/mol]
+        return polyCoeffs[i+5]*R;
+    }
+
     //- calculate entropy [J/(molK)]
     scalar Thermodynamic::s(const scalar T_) const
     {
@@ -137,8 +149,8 @@ Thermodynamic::~Thermodynamic()
         //- FIXME EXTEND TO WHICH SPECIES
         if(T_ < lowTemp)
         {
-            std::cerr << "    - Warning: NASA-Polynomial is not defined for temperature  T=" << T_ << " K\n    \
-                              - Warning: Using low temperature coefficents for calculation...\n";
+            std::cerr << "  ++ Warning: NASA-Polynomial is not defined for temperature  T=" << T_ << " K\n"
+                      << "  ++ Warning: Using low temperature coefficents for calculation...\n";
             i = 7;
         }
         else if(T_ >= lowTemp && T_  <= comTemp)
@@ -151,8 +163,8 @@ Thermodynamic::~Thermodynamic()
         }
         else
         {
-            std::cerr << "    - Warning: NASA-Polynomial is not defined for temperature  T=" << T_ << " K\n    \
-                              - Warning: Using high temperature coefficents for calculation...\n";
+            std::cerr << "  ++ Warning: NASA-Polynomial is not defined for temperature  T=" << T_ << " K\n"
+                     << "  ++ Warning: Using high temperature coefficents for calculation...\n";
             i = 0;
         }
     }

@@ -33,7 +33,9 @@ Reactions::Reactions() :
 
     TROE{false}, a{0}, Ts{0}, Tss{0}, Tsss{0},
 
-    Ea(0), A(0), b(0)
+    Ea(0), A(0), b(0),
+
+    r{0}
 {
 }
 
@@ -42,6 +44,13 @@ Reactions::~Reactions()
 {
 }
 
+void Reactions::createMatrix
+(
+    const normalString reaction_
+)
+{
+
+}
 
 void Reactions::set_kf()
 {

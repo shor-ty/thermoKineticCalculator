@@ -63,16 +63,23 @@ int main()
     //scalar Tst_a = adiabateFlameTemperature(Zst, species);
 
     //- mixture fraction Z (discrete points)
-    scalarField Z_dP = discretZ(fAFCDict);
+    scalarField Z_dP = discretZ(fAFCDict, Zst);
 
     //- scalar dissipation rates (discrete points)
     scalarField chi_dP = discretChi(fAFCDict);
 
     summary(hf_a, ho_a, Zst, chi_dP, species);
 
+    //- Now the complex stuff
+    //  for each discrete point Z, store one object species
+    std::vector<std::vector<Species> > Z;
+    forAll(Z_dP, point)
+    {
+        Z.push_back(species);
+    }
 
-    //- partial differential equation
-    //scalar t{0};
+    //- Set up the fuel and oxidizer stream for start (no chemical reaction)
+    initializeY(Z_dP, Z);
 
     return 0;
 }

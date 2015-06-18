@@ -83,11 +83,14 @@ class Thermodynamic
 //        //- get all high temperature coefficents (NASA-Polynomials)
 //        void highTemperatureCoefficents() const;
 //
-        //- calculate heat capacity cp [J/(molK)]
+        //- return heat capacity cp [J/(molK)]
         scalar cp( const scalar ) const;
 
-        //- calculate enthalpy [J/(mol)]
+        //- return enthalpy [J/(mol)]
         scalar h( const scalar ) const;
+
+        //- return ref enthalpy [J/mol]
+        scalar h0() const;
 
         //- calculate entropie S [J/(molK)]
         scalar s( const scalar ) const;

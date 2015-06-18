@@ -30,6 +30,7 @@
 
 //- typedefs of different fields
 typedef std::vector<double> scalarField;
+typedef std::vector<std::vector<double> > matrix;
 typedef std::vector<std::string> stringField;
 typedef std::string normalString;
 typedef double scalar;

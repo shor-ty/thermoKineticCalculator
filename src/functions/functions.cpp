@@ -159,130 +159,136 @@
                     )
                     {
                         //- split line into array
-                        std::istringstream tmp(fileContent[line]);
+                        //std::istringstream tmp(fileContent[line]);
+                        normalString elemReaction = fileContent[line];
 
-                        stringField lineContent_
-                        {
-                            std::istream_iterator<std::string>{tmp},
-                            std::istream_iterator<std::string>{}
-                        };
+                        //- create matrix for
+                        //  + stochiometric number nu
+                        //  + arrhenius coefficients
+                        reactions[countI].createMatrix(elemReaction);
 
-                        if (lineContent_[0].find('=') != std::string::npos)
-                        {
-                            //- add new object
-                            reactions.resize(reactions.size()+1);
-
-                            //- set the elementar reaction
-                            reactions[countI].setElementarReaction
-                            (
-                                lineContent_[0]
-                            );
-
-                            //- check out if only forward is used
-                            //  + sign =>
-                            if
-                            (
-                                lineContent_[0].find('>') != std::string::npos
-                                &&
-                                lineContent_[0].find('<') == std::string::npos
-                            )
-                            {
-                                reactions[countI].set_kf();
-                            }
-                            //  + sign <=>
-                            else if
-                            (
-                                lineContent_[0].find('>') != std::string::npos
-                                &&
-                                lineContent_[0].find('<') != std::string::npos
-                            )
-                            {
-                                reactions[countI].set_kf();
-                                reactions[countI].set_kb();
-                            }
-                            //  + sign <=
-                            else if
-                            (
-                                lineContent_[0].find('>') == std::string::npos
-                                &&
-                                lineContent_[0].find('<') != std::string::npos
-                            )
-                            {
-                                reactions[countI].set_kb();
-                            }
-                            //  + sign =
-                            else
-                            {
-                                reactions[countI].set_kf();
-                                reactions[countI].set_kb();
-                            }
-
-                            //- set variable for arrhenius eqn.
-                            reactions[countI].setArrheniusCoeffs
-                            (
-                                stod(lineContent_[1]),
-                                stod(lineContent_[2]),
-                                stod(lineContent_[3])
-                            );
-
-                            //- check if LOW
-                            //  + check next line for LOW
-                            std::istringstream tmp2(fileContent[line+1]);
-
-                            stringField lineContent2_
-                            {
-                                std::istream_iterator<std::string>{tmp2},
-                                std::istream_iterator<std::string>{}
-                            };
-
-                            if (lineContent2_[0] == "LOW/")
-                            {
-                                //- set LOW
-                                reactions[countI].setLOW();
-
-                                //- set variable for arrhenius eqn.
-                                reactions[countI].setArrheniusCoeffs
-                                (
-                                    stod(lineContent2_[1]),
-                                    stod(lineContent2_[2]),
-                                    stod(lineContent2_[3])
-                                );
-
-                                //- check if TROE
-                                //  + check next line for TROE (after LOW)
-                                std::istringstream tmp3(fileContent[line+2]);
-
-                                stringField lineContent3_
-                                {
-                                    std::istream_iterator<std::string>{tmp3},
-                                    std::istream_iterator<std::string>{}
-                                };
-
-                                if (lineContent3_[0] == "TROE/")
-                                {
-                                    //- set TROE
-                                    reactions[countI].setTROE();
-
-                                    //- check if Tss is used
-                                    scalar Tss{0};
-
-                                    if (lineContent3_.size() == 6)
-                                    {
-                                        Tss = stod(lineContent3_[4]);
-                                    }
-
-                                    //- set TROE coeffs
-                                    reactions[countI].setTROECoeffs
-                                    (
-                                        stod(lineContent3_[1]),
-                                        stod(lineContent3_[2]),
-                                        stod(lineContent3_[3]),
-                                        Tss
-                                    );
-                                }
-                            }
-                            countI++;
-                        }
+//                        stringField lineContent_
+//                        {
+//                            std::istream_iterator<std::string>{tmp},
+//                            std::istream_iterator<std::string>{}
+//                        };
+//
+//                        if (lineContent_[0].find('=') != std::string::npos)
+//                        {
+//                            //- add new object
+//                            reactions.resize(reactions.size()+1);
+//
+//                            //- set the elementar reaction
+//                            reactions[countI].setElementarReaction
+//                            (
+//                                lineContent_[0]
+//                            );
+//
+//                            //- check out if only forward is used
+//                            //  + sign =>
+//                            if
+//                            (
+//                                lineContent_[0].find('>') != std::string::npos
+//                                &&
+//                                lineContent_[0].find('<') == std::string::npos
+//                            )
+//                            {
+//                                reactions[countI].set_kf();
+//                            }
+//                            //  + sign <=>
+//                            else if
+//                            (
+//                                lineContent_[0].find('>') != std::string::npos
+//                                &&
+//                                lineContent_[0].find('<') != std::string::npos
+//                            )
+//                            {
+//                                reactions[countI].set_kf();
+//                                reactions[countI].set_kb();
+//                            }
+//                            //  + sign <=
+//                            else if
+//                            (
+//                                lineContent_[0].find('>') == std::string::npos
+//                                &&
+//                                lineContent_[0].find('<') != std::string::npos
+//                            )
+//                            {
+//                                reactions[countI].set_kb();
+//                            }
+//                            //  + sign =
+//                            else
+//                            {
+//                                reactions[countI].set_kf();
+//                                reactions[countI].set_kb();
+//                            }
+//
+//                            //- set variable for arrhenius eqn.
+//                            reactions[countI].setArrheniusCoeffs
+//                            (
+//                                stod(lineContent_[1]),
+//                                stod(lineContent_[2]),
+//                                stod(lineContent_[3])
+//                            );
+//
+//                            //- check if LOW
+//                            //  + check next line for LOW
+//                            std::istringstream tmp2(fileContent[line+1]);
+//
+//                            stringField lineContent2_
+//                            {
+//                                std::istream_iterator<std::string>{tmp2},
+//                                std::istream_iterator<std::string>{}
+//                            };
+//
+//                            if (lineContent2_[0] == "LOW/")
+//                            {
+//                                //- set LOW
+//                                reactions[countI].setLOW();
+//
+//                                //- set variable for arrhenius eqn.
+//                                reactions[countI].setArrheniusCoeffs
+//                                (
+//                                    stod(lineContent2_[1]),
+//                                    stod(lineContent2_[2]),
+//                                    stod(lineContent2_[3])
+//                                );
+//
+//                                //- check if TROE
+//                                //  + check next line for TROE (after LOW)
+//                                std::istringstream tmp3(fileContent[line+2]);
+//
+//                                stringField lineContent3_
+//                                {
+//                                    std::istream_iterator<std::string>{tmp3},
+//                                    std::istream_iterator<std::string>{}
+//                                };
+//
+//                                if (lineContent3_[0] == "TROE/")
+//                                {
+//                                    //- set TROE
+//                                    reactions[countI].setTROE();
+//
+//                                    //- check if Tss is used
+//                                    scalar Tss{0};
+//
+//                                    if (lineContent3_.size() == 6)
+//                                    {
+//                                        Tss = stod(lineContent3_[4]);
+//                                    }
+//
+//                                    //- set TROE coeffs
+//                                    reactions[countI].setTROECoeffs
+//                                    (
+//                                        stod(lineContent3_[1]),
+//                                        stod(lineContent3_[2]),
+//                                        stod(lineContent3_[3]),
+//                                        Tss
+//                                    );
+//                                }
+//                            }
+//                            countI++;
+//                        }
                     }
 
                     if (fileContent[line] == "END")
@@ -1333,7 +1339,8 @@
     //  TODO --- move to read afcDict function
     scalarField discretZ
     (
-        const normalString& fileAFCDict
+        const normalString& fileAFCDict,
+        const scalar& Zst
     )
     {
         stringField fileContent = openFile(fileAFCDict);
@@ -1361,10 +1368,17 @@
                 if (lineContent_[0] == "mixtureFractionPoints")
                 {
                     scalar deltaZ = 1/stod(lineContent_[1]);
+                    scalar tmp{0};
 
                     for(int i=1; i<atoi(lineContent_[1].c_str()); i++)
                     {
-                        Z.push_back(Z[i-1]+deltaZ);
+                        tmp += deltaZ;
+                        if (Z[i-1] < (1-Zst) && Z[i-1]+deltaZ > (1-Zst))
+                        {
+                            Z.push_back(1-Zst);
+                        }
+                        Z.push_back(tmp);
+
                     }
                 }
             }
@@ -1437,6 +1451,43 @@
         }
         return chi;
     }
+
+    //- initialize mass fraction Y of fuel and oxidizer
+    void initializeY
+    (
+        const scalarField& Z_dP,
+        std::vector<std::vector<Species> >& Z
+    )
+    {
+        forAll(Z, point)
+        {
+            //- for each point loop over all species to set up the species
+            //  calculation is linear for the beginning due to no
+            //  chemical reaction. That means:
+            //  Z = 0   --> Yi = Yoi
+            //  Z = 1   --> Yi = Yfi
+            //      Yi(Z) = (Yfi - Yoi)*Z + Yoi
+            forAll(Z[point], species)
+            {
+                //- set linear mass fraction
+                Z[point][species].setY
+                (
+                    (Z[point][species].Yf() - Z[point][species].Yo()) *
+                    Z_dP[point] +
+                    Z[point][species].Yo()
+                );
+
+                //- set linear mol fraction
+                Z[point][species].setX
+                (
+                    (Z[point][species].Xf() - Z[point][species].Xo()) *
+                    Z_dP[point] +
+                    Z[point][species].Xo()
+                );
+            }
+        }
+    }
+
 
     //- remove whitespace from string
     void removeSpace(normalString& str)
