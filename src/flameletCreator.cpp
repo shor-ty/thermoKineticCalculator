@@ -18,7 +18,7 @@
 »
 \*---------------------------------------------------------------------------*/
 //- system headers
-
+#include <iomanip>
 
 //- user def. headers
 
@@ -40,10 +40,10 @@ int main()
     std::vector<Species> species;
 
     //- REACTION class
-    std::vector<Reactions> reactions;
+    Chemistry chemistry;
 
     //- Read kinetic file
-    readChemKinThermo(fKinetic, fThermo, species, reactions);
+    readChemKinThermo(fKinetic, fThermo, species, chemistry);
 
     //- Read afcDict
     readAFCDict(fAFCDict, species);
@@ -80,6 +80,21 @@ int main()
 
     //- Set up the fuel and oxidizer stream for start (no chemical reaction)
     initializeY(Z_dP, Z);
+
+
+    std::cout<< "No. \t Reaction \t\t kf   kb \t   LOW   TROE \t    A0  \t    n\t          Ea\n";
+    std::cout<< "----------------------------------------------------------------------------------------------------------\n";
+    for(int i=0; i<chemistry.r(); i++)
+    {
+        std::cout<<std::setw(2)  <<  i+1 << "/"
+                 << chemistry.r()<<std::setw(3) << ": "
+                 << std::left<< std::setw(22) <<chemistry.elementarReaction(i) << " | "
+                 << chemistry.fb(i,0) << "    " << chemistry.fb(i,1) << " | \t | "
+                 << chemistry.TROE(i) << "      " << chemistry.LOW(i) << " | \t | "
+                 << std::setw(9) << chemistry.arrheniusCoeffs(i,0) << "      " << std::right<< std::setw(5) << chemistry.arrheniusCoeffs(i,1) << "      "<< std::setw(8) << chemistry.arrheniusCoeffs(i,2)<< std::setw(5) << " |"
+                 << std::endl;
+
+    }
 
     return 0;
 }

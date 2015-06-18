@@ -30,7 +30,7 @@
 #include "../definitions/IOStream.hpp"
 #include "../species/species.hpp"
 #include "../database/elements.hpp"
-#include "../reactions/reactions.hpp"
+#include "../chemistry/chemistry.hpp"
 
 //- file functions
 
@@ -73,7 +73,7 @@
         const normalString& fileChemKin,
         const normalString& fileThermo,
         std::vector<Species>& species,
-        std::vector<Reactions>& reactions
+        Chemistry& chemistry
     )
     {
         stringField fileContent = openFile(fileChemKin);
@@ -145,7 +145,8 @@
             //- reset count variable for reaction count
             countI = 0;
 
-            //- reactions
+
+            //- Chemistry
             if (fileContent[line] == "REACTIONS")
             {
                 for(;;line++)
@@ -158,78 +159,170 @@
                         !fileContent[line].empty()
                     )
                     {
+                        //- increment the number of reactions (first loop r_ = 0)
+                        chemistry.increment_r();
+
                         //- split line into array
-                        //std::istringstream tmp(fileContent[line]);
-                        normalString elemReaction = fileContent[line];
+                        std::istringstream tmp(fileContent[line]);
+                        stringField lineContent_
+                        {
+                            std::istream_iterator<std::string>{tmp},
+                            std::istream_iterator<std::string>{}
+                        };
 
-                        //- create matrix for
-                        //  + stochiometric number nu
-                        //  + arrhenius coefficients
-                        reactions[countI].createMatrix(elemReaction);
 
-//                        stringField lineContent_
-//                        {
-//                            std::istream_iterator<std::string>{tmp},
-//                            std::istream_iterator<std::string>{}
-//                        };
-//
-//                        if (lineContent_[0].find('=') != std::string::npos)
-//                        {
-//                            //- add new object
-//                            reactions.resize(reactions.size()+1);
-//
-//                            //- set the elementar reaction
-//                            reactions[countI].setElementarReaction
-//                            (
-//                                lineContent_[0]
-//                            );
-//
-//                            //- check out if only forward is used
-//                            //  + sign =>
-//                            if
-//                            (
-//                                lineContent_[0].find('>') != std::string::npos
-//                                &&
-//                                lineContent_[0].find('<') == std::string::npos
-//                            )
-//                            {
-//                                reactions[countI].set_kf();
-//                            }
-//                            //  + sign <=>
-//                            else if
-//                            (
-//                                lineContent_[0].find('>') != std::string::npos
-//                                &&
-//                                lineContent_[0].find('<') != std::string::npos
-//                            )
-//                            {
-//                                reactions[countI].set_kf();
-//                                reactions[countI].set_kb();
-//                            }
-//                            //  + sign <=
-//                            else if
-//                            (
-//                                lineContent_[0].find('>') == std::string::npos
-//                                &&
-//                                lineContent_[0].find('<') != std::string::npos
-//                            )
-//                            {
-//                                reactions[countI].set_kb();
-//                            }
-//                            //  + sign =
-//                            else
-//                            {
-//                                reactions[countI].set_kf();
-//                                reactions[countI].set_kb();
-//                            }
-//
-//                            //- set variable for arrhenius eqn.
-//                            reactions[countI].setArrheniusCoeffs
-//                            (
-//                                stod(lineContent_[1]),
-//                                stod(lineContent_[2]),
-//                                stod(lineContent_[3])
-//                            );
+                        //- check out if only forward is used
+                        //  + sign => or
+                        if
+                        (
+                            lineContent_[0].find('>') != std::string::npos
+                            &&
+                            lineContent_[0].find('<') == std::string::npos
+                        )
+                        {
+                            chemistry.set_kf(true);
+                            chemistry.set_kb(false);
+                            chemistry.setTROE(false);
+                            chemistry.setLOW(false);
+
+                            //- set the formula elementar reaction
+                            chemistry.setElementarReaction
+                            (
+                                lineContent_[0]
+                            );
+
+                            //- set variable for arrhenius eqn.
+                            chemistry.setArrheniusCoeffs
+                            (
+                                stod(lineContent_[1]),
+                                stod(lineContent_[2]),
+                                stod(lineContent_[3])
+                            );
+                        }
+                        //  + sign <=>
+                        else if
+                        (
+                            lineContent_[0].find('>') != std::string::npos
+                            &&
+                            lineContent_[0].find('<') != std::string::npos
+                        )
+                        {
+                            chemistry.set_kf(true);
+                            chemistry.set_kb(true);
+                            chemistry.setTROE(false);
+                            chemistry.setLOW(false);
+
+                            //- set the formula elementar reaction
+                            chemistry.setElementarReaction
+                            (
+                                lineContent_[0]
+                            );
+
+                            //- set variable for arrhenius eqn.
+                            chemistry.setArrheniusCoeffs
+                            (
+                                stod(lineContent_[1]),
+                                stod(lineContent_[2]),
+                                stod(lineContent_[3])
+                            );
+                        }
+                        //  + sign <=
+                        else if
+                        (
+                            lineContent_[0].find('>') == std::string::npos
+                            &&
+                            lineContent_[0].find('<') != std::string::npos
+                        )
+                        {
+                            chemistry.set_kf(false);
+                            chemistry.set_kb(true);
+                            chemistry.setTROE(false);
+                            chemistry.setLOW(false);
+
+                            //- set the formula elementar reaction
+                            chemistry.setElementarReaction
+                            (
+                                lineContent_[0]
+                            );
+
+                            //- set variable for arrhenius eqn.
+                            chemistry.setArrheniusCoeffs
+                            (
+                                stod(lineContent_[1]),
+                                stod(lineContent_[2]),
+                                stod(lineContent_[3])
+                            );
+                        }
+                        //  + sign =
+                        else if
+                        (
+                            lineContent_[0].find('>') == std::string::npos
+                            &&
+                            lineContent_[0].find('<') == std::string::npos
+                            &&
+                            lineContent_[0].find('=') != std::string::npos
+                        )
+                        {
+                            chemistry.set_kf(true);
+                            chemistry.set_kb(true);
+                            chemistry.setTROE(false);
+                            chemistry.setLOW(false);
+
+                            //- set the formula elementar reaction
+                            chemistry.setElementarReaction
+                            (
+                                lineContent_[0]
+                            );
+
+                            //- set variable for arrhenius eqn.
+                            chemistry.setArrheniusCoeffs
+                            (
+                                stod(lineContent_[1]),
+                                stod(lineContent_[2]),
+                                stod(lineContent_[3])
+                            );
+                        }
+                        //- no sign found, then check if TROE or LOW
+                        else
+                        {
+                            //- if TROE or LOW
+                            if
+                            (
+                                lineContent_[0] == "LOW/" ||
+                                lineContent_[0] == "TROE/"
+                            )
+                            {
+                                //- not a new reaction
+                                //  decrement r_ because at the end
+                                //  r_ is incremented again and we are STILL
+                                //  in the same reaction
+                                chemistry.decrement_r();
+
+                                //- LOW
+                                if (lineContent_[0] == "LOW/")
+                                {
+                                    chemistry.setLOW(true);
+                                }
+                                else if (lineContent_[0] == "TROE/")
+                                {
+                                    chemistry.setTROE(true);
+                                }
+
+                                //--> PROCEED with the line!!!
+                            }
+                            else
+                            {
+                                //- not a new reaction
+                                //  decrement r_ because at the end
+                                //  r_ is incremented again and we are STILL
+                                //  in the same reaction
+                                chemistry.decrement_r();
+
+                                //--> PROCEED wiht that line!!!
+                            }
+                        }
+
+
 //
 //                            //- check if LOW
 //                            //  + check next line for LOW
@@ -244,10 +337,10 @@
 //                            if (lineContent2_[0] == "LOW/")
 //                            {
 //                                //- set LOW
-//                                reactions[countI].setLOW();
+//                                Chemistry[countI].setLOW();
 //
 //                                //- set variable for arrhenius eqn.
-//                                reactions[countI].setArrheniusCoeffs
+//                                Chemistry[countI].setArrheniusCoeffs
 //                                (
 //                                    stod(lineContent2_[1]),
 //                                    stod(lineContent2_[2]),
@@ -267,7 +360,7 @@
 //                                if (lineContent3_[0] == "TROE/")
 //                                {
 //                                    //- set TROE
-//                                    reactions[countI].setTROE();
+//                                    Chemistry[countI].setTROE();
 //
 //                                    //- check if Tss is used
 //                                    scalar Tss{0};
@@ -278,7 +371,7 @@
 //                                    }
 //
 //                                    //- set TROE coeffs
-//                                    reactions[countI].setTROECoeffs
+//                                    Chemistry[countI].setTROECoeffs
 //                                    (
 //                                        stod(lineContent3_[1]),
 //                                        stod(lineContent3_[2]),
@@ -288,7 +381,9 @@
 //                                }
 //                            }
 //                            countI++;
-//                        }
+ //                       }
+                        //- next reaction
+ //std::cout << r_ << " >>> " << fb_.size() << ":" << fb_[r_].size()<< "\tkf: " << fb_[r_][0] << "  kb: " << fb_[r_][1] <<  "\n";
                     }
 
                     if (fileContent[line] == "END")

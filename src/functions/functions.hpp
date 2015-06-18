@@ -22,7 +22,7 @@
 //- user def. headers
 #include "../definitions/typedef.hpp"
 #include "../species/species.hpp"
-#include "../reactions/reactions.hpp"
+#include "../chemistry/chemistry.hpp"
 //#include "../thermodynamic/thermodynamic.hpp"
 
 #ifndef FUNCTIONS_HPP_INCLUDED
@@ -43,7 +43,7 @@
         const normalString&,
         const normalString&,
         std::vector<Species>&,
-        std::vector<Reactions>&
+        Chemistry&
     );
 
     //- read afcDict
