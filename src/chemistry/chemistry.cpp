@@ -470,6 +470,9 @@ void Chemistry::updateAllMatrix
             elements.push_back(element);
         }
 
+        //- bool variable to check if species in reaction is
+        //  available in SPECIES section
+        bool speciesAvailable{false};
 
         //- search the ID of species
         forAll(species_, id)
@@ -478,6 +481,9 @@ void Chemistry::updateAllMatrix
             {
                 if (species_[id] == elements[elem])
                 {
+                    //- species is available
+                    speciesAvailable = true;
+
                     int nuTmp_ = nu_[r_][id];
 
                     //- sign of nu depend on the side
@@ -631,6 +637,20 @@ void Chemistry::updateAllMatrix
                     }
                 //- if condition if species in reaction == species
                 }
+
+//                else if (id == species_.size()-1 && !speciesAvailable)
+//                {
+//                    std::cout << id << "  " << species_.size()-1 << "\n";
+//                    std::cout << fileContent[line] << "\n";
+//                    //- species in reaction is not defined in SPECIES section
+//                    std::cerr<< " ++ ERROR in " << __FILE__
+//                             << " line no." << __LINE__ << " ++ Species "
+//                             << elements[elem] << " is not defined in SPECIES"
+//                             << " section"
+//                             << std::endl;
+//                    std::terminate();
+//                }
+
             //- loop over species which are in reaction
             }
         //- loop over all species which involved in elementar reaction
