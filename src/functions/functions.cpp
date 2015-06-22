@@ -147,180 +147,180 @@
 
 
             //- Chemistry
-            if (fileContent[line] == "REACTIONS")
-            {
-                for(;;line++)
-                {
-                    //-
-                    if
-                    (
-                        fileContent[line] != "REACTIONS" &&
-                        fileContent[line] != "END" &&
-                        !fileContent[line].empty()
-                    )
-                    {
-                        //- increment the number of reactions (first loop r_ = 0)
-                        chemistry.increment_r();
-
-                        //- split line into array
-                        std::istringstream tmp(fileContent[line]);
-                        stringField lineContent_
-                        {
-                            std::istream_iterator<std::string>{tmp},
-                            std::istream_iterator<std::string>{}
-                        };
-
-
-                        //- check out if only forward is used
-                        //  + sign => or
-                        if
-                        (
-                            lineContent_[0].find('>') != std::string::npos
-                            &&
-                            lineContent_[0].find('<') == std::string::npos
-                        )
-                        {
-                            chemistry.set_kf(true);
-                            chemistry.set_kb(false);
-                            chemistry.setTROE(false);
-                            chemistry.setLOW(false);
-
-                            //- set the formula elementar reaction
-                            chemistry.setElementarReaction
-                            (
-                                lineContent_[0]
-                            );
-
-                            //- set variable for arrhenius eqn.
-                            chemistry.setArrheniusCoeffs
-                            (
-                                stod(lineContent_[1]),
-                                stod(lineContent_[2]),
-                                stod(lineContent_[3])
-                            );
-                        }
-                        //  + sign <=>
-                        else if
-                        (
-                            lineContent_[0].find('>') != std::string::npos
-                            &&
-                            lineContent_[0].find('<') != std::string::npos
-                        )
-                        {
-                            chemistry.set_kf(true);
-                            chemistry.set_kb(true);
-                            chemistry.setTROE(false);
-                            chemistry.setLOW(false);
-
-                            //- set the formula elementar reaction
-                            chemistry.setElementarReaction
-                            (
-                                lineContent_[0]
-                            );
-
-                            //- set variable for arrhenius eqn.
-                            chemistry.setArrheniusCoeffs
-                            (
-                                stod(lineContent_[1]),
-                                stod(lineContent_[2]),
-                                stod(lineContent_[3])
-                            );
-                        }
-                        //  + sign <=
-                        else if
-                        (
-                            lineContent_[0].find('>') == std::string::npos
-                            &&
-                            lineContent_[0].find('<') != std::string::npos
-                        )
-                        {
-                            chemistry.set_kf(false);
-                            chemistry.set_kb(true);
-                            chemistry.setTROE(false);
-                            chemistry.setLOW(false);
-
-                            //- set the formula elementar reaction
-                            chemistry.setElementarReaction
-                            (
-                                lineContent_[0]
-                            );
-
-                            //- set variable for arrhenius eqn.
-                            chemistry.setArrheniusCoeffs
-                            (
-                                stod(lineContent_[1]),
-                                stod(lineContent_[2]),
-                                stod(lineContent_[3])
-                            );
-                        }
-                        //  + sign =
-                        else if
-                        (
-                            lineContent_[0].find('>') == std::string::npos
-                            &&
-                            lineContent_[0].find('<') == std::string::npos
-                            &&
-                            lineContent_[0].find('=') != std::string::npos
-                        )
-                        {
-                            chemistry.set_kf(true);
-                            chemistry.set_kb(true);
-                            chemistry.setTROE(false);
-                            chemistry.setLOW(false);
-
-                            //- set the formula elementar reaction
-                            chemistry.setElementarReaction
-                            (
-                                lineContent_[0]
-                            );
-
-                            //- set variable for arrhenius eqn.
-                            chemistry.setArrheniusCoeffs
-                            (
-                                stod(lineContent_[1]),
-                                stod(lineContent_[2]),
-                                stod(lineContent_[3])
-                            );
-                        }
-                        //- no sign found, then check if TROE or LOW
-                        else
-                        {
-                            //- if TROE or LOW
-                            if
-                            (
-                                lineContent_[0] == "LOW/" ||
-                                lineContent_[0] == "TROE/"
-                            )
-                            {
-                                //- not a new reaction
-                                //  decrement r_ because at the end
-                                //  r_ is incremented again and we are STILL
-                                //  in the same reaction
-                                chemistry.decrement_r();
-
-                                //- LOW
-                                if (lineContent_[0] == "LOW/")
-                                {
-                                    chemistry.setLOW(true);
-                                }
-                                else if (lineContent_[0] == "TROE/")
-                                {
-                                    chemistry.setTROE(true);
-                                }
-
-                                //--> PROCEED with the line!!!
-                            }
-                            else
-                            {
-                                //- not a new reaction
-                                //  decrement r_ because at the end
-                                //  r_ is incremented again and we are STILL
-                                //  in the same reaction
-                                chemistry.decrement_r();
-
-                                //--> PROCEED wiht that line!!!
-                            }
-                        }
+//            if (fileContent[line] == "REACTIONS")
+//            {
+//                for(;;line++)
+//                {
+//                    //-
+//                    if
+//                    (
+//                        fileContent[line] != "REACTIONS" &&
+//                        fileContent[line] != "END" &&
+//                        !fileContent[line].empty()
+//                    )
+//                    {
+//                        //- increment the number of reactions (first loop r_ = 0)
+//                        chemistry.increment_r();
+//
+//                        //- split line into array
+//                        std::istringstream tmp(fileContent[line]);
+//                        stringField lineContent_
+//                        {
+//                            std::istream_iterator<std::string>{tmp},
+//                            std::istream_iterator<std::string>{}
+//                        };
+//
+//
+//                        //- check out if only forward is used
+//                        //  + sign => or
+//                        if
+//                        (
+//                            lineContent_[0].find('>') != std::string::npos
+//                            &&
+//                            lineContent_[0].find('<') == std::string::npos
+//                        )
+//                        {
+//                            chemistry.set_kf(true);
+//                            chemistry.set_kb(false);
+//                            chemistry.setTROE(false);
+//                            chemistry.setLOW(false);
+//
+//                            //- set the formula elementar reaction
+//                            chemistry.setElementarReaction
+//                            (
+//                                lineContent_[0]
+//                            );
+//
+//                            //- set variable for arrhenius eqn.
+//                            chemistry.setArrheniusCoeffs
+//                            (
+//                                stod(lineContent_[1]),
+//                                stod(lineContent_[2]),
+//                                stod(lineContent_[3])
+//                            );
+//                        }
+//                        //  + sign <=>
+//                        else if
+//                        (
+//                            lineContent_[0].find('>') != std::string::npos
+//                            &&
+//                            lineContent_[0].find('<') != std::string::npos
+//                        )
+//                        {
+//                            chemistry.set_kf(true);
+//                            chemistry.set_kb(true);
+//                            chemistry.setTROE(false);
+//                            chemistry.setLOW(false);
+//
+//                            //- set the formula elementar reaction
+//                            chemistry.setElementarReaction
+//                            (
+//                                lineContent_[0]
+//                            );
+//
+//                            //- set variable for arrhenius eqn.
+//                            chemistry.setArrheniusCoeffs
+//                            (
+//                                stod(lineContent_[1]),
+//                                stod(lineContent_[2]),
+//                                stod(lineContent_[3])
+//                            );
+//                        }
+//                        //  + sign <=
+//                        else if
+//                        (
+//                            lineContent_[0].find('>') == std::string::npos
+//                            &&
+//                            lineContent_[0].find('<') != std::string::npos
+//                        )
+//                        {
+//                            chemistry.set_kf(false);
+//                            chemistry.set_kb(true);
+//                            chemistry.setTROE(false);
+//                            chemistry.setLOW(false);
+//
+//                            //- set the formula elementar reaction
+//                            chemistry.setElementarReaction
+//                            (
+//                                lineContent_[0]
+//                            );
+//
+//                            //- set variable for arrhenius eqn.
+//                            chemistry.setArrheniusCoeffs
+//                            (
+//                                stod(lineContent_[1]),
+//                                stod(lineContent_[2]),
+//                                stod(lineContent_[3])
+//                            );
+//                        }
+//                        //  + sign =
+//                        else if
+//                        (
+//                            lineContent_[0].find('>') == std::string::npos
+//                            &&
+//                            lineContent_[0].find('<') == std::string::npos
+//                            &&
+//                            lineContent_[0].find('=') != std::string::npos
+//                        )
+//                        {
+//                            chemistry.set_kf(true);
+//                            chemistry.set_kb(true);
+//                            chemistry.setTROE(false);
+//                            chemistry.setLOW(false);
+//
+//                            //- set the formula elementar reaction
+//                            chemistry.setElementarReaction
+//                            (
+//                                lineContent_[0]
+//                            );
+//
+//                            //- set variable for arrhenius eqn.
+//                            chemistry.setArrheniusCoeffs
+//                            (
+//                                stod(lineContent_[1]),
+//                                stod(lineContent_[2]),
+//                                stod(lineContent_[3])
+//                            );
+//                        }
+//                        //- no sign found, then check if TROE or LOW
+//                        else
+//                        {
+//                            //- if TROE or LOW
+//                            if
+//                            (
+//                                lineContent_[0] == "LOW/" ||
+//                                lineContent_[0] == "TROE/"
+//                            )
+//                            {
+//                                //- not a new reaction
+//                                //  decrement r_ because at the end
+//                                //  r_ is incremented again and we are STILL
+//                                //  in the same reaction
+//                                chemistry.decrement_r();
+//
+//                                //- LOW
+//                                if (lineContent_[0] == "LOW/")
+//                                {
+//                                    chemistry.setLOW(true);
+//                                }
+//                                else if (lineContent_[0] == "TROE/")
+//                                {
+//                                    chemistry.setTROE(true);
+//                                }
+//
+//                                //--> PROCEED with the line!!!
+//                            }
+//                            else
+//                            {
+//                                //- not a new reaction
+//                                //  decrement r_ because at the end
+//                                //  r_ is incremented again and we are STILL
+//                                //  in the same reaction
+//                                chemistry.decrement_r();
+//
+//                                //--> PROCEED wiht that line!!!
+//                            }
+//                        }
 
 
 //
@@ -384,184 +384,184 @@
  //                       }
                         //- next reaction
  //std::cout << r_ << " >>> " << fb_.size() << ":" << fb_[r_].size()<< "\tkf: " << fb_[r_][0] << "  kb: " << fb_[r_][1] <<  "\n";
-                    }
-
-                    if (fileContent[line] == "END")
-                    {
-                        line++;
-                        break;
-                    }
-                }
+//                    }
+//
+//                    if (fileContent[line] == "END")
+//                    {
+//                        line++;
+//                        break;
+//                    }
+               // }
             }
         //- chemKin
         }
 
         //- Get thermodynamic data from NASA polynomials for each species
-        fileContent = openFile(fileThermo);
-        bool skip{true};
-        int id{-1};
-
-        //- File description from chemkin
-        //-------------------------------------------------------------------------------------------------
-        //- Line Number         Content                                     Format          Column
-        //-------------------------------------------------------------------------------------------------
-        //-     1               THERMO (or THERMO ALL »a«)                  Free            Any
-        //-     2»b«    Temperatur ranges for 2 sets of coefficents:        Float           1-30
-        //-             lowest, common and highest
-        //-     3       Species name (must start in column 1)               Char            1-18
-        //-             Date (not used                                      Char            19-24
-        //-             Atomic symbols and formula                          Char/Int        25-44
-        //-             Phase of species (S,L or G)                         Char            45
-        //-             Low temperature                                     Float           46-55
-        //-             High temperature                                    Float           56-65
-        //-             Common temperature                                  Float           66-73
-        //-             Atomic symbols and formula (if needed, else blank)  Char/Int        74-78
-        //-             The integer 1                                       Int             80
-        //-             Atomic symbols and formula (if needed, else blank)  Char/Int        81-100
-        //-     4       Coefficnents a1 - a5 (for eqn1-3)                   double          1-75
-        //-             for upper temperature interval
-        //-             The integer 2                                       Int             80
-        //-     5       Coefficnents a6, a7 for upper temperature           double          1-75
-        //-             and a1 - a3 for lower temperature interval
-        //-             The integer 3                                       Int             80
-        //-     6       Coefficnents a4 - a7 for lower temperature          double          1-60
-        //-             interval
-        //-             The integer 4                                       Int             80
-        //-             Repeat lines 3 - 6 for each species
-        //-             End (optional, end of thermodynamic data)           Free            Any
-        //-------------------------------------------------------------------------------------------------
-        //-    »a«      FIXME
-        //-    »b«      FIXME
-        //- FIXME       Additionall for more accuracy!
-        //-------------------------------------------------------------------------------------------------
-        //-
-        //-     Eqn1:   C_p^0/R     = a1 + a2*T + a3*T^2 + a4*T^3 + a5*T^4
-        //-     Eqn2:   H^0/(R*T)   = a1 + a2/2*T^2 + a3/3*T^2 + a4/4*T^3 + a5/5*T^4 + a6/T
-        //-     Eqn3:   S^0/R       = a1*ln(T) + a2*T + a3/2*T^2 + a4/3*T^3 + a5/4*T^4 +a7
-        //-     Eqn4:   G^0         = H^0 - T*S^0
-        //-------------------------------------------------------------------------------------------------
-
-        //- temp polyCoeffs field
-        scalarField polyCoeffs;
-
-        forAll(fileContent, line)
-        {
-            //- analyse first line
-            //- FIXME - include "THERMO ALL" extension
-            if(line == 0 && (fileContent[line] != "THERMO"))
-            {
-                std::cerr<< "\n ++ ERROR: first line in thermodynamic file. "
-                         << "THERMO\" not found in first line..."
-                         << "\n ++ Error occur in file " << __FILE__
-                         << " line " << __LINE__ << std::endl;
-                std::terminate();
-            }
-
-            //- FIXME LINE 2
-
-            //- polyCoeffs after line 2 till end
-            if(line > 1)
-            {
-                //- LINE OF THE INTEGER 1
-                if(fileContent[line][79] == '1')
-                {
-                    //- check if species are used
-                    forAll(species, speciesI)
-                    {
-                        normalString tmp = fileContent[line].substr(0,18);
-                        tmp.erase
-                        (
-                            std::remove(tmp.begin(), tmp.end(), ' '),
-                            tmp.end()
-                        );
-
-                        if (species[speciesI].name() == tmp)
-                        {
-                            skip = false;
-                            id = speciesI;
-                        }
-                    }
-
-                    //- get all data from first line
-                    if (skip == false)
-                    {
-                        //- set thermodynamic bool to true
-                        species[id].thermodynamicTrue();
-
-                        scalar lowTemp = stod(fileContent[line].substr(45,54));
-                        scalar comTemp = stod(fileContent[line].substr(65,72));
-                        scalar higTemp = stod(fileContent[line].substr(55,64));
-
-                        species[id].setPolyTemperature
-                        (
-                            lowTemp,
-                            comTemp,
-                            higTemp
-                        );
-
-                        //- set phase
-                        species[id].setPhase
-                        (
-                            fileContent[line].substr(45,1)
-                        );
-                    }
-                }
-                //- LINE OF THE INTEGER 2, 3, 4
-                else if
-                (
-                    (
-                        fileContent[line][79] == '2' ||
-                        fileContent[line][79] == '3' ||
-                        fileContent[line][79] == '4'
-                    ) &&
-                    skip == false
-                )
-                {
-                    forAll(fileContent[line], pos)
-                    {
-                        if(pos <= 60)
-                        {
-                            polyCoeffs.push_back
-                            (
-                                std::stod(fileContent[line].substr(pos,pos+15))
-                            );
-                            pos+=14;
-                        }
-                    }
-
-                    //- INTEGER 4 -> store polyCoeffs
-                    if(fileContent[line][79] == '4')
-                    {
-                        species[id].setPolyCoeffs(polyCoeffs);
-                        polyCoeffs.clear();
-                    }
-
-                    //- if last line of polynomials reached, set skip to true again
-                    if (fileContent[line][79] == '4')
-                    {
-                        skip = true;
-                    }
-                }
-            }
-        //- thermodynamic
-        }
-
-        //- check thermodynamic status
-        //  + each species need thermodynamics
-        //  + if failed - abort
-        forAll(species,i)
-        {
-            if (!species[i].thermodynamicStatus())
-            {
-                std::cerr<< "\n ++ ERROR: For species "
-                         << species[i].name()
-                         << " no thermodynamic data found, no NASA polynoms"
-                         << std::endl;
-                std::terminate();
-            }
-
-        }
-    }
+//        fileContent = openFile(fileThermo);
+//        bool skip{true};
+//        int id{-1};
+//
+//        //- File description from chemkin
+//        //-------------------------------------------------------------------------------------------------
+//        //- Line Number         Content                                     Format          Column
+//        //-------------------------------------------------------------------------------------------------
+//        //-     1               THERMO (or THERMO ALL »a«)                  Free            Any
+//        //-     2»b«    Temperatur ranges for 2 sets of coefficents:        Float           1-30
+//        //-             lowest, common and highest
+//        //-     3       Species name (must start in column 1)               Char            1-18
+//        //-             Date (not used                                      Char            19-24
+//        //-             Atomic symbols and formula                          Char/Int        25-44
+//        //-             Phase of species (S,L or G)                         Char            45
+//        //-             Low temperature                                     Float           46-55
+//        //-             High temperature                                    Float           56-65
+//        //-             Common temperature                                  Float           66-73
+//        //-             Atomic symbols and formula (if needed, else blank)  Char/Int        74-78
+//        //-             The integer 1                                       Int             80
+//        //-             Atomic symbols and formula (if needed, else blank)  Char/Int        81-100
+//        //-     4       Coefficnents a1 - a5 (for eqn1-3)                   double          1-75
+//        //-             for upper temperature interval
+//        //-             The integer 2                                       Int             80
+//        //-     5       Coefficnents a6, a7 for upper temperature           double          1-75
+//        //-             and a1 - a3 for lower temperature interval
+//        //-             The integer 3                                       Int             80
+//        //-     6       Coefficnents a4 - a7 for lower temperature          double          1-60
+//        //-             interval
+//        //-             The integer 4                                       Int             80
+//        //-             Repeat lines 3 - 6 for each species
+//        //-             End (optional, end of thermodynamic data)           Free            Any
+//        //-------------------------------------------------------------------------------------------------
+//        //-    »a«      FIXME
+//        //-    »b«      FIXME
+//        //- FIXME       Additionall for more accuracy!
+//        //-------------------------------------------------------------------------------------------------
+//        //-
+//        //-     Eqn1:   C_p^0/R     = a1 + a2*T + a3*T^2 + a4*T^3 + a5*T^4
+//        //-     Eqn2:   H^0/(R*T)   = a1 + a2/2*T^2 + a3/3*T^2 + a4/4*T^3 + a5/5*T^4 + a6/T
+//        //-     Eqn3:   S^0/R       = a1*ln(T) + a2*T + a3/2*T^2 + a4/3*T^3 + a5/4*T^4 +a7
+//        //-     Eqn4:   G^0         = H^0 - T*S^0
+//        //-------------------------------------------------------------------------------------------------
+//
+//        //- temp polyCoeffs field
+//        scalarField polyCoeffs;
+//
+//        forAll(fileContent, line)
+//        {
+//            //- analyse first line
+//            //- FIXME - include "THERMO ALL" extension
+//            if(line == 0 && (fileContent[line] != "THERMO"))
+//            {
+//                std::cerr<< "\n ++ ERROR: first line in thermodynamic file. "
+//                         << "THERMO\" not found in first line..."
+//                         << "\n ++ Error occur in file " << __FILE__
+//                         << " line " << __LINE__ << std::endl;
+//                std::terminate();
+//            }
+//
+//            //- FIXME LINE 2
+//
+//            //- polyCoeffs after line 2 till end
+//            if(line > 1)
+//            {
+//                //- LINE OF THE INTEGER 1
+//                if(fileContent[line][79] == '1')
+//                {
+//                    //- check if species are used
+//                    forAll(species, speciesI)
+//                    {
+//                        normalString tmp = fileContent[line].substr(0,18);
+//                        tmp.erase
+//                        (
+//                            std::remove(tmp.begin(), tmp.end(), ' '),
+//                            tmp.end()
+//                        );
+//
+//                        if (species[speciesI].name() == tmp)
+//                        {
+//                            skip = false;
+//                            id = speciesI;
+//                        }
+//                    }
+//
+//                    //- get all data from first line
+//                    if (skip == false)
+//                    {
+//                        //- set thermodynamic bool to true
+//                        species[id].thermodynamicTrue();
+//
+//                        scalar lowTemp = stod(fileContent[line].substr(45,54));
+//                        scalar comTemp = stod(fileContent[line].substr(65,72));
+//                        scalar higTemp = stod(fileContent[line].substr(55,64));
+//
+//                        species[id].setPolyTemperature
+//                        (
+//                            lowTemp,
+//                            comTemp,
+//                            higTemp
+//                        );
+//
+//                        //- set phase
+//                        species[id].setPhase
+//                        (
+//                            fileContent[line].substr(45,1)
+//                        );
+//                    }
+//                }
+//                //- LINE OF THE INTEGER 2, 3, 4
+//                else if
+//                (
+//                    (
+//                        fileContent[line][79] == '2' ||
+//                        fileContent[line][79] == '3' ||
+//                        fileContent[line][79] == '4'
+//                    ) &&
+//                    skip == false
+//                )
+//                {
+//                    forAll(fileContent[line], pos)
+//                    {
+//                        if(pos <= 60)
+//                        {
+//                            polyCoeffs.push_back
+//                            (
+//                                std::stod(fileContent[line].substr(pos,pos+15))
+//                            );
+//                            pos+=14;
+//                        }
+//                    }
+//
+//                    //- INTEGER 4 -> store polyCoeffs
+//                    if(fileContent[line][79] == '4')
+//                    {
+//                        species[id].setPolyCoeffs(polyCoeffs);
+//                        polyCoeffs.clear();
+//                    }
+//
+//                    //- if last line of polynomials reached, set skip to true again
+//                    if (fileContent[line][79] == '4')
+//                    {
+//                        skip = true;
+//                    }
+//                }
+//            }
+//        //- thermodynamic
+//        }
+//
+//        //- check thermodynamic status
+//        //  + each species need thermodynamics
+//        //  + if failed - abort
+//        forAll(species,i)
+//        {
+//            if (!species[i].thermodynamicStatus())
+//            {
+//                std::cerr<< "\n ++ ERROR: For species "
+//                         << species[i].name()
+//                         << " no thermodynamic data found, no NASA polynoms"
+//                         << std::endl;
+//                std::terminate();
+//            }
+//
+//        }
+//    }
 
     //- read afcDict
     void readAFCDict
