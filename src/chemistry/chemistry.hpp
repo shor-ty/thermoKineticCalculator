@@ -41,10 +41,48 @@ class Chemistry
 
         //- function
 
+            //- read the chemistry file
+            void readChemkin
+            (
+                const normalString&
+            );
+
+            //- open file and return the content of the file
+            stringField openFile
+            (
+                const normalString&
+            );
+
+            //- split string; delimiter is whitespace
+            stringField splitString
+            (
+                const normalString
+            );
+
+            //- split reaction
+            //  Returns:
+            //  -  0: reactants
+            //  -  1: products
+            normalString splitReaction
+            (
+                const normalString&,
+                const unsigned int
+            );
+
+            //- update stochiometric coefficient matrix nu
+            void updateAllMatrix
+            (
+                const normalString&,
+                const unsigned int,
+                const scalarField&,
+                const stringField&,
+                const unsigned int&
+            );
+
             //- add new stochiometric factors for new elementar reaction
             //  + first int: reaction number
             //  + second int: stochiometric
-            void addNu(const int&, const int&);
+            void set_nu();
 
             //- set kf
             void set_kf(const bool);
@@ -65,28 +103,6 @@ class Chemistry
             //- return formula of elementar reaction (string)
             normalString elementarReaction(const unsigned int&) const;
 
-            //- increment the amount of reactions
-            void increment_r();
-
-            //- decrement the amount of reactions
-            //  used for LOW TROE
-            void decrement_r();
-
-            //- return the amount of elementar reactions
-            int r() const;
-
-            //- set TROE vector
-            void setTROE(const bool);
-
-            //- set LOW vector
-            void setLOW(const bool);
-
-            //- return TROE_ coefficient vector
-            unsigned int TROE(const unsigned int) const;
-
-            //- return LOW_ coefficient vector
-            unsigned int LOW(const unsigned int) const;
-
             //- insert new set of arrhenius coeffs
             void setArrheniusCoeffs
             (
@@ -102,38 +118,40 @@ class Chemistry
                 const unsigned int
             ) const;
 
-
+            //- summary
+            void summary() const;
 
     private:
 
-        //- stochiometric factors nu
-        //  as a coefficient matrix
-        //  maximal third body reaction means 3 reactants 3 products = 6
-        //  matrix is nx6 := n is the amount of elementar Chemistry
+        //- this field contains all elements that are used in the reaction
+        stringField elements_;
+
+        //- this field contains all species that are used in the reaction
+        stringField species_;
+
+        //- matrix nu --> stochiometric coefficient matrix
+        //  nu on product side === positiv
+        //  nu on reactant side === negativ
         //
+        //  Definition of matrix nu
+        //      Range: r x m
+        //      r: reactions
+        //      m: species
         //  ------------------------------------------------------------------
-        //  r   elem1    ...    elem3          elem4        ... elem6
+        //     species1    species2    ...     species m
         //  ------------------------------------------------------------------
-        //  1 | nu_i,j   ...    nu_i,j+2        nu_i,j+3    ... nu_i,j+5
-        //  2 | nu_i+1,j ...    nu_i+1,j+2      nu_i+1,j+3  ... nu_i+1,j+5
-        //  3 | nu_i+2,j ...        .               .               .
-        //  . |    .                .               .               .
-        //  . |    .                .               .               .
-        //  n |    .                .               .           nu_i+n,j+5
+        //  1 | nu_1,1      nu_1,2      .          .
+        //  2 | nu_2,1        .         .          .
+        //  . |    .          .         .          .
+        //  r |    .          .         .       nu_r,m
         //  ------------------------------------------------------------------
         matrix nu_;
 
         //- forward and backward reaction used or not
-        //  matrix
-        //
-        //  r     kf     kb
-        //  -----------------
-        //  1  |  1       0
-        //  2  |  1       1
-        //  .  |  .       .
-        //  n  |  .       .
-        //  -----------------
-        matrix fb_;
+        //  Definition:
+        //  -  1: both are used
+        //  -  0: only forward is used
+        scalarField kfkb_;
 
         //- arrhenius coefficient matrix nx3
         //  same as coefficient matrix for the stochiometric factors
@@ -149,10 +167,45 @@ class Chemistry
         //  n |    .            .            x_i+n,j+2
         matrix arrheniusCoeffs_;
 
-        //- matrix of elementary reaction (as string)
-        //  only for storing - not needed afterwards
-        public:
-        std::vector<normalString> elementarReaction_;
+        //- TROE coefficient
+        //  definition:
+        //  +  0: T***
+        //  +  1: T*
+        //  +  2: T**
+        matrix TROECoeffs_;
+
+        //- LINDEMANN formula (LOW)
+        //  definition:
+        //  +  0: A0
+        //  +  1: b
+        //  +  2: Ea
+        matrix LOWCoeffs_;
+
+        //- THIRD BODY species M
+        matrix M_;
+
+        //- vector of elementary reaction (as string)
+        stringField elementarReaction_;
+
+        //- vector of fall-off reactions
+        scalarField fO_;
+
+        //- vector of low-pressure reactions
+        scalarField lP_;
+
+        //- amount of elementar reactions
+        unsigned int r_;
+
+        //- amount of third body reactions (fall-off region)
+        //  := (+M)
+        unsigned int rFO_;
+
+        //- amount of third body reactions (low pressure)
+        //  := +M
+        unsigned int rLP_;
+
+        //- duplicated reactions
+        unsigned int rDuplicate_;
 
         //- TROE vector
         std::vector<int> TROE_;
@@ -160,8 +213,6 @@ class Chemistry
         //- LOW vector
         std::vector<int> LOW_;
 
-        //- amount of elementar Chemistry
-        unsigned int r_;
 };
 
 #endif // Chemistry_HPP
