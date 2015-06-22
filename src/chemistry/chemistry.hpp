@@ -196,14 +196,6 @@ class Chemistry
         //- amount of elementar reactions
         unsigned int r_;
 
-        //- amount of third body reactions (fall-off region)
-        //  := (+M)
-        unsigned int rFO_;
-
-        //- amount of third body reactions (low pressure)
-        //  := +M
-        unsigned int rLP_;
-
         //- duplicated reactions
         unsigned int rDuplicate_;
 

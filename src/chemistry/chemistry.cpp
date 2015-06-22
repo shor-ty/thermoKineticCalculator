@@ -376,7 +376,11 @@ normalString Chemistry::splitReaction
         delimiter = "<=>";
 
         //- forward and backward reaction is used
-        kfkb_.push_back(1);
+        //  prevent due to reactants and products
+        if (kfkb_.size() != r_)
+        {
+            kfkb_.push_back(1);
+        }
     }
     else if
     (
@@ -387,7 +391,11 @@ normalString Chemistry::splitReaction
         delimiter = "=>";
 
         //- only forward reaction is used
-        kfkb_.push_back(0);
+        //  prevent due to reactants and products
+        if (kfkb_.size() != r_)
+        {
+            kfkb_.push_back(0);
+        }
     }
     else if
     (
@@ -397,7 +405,11 @@ normalString Chemistry::splitReaction
         delimiter = "=";
 
         //- forward and backward reaction is used
-        kfkb_.push_back(1);
+        //  prevent due to reactants and products
+        if (kfkb_.size() != r_)
+        {
+            kfkb_.push_back(1);
+        }
     }
     //- something went wrong
     else
@@ -447,10 +459,6 @@ void Chemistry::updateAllMatrix
     {
         //- modify the reaction (remove (+M))
         normalString modifiedReaction = reaction.substr(0,found);
-
-        //- increment the amount of fall of and low pressure reactions
-        rFO_++;
-        rLP_++;
 
         //- spilt into the single species using delimiter '+'
         std::stringstream tmp(modifiedReaction);
@@ -636,6 +644,8 @@ void Chemistry::summary() const
 {
 
     unsigned int kb{0};
+    unsigned int fO{0};
+    unsigned int lP{0};
 
     //- get backward reactions
     forAll(kfkb_, i)
@@ -645,6 +655,25 @@ void Chemistry::summary() const
             kb++;
         }
     }
+
+    //- get fall off reactions
+    forAll(fO_, i)
+    {
+        if (fO_[i] == 1)
+        {
+            fO++;
+        }
+    }
+
+    //- get low pressure reactions
+    forAll(lP_, i)
+    {
+        if (lP_[i] == 1)
+        {
+            lP++;
+        }
+    }
+
 
     std::cout<< "----------------------------------------------------------\n"
              << "                   CHEMISTRY SUMMARY                      \n"
@@ -657,12 +686,34 @@ void Chemistry::summary() const
              << std::setw(40) << " No. of elementar reactions: "
              << std::setw(20) << r_ << "\n"
              << std::setw(40) << " No. of low pressure reactions: "
-             << std::setw(20) << lP_.size() << "\n"
+             << std::setw(20) << lP << "\n"
              << std::setw(40) << " No. of fall off reactions: "
-             << std::setw(20) << fO_.size() << "\n"
+             << std::setw(20) << fO << "\n"
              << std::setw(40) << " No. of forward reactions: "
-             << std::setw(20) << r_ << "\n"
+             << std::setw(20) << kfkb_.size() << "\n"
              << std::setw(40) << " No. of backward reactions: "
              << std::setw(20) << kb << "\n"
+             << std::setw(40) << " No. of dublicated reactions: "
+             << std::setw(20) << rDuplicate_ << "\n"
+             << "----------------------------------------------------------\n"
+             << std::setw(40) << " Matrix size nu_: "
+             << std::setw(2) << nu_.size() << "x"
+             << nu_[0].size() << "\n"
+             << std::setw(40) << " Matrix size M_: "
+             << std::setw(2) << M_.size() << "x" << M_[0].size() << "\n"
+             << std::setw(40) << " Matrix size ArrheniusCoeffs_: "
+             << std::setw(2) << arrheniusCoeffs_.size() << "x"
+             << arrheniusCoeffs_[0].size() << "\n"
+             << std::setw(40) << " Matrix size TROECoeffs_: "
+             << std::setw(2) << TROECoeffs_.size() << "x"
+             << TROECoeffs_[0].size() << "\n"
+             << std::setw(40) << " Matrix size LOWCoeffs_: "
+             << std::setw(2) << LOWCoeffs_.size() << "x"
+             << LOWCoeffs_[0].size() << "\n"
+             << std::setw(40) << " Vector size kfkb_: "
+             << std::setw(2) << kfkb_.size() << "\n"
              << "----------------------------------------------------------\n";
+
+             forAll(kfkb_, i)
+             std::cout << i << ": " << kfkb_[i] << " --> " << elementarReaction_[i] << "\n";
 }
