@@ -377,7 +377,7 @@ normalString Chemistry::splitReaction
 
         //- forward and backward reaction is used
         //  prevent due to reactants and products
-        if (kfkb_.size() != r_)
+        if (i == 0)
         {
             kfkb_.push_back(1);
         }
@@ -392,7 +392,7 @@ normalString Chemistry::splitReaction
 
         //- only forward reaction is used
         //  prevent due to reactants and products
-        if (kfkb_.size() != r_)
+        if (i == 0)
         {
             kfkb_.push_back(0);
         }
@@ -406,7 +406,7 @@ normalString Chemistry::splitReaction
 
         //- forward and backward reaction is used
         //  prevent due to reactants and products
-        if (kfkb_.size() != r_)
+        if (i == 0)
         {
             kfkb_.push_back(1);
         }
@@ -448,168 +448,304 @@ void Chemistry::updateAllMatrix
     const unsigned int& line
 )
 {
-    //- EXCEPTION 1
-    //  check (+M)
-    normalString pattern = "(+M)";
+    //- THIRD BODY REACTION
+    //  check +M
+    normalString pattern = "+M";
     std::size_t found = reaction.find(pattern);
 
-    //- THIRD BODY REACTION WITH (+M)
-    //  LOW and TROE
+    //- THIRD BODY REACTION WITH +M
+    //  Options:
+    //  +  1: +M
+    //  +  2: (+M)
+    //  +  3: if (+M) use LOW
+    //  +  4: if (+M) use TROE
+
     if (found != std::string::npos)
     {
-        //- modify the reaction (remove (+M))
-        normalString modifiedReaction = reaction.substr(0,found);
+        //- check if (+M) found
+        pattern = "(+M)";
+        found = reaction.find(pattern);
 
-        //- spilt into the single species using delimiter '+'
-        std::stringstream tmp(modifiedReaction);
-        normalString element;
-        stringField elements;
-
-        while (std::getline(tmp, element, '+'))
+        //- THIRD BODY REACTION with (+M)
+        if (found != std::string::npos)
         {
-            elements.push_back(element);
-        }
+            //- modify the reaction (remove +M)
+            normalString modifiedReaction = reaction.substr(0,found);
 
-        //- bool variable to check if species in reaction is
-        //  available in SPECIES section
-        bool speciesAvailable{false};
+            //- spilt into the single species using delimiter '+'
+            std::stringstream tmp(modifiedReaction);
+            normalString element;
+            stringField elements;
 
-        //- search the ID of species
-        forAll(species_, id)
-        {
-            forAll(elements, elem)
+            while (std::getline(tmp, element, '+'))
             {
-                if (species_[id] == elements[elem])
+                elements.push_back(element);
+            }
+
+            //- search the ID of species
+            forAll(species_, id)
+            {
+                forAll(elements, elem)
                 {
-                    //- species is available
-                    speciesAvailable = true;
-
-                    int nuTmp_ = nu_[r_][id];
-
-                    //- sign of nu depend on the side
-                    //  Definition
-                    //  +  reactants := negativ
-                    //  +  products := positiv
-                    if (i == 0)
+                    if (species_[id] == elements[elem])
                     {
-                        nuTmp_--;
-                    }
-                    else if (i == 1)
-                    {
-                        nuTmp_++;
-                    }
-                    //- something went wrong
-                    else
-                    {
-                        std::cerr<< " ++ ERROR in " << __FILE__
-                            << " line no." << __LINE__ << " ++ i is "
-                            << "not defined. i = " << i << ". Species"
-                            << " not defined: " << elements[elem]
-                            << std::endl;
-                        std::terminate();
-                    }
 
-                    //- set the stochiometric factors
-                    nu_[r_][id] = nuTmp_;
+                        int nuTmp_ = nu_[r_][id];
 
-
-                    //- set arrhenius coefficients
-                    //  +   0 := A0
-                    //  +   1 := b
-                    //  +   2 := Ea
-                    arrheniusCoeffs_[r_][0] = arrhenius[0];
-                    arrheniusCoeffs_[r_][1] = arrhenius[1];
-                    arrheniusCoeffs_[r_][2] = arrhenius[2];
-
-                    //- check if LOW
-                    normalString line1 = fileContent[line+1];
-                    stringField  line1Array = splitString(line1);
-
-                    if (line1Array[0] == "LOW/")
-                    {
-                        //- set low pressure (LOW)
-                        lP_[r_] = 1;
-
-                        //- next check
-                        //  TROE used?
-                        normalString line2 = fileContent[line+2];
-                        stringField  line2Array = splitString(line2);
-
-
-                        if (line2Array[0] == "TROE/")
+                        //- sign of nu depend on the side
+                        //  Definition
+                        //  +  reactants := negativ
+                        //  +  products := positiv
+                        if (i == 0)
                         {
-                            //- set fall off (TROE)
-                            fO_[r_] = 1;
-
-                            //- set TROES formula coefficient
-                            TROECoeffs_[r_][0] = stod(line2Array[1]);
-                            TROECoeffs_[r_][1] = stod(line2Array[2]);
-                            TROECoeffs_[r_][2] = stod(line2Array[3]);
-
-                            //- set LOW pressure coefficient
-                            LOWCoeffs_[r_][0] = stod(line1Array[1]);
-                            LOWCoeffs_[r_][1] = stod(line1Array[2]);
-                            LOWCoeffs_[r_][2] = stod(line1Array[3]);
-
-                            //- check next
-                            //  modified M?
-                            normalString line3 = fileContent[line+3];
-
-                            //- if modified M, next line does not contain '='
-                            //  and contain '/'
-                            if
-                            (
-                                line3.find('=') == std::string::npos
-                             && line3.find('/') != std::string::npos
-                            )
-                            {
-                                //- split the line with delimiter '/'
-                                std::stringstream tmp(line3);
-                                normalString element;
-                                stringField elements;
-
-                                while (std::getline(tmp, element, '/'))
-                                {
-                                    elements.push_back(element);
-                                }
-
-                                forAll(elements, elem)
-                                {
-                                    forAll(species_, id)
-                                    {
-                                        if (species_[id] == elements[elem])
-                                        {
-                                            M_[r_][id] =
-                                                stod(elements[elem+1]);
-                                        }
-                                    }
-                                }
-                            }
+                            nuTmp_--;
                         }
+                        else if (i == 1)
+                        {
+                            nuTmp_++;
+                        }
+                        //- something went wrong
                         else
                         {
-                            //- set low pressure (LOW)
-                            lP_[r_] = 1;
+                            std::cerr<< " ++ ERROR in " << __FILE__
+                                << " line no." << __LINE__ << " ++ i is "
+                                << "not defined. i = " << i << ". Species"
+                                << " not defined: " << elements[elem]
+                                << std::endl;
+                            std::terminate();
+                        }
 
-                            //- set LOW pressure coefficient
-                            LOWCoeffs_[r_][0] = stod(line1Array[1]);
-                            LOWCoeffs_[r_][1] = stod(line1Array[2]);
-                            LOWCoeffs_[r_][2] = stod(line1Array[3]);
+                        //- set the stochiometric factors
+                        nu_[r_][id] = nuTmp_;
 
-                            //- check next
-                            //  modified M?
-                            normalString line3 = fileContent[line+3];
+                        //- ONLY FOR REACTANTS
+                        //  for products it would be the same
+                        if (i == 0)
+                        {
+                            //- set arrhenius coefficients
+                            //  +   0 := A0
+                            //  +   1 := b
+                            //  +   2 := Ea
+                            arrheniusCoeffs_[r_][0] = arrhenius[0];
+                            arrheniusCoeffs_[r_][1] = arrhenius[1];
+                            arrheniusCoeffs_[r_][2] = arrhenius[2];
 
-                            //- if modified M, next line does not contain '='
-                            //  and contain '/'
+                            //- check if LOW
+                            normalString line1 = fileContent[line+1];
+                            stringField  line1Array = splitString(line1);
+
+                            if (line1Array[0] == "LOW/")
+                            {
+                                //- set low pressure (LOW)
+                                lP_[r_] = 1;
+
+                                //- next check
+                                //  TROE used?
+                                normalString line2 = fileContent[line+2];
+                                stringField  line2Array = splitString(line2);
+
+
+                                if (line2Array[0] == "TROE/")
+                                {
+                                    //- set fall off (TROE)
+                                    fO_[r_] = 1;
+
+                                    //- set TROES formula coefficient
+                                    TROECoeffs_[r_][0] = stod(line2Array[1]);
+                                    TROECoeffs_[r_][1] = stod(line2Array[2]);
+                                    TROECoeffs_[r_][2] = stod(line2Array[3]);
+
+                                    //- set LOW pressure coefficient
+                                    LOWCoeffs_[r_][0] = stod(line1Array[1]);
+                                    LOWCoeffs_[r_][1] = stod(line1Array[2]);
+                                    LOWCoeffs_[r_][2] = stod(line1Array[3]);
+
+                                    //- check next
+                                    //  modified M?
+                                    normalString line3 = fileContent[line+3];
+
+                                    //- if modified M, next line does not
+                                    //  contain '=' and contain '/'
+                                    if
+                                    (
+                                        line3.find('=') == std::string::npos
+                                     && line3.find('/') != std::string::npos
+                                    )
+                                    {
+                                        //- split the line with delimiter '/'
+                                        std::stringstream tmp(line3);
+                                        normalString element;
+                                        stringField elements;
+
+                                        while (std::getline(tmp, element, '/'))
+                                        {
+                                            elements.push_back(element);
+                                        }
+
+                                        forAll(elements, elem)
+                                        {
+                                            forAll(species_, id)
+                                            {
+                                                if
+                                                (
+                                                    species_[id]
+                                                 == elements[elem]
+                                                )
+                                                {
+                                                    M_[r_][id] =
+                                                        stod(elements[elem+1]);
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    //- set low pressure (LOW)
+                                    lP_[r_] = 1;
+
+                                    //- set LOW pressure coefficient
+                                    LOWCoeffs_[r_][0] = stod(line1Array[1]);
+                                    LOWCoeffs_[r_][1] = stod(line1Array[2]);
+                                    LOWCoeffs_[r_][2] = stod(line1Array[3]);
+
+                                    //- check next
+                                    //  modified M?
+                                    normalString line3 = fileContent[line+3];
+
+                                    //- if modified M, next line does not
+                                    //  contain '=' and contain '/'
+                                    if
+                                    (
+                                        line3.find('=') == std::string::npos
+                                     && line3.find('/') != std::string::npos
+                                    )
+                                    {
+                                        //- split the line with delimiter '/'
+                                        std::stringstream tmp(line3);
+                                        normalString element;
+                                        stringField elements;
+
+                                        while (std::getline(tmp, element, '/'))
+                                        {
+                                            elements.push_back(element);
+                                        }
+
+                                        forAll(elements, elem)
+                                        {
+                                            forAll(species_, id)
+                                            {
+                                                if
+                                                (
+                                                    species_[id]
+                                                 == elements[elem]
+                                                )
+                                                {
+                                                    M_[r_][id] =
+                                                        stod(elements[elem+1]);
+                                                }
+                                            }
+                                        }
+                                    //- M modification end
+                                    }
+                                //- LOW end
+                                }
+                            //- LOW TROE end
+                            }
+                        //- check TROE and LOW for reactants
+                        }
+                    //- if condition if species in reaction == species
+                    }
+                //- loop over species which are in reaction
+                }
+            //- loop over all species which involved in elementar reaction
+            }
+        //- THIRD BODY REACTION WITH (+M) end
+        }
+
+        //- THIRD BODY REACTION without TROE AND LOW
+        else
+        {
+            //- reset
+            pattern = "+M";
+            found = reaction.find(pattern);
+
+            //- modify the reaction (remove +M)
+            normalString modifiedReaction = reaction.substr(0,found);
+
+            //- spilt into the single species using delimiter '+'
+            std::stringstream tmp(modifiedReaction);
+            normalString element;
+            stringField elements;
+
+            while (std::getline(tmp, element, '+'))
+            {
+                elements.push_back(element);
+            }
+
+            //- search the ID of species
+            forAll(species_, id)
+            {
+                forAll(elements, elem)
+                {
+                    if (species_[id] == elements[elem])
+                    {
+
+                        int nuTmp_ = nu_[r_][id];
+
+                        //- sign of nu depend on the side
+                        //  Definition
+                        //  +  reactants := negativ
+                        //  +  products := positiv
+                        if (i == 0)
+                        {
+                            nuTmp_--;
+                        }
+                        else if (i == 1)
+                        {
+                            nuTmp_++;
+                        }
+                        //- something went wrong
+                        else
+                        {
+                            std::cerr<< " ++ ERROR in " << __FILE__
+                                << " line no." << __LINE__ << " ++ i is "
+                                << "not defined. i = " << i << ". Species"
+                                << " not defined: " << elements[elem]
+                                << std::endl;
+                            std::terminate();
+                        }
+
+                        //- set the stochiometric factors
+                        nu_[r_][id] = nuTmp_;
+
+                        //- ONLY FOR REACTANTS
+                        //  for products it would be the same
+                        if (i == 0)
+                        {
+                            //- set arrhenius coefficients
+                            //  +   0 := A0
+                            //  +   1 := b
+                            //  +   2 := Ea
+
+                            arrheniusCoeffs_[r_][0] = arrhenius[0];
+                            arrheniusCoeffs_[r_][1] = arrhenius[1];
+                            arrheniusCoeffs_[r_][2] = arrhenius[2];
+
+                            //- check if LOW
+                            normalString line1 = fileContent[line+1];
+                            stringField  line1Array = splitString(line1);
+
+                            //- get third body M, next line does not
+                            //  contain '=' and contain '/'
                             if
                             (
-                                line3.find('=') == std::string::npos
-                             && line3.find('/') != std::string::npos
+                                line1.find('=') == std::string::npos
+                             && line1.find('/') != std::string::npos
                             )
                             {
                                 //- split the line with delimiter '/'
-                                std::stringstream tmp(line3);
+                                std::stringstream tmp(line1);
                                 normalString element;
                                 stringField elements;
 
@@ -622,40 +758,30 @@ void Chemistry::updateAllMatrix
                                 {
                                     forAll(species_, id)
                                     {
-                                        if (species_[id] == elements[elem])
+                                        if
+                                        (
+                                            species_[id]
+                                         == elements[elem]
+                                        )
                                         {
                                             M_[r_][id] =
                                                 stod(elements[elem+1]);
                                         }
                                     }
                                 }
-                            //- LOW - M modification end
+                            //- M modification end
                             }
-                        //- LOW end
+                        //- if for reactants (save arrhenius and M)
                         }
-                    //- LOW TROE end
+                    //- species of reaction found in SPECIES
                     }
-                //- if condition if species in reaction == species
+                //- loop over all species in reaction
                 }
-
-//                else if (id == species_.size()-1 && !speciesAvailable)
-//                {
-//                    std::cout << id << "  " << species_.size()-1 << "\n";
-//                    std::cout << fileContent[line] << "\n";
-//                    //- species in reaction is not defined in SPECIES section
-//                    std::cerr<< " ++ ERROR in " << __FILE__
-//                             << " line no." << __LINE__ << " ++ Species "
-//                             << elements[elem] << " is not defined in SPECIES"
-//                             << " section"
-//                             << std::endl;
-//                    std::terminate();
-//                }
-
-            //- loop over species which are in reaction
+            //- loop over all species in SPECIES
             }
-        //- loop over all species which involved in elementar reaction
+        //- THIRD BODY REACTION +M end
         }
-    //- THIRD BODY REACTION TROE end (EXCEPTION 1)
+    //- THIRD BODY REACTION end (+M) and +M
     }
 }
 
@@ -694,7 +820,6 @@ void Chemistry::summary() const
         }
     }
 
-
     std::cout<< "----------------------------------------------------------\n"
              << "                   CHEMISTRY SUMMARY                      \n"
              << "----------------------------------------------------------\n"
@@ -709,9 +834,9 @@ void Chemistry::summary() const
              << std::setw(20) << lP << "\n"
              << std::setw(40) << " No. of fall off reactions: "
              << std::setw(20) << fO << "\n"
-             << std::setw(40) << " No. of forward reactions: "
-             << std::setw(20) << kfkb_.size() << "\n"
-             << std::setw(40) << " No. of backward reactions: "
+             << std::setw(40) << " No. of irreversible reactions: "
+             << std::setw(20) << kfkb_.size() - kb << "\n"
+             << std::setw(40) << " No. of reversible reactions: "
              << std::setw(20) << kb << "\n"
              << std::setw(40) << " No. of dublicated reactions: "
              << std::setw(20) << rDuplicate_ << "\n"
