@@ -30,8 +30,8 @@
 
 Chemistry::Chemistry()
 :
-    r_(0),
-    rDuplicate_(0)
+    n_(0),
+    nDuplicate_(0)
 {}
 
 
@@ -193,7 +193,7 @@ void Chemistry::readChemkin
                     line+=3;
 
                     //- increment duplicated entrys
-                    rDuplicate_++;
+                    nDuplicate_++;
 
                     //- re-initialize the array with the new line
                     lineArray = splitString(fileContent[line]);
@@ -239,29 +239,12 @@ void Chemistry::readChemkin
                             arrhenius.push_back(stod(lineArray[i]));
                         }
 
+                        //- increment the size of all vectors and matrixes
+                        incrementMatrixesVectors();
+
                         //- insert the reaction to the vector
                         //  added as string
-                        elementarReaction_.push_back(reaction);
 
-                        //- increment matrix nu
-                        nu_.push_back(std::vector<double>(species_.size()));
-
-                        //- increment matrix M
-                        M_.push_back(std::vector<double>(species_.size()));
-
-                        //- increment arrhenius, TROE and LOW matrix
-                        arrheniusCoeffs_.push_back(std::vector<double>(3));
-                        TROECoeffs_.push_back(std::vector<double>(3));
-                        LOWCoeffs_.push_back(std::vector<double>(3));
-
-                        //- increment fall off vector
-                        fO_.push_back(0);
-
-                        //- increment low pressure vector
-                        lP_.push_back(0);
-
-                        //- increment speciesOfReac_
-                        speciesInReac_.push_back((std::vector<std::string>(6)));
 
                         //- splitting the reaction into reactants and products
                         //  additionall the matrix kfkb is modified
@@ -290,7 +273,7 @@ void Chemistry::readChemkin
 
 
                         //- increment reaction counter
-                        r_++;
+                        n_++;
                     }
                 }
             }
@@ -492,7 +475,7 @@ void Chemistry::updateAllMatrix
                 {
                     if (species_[id] == elements[elem])
                     {
-                        int nuTmp_ = nu_[r_][id];
+                        int nuTmp_ = nu_[n_][id];
 
                         //- sign of nu depend on the side
                         //  Definition
@@ -518,7 +501,7 @@ void Chemistry::updateAllMatrix
                         }
 
                         //- set the stochiometric factors
-                        nu_[r_][id] = nuTmp_;
+                        nu_[n_][id] = nuTmp_;
 
                         //- ONLY FOR REACTANTS
                         //  for products it would be the same
@@ -528,9 +511,9 @@ void Chemistry::updateAllMatrix
                             //  +   0 := A0
                             //  +   1 := b
                             //  +   2 := Ea
-                            arrheniusCoeffs_[r_][0] = arrhenius[0];
-                            arrheniusCoeffs_[r_][1] = arrhenius[1];
-                            arrheniusCoeffs_[r_][2] = arrhenius[2];
+                            arrheniusCoeffs_[n_][0] = arrhenius[0];
+                            arrheniusCoeffs_[n_][1] = arrhenius[1];
+                            arrheniusCoeffs_[n_][2] = arrhenius[2];
 
                             //- check if LOW
                             normalString line1 = fileContent[line+1];
@@ -539,7 +522,7 @@ void Chemistry::updateAllMatrix
                             if (line1Array[0] == "LOW/")
                             {
                                 //- set low pressure (LOW)
-                                lP_[r_] = 1;
+                                nLOW_[n_] = 1;
 
                                 //- next check
                                 //  TROE used?
@@ -550,17 +533,17 @@ void Chemistry::updateAllMatrix
                                 if (line2Array[0] == "TROE/")
                                 {
                                     //- set fall off (TROE)
-                                    fO_[r_] = 1;
+                                    nTROE_[n_] = 1;
 
                                     //- set TROES formula coefficient
-                                    TROECoeffs_[r_][0] = stod(line2Array[1]);
-                                    TROECoeffs_[r_][1] = stod(line2Array[2]);
-                                    TROECoeffs_[r_][2] = stod(line2Array[3]);
+                                    TROECoeffs_[n_][0] = stod(line2Array[1]);
+                                    TROECoeffs_[n_][1] = stod(line2Array[2]);
+                                    TROECoeffs_[n_][2] = stod(line2Array[3]);
 
                                     //- set LOW pressure coefficient
-                                    LOWCoeffs_[r_][0] = stod(line1Array[1]);
-                                    LOWCoeffs_[r_][1] = stod(line1Array[2]);
-                                    LOWCoeffs_[r_][2] = stod(line1Array[3]);
+                                    LOWCoeffs_[n_][0] = stod(line1Array[1]);
+                                    LOWCoeffs_[n_][1] = stod(line1Array[2]);
+                                    LOWCoeffs_[n_][2] = stod(line1Array[3]);
 
                                     //- check next
                                     //  modified M?
@@ -594,7 +577,7 @@ void Chemistry::updateAllMatrix
                                                  == elements[elem]
                                                 )
                                                 {
-                                                    M_[r_][id] =
+                                                    Mvalue_[n_][id] =
                                                         stod(elements[elem+1]);
                                                 }
                                             }
@@ -604,12 +587,12 @@ void Chemistry::updateAllMatrix
                                 else
                                 {
                                     //- set low pressure (LOW)
-                                    lP_[r_] = 1;
+                                    nLOW_[n_] = 1;
 
                                     //- set LOW pressure coefficient
-                                    LOWCoeffs_[r_][0] = stod(line1Array[1]);
-                                    LOWCoeffs_[r_][1] = stod(line1Array[2]);
-                                    LOWCoeffs_[r_][2] = stod(line1Array[3]);
+                                    LOWCoeffs_[n_][0] = stod(line1Array[1]);
+                                    LOWCoeffs_[n_][1] = stod(line1Array[2]);
+                                    LOWCoeffs_[n_][2] = stod(line1Array[3]);
 
                                     //- check next
                                     //  modified M?
@@ -643,7 +626,7 @@ void Chemistry::updateAllMatrix
                                                  == elements[elem]
                                                 )
                                                 {
-                                                    M_[r_][id] =
+                                                    Mvalue_[n_][id] =
                                                         stod(elements[elem+1]);
                                                 }
                                             }
@@ -692,7 +675,7 @@ void Chemistry::updateAllMatrix
                 {
                     if (species_[id] == elements[elem])
                     {
-                        int nuTmp_ = nu_[r_][id];
+                        int nuTmp_ = nu_[n_][id];
 
                         //- sign of nu depend on the side
                         //  Definition
@@ -718,7 +701,7 @@ void Chemistry::updateAllMatrix
                         }
 
                         //- set the stochiometric factors
-                        nu_[r_][id] = nuTmp_;
+                        nu_[n_][id] = nuTmp_;
 
                         //- ONLY FOR REACTANTS
                         //  for products it would be the same
@@ -729,9 +712,9 @@ void Chemistry::updateAllMatrix
                             //  +   1 := b
                             //  +   2 := Ea
 
-                            arrheniusCoeffs_[r_][0] = arrhenius[0];
-                            arrheniusCoeffs_[r_][1] = arrhenius[1];
-                            arrheniusCoeffs_[r_][2] = arrhenius[2];
+                            arrheniusCoeffs_[n_][0] = arrhenius[0];
+                            arrheniusCoeffs_[n_][1] = arrhenius[1];
+                            arrheniusCoeffs_[n_][2] = arrhenius[2];
 
                             //- check if LOW
                             normalString line1 = fileContent[line+1];
@@ -765,7 +748,7 @@ void Chemistry::updateAllMatrix
                                          == elements[elem]
                                         )
                                         {
-                                            M_[r_][id] =
+                                            Mvalue_[n_][id] =
                                                 stod(elements[elem+1]);
                                         }
                                     }
@@ -790,6 +773,46 @@ void Chemistry::updateAllMatrix
 }
 
 
+void Chemistry::incrementMatrixesVectors()
+{
+
+    //- increment matrixes and vectors
+
+        //- vector for saving reactions
+        elementarReaction_.push_back("");
+
+        //- matrix for stochiometric coeffs
+        nu_.push_back(std::vector<double>(species_.size()));
+
+        //- matrix of THIRD BODY M (composition of species)
+        Mcomp_.push_back(std::vector<std::string>(species_.size()));
+
+        //- matrix of THIRD BODY M (values of species)
+        Mvalue_.push_back(std::vector<double>(species_.size()));
+
+        //- matrix of ARRHENIUS coeffs
+        arrheniusCoeffs_.push_back(std::vector<double>(3));
+
+        //- matrix of TROE coeffs
+        TROECoeffs_.push_back(std::vector<double>(3));
+
+        //- matrix of ARRHENIUS coeffs for LOW pressure
+        LOWCoeffs_.push_back(std::vector<double>(3));
+
+        //- vector of fall off reactions (TROE) (0:=no | 1:=yes)
+        nTROE_.push_back(0);
+
+        //- vector of low pressure reactions
+        nLOW_.push_back(0);
+
+        //- matrix of reactants that are used in reaction n_
+        reactants_.push_back((std::vector<std::string>(3)));
+
+        //- matrix of products that are used in reaction n_
+        products_.push_back((std::vector<std::string>(3)));
+}
+
+
 void Chemistry::summary() const
 {
 
@@ -807,18 +830,18 @@ void Chemistry::summary() const
     }
 
     //- get fall off reactions
-    forAll(fO_, i)
+    forAll(nTROE_, i)
     {
-        if (fO_[i] == 1)
+        if (nTROE_[i] == 1)
         {
             fO++;
         }
     }
 
     //- get low pressure reactions
-    forAll(lP_, i)
+    forAll(nLOW_, i)
     {
-        if (lP_[i] == 1)
+        if (nLOW_[i] == 1)
         {
             lP++;
         }
@@ -833,7 +856,7 @@ void Chemistry::summary() const
              << std::setw(40) << " No. of species in reactions: "
              << std::setw(20) << species_.size() << "\n"
              << std::setw(40) << " No. of elementar reactions: "
-             << std::setw(20) << r_ << "\n"
+             << std::setw(20) << n_ << "\n"
              << std::setw(40) << " No. of low pressure reactions: "
              << std::setw(20) << lP << "\n"
              << std::setw(40) << " No. of fall off reactions: "
@@ -843,13 +866,13 @@ void Chemistry::summary() const
              << std::setw(40) << " No. of reversible reactions: "
              << std::setw(20) << kb << "\n"
              << std::setw(40) << " No. of dublicated reactions: "
-             << std::setw(20) << rDuplicate_ << "\n"
+             << std::setw(20) << nDuplicate_ << "\n"
              << "----------------------------------------------------------\n"
              << std::setw(40) << " Matrix size nu_: "
              << std::setw(2) << nu_.size() << "x"
              << nu_[0].size() << "\n"
-             << std::setw(40) << " Matrix size M_: "
-             << std::setw(2) << M_.size() << "x" << M_[0].size() << "\n"
+             << std::setw(40) << " Matrix size Mvalue_: "
+             << std::setw(2) << Mvalue_.size() << "x" << Mvalue_[0].size() << "\n"
              << std::setw(40) << " Matrix size ArrheniusCoeffs_: "
              << std::setw(2) << arrheniusCoeffs_.size() << "x"
              << arrheniusCoeffs_[0].size() << "\n"
@@ -863,7 +886,7 @@ void Chemistry::summary() const
              << std::setw(2) << kfkb_.size() << "\n"
              << "----------------------------------------------------------\n";
 
-             for (unsigned int i=0; i<r_; i++)
+             for (unsigned int i=0; i<n_; i++)
              {
                 std::cout << "reaction no. " << i+1 << ": " << elementarReaction_[i] << "\n";
 

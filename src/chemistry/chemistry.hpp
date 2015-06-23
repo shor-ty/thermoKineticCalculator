@@ -79,6 +79,9 @@ class Chemistry
                 const unsigned int&
             );
 
+            //- increment the size of matrixes and vectors that are used
+            void incrementMatrixesVectors();
+
             //- add new stochiometric factors for new elementar reaction
             //  + first int: reaction number
             //  + second int: stochiometric
@@ -129,78 +132,47 @@ class Chemistry
         //- this field contains all species that are used in the reaction
         stringField species_;
 
-        //- this matrix contains all species of reaction r_x6
-        stringMatrix speciesInReac_;
+        //- matrix that contains the reactants in elementar reaction
+        stringMatrix reactants_;
 
-        //- matrix nu --> stochiometric coefficient matrix
-        //  nu on product side === positiv
-        //  nu on reactant side === negativ
-        //
-        //  Definition of matrix nu
-        //      Range: r x m
-        //      r: reactions
-        //      m: species
-        //  ------------------------------------------------------------------
-        //     species1    species2    ...     species m
-        //  ------------------------------------------------------------------
-        //  1 | nu_1,1      nu_1,2      .          .
-        //  2 | nu_2,1        .         .          .
-        //  . |    .          .         .          .
-        //  r |    .          .         .       nu_r,m
-        //  ------------------------------------------------------------------
+        //- matrix that contains the products in elementar reaction
+        stringMatrix products_;
+
+        //- matrix of stochiometric coeffs
         matrix nu_;
 
         //- forward and backward reaction used or not
-        //  Definition:
-        //  -  1: both are used
-        //  -  0: only forward is used
         scalarField kfkb_;
 
-        //- arrhenius coefficient matrix nx3
-        //  same as coefficient matrix for the stochiometric factors
-        //
-        //  -------------------------------------------------
-        //  r   A0            n               Ea
-        //  -------------------------------------------------
-        //  1 |  x_i,j       x_i,j+1         x_i,j+2
-        //  2 |  x_i+1,j        .               .
-        //  3 |    .            .               .
-        //  . |    .            .               .
-        //  . |    .            .               .
-        //  n |    .            .            x_i+n,j+2
+        //- matrix of arrhenius coeffs
         matrix arrheniusCoeffs_;
 
         //- TROE coefficient
-        //  definition:
-        //  +  0: T***
-        //  +  1: T*
-        //  +  2: T**
         matrix TROECoeffs_;
 
         //- LINDEMANN formula (LOW)
-        //  definition:
-        //  +  0: A0
-        //  +  1: b
-        //  +  2: Ea
         matrix LOWCoeffs_;
 
-        //- THIRD BODY species M
-        matrix M_;
+        //- matrix of THIRD BODY M (composition of species)
+        stringMatrix Mcomp_;
+
+        //- matrix of THIRD BODY M (values of species)
+        matrix Mvalue_;
 
         //- vector of elementary reaction (as string)
         stringField elementarReaction_;
 
         //- vector of fall-off reactions
-        scalarField fO_;
+        scalarField nTROE_;
 
         //- vector of low-pressure reactions
-        scalarField lP_;
+        scalarField nLOW_;
 
         //- amount of elementar reactions
-        unsigned int r_;
+        unsigned int n_;
 
         //- duplicated reactions
-        unsigned int rDuplicate_;
+        unsigned int nDuplicate_;
 
         //- TROE vector
         std::vector<int> TROE_;
