@@ -260,6 +260,9 @@ void Chemistry::readChemkin
                         //- increment low pressure vector
                         lP_.push_back(0);
 
+                        //- increment speciesOfReac_
+                        speciesInReac_.push_back((std::vector<std::string>(6)));
+
                         //- splitting the reaction into reactants and products
                         //  additionall the matrix kfkb is modified
                         //  -  only forward reaction kfkb := 0
@@ -489,7 +492,6 @@ void Chemistry::updateAllMatrix
                 {
                     if (species_[id] == elements[elem])
                     {
-
                         int nuTmp_ = nu_[r_][id];
 
                         //- sign of nu depend on the side
@@ -690,7 +692,6 @@ void Chemistry::updateAllMatrix
                 {
                     if (species_[id] == elements[elem])
                     {
-
                         int nuTmp_ = nu_[r_][id];
 
                         //- sign of nu depend on the side
@@ -783,6 +784,9 @@ void Chemistry::updateAllMatrix
         }
     //- THIRD BODY REACTION end (+M) and +M
     }
+
+    else
+    std::cout << reaction << "\n";
 }
 
 
@@ -859,6 +863,11 @@ void Chemistry::summary() const
              << std::setw(2) << kfkb_.size() << "\n"
              << "----------------------------------------------------------\n";
 
-             forAll(kfkb_, i)
-             std::cout << i << ": " << kfkb_[i] << " --> " << elementarReaction_[i] << "\n";
+             for (unsigned int i=0; i<r_; i++)
+             {
+                std::cout << "reaction no. " << i+1 << ": " << elementarReaction_[i] << "\n";
+
+
+
+             }
 }

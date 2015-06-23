@@ -129,6 +129,9 @@ class Chemistry
         //- this field contains all species that are used in the reaction
         stringField species_;
 
+        //- this matrix contains all species of reaction r_x6
+        stringMatrix speciesInReac_;
+
         //- matrix nu --> stochiometric coefficient matrix
         //  nu on product side === positiv
         //  nu on reactant side === negativ
