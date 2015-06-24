@@ -157,6 +157,9 @@ class Chemistry
             //- summary
             void summary() const;
 
+            //- create reaction rate matrix
+            void createReactionRateMatrix();
+
     private:
 
         //- vector of all elements that are used in the chemistry
@@ -229,6 +232,11 @@ class Chemistry
 
             //- matrix of THIRD BODY M (values of species)
             matrix Mvalue_;
+
+
+        //- reaction rate matrix (this matrix contain the
+        //  reaction no. that influence the species
+        matrix reactionRateMatrix_;
 
 };
 // ************************************************************************* //

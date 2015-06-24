@@ -1219,30 +1219,24 @@ void Chemistry::summary() const
              << std::setw(40) << " No. of dublicated reactions: "
              << std::setw(20) << nDuplicate_ << "\n"
              << "----------------------------------------------------------\n";
-//             << "----------------------------------------------------------\n";
-//            std::cout << std::left << "reaction no." << std::setw(45) << " " << "TBR\tENHANCED\tLOW\tTROE\tSRI\n";
-//             for (unsigned int i=0; i<n_; i++)
-//             {
-//                std::cout << std::left << i+1 << ": " << std::setw(55) << elementarReaction_[i]
-//                << TBR_[i] << "\t"
-//                << ENHANCE_[i] << "\t"
-//                << LOW_[i] << "\t"
-//                << TROE_[i] << "\t"
-//                << SRI_[i] << "\t"
-//                << "\n";
-//             }
-//            for (int i=0; i< n_; i++)
-//            {
-//                std::cout << "Reaction: " << elementarReaction_[i] << ": ";
-//                forAll(nu_[i], j)
-//                {
-//                    if (nu_[i][j] != 0)
-//                    {
-//                        std::cout << nu_[i][j] <<" " << species_[j] << ", ";
-//                    }
-//                }
-//                std::cout << "\n";
-//
-//            }
+}
 
+
+void Chemistry::createReactionRateMatrix()
+{
+    //- loop through all species
+    forAll(species_, id)
+    {
+        reactionRateMatrix_.push_back(std::vector<double>(0));
+
+        //- loop through the nu matrix to figure out which elementar reaction
+        //  influences the species
+        forAll(nu_, r)
+        {
+            if (nu_[r][id] != 0)
+            {
+                reactionRateMatrix_[id].push_back(r);
+            }
+        }
+    }
 }
