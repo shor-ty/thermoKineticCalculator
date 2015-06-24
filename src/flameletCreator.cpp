@@ -25,6 +25,7 @@
 //#include "thermodynamic/thermodynamic.hpp"
 #include "functions/functions.hpp"
 #include "database/elements.hpp"
+#include "chemistry/chemistry.hpp"
 
 
 int main()

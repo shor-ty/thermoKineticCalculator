@@ -47,6 +47,36 @@ class Chemistry
                 const normalString&
             );
 
+            //- increment the size of matrixes and vectors that are used
+            void incrementMatrixesVectors();
+
+            //- update all variables (matrixes, vectors, scalars etc.)
+            void update
+            (
+                const normalString&,
+                const stringField&,
+                const unsigned int&
+            );
+
+            //- save elementar reaction as re-arranged string
+            void elementarReaction
+            (
+                const normalString&
+            );
+
+            //- set arrhenius coeffs
+            void arrheniusCoeffs
+            (
+                const normalString&
+            );
+
+            //- check if elementar reaction is a THIRD BODY REACTION
+            void thirdBodyReaction
+            (
+                const stringField&,
+                const unsigned int&
+            );
+
             //- open file and return the content of the file
             stringField openFile
             (
@@ -56,7 +86,7 @@ class Chemistry
             //- split string; delimiter is whitespace
             stringField splitString
             (
-                const normalString
+                const normalString&
             );
 
             //- split reaction
@@ -65,22 +95,10 @@ class Chemistry
             //  -  1: products
             normalString splitReaction
             (
-                const normalString&,
-                const unsigned int
+                const normalString&
             );
 
-            //- update stochiometric coefficient matrix nu
-            void updateAllMatrix
-            (
-                const normalString&,
-                const unsigned int,
-                const scalarField&,
-                const stringField&,
-                const unsigned int&
-            );
 
-            //- increment the size of matrixes and vectors that are used
-            void incrementMatrixesVectors();
 
             //- add new stochiometric factors for new elementar reaction
             //  + first int: reaction number
@@ -100,19 +118,11 @@ class Chemistry
                 const unsigned int
             ) const;
 
-            //- set formula of elementar reaction (string)
-            void setElementarReaction(const normalString&);
+
 
             //- return formula of elementar reaction (string)
             normalString elementarReaction(const unsigned int&) const;
 
-            //- insert new set of arrhenius coeffs
-            void setArrheniusCoeffs
-            (
-                const scalar&,
-                const scalar&,
-                const scalar&
-            );
 
             //- return arrhenius coeffs
             scalar arrheniusCoeffs
@@ -174,11 +184,20 @@ class Chemistry
         //- duplicated reactions
         unsigned int nDuplicate_;
 
-        //- TROE vector
-        std::vector<int> TROE_;
+        //- vector for SRI
+        std::vector<bool> SRI_;
 
-        //- LOW vector
-        std::vector<int> LOW_;
+        //- vector for TROE
+        std::vector<bool> TROE_;
+
+        //- vector for low pressure
+        std::vector<bool> LOW_;
+
+        //- vector for THIRD BODY REACTION
+        std::vector<bool> TBR_;
+
+        //- vector for THIRD BODY REACTION for ENHANCE
+        std::vector<bool> ENHANCE_;
 
 };
 

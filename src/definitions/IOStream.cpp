@@ -19,6 +19,9 @@
 \*---------------------------------------------------------------------------*/
 //- system headers
 
+#ifndef IOSTREAM_HPP_INCLUDED
+#define IOSTREAM_HPP_INCLUDED
+
 //- user def. headers
 #include "../definitions/IOStream.hpp"
 

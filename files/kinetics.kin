@@ -2,21 +2,33 @@
 ! CRECK Modeling Group (Politecnico di Milano)
 ! http://creckmodeling.chem.polimi.it/
 !
-! H2/CO kinetic mechanism 
+! BIO1412 kinetic mechanism 
 ! Version 1412, December 2014
-! Detailed mechanism of hydrogen oxidation.
+! Detailed mechanism of Biomass secondary gas phase components.
 !
-! Kinetic scheme: 14 species and 33 reactions
+! Kinetic scheme: 137 species 4533 reactions
 !
 ! References
 !
-!E. Ranzi, A. Frassoldati, R. Grana, A. Cuoci, T. Faravelli, A.P. Kelley, C.K. Law, Hierarchical and comparative kinetic modeling of laminar flame speeds of hydrocarbon and oxygenated fuels, 
-!Progress in Energy and Combustion Science, 38 (4), pp. 468-501 (2012), DOI: 10.1016/j.pecs.2012.03.004
+!E. Ranzi, A. Cuoci, T. Faravelli, A. Frassoldati, G. Migliavacca, S. Pierucci, S. Sommariva, 
+!Chemical Kinetics of Biomass Pyrolysis, Energy and Fuels 22 (6), pp. 4292-4300 (2008), doi: 10.1021/ef800551t
+!
+!C. Dupont, L. Chen, J. Cances, J.-M. Commandre, A. Cuoci, S. Pierucci, E. Ranzi, 
+!Biomass pyrolysis: Kinetic modelling and experimental validation under high temperature and flash heating rate conditions, Journal of Analytical and Applied Pyrolysis 85 (1-2), pp. 260-267 (2009), doi:10.1016/j.jaap.2008.11.034
+!
+!M. Calonaci, R. Grana, E. Barker Hemings, G. Bozzano, M. Dente, E. Ranzi, 
+!Comprehensive Kinetic Modeling Study of Bio-oil Formation from Fast Pyrolysis of Biomass, Energy Fuels, 24 (10), pp 5727-5734 (2010), doi: 10.1021/ef1008902
+!
+!E. Barker Hemings, C. Cavallotti, A. Cuoci, T. Faravelli, E. Ranzi (2012). 
+!A�Detailed Kinetic Study of Pyrolysis and Oxidation of Glycerol (Propane-1,2,3-triol). COMBUSTION�SCIENCE AND TECHNOLOGY, vol. 184, p. 1164-1178, ISSN: 0010-2202, doi:�10.1080/00102202.2012.664006
+!
+!M. Corbetta, A. Frassoldati, H. Bennadji, K. Smith, M. J. Serapiglia, G. Gauthier,T. Melkior, E. Ranzi, E. M. Fisher, 
+!Pyrolysis of Centimeter-Scale Woody Biomass Particles: Kinetic Modeling and Experimental Validation, Energy Fuels 2014, 28, 3884-3898, dx.doi.org/10.1021/ef500525v
 !
 !
 !
 ELEMENTS
-C  
+C 
 H 
 CL
 O 
@@ -26,9 +38,215 @@ HE
 END
 SPECIES
 HE             AR             N2             O2             H2             
-H2O            H2O2           CO             CO2            
-O              H              OH             HO2            HCO            
+H2O            H2O2           CO             CO2            CH2O           
+HCOOH          HCO3H          CH4            CH3OH          CH3OOH         
+C2H2           CH2CO          C2H2O2         C2H4           C2H4O          
+CH3CHO         CH3COOH        C2H4O2         C2-OQOOH       CH3CO3H        
+C2H6           C2H5OH         GLIET          C2H5OOH        C3H2           
+AC3H4          PC3H4          C2H3CHO        C3H4O2         C3H4O3         
+C3H6           C2H5CHO        CH3COCH3       C3H6O          C3H6O2         
+C3H5OOH        ACETOL         C3-OQOOH       C3H8           IC3H7OH        
+NC3H7OH        C3H7OOH        GLYCEROL       C4H2           C4H4           
+CH2CCHCHO      C4H4O          C4H6           IC3H5CHO       C4H6O2         
+IC4H8          NC4H8          CYC5H4O        C5H4O2         CYC5H6         
+MEFU2          C5H8           C5H8O4         C6H6           C6H5OH         
+C6H6O3         MCPTD          DMF            C6H8O4         C6H10O5        
+C6H5CHO        C7H8           C6H5OCH3       CRESOL         C8H10O3        
+C9H10O2        C10H8          C11H12O4       
+O              H              OH             HO2            C              
+CH             HCO            HCO3           CH2S           CH2            
+CH3            CH2OH          CH3O           CH3OO          C2H            
+HCCO           C2H3           CH3CO          CH2CHO         CH3CO3         
+C2H5           C2H4OH         CH3CHOH        C2H5OO         C2-QOOH        
+C2-OOQOOH      C3H3           CH2CCH3        CHCHCH3        CH2CHCH2       
+RALD3B         RALD3G         CH3COCH2       C3H5OO         NC3H7          
+IC3H7          NC3H7O         IC3H7OO        IC3-QOOH       NC3H7OO        
+NC3-QOOH       IC3-OOQOOH     NC3-OOQOOH     C4H3           C4H3O          
+C4H5           IC4H7          CH2C3H5        SC4H7          CYC5H5         
+C5H5O          C5H7           C6H5           C6H5O          DMF-3YL        
+C6H4CH3        C7H7           RCRESOLC       RCRESOLO       
 END
 REACTIONS
-2H+O2+M=OH+O+M                                .9600E+15   -.200  16625.0
+H+O2=OH+O                                .9600E+15   -.200  16625.0
+O+H2=OH+H                                .4330E+14    .000  10000.0
+H+O2(+M)=HO2(+M)                             .5580E+13   .400       .0
+ LOW/  .8400E+18   -.800       .0/
+TROE/     .5000        .1000E-29    .1000E+31            /
+H2O/ 18.00/H2/  2.50/N2/  1.26/AR/   .80/HE/   .80/CO/  1.20/CO2/  2.40/
+OH+HO2=H2O+O2                            .5000E+14    .000   1000.0
+H+HO2=OH+OH                              .2500E+15    .000   1900.0
+O+HO2=O2+OH                              .3250E+14    .000       .0
+OH+OH=O+H2O                              .3570E+05   2.400  -2110.0
+H2+M=H+H+M                               .1115E+15   .000  96081.0
+H2/  2.50/H2O/ 12.00/AR/   .50/CO/  1.90/CO2/  3.80/
+O2+M=O+O+M                               .1550E+15   .000 115120.0
+H2/  2.50/H2O/ 12.00/AR/   .20/HE/   .20/CO/  1.90/CO2/  3.80/
+H+OH+M=H2O+M                             .4500E+23 -2.000       .0
+H2O/ 16.00/H2/  2.00/CO2/  1.90/
+H+HO2=H2+O2                              .2500E+14    .000    700.0
+HO2+HO2=H2O2+O2                          .2110E+13    .000       .0
+OH+OH(+M)=H2O2(+M)                           .7400E+14  -.370       .0
+ LOW/  .1300E+19   -.900  -1700.0/
+TROE/     .7346        94.00        1756.        5182.    /
+H2/  2.00/H2O/  6.00/CH4/  2.00/CO/  1.50/CO2/  2.00/C2H6/  3.00/AR/   .70/HE/   .70/N2/   .90/
+O+OH+M=HO2+M                             .1000E+17    .000       .0
+O2+CO=CO2+O                              .2530E+13    .000  47700.0
+O2+HCO=HO2+CO                            .3000E+13    .000       .0
+CO+O(+M)=CO2(+M)                             .9640E+11   .000   3800.0
+ LOW/  .2070E+27  -3.340   7610.0/
+H2O/ 12.00/H2/  2.00/CO/  1.50/CO2/  2.00/AR/   .50/
+CO+OH=CO2+H                              .9600E+12    .140   7352.0
+ DUPLICATE
+CO+OH=CO2+H                              .7320E+11    .030    -16.0
+ DUPLICATE
+CO+HO2=CO2+OH                            .3000E+14    .000  23000.0
+CO+H2O=CO2+H2                            .2000E+12    .000  38000.0
+H+CH3(+M)=CH4(+M)                            .1200E+16  -.400       .0
+ LOW/  .6400E+24  -1.800       .0/
+SRI/     .4500        797.0        979.0        1.000        .0000    /
+H2/  2.00/CO/  2.00/CO2/  3.00/H2O/  5.00/
+CH3+CH3(+M)=C2H6(+M)                         .2500E+14   .000       .0
+ LOW/  .2330E+35  -5.030  -1200.0/
+TROE/     .3800        73.00        1180.                /
+H2/  2.00/CO/  2.00/CO2/  3.00/H2O/  5.00/
+H+C2H5(+M)=C2H6(+M)                          .5210E+18  -.990   1580.0
+ LOW/  .1990E+42  -7.080   6685.0/
+TROE/     .8422        125.0        2219.        6882.    /
+H2O/  6.00/C2H6/  3.00/CH4/  2.00/CO/  1.50/AR/   .70/
+H+CH2CHCH2=H2+AC3H4                      .1810E+14    .000       .0
+H+CH2CHCH2(+M)=C3H6(+M)                      .1000E+15   .000       .0
+ LOW/  .1330E+61 -12.000   5967.8/
+TROE/     .2000E-01    1097.        .1097E+05    6860.    /
+H2/  2.00/H2O/  6.00/CH4/  2.00/CO/  1.50/CO2/  2.00/C2H6/  3.00/AR/   .70/
+CH3+C2H5(+M)=C3H8(+M)                        .9600E+15  -.500       .0
+ LOW/  .6800E+62 -13.420   6000.0/
+TROE/     1.000        1000.        1434.        5329.    /
+H+NC3H7=C3H8                             .5000E+14    .000       .0
+IC3H7+H(+M)=C3H8(+M)                         .2400E+14   .000       .0
+ LOW/  .1700E+59 -12.080  11263.7/
+TROE/     .6490        1213.        1213.        .1337E+05/
+H2/  2.00/H2O/  6.00/CH4/  2.00/CO/  1.50/CO2/  2.00/C2H6/  3.00/AR/   .70/
+H+C2H(+M)=C2H2(+M)                           .1000E+18 -1.000       .0
+ LOW/  .3750E+34  -4.800   1900.0/
+TROE/     .6464        132.0        1315.        5566.    /
+H2/  2.00/H2O/  6.00/CH4/  2.00/CO/  1.50/CO2/  2.00/C2H6/  3.00/AR/   .70/
+C2H4(+M)=H2+C2H2(+M)                         .8000E+13   .440  88770.0
+ LOW/  .1580E+52  -9.300  97800.0/
+TROE/     .7345        180.0        1035.        5417.    /
+H2/  2.00/H2O/  6.00/CH4/  2.00/CO/  1.50/CO2/  2.00/C2H6/  3.00/AR/   .70/
+H+C2H3(+M)=C2H4(+M)                          .6080E+13   .270    280.0
+ LOW/  .1400E+31  -3.860   3320.0/
+TROE/     .7820        207.5        2663.        6095.    /
+H2/  2.00/H2O/  6.00/CH4/  2.00/CO/  1.50/CO2/  2.00/C2H6/  3.00/AR/   .70/
+C3H3+H(+M)=AC3H4(+M)                         .1000E+18  -.800    315.0
+ LOW/  .3500E+34  -4.900   2225.0/
+TROE/     .7090        134.0        1784.        5740.    /
+H2/  2.90/H2O/  8.60/CH4/  2.90/CO/  2.10/CO2/  2.90/C2H6/  4.30/
+C3H3+H(+M)=PC3H4(+M)                         .1000E+18  -.800    315.0
+ LOW/  .3500E+34  -4.900   2225.0/
+TROE/     .7090        134.0        1784.        5740.    /
+H2/  2.90/H2O/  8.60/CH4/  2.90/CO/  2.10/CO2/  2.90/C2H6/  4.30/
+CH3+C2H3(+M)=C3H6(+M)                        .2500E+14   .000       .0
+ LOW/  .4270E+59 -11.940   9770.0/
+TROE/     .1750        1341.        .6000E+05    .1014E+05/
+H2/  2.00/H2O/  6.00/CH4/  2.00/CO/  1.50/CO2/  2.00/C2H6/  3.00/AR/   .70/
+C4H4=C2H+C2H3                            .1000E+17    .000 105000.0
+C4H4+C4H4=C4H3+C4H5                      .5000E+17    .000  81500.0
+C2H3+C2H5(+M)=NC4H8(+M)                      .1500E+14   .000       .0
+ LOW/  .1550E+57 -11.790   8984.4/
+TROE/     .1980        2278.        .6000E+05    5723.    /
+NC4H8=CH2CHCH2+CH3                       .2000E+17    .000  78000.0
+SC4H7+H(+M)=NC4H8(+M)                        .5000E+14   .000       .0
+ LOW/  .1330E+61 -12.000   5967.8/
+TROE/     .2000E-01    1097.        .1097E+05    6860.    /
+H2/  2.00/H2O/  6.00/CH4/  2.00/CO/  1.50/CO2/  2.00/C2H6/  3.00/AR/   .70/
+IC4H8=IC4H7+H                            .1500E+17    .000  89000.0
+C2H3+C2H2=C4H4+H                         .2500E+15   -.710   6700.0
+C4H5=C2H3+C2H2                           .7500E+13    .000  40000.0
+C2H3+C2H3=C4H6                           .1000E+14    .000       .0
+C2H2+C2H4=C4H6                           .5000E+11    .000  28000.0
+C4H6=C4H4+H2                             .2520E+16    .000  94700.0
+H+C2H3=H2+C2H2                           .3000E+14    .000       .0
+H2+C2H4=C2H5+H                           .1000E+15    .000  65000.0
+C2H2+C2H2=C4H3+H                         .2000E+17    .000  81500.0
+H2+C4H3=C2H2+C2H3                        .5000E+11    .000  20000.0
+CH3+IC3H7=>CH4+C3H6                       .6000E+11    .000       .0
+CH3+CH3=>H2+C2H4                          .5000E+15    .000  32000.0
+C2H3+CH3=C2H2+CH4                        .1333E+14    .000       .0
+CH4+C2H4=>CH3+C2H5                        .3000E+14    .000  62000.0
+C2H5+IC3H7=>C3H8+C2H4                     .5000E+12    .000       .0
+C2H5+C2H3=>NC4H8                          .9000E+13    .000       .0
+C2H5+SC4H7=>C2H6+C4H6                     .1000E+13    .000       .0
+C2H2+C2H2=C2H+C2H3                       .1700E+15    .000  92000.0
+C2H2+C2H4=C2H3+C2H3                      .2400E+14    .000  68360.0
+H+C4H3=C4H2+H2                           .1000E+15    .000       .0
+H+C4H3=C4H4                              .1000E+15    .000       .0
+H+C4H5=C2H2+C2H4                         .1000E+14    .000       .0
+H+C4H5=C4H4+H2                           .1500E+14    .000       .0
+C2H2+AC3H4=C2H+CH2CHCH2                  .5000E+15    .000  73000.0
+C2H2+C2H6=C2H3+C2H5                      .2000E+15    .000  60000.0
+C2H2+C3H6=C2H3+CH2CHCH2                  .4000E+14    .000  46800.0
+C2H2+C4H2=C2H+C4H3                       .3000E+15    .000  97000.0
+C2H2+C4H4=C2H+C4H5                       .1000E+15    .000  95000.0
+C2H2+C4H4=C2H3+C4H3                      .3000E+15    .000  73000.0
+C2H4+C2H4=C2H5+C2H3                      .4800E+15    .000  71500.0
+C2H4+C3H6=C2H5+CH2CHCH2                  .5780E+14    .000  51600.0
+C2H3+SC4H7=>C2H4+C4H6                     .2000E+13    .000       .0
+C2H3+IC4H7=>C2H2+IC4H8                    .2000E+13    .000       .0
+C3H3+C3H3=>C2H2+C4H4                      .1000E+12    .000       .0
+CH2CHCH2+CH2CHCH2=>AC3H4+C3H6             .2500E+11    .000   1500.0
+CH2CHCH2+C3H3=>C2H2+C4H6                  .5000E+12    .000       .0
+CH2CHCH2+SC4H7=>C3H6+C4H6                 .7000E+12    .000       .0
+CH2CHCH2+IC4H7=>AC3H4+IC4H8               .5000E+11    .000       .0
+SC4H7+SC4H7=>C4H6+NC4H8                   .7000E+12    .000       .0
+SC4H7+IC4H7=>IC4H8+C4H6                   .7000E+12    .000       .0
+C4H6+C4H6=SC4H7+C4H5                     .5000E+15    .000  64000.0
+AC3H4=PC3H4                              .6026E+54 -12.180  84276.0
+ ! ABSTRACTION REACTION N.  51
+ ! R+C6H6O3>RH+C5H4O2+CO+H
+ ! NUMBER OF H ABSTRACTED:   1.0
+ ! TYPE OF H ABSTRACTED:     8
+C3H3    +IC3H5CHO=>AC3H4   +.5CO+.5CHCHCH3+.5AC3H4+.5HCO  .1350E+06 2.0  14730.58
+C4H3    +IC3H5CHO=>C4H4    +.5CO+.5CHCHCH3+.5AC3H4+.5HCO  .2044E+06 2.0   5333.37
+C4H5    +IC3H5CHO=>C4H6    +.5CO+.5CHCHCH3+.5AC3H4+.5HCO  .1350E+06 2.0   4594.58
+SC4H7   +IC3H5CHO=>NC4H8   +.5CO+.5CHCHCH3+.5AC3H4+.5HCO  .1700E+06 2.0  15253.34
+O2      +C3-OQOOH=>HO2     +CO+CH3CHO+OH  .6815E+06 2.0  38109.91
+H       +C3-OQOOH=>H2      +CO+CH3CHO+OH  .9627E+06 2.0   2387.18
+O       +C3-OQOOH=>OH      +CO+CH3CHO+OH  .5413E+06 2.0   1094.46
+HO2     +C3-OQOOH=>H2O2    +CO+CH3CHO+OH  .2155E+05 2.0   9982.61
+HCO     +C3-OQOOH=>CH2O    +CO+CH3CHO+OH  .5052E+05 2.0  10438.75
+CH3     +C3-OQOOH=>CH4     +CO+CH3CHO+OH  .1561E+05 2.0   3259.77
+C2H5    +C3-OQOOH=>C2H6    +CO+CH3CHO+OH  .9193E+04 2.0   5917.09
+CH2CHCH2+C3-OQOOH=>C3H6    +CO+CH3CHO+OH  .9627E+04 2.0  13236.28
+NC3H7   +C3-OQOOH=>C3H8    +CO+CH3CHO+OH  .5413E+04 2.0   4936.71
+IC3H7   +C3-OQOOH=>C3H8    +CO+CH3CHO+OH  .5413E+04 2.0   6813.50
+C2H3    +C3-OQOOH=>C2H4    +CO+CH3CHO+OH  .2713E+05 2.0   3259.77
+C3H3    +C3-OQOOH=>AC3H4   +CO+CH3CHO+OH  .1080E+05 2.0  12730.05
+C4H3    +C3-OQOOH=>C4H4    +CO+CH3CHO+OH  .1635E+05 2.0   3698.82
+C4H5    +C3-OQOOH=>C4H6    +CO+CH3CHO+OH  .1080E+05 2.0   2997.19
+SC4H7   +C3-OQOOH=>NC4H8   +CO+CH3CHO+OH  .1360E+05 2.0  13236.28
+IC4H7   +C3-OQOOH=>IC4H8   +CO+CH3CHO+OH  .1360E+05 2.0  13236.28
+CHCHCH3 +C3-OQOOH=>C3H6    +CO+CH3CHO+OH  .1080E+05 2.0   2997.19
+CH2CCH3 +C3-OQOOH=>C3H6    +CO+CH3CHO+OH  .1080E+05 2.0   2997.19
+CH2C3H5 +C3-OQOOH=>NC4H8   +CO+CH3CHO+OH  .5413E+04 2.0   5025.57
+CH2OH   +C3-OQOOH=>CH3OH   +CO+CH3CHO+OH  .1131E+05 2.0   8618.97
+CH3CO   +C3-OQOOH=>CH3CHO  +CO+CH3CHO+OH  .5413E+05 2.0  12086.82
+HCCO    +C3-OQOOH=>CH2CO   +CO+CH3CHO+OH  .1712E+05 2.0   3698.82
+CH3O    +C3-OQOOH=>CH3OH   +CO+CH3CHO+OH  .1712E+05 2.0    161.62
+CH2CHO  +C3-OQOOH=>CH3CHO  +CO+CH3CHO+OH  .9193E+04 2.0   9527.24
+C6H5    +C3-OQOOH=>C6H6    +CO+CH3CHO+OH  .5413E+04 2.0  -1408.57
+CH3OO   +C3-OQOOH=>CH3OOH  +CO+CH3CHO+OH  .3044E+05 2.0  10438.75
+C2H5OO  +C3-OQOOH=>C2H5OOH +CO+CH3CHO+OH  .3044E+05 2.0  10438.75
+CH3COCH2+C3-OQOOH=>CH3COCH3+CO+CH3CHO+OH  .9193E+04 2.0   5917.09
+C4H3O   +C3-OQOOH=>C4H4O   +CO+CH3CHO+OH  .2713E+05 2.0   3259.77
+C6H5O   +C3-OQOOH=>C6H5OH  +CO+CH3CHO+OH  .1080E+05 2.0  10621.42
+C5H7    +C3-OQOOH=>C5H8    +CO+CH3CHO+OH  .1080E+05 2.0  13190.23
+C7H7    +C3-OQOOH=>C7H8    +CO+CH3CHO+OH  .1080E+05 2.0  12730.05
+C6H4CH3 +C3-OQOOH=>C7H8    +CO+CH3CHO+OH  .5413E+04 2.0  -1408.57
+RCRESOLO+C3-OQOOH=>CRESOL  +CO+CH3CHO+OH  .1080E+05 2.0  10621.42
+CH3CO3  +C3-OQOOH=>CH3CO3H +CO+CH3CHO+OH  .1360E+05 2.0   4581.82
+HCO3    +C3-OQOOH=>HCO3H   +CO+CH3CHO+OH  .1360E+05 2.0   4581.82
+NC3H7OO +C3-OQOOH=>C3H7OOH +CO+CH3CHO+OH  .3044E+05 2.0  10438.75
+IC3H7OO +C3-OQOOH=>C3H7OOH +CO+CH3CHO+OH  .3044E+05 2.0  10438.75
 END
+
