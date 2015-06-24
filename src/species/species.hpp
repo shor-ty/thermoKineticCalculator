@@ -23,12 +23,16 @@
 //- user def. headers
 #include "../definitions/typedef.hpp"
 #include "../thermodynamic/thermodynamic.hpp"
+#include "../chemistry/chemistry.hpp"
 
 #ifndef SPECIES_HPP
 #define SPECIES_HPP
 
 
-class Species : public Thermodynamic
+class Species
+:
+    public Thermodynamic,
+    public Chemistry
 {
     public:
 

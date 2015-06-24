@@ -33,12 +33,9 @@ int main()
     normalString fKinetic = "../files/kinetics.kin";
     normalString fThermo  = "../files/thermo.tdc";
     normalString fAFCDict = "../files/afcDict";
-    //- Some output definitions
-    //std::cout.precision( 8 );
-    //std::cout.setf( std::ios::scientific );
 
     //- SPECIES class
-    //std::vector<Species> species;
+    Species species;
 
     //- REACTION class
     Chemistry chemistry;
@@ -49,8 +46,13 @@ int main()
     //- summary of chemistry
     chemistry.summary();
 
+    //- build reaction rate matrix
+    chemistry.createReactionRateMatrix();
+
+    species.summary();
+
     //- Read kinetic file
-//    readChemKinThermo(fKinetic, fThermo, species, chemistry);
+    //readChemKinThermo(fKinetic, fThermo, species, chemistry);
 
     //- Read afcDict
 //    readAFCDict(fAFCDict, species);
