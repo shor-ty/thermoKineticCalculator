@@ -912,42 +912,133 @@ void Chemistry::reactantsAndProducts()
     stringField prodElements = splitString(products, '+');
 
     //- STEP 4: update stochiometric
-    updateStochiometricMatrix(reacElements);
-    updateStochiometricMatrix(prodElements);
+    updateStochiometricMatrix(reacElements, 0);
+    updateStochiometricMatrix(prodElements, 1);
 }
 
 
 void Chemistry::updateStochiometricMatrix
 (
-    const stringField& speciesField
+    const stringField& speciesField,
+    const unsigned int x
 )
 {
+    //- bool variable for match information
+    bool found{false};
+
+
     //- loop through the field
     forAll(speciesField, species)
     {
-        std::cout<< "Species that is checked: " << speciesField[species] << "\n";
+        found = false;
+
         //- loop through all single letter of the species
-        for (unsigned int i = 0; i < speciesField[species].size(); i++)
+        for (unsigned int pos = 0; pos < speciesField[species].size(); pos++)
         {
-            std::cout << "  " << speciesField[species][i] << "\n";
             //- compare single letter with ASCII table (LETTERS)
             for (unsigned int j = 65; j <= 90; j++)
             {
-                normalString delimiter = static_cast<std::string>(static_cast<char>(j));
-                normalString tmp(1, static_cast<char>(speciesField[species][i]));
-                std::size_t found = tmp.find(delimiter);
+                char c = static_cast<char>(j);
 
-                std::cout << "      " << delimiter << " < > " << speciesField[species][i] << "\n";
-                if (found != std::string::npos)
+                if (c == speciesField[species][pos])
                 {
-                    std::cout << "      FOUND: " << delimiter << " < > " << speciesField[species][i] << "\n";
+                    found = true;
                     break;
                 }
             }
+
+            //- if letter found, check which position
+            if (found)
+            {
+                //- pos = 0 (first letter) --> nu = 1
+                if (pos == 0)
+                {
+                    updateStochiometricMatrix
+                    (
+                        speciesField[species],
+                        1,
+                        x
+                    );
+                }
+                //- if not pos = 0, scalar has to be splitted
+                else
+                {
+                    //- line below also work
+                    //  scalar nu = stod(speciesField[species]);
+                    scalar nu = stod(speciesField[species].substr(0,pos));
+                    normalString specie =
+                        speciesField[species].substr
+                        (
+                            pos,speciesField[species].size()
+                        );
+
+                    updateStochiometricMatrix
+                    (
+                        specie,
+                        nu,
+                        x
+                    );
+                }
+
+                //- move to next species
+                break;
+            }
+        //- loop over all single letter in species
+        }
+    //- loop over all species
+    }
+}
+
+
+void Chemistry::updateStochiometricMatrix
+(
+    const normalString& species,
+    const scalar nu,
+    const unsigned int x
+)
+{
+    //- STEP 1: find id of species
+    unsigned int ID{0};
+    bool found{false};
+
+    forAll(species_, id)
+    {
+        if (species == species_[id])
+        {
+            found = true;
+            ID = id;
         }
     }
-    std::cout << "\n";
 
+    //- check if species found or not
+    if (!found)
+    {
+            std::cerr<< " ++ ERROR in " << __FILE__ << " line no. "
+                << __LINE__ << " ++ Species " << species << " not defined in "
+                << "the SPECIES section of the chemkin file." << std::endl;
+            std::terminate();
+    }
+
+
+    //- STEP 2: get actual nu out from the matrix
+    scalar nuTmp = nu_[n_][ID];
+
+    //- STEP 3: check if product or reactant and add the new value
+    //  needed because of HO+HO (twice)
+
+        //- reactants
+        if (x == 0)
+        {
+            nuTmp -= nu;
+        }
+        //- products
+        else if (x == 1)
+        {
+            nuTmp += nu;
+        }
+
+    //- STEP 4: save the new stochiometric factor
+    nu_[n_][ID] = nuTmp;
 }
 
 
@@ -1140,4 +1231,18 @@ void Chemistry::summary() const
 //                << SRI_[i] << "\t"
 //                << "\n";
 //             }
+//            for (int i=0; i< n_; i++)
+//            {
+//                std::cout << "Reaction: " << elementarReaction_[i] << ": ";
+//                forAll(nu_[i], j)
+//                {
+//                    if (nu_[i][j] != 0)
+//                    {
+//                        std::cout << nu_[i][j] <<" " << species_[j] << ", ";
+//                    }
+//                }
+//                std::cout << "\n";
+//
+//            }
+
 }

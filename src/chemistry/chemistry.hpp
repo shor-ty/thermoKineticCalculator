@@ -114,10 +114,19 @@ class Chemistry
             //- update reactants and products matrix (species)
             void reactantsAndProducts();
 
-            //- update stochiometric matrix
+            //- update stochiometric matrix (pre-processing)
             void updateStochiometricMatrix
             (
-                const stringField&
+                const stringField&,
+                const unsigned int
+            );
+
+            //- update stochiometric matrix (store data)
+            void updateStochiometricMatrix
+            (
+                const normalString&,
+                const scalar,
+                const unsigned int
             );
 
             //- remove THIRD BODY from reaction
