@@ -53,9 +53,7 @@ class Chemistry
             //- update all variables (matrixes, vectors, scalars etc.)
             void update
             (
-                const normalString&,
-                const stringField&,
-                const unsigned int&
+                const normalString&
             );
 
             //- save elementar reaction as re-arranged string
@@ -184,7 +182,7 @@ class Chemistry
         stringField elementarReaction_;
 
         //- amount of elementar reactions
-        unsigned int n_;
+        int n_;
 
         //- duplicated reactions
         unsigned int nDuplicate_;

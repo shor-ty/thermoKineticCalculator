@@ -31,7 +31,7 @@
 
 Chemistry::Chemistry()
 :
-    n_(0),
+    n_(-1),
     nDuplicate_(0)
 {}
 
@@ -55,191 +55,217 @@ void Chemistry::readChemkin
     //- loop through the fileContent
     forAll(fileContent, line)
     {
-        //- ELEMENTS
-        //  get the elements, that are included
-        if (fileContent[line] == "ELEMENTS")
+        //- STEP 1: remove all whitespaces
+        stringField tmp = splitString(fileContent[line]);
+
+
+        //- if not empty, and no comment, proceed
+        if
+        (
+            !tmp.empty()
+         && tmp[0][0] != '!'
+        )
         {
-            //- skip the line with the keyword ELEMENTS
-            line++;
-
-            //- loop till we reach the keyword END
-            for (;;line++)
+            //- ELEMENTS BLOCK
+            if
+            (
+                tmp[0] == "ELEMENTS"
+             || tmp[0] == "ELEM"
+            )
             {
-                //- EXEPTION 1
-                //  when the line content is empty
-                if (fileContent[line].empty())
+                //- skip the line with the keyword ELEMENTS
+                line++;
+
+                //- loop till we reach the keyword END
+                for (;;line++)
                 {
-                    //- skip that line
-                    line++;
-                }
+                    tmp = splitString(fileContent[line]);
 
-                //- EXEPTION 2
-                //  when the line content is a comment »!«
-                stringField lineArray = splitString(fileContent[line]);
-
-                //- when no comment, proceed
-                if (lineArray[0] != "!")
-                {
-                    //- when the line content is END, leave that loop
-                    if (fileContent[line] == "END")
+                    //- if line is not empty and no comment, proceed
+                    if
+                    (
+                        !tmp.empty()
+                     && tmp[0][0] != '!'
+                    )
                     {
-                        //- skip END
-                        line++;
-                        break;
-                    }
-
-                    //- EXCEPTION 3
-                    //  when more elements are in one line
-                    if (lineArray.size() > 1)
-                    {
-                        forAll(lineArray, element)
+                        //- when the line content is END, leave that loop
+                        if (tmp[0] == "END")
                         {
-                            elements_.push_back(lineArray[element]);
+                            //- skip END
+                            line++;
+                            break;
+                        }
+
+                        //- when more elements are in one line
+                        if (tmp.size() > 1)
+                        {
+                            forAll(tmp, element)
+                            {
+                                elements_.push_back(tmp[element]);
+                            }
+                        }
+                        else
+                        {
+                            elements_.push_back(tmp[0]);
                         }
                     }
-                    else
-                    {
-                        elements_.push_back(lineArray[0]);
-                    }
                 }
+            //- ELMENTS BLOCK END
             }
-        //- ELEMENTS end
-        }
 
 
-        //- SPECIES
-        //  get the species, that are included
-        if (fileContent[line] == "SPECIES")
-        {
-            //- skip the line with the keyword SPECIES
-            line++;
-
-            //- loop till we reach the keyword END
-            for (;;line++)
+            //- SPECIES BLOCK
+            else if
+            (
+                tmp[0] == "SPECIES"
+            )
             {
-                //- EXEPTION 1
-                //  when the line content is empty
-                if (fileContent[line].empty())
+                //- skip the line with the keyword SPECIES
+                line++;
+
+                //- loop till we reach the keyword END
+                for (;;line++)
                 {
-                    //- skip that line
-                    line++;
-                }
+                    tmp = splitString(fileContent[line]);
 
-                //- EXCEPTION 2
-                //  when the line content is a comment »!«
-                stringField lineArray = splitString(fileContent[line]);
-
-                //- when no comment, proceed
-                if (lineArray[0] != "!")
-                {
-                    //- when the line content is END, leave that loop
-                    if (fileContent[line] == "END")
+                    //- if line is not empty and no comment, proceed
+                    if
+                    (
+                        !tmp.empty()
+                     && tmp[0][0] != '!'
+                    )
                     {
-                        //- skip END
-                        line++;
-                        break;
-                    }
-
-                    //- EXCEPTION 3
-                    //  when more SPECIES are in one line
-                    if (lineArray.size() > 1)
-                    {
-                        forAll(lineArray, species)
+                        //- when the line content is END, leave that loop
+                        if (tmp[0] == "END")
                         {
-                            species_.push_back(lineArray[species]);
+                            //- skip END
+                            line++;
+                            break;
+                        }
+
+                        //- when more SPECIES are in one line
+                        if (tmp.size() > 1)
+                        {
+                            forAll(tmp, species)
+                            {
+                                species_.push_back(tmp[species]);
+                            }
+                        }
+                        else
+                        {
+                            species_.push_back(tmp[0]);
                         }
                     }
-                    else
-                    {
-                        species_.push_back(lineArray[0]);
-                    }
                 }
+            //- SPECIES BLOCK END
             }
-        //- SPECIES end
-        }
 
 
-        //- REACTIONS
-        //  get the reactions that are included
-        if (fileContent[line] == "REACTIONS")
-        {
-            //- skip the line with the keyword ELEMENTS
-            line++;
-
-            //- variables used in that section
-            std::size_t found;
-
-            //- loop till we reach the keyword END
-            for (;;line++)
+            //- THERMO BLOCK
+            else if
+            (
+               (tmp[0] == "THERMO"
+             && tmp[1] == "ALL")
+             || tmp[0] == "THERMO"
+            )
             {
-                //- EXCEPTION 1
-                //  when the line content is empty
-                if (fileContent[line].empty())
+                //- skip the line with the keyword THERMO
+                line++;
+
+                //- loop till we reach the keyword END
+                for (;;line++)
                 {
-                    //- skip that line
-                    line++;
-                }
+                    tmp = splitString(fileContent[line]);
 
-                //- EXCEPTION 2
-                //  when the line content is a comment »!«
-                stringField lineArray = splitString(fileContent[line]);
-
-                //- EXCEPTION 3
-                //  when the line content contains 'DUPLICATE'
-                //  skip the next 3 lines
-                //  TODO - get the point!
-                if (lineArray[0] == "DUPLICATE")
-                {
-                    //- skip 3 lines
-                    line+=3;
-
-                    //- increment duplicated entrys
-                    nDuplicate_++;
-
-                    //- re-initialize the array with the new line
-                    lineArray = splitString(fileContent[line]);
-                }
-
-                //- when no comment, proceed
-                if (lineArray[0] != "!")
-                {
-                    //- when the line content is END, leave that loop
-                    if (fileContent[line] == "END")
+                    //- if line is not empty and no comment, proceed
+                    if
+                    (
+                        !tmp.empty()
+                     && tmp[0][0] != '!'
+                    )
                     {
-                        //- skip END
-                        line++;
-                        break;
-                    }
-
-                    //- check if the line contains '=' sign
-                    found = fileContent[line].find('=');
-
-                    //- the line content is a reaction
-                    if (found != std::string::npos)
-                    {
-                        //- tmp
-                        normalString reaction = fileContent[line];
-
-                        //- increment the size of all vectors and matrixes
-                        incrementMatrixesVectors();
-
-                        //- main functionallity
-                        //
-                        //  +  1: take the reaction string
-                        //  +  2: handle exceptions (TROE/LOW)
-                        //  +  3: get species and stochiometric factors
-                        update
-                        (
-                            reaction,
-                            fileContent,
-                            line
-                        );
+                        //- when the line content is END, leave that loop
+                        if (tmp[0] == "END")
+                        {
+                            //- skip END
+                            line++;
+                            break;
+                        }
                     }
                 }
+            //- THERMO BLOCK END
             }
-        //- REACTIONS end
+
+
+            //- REACTION BLOCK
+            else if
+            (
+                tmp[0] == "REACTIONS"
+            )
+            {
+                //- skip the line with the keyword THERMO
+                line++;
+
+                //- loop till we reach the keyword END
+                for (;;line++)
+                {
+                    tmp = splitString(fileContent[line]);
+
+                    //- if line is not empty and no comment, proceed
+                    if
+                    (
+                        !tmp.empty()
+                     && tmp[0][0] != '!'
+                    )
+                    {
+                        //- when the line content is END, leave that loop
+                        if (tmp[0] == "END")
+                        {
+                            //- skip END
+                            line++;
+                            break;
+                        }
+
+                        //- check for duplicate entrys
+                        if (tmp[0] == "DUPLICATE")
+                        {
+                            //- skip next two lines (third with for loop)
+                            line+= 2;
+
+                            //- increment duplicate entry
+                            nDuplicate_++;
+                        }
+                        else
+                        {
+                            //- check if '=' is in string (means reaction)
+                            std::size_t found = fileContent[line].find('=');
+
+                            if (found != std::string::npos)
+                            {
+                                //- increase reaction amount
+                                n_++;
+
+                                //- increment all matrixes
+                                incrementMatrixesVectors();
+
+                                //- save the elementar reaction
+                                elementarReaction(fileContent[line]);
+
+                                //- split elementar reaction into reactants
+                                //  and product species get stochiometric
+                                //  factors and update the matrix
+                                //reactantsAndProducts();
+                            }
+                            else
+                            std::cout << fileContent[line] << "\n";
+                        }
+                    }
+                }
+            //- REACTION BLOCK END
+            }
+
+        //- comment check
         }
-    //- loop through the file content end
     }
 }
 
@@ -247,44 +273,60 @@ void Chemistry::readChemkin
 
 void Chemistry::update
 (
-    const normalString& reaction,
-    const stringField& fileContent,
-    const unsigned int& line
+    const normalString& str
 )
 {
+    //- STEP 1: check if its a reaction
+    std::size_t found = str.find("=");
+    std::cout << str << "\n";
 
-    //- STEP 1: save reaction
-    elementarReaction(reaction);
-
-    //- STEP 2: save arrhenius coeffs
-    arrheniusCoeffs(reaction);
-
-    //- STEP 3: check if THIRD BODY REACTION
-    thirdBodyReaction
-    (
-        fileContent,
-        line
-    );
-
-    //- STEP 4: handle THIRD BODY REACTION
-    if (TBR_[n_])
+    //- STEP 2: if reaction found save:
+    //
+    //  +  a) elementar reaction
+    //  +  b) arrhenius coeffs
+    //  +  c) increment all matrixes and vectors
+    //  +  d) increase the variable n_
+    //  +  e) get stochiometric factors
+    if (found != std::string::npos)
     {
-        handleThirdBodyReaction
-        (
-            fileContent,
-            line
-        );
+        //- increment n_
+        //  reason that we start with -1 is the first reaction
+        //  --> becomes 0
+        n_++;
+
     }
 
-    //- STEP 5: check if backward reaction is used
-    backwardReaction();
 
-    //- STEP 6: split elementar reaction into reactants and product species
-    //  get stochiometric factors and update the matrix
-    reactantsAndProducts();
+    //- STEP 1: save reaction
+//
+//
+//    //- STEP 2: save arrhenius coeffs
+//    arrheniusCoeffs(reaction);
+//
+//    //- STEP 3: check if THIRD BODY REACTION
+//    thirdBodyReaction
+//    (
+//        fileContent,
+//        line
+//    );
+//
+//    //- STEP 4: handle THIRD BODY REACTION
+//    if (TBR_[n_])
+//    {
+//        handleThirdBodyReaction
+//        (
+//            fileContent,
+//            line
+//        );
+//    }
+//
+//    //- STEP 5: check if backward reaction is used
+//    backwardReaction();
+//
 
-    //- STEP 5: increment reaction counter
-    n_++;
+//
+//    //- STEP 5: increment reaction counter
+//    n_++;
 }
 
 
@@ -1205,7 +1247,7 @@ void Chemistry::summary() const
              << std::setw(40) << " No. of species in reactions: "
              << std::setw(20) << species_.size() << "\n"
              << std::setw(40) << " No. of elementar reactions: "
-             << std::setw(20) << n_ << "\n"
+             << std::setw(20) << n_+1 << "\n"
              << std::setw(40) << " No. of third body reactions: "
              << std::setw(20) << TBR << "\n"
              << std::setw(40) << " No. of low pressure reactions: "
@@ -1239,4 +1281,5 @@ void Chemistry::createReactionRateMatrix()
             }
         }
     }
+
 }
