@@ -50,12 +50,6 @@ class Chemistry
             //- increment the size of matrixes and vectors that are used
             void incrementMatrixesVectors();
 
-            //- update all variables (matrixes, vectors, scalars etc.)
-            void update
-            (
-                const normalString&
-            );
-
             //- save elementar reaction as re-arranged string
             void elementarReaction
             (
@@ -66,20 +60,6 @@ class Chemistry
             void arrheniusCoeffs
             (
                 const normalString&
-            );
-
-            //- check if elementar reaction is a THIRD BODY REACTION
-            void thirdBodyReaction
-            (
-                const stringField&,
-                const unsigned int&
-            );
-
-            //- handle THIRD BODY REACTION
-            void handleThirdBodyReaction
-            (
-                const stringField&,
-                const unsigned int&
             );
 
             //- update ENHANCED factors matrix
@@ -116,7 +96,8 @@ class Chemistry
             void updateStochiometricMatrix
             (
                 const stringField&,
-                const unsigned int
+                const unsigned int,
+                const unsigned int&
             );
 
             //- update stochiometric matrix (store data)
@@ -124,13 +105,15 @@ class Chemistry
             (
                 const normalString&,
                 const scalar,
-                const unsigned int
+                const unsigned int,
+                const unsigned int&
             );
 
             //- remove THIRD BODY from reaction
             void removeThirdBody
             (
-                normalString&
+                normalString&,
+                const unsigned int&
             );
 
             //- open file and return the content of the file
@@ -166,12 +149,6 @@ class Chemistry
         //- vector of all species that are used in the chemistry
         stringField species_;
 
-        //- matrix that contains the reactants in elementar reaction
-        stringMatrix reactants_;
-
-        //- matrix that contains the products in elementar reaction
-        stringMatrix products_;
-
         //- matrix of stochiometric coeffs
         matrix nu_;
 
@@ -189,6 +166,11 @@ class Chemistry
 
         //- vector of backward reaction
         std::vector<bool> kb_;
+
+
+        //- vector for THIRD BODY REACTION
+        std::vector<bool> TBR_;
+
 
         //- SRI THIRD BODY
 
@@ -215,9 +197,6 @@ class Chemistry
 
             //- LOW pressure arrhenius coeffs
             matrix LOWCoeffs_;
-
-            //- vector for THIRD BODY REACTION
-            std::vector<bool> TBR_;
 
 
         //- ENHANCED THIRD BODY

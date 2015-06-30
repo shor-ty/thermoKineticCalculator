@@ -251,82 +251,64 @@ void Chemistry::readChemkin
                                 //- save the elementar reaction
                                 elementarReaction(fileContent[line]);
 
-                                //- split elementar reaction into reactants
-                                //  and product species get stochiometric
-                                //  factors and update the matrix
-                                //reactantsAndProducts();
+                                //- backward reaction
+                                backwardReaction();
                             }
                             else
-                            std::cout << fileContent[line] << "\n";
+                            {
+                                std::size_t foundLOW;
+                                std::size_t foundSRI;
+                                std::size_t foundTROE;
+
+                                foundLOW = fileContent[line].find("LOW");
+                                foundSRI = fileContent[line].find("SRI");
+                                foundTROE = fileContent[line].find("TROE");
+
+                                //- LOW parameters
+                                if (foundLOW != std::string::npos)
+                                {
+                                    LOWCoeffs(fileContent[line]);
+                                    TBR_[n_] = true;
+                                    LOW_[n_] = true;
+                                }
+                                //- TROE parameters
+                                else if (foundTROE != std::string::npos)
+                                {
+                                    TROECoeffs(fileContent[line]);
+                                    TBR_[n_] = true;
+                                    TROE_[n_] = true;
+                                }
+                                //- SRI parameters
+                                else if (foundSRI != std::string::npos)
+                                {
+                                    SRICoeffs(fileContent[line]);
+                                    TBR_[n_] = true;
+                                    SRI_[n_] = true;
+                                }
+                                else
+                                {
+                                    enhancedFactors(fileContent[line]);
+                                    TBR_[n_] = true;
+                                    ENHANCE_[n_] = true;
+                                }
+                            }
+                        //- working else
                         }
+                    //- check for empty and comments
                     }
+                //- loop in reaction block
                 }
             //- REACTION BLOCK END
             }
-
         //- comment check
         }
-    }
-}
-
-
-
-void Chemistry::update
-(
-    const normalString& str
-)
-{
-    //- STEP 1: check if its a reaction
-    std::size_t found = str.find("=");
-    std::cout << str << "\n";
-
-    //- STEP 2: if reaction found save:
-    //
-    //  +  a) elementar reaction
-    //  +  b) arrhenius coeffs
-    //  +  c) increment all matrixes and vectors
-    //  +  d) increase the variable n_
-    //  +  e) get stochiometric factors
-    if (found != std::string::npos)
-    {
-        //- increment n_
-        //  reason that we start with -1 is the first reaction
-        //  --> becomes 0
-        n_++;
-
+    //- loop through the file
     }
 
 
-    //- STEP 1: save reaction
-//
-//
-//    //- STEP 2: save arrhenius coeffs
-//    arrheniusCoeffs(reaction);
-//
-//    //- STEP 3: check if THIRD BODY REACTION
-//    thirdBodyReaction
-//    (
-//        fileContent,
-//        line
-//    );
-//
-//    //- STEP 4: handle THIRD BODY REACTION
-//    if (TBR_[n_])
-//    {
-//        handleThirdBodyReaction
-//        (
-//            fileContent,
-//            line
-//        );
-//    }
-//
-//    //- STEP 5: check if backward reaction is used
-//    backwardReaction();
-//
-
-//
-//    //- STEP 5: increment reaction counter
-//    n_++;
+    //- split elementar reaction into reactants and product
+    //  get stochiometric factors and update the matrix
+    reactantsAndProducts();
 }
 
 
@@ -358,12 +340,6 @@ void Chemistry::incrementMatrixesVectors()
 
         //- matrix of SRI coeffs
         SRICoeffs_.push_back(std::vector<double>(5));
-
-        //- matrix of reactants that are used in reaction n_
-        reactants_.push_back((std::vector<std::string>(3)));
-
-        //- matrix of products that are used in reaction n_
-        products_.push_back((std::vector<std::string>(3)));
 
         //- vector for THIRD BODY REACTION
         TBR_.push_back(false);
@@ -424,235 +400,6 @@ void Chemistry::arrheniusCoeffs
     arrheniusCoeffs_[n_][0] = stod(tmp[tmp.size()-3]);
     arrheniusCoeffs_[n_][1] = stod(tmp[tmp.size()-2]);
     arrheniusCoeffs_[n_][2] = stod(tmp[tmp.size()-1]);
-}
-
-
-void Chemistry::thirdBodyReaction
-(
-    const stringField& fileContent,
-    const unsigned int& line
-)
-{
-    //- search for the indicator (only first match)
-
-        //- for standard THIRD BODY REACTIONS
-        //  definition:
-        //  +  a) next line is a new reaction -> constant rate ind. of p
-        //  +  b) next line is a enhancement factor
-        normalString delimiter1 = "+M=";
-
-        //- for modified THIRD BODY REACTIONS (TROE/LOW)
-        normalString delimiter2 = "(+M)=";
-
-        std::size_t found_standard = elementarReaction_[n_].find(delimiter1);
-        std::size_t found_modified = elementarReaction_[n_].find(delimiter2);
-
-    //- match means THIRD BODY REACTION
-    //  definition:
-    //  +  a) found_standard = true  and found_modified = false
-    //  +  b) found_standard = false and found_modified = true
-    //  +  c) both true  (not possible)
-    //  +  d) both false (standard reaction)
-
-    //- chase a)
-    if
-    (
-        found_standard != std::string::npos
-     && found_modified == std::string::npos
-    )
-    {
-        TBR_[n_] = true;
-
-        //- check next line for ENHANCE
-        normalString delimiterE="/";
-        std::size_t found_E = fileContent[line+1].find(delimiterE);
-
-        //- match means, that ENHANCE factors found
-        if (found_E != std::string::npos)
-        {
-            ENHANCE_[n_] = true;
-        }
-
-    }
-    //- case b)
-    else if
-    (
-        found_standard == std::string::npos
-     && found_modified != std::string::npos
-    )
-    {
-        TBR_[n_] = true;
-
-        //- check next line for LOW
-        normalString delimiterLOW="LOW";
-        std::size_t found_LOW = fileContent[line+1].find(delimiterLOW);
-
-        // match means, that LOW is found
-        if (found_LOW != std::string::npos)
-        {
-            //- check next line for TROE
-            normalString delimiterTROE="TROE";
-            std::size_t found_TROE = fileContent[line+2].find(delimiterTROE);
-
-            //- check next line for SRI
-            normalString delimiterSRI="SRI";
-            std::size_t found_SRI = fileContent[line+2].find(delimiterSRI);
-
-            //- match means, that TROE or SRI was found
-            if
-            (
-                found_TROE != std::string::npos
-             || found_SRI != std::string::npos
-            )
-            {
-                LOW_[n_] = true;
-
-                //- TROE
-                if (found_TROE != std::string::npos)
-                {
-                    TROE_[n_] = true;
-                }
-                else
-                {
-                    SRI_[n_] = true;
-                }
-
-                //- check next line for ENHANCE
-                normalString delimiterE="/";
-                std::size_t found_E = fileContent[line+2].find(delimiterE);
-
-                //- match means, that ENHANCE factors found
-                if (found_E != std::string::npos)
-                {
-                    ENHANCE_[n_] = true;
-                }
-            }
-            //- only LOW is used
-            else
-            {
-                LOW_[n_] = true;
-
-                //- check next line for ENHANCE
-                normalString delimiterE="/";
-                std::size_t found_E = fileContent[line+2].find(delimiterE);
-
-                //- match means, that ENHANCE factors found
-                if (found_E != std::string::npos)
-                {
-                    ENHANCE_[n_] = true;
-                }
-            }
-        }
-        //- something went wrong
-        else
-        {
-            //- not possible ERROR
-            std::cerr<< " ++ ERROR in " << __FILE__ << " line no. "
-                << __LINE__ << " ++ THIRD BODY REACTION | LOW not found\n"
-                << " ++ REACTION = " << elementarReaction_[n_] << std::endl;
-            std::terminate();
-        }
-    }
-    //- case c)
-    else if
-    (
-        found_standard != std::string::npos
-     && found_modified != std::string::npos
-    )
-    {
-        //- not possible ERROR
-        std::cerr<< " ++ ERROR in " << __FILE__ << " line no. "
-            << __LINE__ << " ++ THIRD BODY REACTION problem" << std::endl;
-        std::terminate();
-    }
-}
-
-
-void Chemistry::handleThirdBodyReaction
-(
-    const stringField& fileContent,
-    const unsigned int& line
-)
-{
-    //- EXCEPTION 1
-    //  only ENHANCED factors
-    if
-    (
-        ENHANCE_[n_]
-     && !LOW_[n_]
-     && !TROE_[n_]
-     && !SRI_[n_]
-    )
-    {
-        //- update the ENHANCED factors matrix
-        enhancedFactors(fileContent[line+1]);
-
-    }
-
-    //- EXCEPTION 2
-    //  only LOW and ENHANCED factors
-    else if
-    (
-        ENHANCE_[n_]
-     && LOW_[n_]
-     && !TROE_[n_]
-     && !SRI_[n_]
-    )
-    {
-        //- update the LOW pressure arrhenius coeffs matrix
-        LOWCoeffs(fileContent[line+1]);
-
-        //- update the ENHANCED factors matrix
-        enhancedFactors(fileContent[line+2]);
-    }
-
-    //- EXCEPTION 3
-    //  only LOW TROE AND ENHANCED
-    else if
-    (
-        ENHANCE_[n_]
-     && LOW_[n_]
-     && TROE_[n_]
-     && !SRI_[n_]
-    )
-    {
-        //- update the LOW pressure arrhenius coeffs matrix
-        LOWCoeffs(fileContent[line+1]);
-
-        //- update the TROE coeffs matrix
-        TROECoeffs(fileContent[line+2]);
-
-        //- update the ENHANCED factors matrix
-        enhancedFactors(fileContent[line+3]);
-    }
-    //- EXCEPTION 4
-    //  only LOW SRI AND ENHANCED
-    else if
-    (
-        ENHANCE_[n_]
-     && LOW_[n_]
-     && !TROE_[n_]
-     && SRI_[n_]
-    )
-    {
-        //- update the LOW pressure arrhenius coeffs matrix
-        LOWCoeffs(fileContent[line+1]);
-
-        //- update the TROE coeffs matrix
-        SRICoeffs(fileContent[line+2]);
-
-        //- update the ENHANCED factors matrix
-        enhancedFactors(fileContent[line+3]);
-    }
-    //- something went wrong
-    //  TODO here no LOW, TROE, SRI, ENHANCED factors for THREE BODY
-    else
-    {
-        std::cerr<< " ++ ERROR in " << __FILE__ << " line no. "
-            << __LINE__ << " ++ Something is wrong with reaction: "
-            << elementarReaction_[n_] << std::endl;
-        std::terminate();
-    }
 }
 
 
@@ -881,10 +628,11 @@ void Chemistry::reactantsAndProducts()
     //  +  c)  A+A=>B  (only forward reaction)
     //  +  d)  A+A<=B  (only backward reaction)
     //  d) is not implemented
+    forAll(elementarReaction_, i)
     {
-        std::size_t found1 = elementarReaction_[n_].find(delimiter1);
-        std::size_t found2 = elementarReaction_[n_].find(delimiter2);
-        std::size_t found3 = elementarReaction_[n_].find(delimiter3);
+        std::size_t found1 = elementarReaction_[i].find(delimiter1);
+        std::size_t found2 = elementarReaction_[i].find(delimiter2);
+        std::size_t found3 = elementarReaction_[i].find(delimiter3);
 
         //- handle only stuff which include backward reaction because
         //  standard setting is false
@@ -923,51 +671,51 @@ void Chemistry::reactantsAndProducts()
         {
             std::cerr<< " ++ ERROR in " << __FILE__ << " line no. "
                 << __LINE__ << " ++ Reaction direction is not clear for "
-                << elementarReaction_[n_] << std::endl;
+                << elementarReaction_[i] << std::endl;
             std::terminate();
         }
+
+        normalString reactants =
+            elementarReaction_[i].substr
+            (
+                0,
+                elementarReaction_[i].find(delimiter4)
+            );
+
+        normalString products =
+            elementarReaction_[i].substr
+            (
+                elementarReaction_[i].find(delimiter4)+delimiter4.size(),
+                elementarReaction_[i].size()
+            );
+
+        //- STEP 2: remove THIRD BODY
+        if (TBR_[i])
+        {
+            removeThirdBody(reactants, i);
+            removeThirdBody(products, i);
+        }
+
+        //- STEP 3: split reactants and products into species
+        stringField reacElements = splitString(reactants, '+');
+        stringField prodElements = splitString(products, '+');
+
+        //- STEP 4: update stochiometric
+        updateStochiometricMatrix(reacElements, 0, i);
+        updateStochiometricMatrix(prodElements, 1, i);
     }
-
-    normalString reactants =
-        elementarReaction_[n_].substr
-        (
-            0,
-            elementarReaction_[n_].find(delimiter4)
-        );
-
-    normalString products =
-        elementarReaction_[n_].substr
-        (
-            elementarReaction_[n_].find(delimiter4)+delimiter4.size(),
-            elementarReaction_[n_].size()
-        );
-
-    //- STEP 2: remove THIRD BODY
-    if (TBR_[n_])
-    {
-        removeThirdBody(reactants);
-        removeThirdBody(products);
-    }
-
-    //- STEP 3: split reactants and products into species
-    stringField reacElements = splitString(reactants, '+');
-    stringField prodElements = splitString(products, '+');
-
-    //- STEP 4: update stochiometric
-    updateStochiometricMatrix(reacElements, 0);
-    updateStochiometricMatrix(prodElements, 1);
 }
 
 
 void Chemistry::updateStochiometricMatrix
 (
     const stringField& speciesField,
-    const unsigned int x
+    const unsigned int x,
+    const unsigned int& i
 )
 {
     //- bool variable for match information
     bool found{false};
-
 
     //- loop through the field
     forAll(speciesField, species)
@@ -999,7 +747,8 @@ void Chemistry::updateStochiometricMatrix
                     (
                         speciesField[species],
                         1,
-                        x
+                        x,
+                        i
                     );
                 }
                 //- if not pos = 0, scalar has to be splitted
@@ -1018,7 +767,8 @@ void Chemistry::updateStochiometricMatrix
                     (
                         specie,
                         nu,
-                        x
+                        x,
+                        i
                     );
                 }
 
@@ -1036,7 +786,8 @@ void Chemistry::updateStochiometricMatrix
 (
     const normalString& species,
     const scalar nu,
-    const unsigned int x
+    const unsigned int x,
+    const unsigned int& i
 )
 {
     //- STEP 1: find id of species
@@ -1063,7 +814,7 @@ void Chemistry::updateStochiometricMatrix
 
 
     //- STEP 2: get actual nu out from the matrix
-    scalar nuTmp = nu_[n_][ID];
+    scalar nuTmp = nu_[i][ID];
 
     //- STEP 3: check if product or reactant and add the new value
     //  needed because of HO+HO (twice)
@@ -1080,13 +831,14 @@ void Chemistry::updateStochiometricMatrix
         }
 
     //- STEP 4: save the new stochiometric factor
-    nu_[n_][ID] = nuTmp;
+    nu_[i][ID] = nuTmp;
 }
 
 
 void Chemistry::removeThirdBody
 (
-    normalString& reaction
+    normalString& reaction,
+    const unsigned int& i
 )
 {
     //- delimiter
@@ -1097,8 +849,8 @@ void Chemistry::removeThirdBody
     //  && (LOW true || TROE ture || SRI true)
     if
     (
-        TBR_[n_]
-     && (LOW_[n_] || TROE_[n_] || SRI_[n_])
+        TBR_[i]
+     && (LOW_[i] || TROE_[i] || SRI_[i])
     )
     {
         //- THIRD BODY KEYWORD (+M)
@@ -1109,10 +861,10 @@ void Chemistry::removeThirdBody
     //  && LOW false && TROE false && SRI false
     else if
     (
-        TBR_[n_]
-     && !LOW_[n_]
-     && !TROE_[n_]
-     && !SRI_[n_]
+        TBR_[i]
+     && !LOW_[i]
+     && !TROE_[i]
+     && !SRI_[i]
     )
     {
         //- THIRD BODY KEYWORD +M
@@ -1261,6 +1013,17 @@ void Chemistry::summary() const
              << std::setw(40) << " No. of dublicated reactions: "
              << std::setw(20) << nDuplicate_ << "\n"
              << "----------------------------------------------------------\n";
+
+
+             forAll(elementarReaction_, i)
+             {
+                std::cout << elementarReaction_[i] << "  >> ";
+                forAll(nu_[i], a)
+                {
+                    std::cout <<  nu_[i][a] << "   " ;
+                }
+                std::cout << "\n";
+             }
 }
 
 
