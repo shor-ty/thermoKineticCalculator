@@ -41,6 +41,50 @@ class Thermodynamic
     //- functions
     //-----------
 
+        //- read thermo file
+        void readThermodynamicFile
+        (
+            const normalString&,
+            const stringField&
+        );
+
+        //- read the NASA polynoms
+        void readNASA
+        (
+            const stringField&,
+            const unsigned int&,
+            const stringField&
+        );
+
+        //- increment all matrixes and vectors
+        void thermodynamicDataIncrement();
+
+        //- calculate molecular weight of species
+        void calcMolecularWeight
+        (
+            const normalString&
+        );
+
+
+
+        //- open file and return the content of the file
+        stringField openFile
+        (
+            const normalString&
+        );
+
+        //- split string; delimiter is whitespace
+        stringField splitString
+        (
+            const normalString&
+        );
+
+        //- split string; delimiter is given
+        stringField splitString
+        (
+            const normalString&,
+            const char
+        );
 
         //- set phase
         void setPhase( const normalString& );
@@ -124,8 +168,21 @@ class Thermodynamic
         scalar comTemp;
         scalar higTemp;
 
-        //- polyCoeffs
-        scalarField polyCoeffs;
+        //- NASA coeffs for each species that is involved in the meachanism
+        matrix NASACoeffs_;
+
+        //- bool switch (if NASA found set to true) otherwise its false
+        //  necessary for checking if for all species polynomials found
+        std::vector<bool> NASA_;
+
+        //- moleculare weight of species
+        scalarField MW_;
+
+        //- special variables
+
+            //- this variable is changed during setting up the NASA coeffs
+            //  it contains the ID of the species that is read at the moment
+            unsigned int speciesId_;
 //
 //        //- mid temperature
 //        int T_mid{0};

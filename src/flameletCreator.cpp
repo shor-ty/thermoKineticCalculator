@@ -21,9 +21,6 @@
 #include <iomanip>
 
 //- user def. headers
-
-//#include "thermodynamic/thermodynamic.hpp"
-#include "functions/functions.hpp"
 #include "database/elements.hpp"
 #include "chemistry/chemistry.hpp"
 
@@ -34,17 +31,31 @@ int main()
     normalString fThermo  = "../files/thermo.tdc";
     normalString fAFCDict = "../files/afcDict";
 
-    //- SPECIES class
-    Species species;
-
-    //- REACTION class
-    Chemistry chemistry;
+    //- Chemistry class (Thermo derivated)
+    Chemistry kinetic;
 
     //- read the chemistry file
-    chemistry.readChemkin(fKinetic);
+    kinetic.readChemkin(fKinetic);
 
     //- summary of chemistry
-    chemistry.summary();
+    kinetic.summary();
+
+    //- check if thermodynamic is in chemistry file
+    //  if exist use that one
+    if (!kinetic.thermo())
+    {
+        kinetic.readChemKinThermo(fKinetic);
+    }
+    //- otherwise use the given one
+    else
+    {
+        kinetic.readThermodynamicFile
+        (
+            fThermo,
+            kinetic.species()
+        );
+    }
+
 
 
     //- Read kinetic file

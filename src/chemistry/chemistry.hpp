@@ -24,9 +24,12 @@
 
 //- user def. headers
 #include "../definitions/typedef.hpp"
+#include "../thermodynamic/thermodynamic.hpp"
 
 
 class Chemistry
+:
+    public Thermodynamic
 {
     public:
 
@@ -39,7 +42,7 @@ class Chemistry
 
     public:
 
-        //- function
+        //- functions
 
             //- read the chemistry file
             void readChemkin
@@ -116,30 +119,26 @@ class Chemistry
                 const unsigned int&
             );
 
-            //- open file and return the content of the file
-            stringField openFile
-            (
-                const normalString&
-            );
-
-            //- split string; delimiter is whitespace
-            stringField splitString
-            (
-                const normalString&
-            );
-
-            //- split string; delimiter is given
-            stringField splitString
-            (
-                const normalString&,
-                const char
-            );
 
             //- summary
             void summary() const;
 
+            //- read thermo data from chemistry file
+            void readChemKinThermo
+            (
+                const normalString&
+            );
+
             //- create reaction rate matrix
             void createReactionRateMatrix();
+
+            //- return thermodynamic_ value
+            bool thermo() const;
+
+            //- return species field
+            stringField species() const;
+
+
 
     private:
 
@@ -214,6 +213,9 @@ class Chemistry
         //- reaction rate matrix (this matrix contain the
         //  reaction no. that influence the species
         matrix reactionRateMatrix_;
+
+        //- bool if thermodynamic is included in the chemkin file
+        bool themodynamic_;
 
 };
 // ************************************************************************* //

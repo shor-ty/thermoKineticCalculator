@@ -18,7 +18,7 @@
 »
 \*---------------------------------------------------------------------------*/
 //- system headers
-#include <fstream>
+
 #include <iterator>
 #include <sstream>
 #include <iomanip>
@@ -32,7 +32,8 @@
 Chemistry::Chemistry()
 :
     n_(-1),
-    nDuplicate_(0)
+    nDuplicate_(0),
+    themodynamic_(false)
 {}
 
 
@@ -57,7 +58,6 @@ void Chemistry::readChemkin
     {
         //- STEP 1: remove all whitespaces
         stringField tmp = splitString(fileContent[line]);
-
 
         //- if not empty, and no comment, proceed
         if
@@ -148,7 +148,12 @@ void Chemistry::readChemkin
                         {
                             forAll(tmp, species)
                             {
+                                //- put species at the end of the vector
                                 species_.push_back(tmp[species]);
+
+                                //- increment all thermodynamic variables
+                                //  matrixes, vectors etc.
+                                thermodynamicDataIncrement();
                             }
                         }
                         else
@@ -169,31 +174,8 @@ void Chemistry::readChemkin
              || tmp[0] == "THERMO"
             )
             {
-                //- skip the line with the keyword THERMO
-                line++;
-
-                //- loop till we reach the keyword END
-                for (;;line++)
-                {
-                    tmp = splitString(fileContent[line]);
-
-                    //- if line is not empty and no comment, proceed
-                    if
-                    (
-                        !tmp.empty()
-                     && tmp[0][0] != '!'
-                    )
-                    {
-                        //- when the line content is END, leave that loop
-                        if (tmp[0] == "END")
-                        {
-                            //- skip END
-                            line++;
-                            break;
-                        }
-                    }
-                }
-            //- THERMO BLOCK END
+                //- set the variable
+                themodynamic_ = true;
             }
 
 
@@ -879,81 +861,6 @@ void Chemistry::removeThirdBody
 }
 
 
-stringField Chemistry::splitString
-(
-    const normalString& str
-)
-{
-    //- split string, delimiter is whitespace
-    std::istringstream tmp(str);
-
-    stringField strArray_
-    {
-        std::istream_iterator<std::string>{tmp},
-        std::istream_iterator<std::string>{}
-    };
-
-    return strArray_;
-}
-
-
-stringField Chemistry::splitString
-(
-    const normalString& str,
-    const char delimiter
-)
-{
-    //- split the line with delimiter
-    std::stringstream tmp(str);
-    normalString element;
-    stringField elements;
-
-    while (std::getline(tmp, element, delimiter))
-    {
-        elements.push_back(element);
-    }
-
-    //- return the field
-    return elements;
-}
-
-
-stringField Chemistry::openFile
-(
-    const normalString& fileName
-)
-{
-    //- new object
-    std::ifstream file;
-
-    //- open file
-    file.open(fileName.c_str(), std::ios::in);
-
-    //- check file
-    if (!file.good())
-    {
-        std::cerr<< "\n ++ ERROR: Could not open file \""
-                 << fileName << "\"..."
-                 << "\n ++ Error occur in file " << __FILE__
-                 << " line " << __LINE__ << std::endl;
-        std::terminate();
-    }
-
-    //- stored line
-    normalString fileLine;
-
-    //- file content
-    stringField fileContent(0);
-
-    //- read the whole file and store the lines inside fileContent
-    while (!file.eof())
-    {
-        std::getline(file, fileLine);
-        fileContent.push_back(fileLine);
-    }
-
-    return fileContent;
-}
 
 
 void Chemistry::summary() const
@@ -1026,6 +933,71 @@ void Chemistry::summary() const
              }
 }
 
+void Chemistry::readChemKinThermo
+(
+    const normalString& fileName
+)
+{
+    //- read the whole file and store it
+    stringField fileContent = openFile(fileName);
+
+    //- loop through the fileContent
+    forAll(fileContent, line)
+    {
+        //- STEP 1: remove all whitespaces
+        stringField tmp = splitString(fileContent[line]);
+
+        //- if not empty, and no comment, proceed
+        if
+        (
+            !tmp.empty()
+         && tmp[0][0] != '!'
+        )
+        {
+            //- ELEMENTS BLOCK
+            if
+            (
+               (tmp[0] == "THERMO"
+             && tmp[1] == "ALL")
+             || tmp[0] == "THERMO"
+            )
+            {
+                //- skip the line with the keyword THERMO
+                line++;
+
+                //- loop till we reach the keyword END
+                for (;;line++)
+                {
+                    tmp = splitString(fileContent[line]);
+
+                    //- if line is not empty and no comment, proceed
+                    if
+                    (
+                        !tmp.empty()
+                     && tmp[0][0] != '!'
+                    )
+                    {
+                        //- when the line content is END, leave that loop
+                        if (tmp[0] == "END")
+                        {
+                            //- skip END
+                            line++;
+                            break;
+                        }
+
+                        readNASA
+                        (
+                            fileContent,
+                            line,
+                            species_
+                        );
+                    }
+                }
+            }
+        }
+    }
+}
+
 
 void Chemistry::createReactionRateMatrix()
 {
@@ -1045,4 +1017,16 @@ void Chemistry::createReactionRateMatrix()
         }
     }
 
+}
+
+
+bool Chemistry::thermo() const
+{
+    return themodynamic_;
+}
+
+
+stringField Chemistry::species() const
+{
+    return species_;
 }
