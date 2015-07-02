@@ -1,7 +1,7 @@
 #.gitignore
 #
 # codeBlocks
-*.cbp
+#*.cbp
 *.layout
 *.depend
 
