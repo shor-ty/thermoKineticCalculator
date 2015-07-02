@@ -27,7 +27,7 @@
 
 int main()
 {
-    normalString fKinetic = "../files/kinetics4.kin";
+    normalString fKinetic = "../files/kinetics2.kin";
     normalString fThermo  = "../files/thermo.tdc";
     normalString fAFCDict = "../files/afcDict";
 

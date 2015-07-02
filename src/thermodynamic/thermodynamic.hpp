@@ -23,9 +23,12 @@
 #include <math.h>
 //- user def. headers
 #include "../definitions/typedef.hpp"
+#include "../database/elements.hpp"
 
 
 class Thermodynamic
+:
+    public Elements
 {
     public:
 
@@ -63,6 +66,13 @@ class Thermodynamic
         void calcMolecularWeight
         (
             const normalString&
+        );
+
+        //- return the element moleculare weight in species
+        scalar calcMolecularWeight
+        (
+            const normalString&,
+            const scalar&
         );
 
 

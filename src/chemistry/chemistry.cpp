@@ -788,7 +788,7 @@ void Chemistry::updateStochiometricMatrix
     //- check if species found or not
     if (!found)
     {
-            std::cerr<< " ++ ERROR in " << __FILE__ << " line no. "
+            std::cerr<< " ++Foo ERROR in " << __FILE__ << " line no. "
                 << __LINE__ << " ++ Species " << species << " not defined in "
                 << "the SPECIES section of the chemkin file." << std::endl;
             std::terminate();
@@ -922,15 +922,15 @@ void Chemistry::summary() const
              << "----------------------------------------------------------\n";
 
 
-             forAll(elementarReaction_, i)
-             {
-                std::cout << elementarReaction_[i] << "  >> ";
-                forAll(nu_[i], a)
-                {
-                    std::cout <<  nu_[i][a] << "   " ;
-                }
-                std::cout << "\n";
-             }
+//             forAll(elementarReaction_, i)
+//             {
+//                std::cout << elementarReaction_[i] << "  >> ";
+//                forAll(nu_[i], a)
+//                {
+//                    std::cout <<  nu_[i][a] << "   " ;
+//                }
+//                std::cout << "\n";
+//             }
 }
 
 void Chemistry::readChemKinThermo

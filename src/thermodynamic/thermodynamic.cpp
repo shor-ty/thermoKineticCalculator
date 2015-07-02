@@ -162,6 +162,8 @@ void Thermodynamic::calcMolecularWeight
     const normalString& composition
 )
 {
+std::cout << "\n\n";
+
     stringField tmp = splitString(composition);
     normalString composition_;
 
@@ -171,16 +173,24 @@ void Thermodynamic::calcMolecularWeight
         composition_ += tmp[i];
     }
 
-    bool found{false};
-    bool lastLetter{false};
+    bool foundLetter{false};
+    bool foundNumber{false};
+
+    bool lastNumber{false};
+
     normalString letter;
-    normalString multiplicator;
     normalString tmp2;
+
+    scalar multiplicator;
+    scalar tmpMW{0};
+
 
    //- loop through all single letter of the species
     for (unsigned int pos = 0; pos < composition_.size(); pos++)
     {
-        found = false;
+        foundLetter = false;
+        foundNumber = false;
+
         //- compare single letter with ASCII table (LETTERS)
         for (unsigned int j = 65; j <= 90; j++)
         {
@@ -191,33 +201,77 @@ void Thermodynamic::calcMolecularWeight
                 c == composition_[pos]
             )
             {
-                found = true;
-                lastLetter = true;
+                foundLetter = true;
+                foundNumber = false;
                 letter = c;
                 break;
             }
+            else
+            {
+                foundNumber = true;
+                foundLetter = false;
+            }
         }
 
-        if
-        (
-            found
-         && lastLetter
-        )
+        //- if letter found but befor there was a number (new species)
+        if (foundLetter && lastNumber)
         {
-            tmp2 += letter;
+            //- calculate MW for atomic element
+            tmpMW += atomicWeight
+            (
+                tmp2,
+                multiplicator
+            );
+
+            //- reset the string
+            tmp2.clear();
+            multiplicator = 0;
+            lastNumber = false;
         }
 
-
-        if (!found)
+        //- if a letter is found
+        if (foundLetter)
         {
-            lastLetter = false;
-           multiplicator += composition_[pos];
+            //- last letter
+            tmp2 += composition_[pos];
         }
-        std::cout << composition << ">>>> " << tmp2 << " -> " << multiplicator << "\n";
 
-        if (!found) tmp2.clear();
+
+        if (foundNumber)
+        {
+            //- last number
+            lastNumber = true;
+
+            multiplicator += atof(composition_.substr(pos,1).c_str());
+        }
+
+        //- if pos is at last position
+        if (pos == composition_.size()-1)
+        {
+            //- calculate MW for atomic element
+            tmpMW += atomicWeight
+            (
+                tmp2,
+                multiplicator
+            );
+
+            std::cout << "For species " << composition_ << " we calculated a moleculare weight of " << tmpMW << "\n";
+        }
     }
 }
+
+
+scalar Thermodynamic::calcMolecularWeight
+(
+    const normalString& atom,
+    const scalar& numbersOfAtoms
+)
+{
+    //- find atom (database in elements.hpp)
+
+    return 10;
+}
+
 
 stringField Thermodynamic::openFile
 (

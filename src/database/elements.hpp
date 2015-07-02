@@ -43,7 +43,11 @@ class Elements
         //- functions
 
             //- return atomic mass of element [kg/mol]
-            scalar atomicWeight(const normalString);
+            scalar atomicWeight
+            (
+                const normalString&,
+                const scalar&
+            );
 
 
     private:

@@ -48,7 +48,11 @@ Elements::~Elements()
 {
 }
 
-scalar Elements::atomicWeight(const normalString element)
+scalar Elements::atomicWeight
+(
+    const normalString& element,
+    const scalar& multiplicator
+)
 {
     //- ID
     int id{-1};
@@ -71,5 +75,5 @@ scalar Elements::atomicWeight(const normalString element)
         std::terminate();
     }
 
-    return elementAM[id];
+    return elementAM[id] * multiplicator;
 }
