@@ -92,7 +92,6 @@ void Chemistry::readChemkin
                         if (tmp[0] == "END")
                         {
                             //- skip END
-                            line++;
                             break;
                         }
 
@@ -139,13 +138,13 @@ void Chemistry::readChemkin
                         if (tmp[0] == "END")
                         {
                             //- skip END
-                            line++;
                             break;
                         }
 
                         //- when more SPECIES are in one line
                         if (tmp.size() > 1)
                         {
+
                             forAll(tmp, species)
                             {
                                 //- put species at the end of the vector
@@ -204,7 +203,6 @@ void Chemistry::readChemkin
                         if (tmp[0] == "END")
                         {
                             //- skip END
-                            line++;
                             break;
                         }
 
@@ -235,6 +233,14 @@ void Chemistry::readChemkin
 
                                 //- backward reaction
                                 backwardReaction();
+
+                                //- check if THIRD BODY REACTION
+                                found = fileContent[line].find("+M");
+
+                                if (found != std::string::npos)
+                                {
+                                    TBR_[n_] = true;
+                                }
                             }
                             else
                             {
@@ -250,27 +256,23 @@ void Chemistry::readChemkin
                                 if (foundLOW != std::string::npos)
                                 {
                                     LOWCoeffs(fileContent[line]);
-                                    TBR_[n_] = true;
                                     LOW_[n_] = true;
                                 }
                                 //- TROE parameters
                                 else if (foundTROE != std::string::npos)
                                 {
                                     TROECoeffs(fileContent[line]);
-                                    TBR_[n_] = true;
                                     TROE_[n_] = true;
                                 }
                                 //- SRI parameters
                                 else if (foundSRI != std::string::npos)
                                 {
                                     SRICoeffs(fileContent[line]);
-                                    TBR_[n_] = true;
                                     SRI_[n_] = true;
                                 }
                                 else
                                 {
                                     enhancedFactors(fileContent[line]);
-                                    TBR_[n_] = true;
                                     ENHANCE_[n_] = true;
                                 }
                             }
@@ -788,7 +790,7 @@ void Chemistry::updateStochiometricMatrix
     //- check if species found or not
     if (!found)
     {
-            std::cerr<< " ++Foo ERROR in " << __FILE__ << " line no. "
+            std::cerr<< " ++ ERROR in " << __FILE__ << " line no. "
                 << __LINE__ << " ++ Species " << species << " not defined in "
                 << "the SPECIES section of the chemkin file." << std::endl;
             std::terminate();
@@ -910,13 +912,13 @@ void Chemistry::summary() const
              << std::setw(40) << " No. of third body reactions: "
              << std::setw(20) << TBR << "\n"
              << std::setw(40) << " No. of low pressure reactions: "
-             << std::setw(20) << LOW-TROE-SRI << "\n"
+             << std::setw(20) << LOW << "\n"
              << std::setw(40) << " No. of TROE reactions: "
              << std::setw(20) << TROE << "\n"
              << std::setw(40) << " No. of SRI reactions: "
              << std::setw(20) << SRI << "\n"
              << std::setw(40) << " No. of enhanced factor reactions: "
-             << std::setw(20) << ENH-LOW << "\n"
+             << std::setw(20) << ENH << "\n"
              << std::setw(40) << " No. of dublicated reactions: "
              << std::setw(20) << nDuplicate_ << "\n"
              << "----------------------------------------------------------\n";
@@ -938,6 +940,9 @@ void Chemistry::readChemKinThermo
     const normalString& fileName
 )
 {
+    //- output
+    std::cout << "Reading thermodynamic properties (" << fileName << ")\n";
+
     //- read the whole file and store it
     stringField fileContent = openFile(fileName);
 
@@ -1017,6 +1022,25 @@ void Chemistry::createReactionRateMatrix()
         }
     }
 
+}
+
+
+void Chemistry::checkThermo
+(
+    const normalString& fileName
+) const
+{
+    forAll(species_, i)
+    {
+        if (!NASA(i))
+        {
+            std::cerr<< " ++ ERROR in " << __FILE__ << " line no. "
+                << __LINE__ << " ++ Species " << species_[i] << " has no "
+                << "thermodynamic. No entry found in thermodynamic file "
+                << fileName << std::endl;
+            std::terminate();
+        }
+    }
 }
 
 

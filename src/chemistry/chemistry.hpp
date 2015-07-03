@@ -132,6 +132,12 @@ class Chemistry
             //- create reaction rate matrix
             void createReactionRateMatrix();
 
+            //- check thermo
+            void checkThermo
+            (
+                const normalString&
+            ) const;
+
             //- return thermodynamic_ value
             bool thermo() const;
 

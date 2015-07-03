@@ -68,13 +68,11 @@ class Thermodynamic
             const normalString&
         );
 
-        //- return the element moleculare weight in species
-        scalar calcMolecularWeight
+        // return value of NASA_ vector
+        bool NASA
         (
-            const normalString&,
-            const scalar&
-        );
-
+            const unsigned int&
+        ) const;
 
 
         //- open file and return the content of the file
@@ -160,6 +158,8 @@ class Thermodynamic
 
         //- define the
         void whichPolyCoeffs( const scalar&, int& ) const;
+
+
 
 
     private:

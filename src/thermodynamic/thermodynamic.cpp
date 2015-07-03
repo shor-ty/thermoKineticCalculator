@@ -46,6 +46,9 @@ void Thermodynamic::readThermodynamicFile
     const stringField& species
 )
 {
+    //- output
+    std::cout << "Reading thermodynamic properties (" << fileName << ")\n";
+
     //- read the whole file and store it
     stringField fileContent = openFile(fileName);
 
@@ -138,9 +141,6 @@ void Thermodynamic::readNASA
             }
         }
     }
-
-
-
 }
 
 
@@ -261,15 +261,12 @@ std::cout << "\n\n";
 }
 
 
-scalar Thermodynamic::calcMolecularWeight
+bool Thermodynamic::NASA
 (
-    const normalString& atom,
-    const scalar& numbersOfAtoms
-)
+    const unsigned int& i
+) const
 {
-    //- find atom (database in elements.hpp)
-
-    return 10;
+    return NASA_[i];
 }
 
 
