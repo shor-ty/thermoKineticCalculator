@@ -25,6 +25,7 @@
 //- user def. headers
 #include "../definitions/typedef.hpp"
 #include "../thermodynamic/thermodynamic.hpp"
+#include "../transport/transport.hpp"
 
 
 class Chemistry
@@ -134,6 +135,12 @@ class Chemistry
 
             //- check thermo
             void checkThermo
+            (
+                const normalString&
+            ) const;
+
+            //- check thermo
+            void checkTrans
             (
                 const normalString&
             ) const;

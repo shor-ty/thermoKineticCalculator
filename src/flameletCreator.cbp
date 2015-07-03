@@ -51,14 +51,18 @@
 			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
 		<Unit filename="functions/functions.hpp" />
+		<Unit filename="include/transport.hpp" />
 		<Unit filename="species/species.cpp">
 			<Option compile="0" />
 			<Option link="0" />
 			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
 		<Unit filename="species/species.hpp" />
+		<Unit filename="src/transport.cpp" />
 		<Unit filename="thermodynamic/thermodynamic.cpp" />
 		<Unit filename="thermodynamic/thermodynamic.hpp" />
+		<Unit filename="transport/transport.cpp" />
+		<Unit filename="transport/transport.hpp" />
 		<Extensions>
 			<code_completion />
 			<debugger />

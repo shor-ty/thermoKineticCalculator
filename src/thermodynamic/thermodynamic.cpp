@@ -18,7 +18,6 @@
 »
 \*---------------------------------------------------------------------------*/
 //- system headers
-#include <fstream>
 #include <iterator>
 #include <sstream>
 #include <iomanip>
@@ -162,8 +161,6 @@ void Thermodynamic::calcMolecularWeight
     const normalString& composition
 )
 {
-std::cout << "\n\n";
-
     stringField tmp = splitString(composition);
     normalString composition_;
 
@@ -254,9 +251,8 @@ std::cout << "\n\n";
                 tmp2,
                 multiplicator
             );
-
-            std::cout << "For species " << composition_ << " we calculated a moleculare weight of " << tmpMW << "\n";
         }
+        //- todo | logfile of Molecular weight
     }
 }
 
@@ -268,84 +264,6 @@ bool Thermodynamic::NASA
 {
     return NASA_[i];
 }
-
-
-stringField Thermodynamic::openFile
-(
-    const normalString& fileName
-)
-{
-    //- new object
-    std::ifstream file;
-
-    //- open file
-    file.open(fileName.c_str(), std::ios::in);
-
-    //- check file
-    if (!file.good())
-    {
-        std::cerr<< "\n ++ ERROR: Could not open file \""
-                 << fileName << "\"..."
-                 << "\n ++ Error occur in file " << __FILE__
-                 << " line " << __LINE__ << std::endl;
-        std::terminate();
-    }
-
-    //- stored line
-    normalString fileLine;
-
-    //- file content
-    stringField fileContent(0);
-
-    //- read the whole file and store the lines inside fileContent
-    while (!file.eof())
-    {
-        std::getline(file, fileLine);
-        fileContent.push_back(fileLine);
-    }
-
-    return fileContent;
-}
-
-
-stringField Thermodynamic::splitString
-(
-    const normalString& str
-)
-{
-    //- split string, delimiter is whitespace
-    std::istringstream tmp(str);
-
-    stringField strArray_
-    {
-        std::istream_iterator<std::string>{tmp},
-        std::istream_iterator<std::string>{}
-    };
-
-    return strArray_;
-}
-
-
-stringField Thermodynamic::splitString
-(
-    const normalString& str,
-    const char delimiter
-)
-{
-    //- split the line with delimiter
-    std::stringstream tmp(str);
-    normalString element;
-    stringField elements;
-
-    while (std::getline(tmp, element, delimiter))
-    {
-        elements.push_back(element);
-    }
-
-    //- return the field
-    return elements;
-}
-
 
 
 

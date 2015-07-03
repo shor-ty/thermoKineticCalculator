@@ -27,9 +27,10 @@
 
 int main()
 {
-    normalString fKinetic = "../files/kinetics2.kin";
-    normalString fThermo  = "../files/thermo.tdc";
+    normalString fKinetic = "../files/fullChemistry.kin";
+    normalString fThermo  = "../files/fullThermo.tdc";
     normalString fAFCDict = "../files/afcDict";
+    normalString fTransport = "../files/fullTransport.tra";
 
     //- Chemistry class (Thermo derivated)
     Chemistry kinetic;
@@ -42,7 +43,7 @@ int main()
 
     //- check if thermodynamic is in chemistry file
     //  if exist use that one
-    if (!kinetic.thermo())
+    if (kinetic.thermo())
     {
         kinetic.readChemKinThermo(fKinetic);
     }
@@ -56,6 +57,18 @@ int main()
         );
     }
 
+    //- check if each species has thermodynamics
+    kinetic.checkThermo(fThermo);
+
+    //- read transport data
+    kinetic.readTransportFile
+    (
+        fTransport,
+        kinetic.species()
+    );
+
+    //- check if each species has transport properties
+    kinetic.checkTrans(fTransport);
 
 
     //- Read kinetic file

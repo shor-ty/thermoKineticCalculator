@@ -153,6 +153,9 @@ void Chemistry::readChemkin
                                 //- increment all thermodynamic variables
                                 //  matrixes, vectors etc.
                                 thermodynamicDataIncrement();
+
+                                //- increment all transport vectors
+                                transportDataIncrement();
                             }
                         }
                         else
@@ -1041,6 +1044,26 @@ void Chemistry::checkThermo
             std::terminate();
         }
     }
+    std::cout<< " ++ Thermodynamic database O.K.\n\n";
+}
+
+void Chemistry::checkTrans
+(
+    const normalString& fileName
+) const
+{
+    forAll(species_, i)
+    {
+        if (!TRANS(i))
+        {
+            std::cerr<< " ++ ERROR in " << __FILE__ << " line no. "
+                << __LINE__ << " ++ Species " << species_[i] << " has no "
+                << "transport properties. No entry found in transport file "
+                << fileName << std::endl;
+            std::terminate();
+        }
+    }
+    std::cout<< " ++ Transport database O.K.\n\n";
 }
 
 

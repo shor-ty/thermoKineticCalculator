@@ -23,12 +23,12 @@
 #include <math.h>
 //- user def. headers
 #include "../definitions/typedef.hpp"
-#include "../database/elements.hpp"
+#include "../transport/transport.hpp"
 
 
 class Thermodynamic
 :
-    public Elements
+    public Transport
 {
     public:
 
@@ -74,25 +74,6 @@ class Thermodynamic
             const unsigned int&
         ) const;
 
-
-        //- open file and return the content of the file
-        stringField openFile
-        (
-            const normalString&
-        );
-
-        //- split string; delimiter is whitespace
-        stringField splitString
-        (
-            const normalString&
-        );
-
-        //- split string; delimiter is given
-        stringField splitString
-        (
-            const normalString&,
-            const char
-        );
 
         //- set phase
         void setPhase( const normalString& );
