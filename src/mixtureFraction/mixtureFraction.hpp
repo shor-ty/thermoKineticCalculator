@@ -25,11 +25,11 @@
 #include "../thermodynamic/thermodynamic.hpp"
 #include "../chemistry/chemistry.hpp"
 
-#ifndef SPECIES_HPP
-#define SPECIES_HPP
+#ifndef MixtureFraction_HPP
+#define MixtureFraction_HPP
 
 
-class Species
+class MixtureFraction
 :
     public Thermodynamic,
     public Chemistry
@@ -37,21 +37,21 @@ class Species
     public:
 
         //- Constructor
-        Species();
-        Species(normalString);
+        MixtureFraction();
+        MixtureFraction(normalString);
 
         //- Destructor
-        ~Species();
+        ~MixtureFraction();
 
 
     public:
 
         //- Fuctions
 
-            //- set the name of species
+            //- set the name of MixtureFraction
             void setName(const normalString&);
 
-            //- set the molecular weight of species
+            //- set the molecular weight of MixtureFraction
             void setMW(const scalar);
 
             //- set fuel | set oxidizer
@@ -119,7 +119,7 @@ class Species
                 const scalar To() const;
 
 
-            //- return name of species
+            //- return name of MixtureFraction
             const normalString name() const;
 
             //- retrun MW [g/mol]
@@ -179,4 +179,4 @@ class Species
         bool oxidizer_;
 };
 
-#endif // SPECIES_HPP
+#endif // MixtureFraction_HPP
