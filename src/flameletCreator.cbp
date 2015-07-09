@@ -45,11 +45,7 @@
 		<Unit filename="flameletCreator.cpp">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="functions/functions.cpp">
-			<Option compile="0" />
-			<Option link="0" />
-			<Option target="&lt;{~None~}&gt;" />
-		</Unit>
+		<Unit filename="functions/functions.cpp" />
 		<Unit filename="functions/functions.hpp" />
 		<Unit filename="include/transport.hpp" />
 		<Unit filename="mixtureFraction/mixtureFraction.cpp" />

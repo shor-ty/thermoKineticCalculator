@@ -74,6 +74,8 @@ class Thermodynamic
             const unsigned int&
         ) const;
 
+        //- return moleculare weight
+        scalar MW(const unsigned int&) const;
 
         //- set phase
         void setPhase( const normalString& );
@@ -81,41 +83,9 @@ class Thermodynamic
         //- set temperature bounds
         void setPolyTemperature( const scalar&, const scalar&, const scalar& );
 
+        //- set polyCoeffs
+        void setPolyCoeffs( const scalarField& );
 
-//
-//        //- get low temperatur
-//        int lowTemperature() const;
-//
-//        //- set mid temperature
-//        void setMidTemperature( const int& );
-//
-//        //- get mid temperature
-//        int midTemperature() const;
-//
-//        //- set high temperature
-//        void setHighTemperature( const int& );
-//
-//        //- get high temperatur
-//        int highTemperature() const;
-//
-//        //- show values
-//        void showValues() const;
-//
-//        //- set polyCoeffs
-          void setPolyCoeffs( const scalarField& );
-//
-//        //- set second line of coefficents
-//        void setSecondLineOfCoefficients( const double&, const double&, const double&, const double&, const double& );
-//
-//        //- set third line of coefficents
-//        void setThirdLineOfCoefficients( const double&, const double&, const double&, const double& );
-//
-//        //- get all low temperature coefficents (NASA-Polynomials)
-//        void lowTemperatureCoefficents() const;
-//
-//        //- get all high temperature coefficents (NASA-Polynomials)
-//        void highTemperatureCoefficents() const;
-//
         //- return heat capacity cp [J/(molK)]
         scalar cp( const scalar ) const;
 
@@ -129,7 +99,7 @@ class Thermodynamic
         scalar s( const scalar ) const;
 
         //- calculate free gibbs energy
-        scalar G( const scalar ) const ;
+        scalar G( const scalar ) const;
 
         //- set thermodynamic status
         void thermodynamicTrue();

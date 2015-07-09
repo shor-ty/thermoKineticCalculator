@@ -9,5 +9,10 @@
 obj/
 bin/
 
+#doxygen
+doxygen/
+latex/
+html/
+
 #gedit
 *~

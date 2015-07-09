@@ -20,179 +20,214 @@
 //- system headers
 
 //- user def. headers
-#include "MixtureFraction.hpp"
+#include "mixtureFraction.hpp"
 
-//- standard constructor
-MixtureFraction::MixtureFraction() :
-    MW_(0),
-    Y_(0),
-    Yf_(0),
-    Yo_(0),
-    X_(0),
-    Xf_(0),
-    Xo_(0),
-    Con_(0),
-    fuel_(false),
-    oxidizer_(false)
+//- constructor with species vector
+MixtureFraction::MixtureFraction
+(
+    const stringField& species,
+    const Chemistry* chemistryObj
+)
 {
+    species_ = species;
+    pChemistry = chemistryObj;
+
+    //- increase all vectors
+    forAll(species_, i)
+    {
+        //- mass fraction increment
+        Y_.push_back(0);
+        Yf_.push_back(0);
+        Yo_.push_back(0);
+
+        //- mole fraction increment
+        X_.push_back(0);
+        Xf_.push_back(0);
+        Xo_.push_back(0);
+
+        //- is fuel or oxidizer bool vector
+        fuel_.push_back(false);
+        oxidizer_.push_back(false);
+    }
 }
 
-//- one argument constructor
-MixtureFraction::MixtureFraction(normalString name) : name_(name)
-{
-}
 
 //- destructor
 MixtureFraction::~MixtureFraction()
 {
 }
 
-//- set names
-void MixtureFraction::setName(const normalString& nameOfMixtureFraction)
+//- read afcDict
+void MixtureFraction::readAFCDict
+(
+    const normalString& fileName
+)
 {
-    name_ = nameOfMixtureFraction;
+    //- output
+    std::cout << "Reading AFCDict (" << fileName << ")\n\n";
+
+    //- read the whole file and store it
+    stringField fileContent = Transport::openFile(fileName);
+
+    bool fuelFound{false};
+    bool oxidizerFound{false};
+    bool fuelOxidizerFound{false};
+    bool inDictionary{false};
+
+    //- loop through the fileContent
+    forAll(fileContent, line)
+    {
+        //- STEP 1: remove all whitespaces
+        stringField tmp = Transport::splitString(fileContent[line]);
+
+        //- if not empty, and no comment, proceed
+        if
+        (
+            !tmp.empty()
+         && tmp[0][0] != '!'
+        )
+        {
+            //- moleFractionFuel and moleFractionOxidizer
+            if
+            (
+                tmp[0] == "moleFractionFuel"
+             || tmp[0] == "moleFractionOxidizer"
+            )
+            {
+                if (tmp[0] == "moleFractionFuel")
+                {
+                    fuelFound = true;
+                }
+                else if (tmp[0] == "moleFractionOxidizer")
+                {
+                    oxidizerFound = true;
+                }
+
+                fuelOxidizerFound = true;
+            }
+            //- fuel and oxidizer dictionary
+            else if
+            (
+                fuelOxidizerFound
+             && !inDictionary
+            )
+            {
+                if (tmp[0] == "{")
+                {
+                    inDictionary = true;
+                }
+            }
+            //- set fuel and oxidizer boundary conditions
+            else if
+            (
+                fuelOxidizerFound
+             && inDictionary
+            )
+            {
+                if (tmp[0] == "}")
+                {
+                    inDictionary = false;
+                    fuelOxidizerFound = false;
+                    oxidizerFound = false;
+                    fuelFound = false;
+                }
+                else
+                {
+                    //- oxidizer boundary
+                    if (oxidizerFound)
+                    {
+                        bool speciesFound{false};
+
+                        //- find species
+                        forAll(species_, i)
+                        {
+                            if (species_[i] == tmp[0])
+                            {
+                                //- set oxidizer parameters
+                                Xo_[i] = stod(tmp[1]);
+                                oxidizer_[i] = true;
+                                speciesFound = true;
+                            }
+                        }
+
+                        //- check if species found
+                        if (!speciesFound)
+                        {
+                            std::cerr<< "\n ++ ERROR: Species " << tmp[0]
+                                     << " not found in chemistry class."
+                                     << __FILE__ << " line " << __LINE__
+                                     << std::endl;
+                            std::terminate();
+                        }
+                    }
+                    //- fuel boundary
+                    else if (fuelFound)
+                    {
+                        bool speciesFound{false};
+
+                        //- find species
+                        forAll(species_, i)
+                        {
+                            if (species_[i] == tmp[0])
+                            {
+                                //- set fuel parameters
+                                Xf_[i] = stod(tmp[1]);
+                                fuel_[i] = true;
+                                speciesFound = true;
+                            }
+                        }
+
+                        //- check if species found
+                        if (!speciesFound)
+                        {
+                            std::cerr<< "\n ++ ERROR: Species " << tmp[0]
+                                     << " not found in chemistry class."
+                                     << __FILE__ << " line " << __LINE__
+                                     << std::endl;
+                            std::terminate();
+                        }
+                    }
+                }
+            }
+
+            //- set oxidizer temperature
+            else if
+            (
+                tmp[0] == "temperatureOxidizer"
+            )
+            {
+                To_ = stod(tmp[1]);
+            }
+
+            //- set fuel temperature
+            else if
+            (
+                tmp[0] == "temperatureFuel"
+            )
+            {
+                Tf_ = stod(tmp[1]);
+            }
+        }
+    }
 }
 
-//- set molecular weight
-void MixtureFraction::setMW(const scalar MW)
+
+//- return species i
+const stringField MixtureFraction::species() const
 {
-    MW_ = MW;
-}
-
-//- set fuel
-void MixtureFraction::setFuel()
-{
-    fuel_ = true;
-}
-
-//- set oxidizer
-void MixtureFraction::setOxidizer()
-{
-    oxidizer_ = true;
-}
-
-//- return fuel
-const bool MixtureFraction::fuel() const
-{
-    return fuel_;
-}
-
-//- return oxidizer
-const bool MixtureFraction::oxidizer() const
-{
-    return oxidizer_;
-}
-
-//- mol fraction
-
-    //- set mol fraction X 0 < Z 1
-    void MixtureFraction::setX(const scalar& molFraction)
-    {
-        X_ = molFraction;
-    }
-
-    //- set mol fraction X in pure fuel
-    void MixtureFraction::setXf(const scalar& molFraction)
-    {
-        Xf_ = molFraction;
-    }
-
-    //- set mol fraction X in pure oxidizer
-    void MixtureFraction::setXo(const scalar& molFraction)
-    {
-        Xo_ = molFraction;
-    }
-
-    //- return mol fraction X 0 < Z < 1
-    const scalar MixtureFraction::X() const
-    {
-        return X_;
-    }
-
-    //- return mol fraction X in pure fuel
-    const scalar MixtureFraction::Xf() const
-    {
-        return Xf_;
-    }
-
-    //- return mol fraction X in pure oxidizer
-    const scalar MixtureFraction::Xo() const
-    {
-        return Xo_;
-    }
-
-
-//- mass fraction
-
-    //- set mass fraction Y 0 < Z < 1
-    void MixtureFraction::setY(const scalar& massFraction)
-    {
-        Y_ = massFraction;
-    }
-
-    //- set mass fraction Y in pure fuel
-    void MixtureFraction::setYf(const scalar& massFraction)
-    {
-        Yf_ = massFraction;
-    }
-
-    //- set mass fraction Y in pure oxidizer
-    void MixtureFraction::setYo(const scalar& massFraction)
-    {
-        Yo_ = massFraction;
-    }
-
-    //- return mass fraction Y 0 < Z < 1
-    const scalar MixtureFraction::Y() const
-    {
-        return Y_;
-    }
-
-    //- return mass fraction Y in pure fuel
-    const scalar MixtureFraction::Yf() const
-    {
-        return Yf_;
-    }
-
-    //- return mass fraction Y in pure oxidizer
-    const scalar MixtureFraction::Yo() const
-    {
-        return Yo_;
-    }
-
-
-//- set temperature of fuel
-void MixtureFraction::setTf(const scalar& Tf)
-{
-    Tf_ = Tf;
-}
-
-//- set temperature of oxidizer
-void MixtureFraction::setTo(const scalar& To)
-{
-    To_ = To;
-}
-
-//- get temperature of fuel
-const scalar MixtureFraction::Tf() const
-{
-    return Tf_;
-}
-
-//- get temperature of oxidizer
-const scalar MixtureFraction::To() const
-{
-    return To_;
+    return species_;
 }
 
 
-const scalar MixtureFraction::MW() const
+//- calculate mass fraction out of mole fraction
+void MixtureFraction::XToY()
 {
-    return MW_;
-}
+    forAll(species_, i)
+    {
+        Yf_ = pChemistry->MW(i) /
 
-//- return name
-const normalString MixtureFraction::name() const
-{
-    return name_;
+             species[id].MW() /
+//                    MMW_fuel *
+//                    species[id].Xf()
+    }
 }

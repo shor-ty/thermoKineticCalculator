@@ -56,19 +56,19 @@ class Transport
             );
 
             //- open file
-            stringField openFile
+            static stringField openFile
             (
                 const normalString&
             );
 
             //- split string; delimiter is whitespace
-            stringField splitString
+            static stringField splitString
             (
                 const normalString&
             );
 
             //- split string; delimiter is given
-            stringField splitString
+            static stringField splitString
             (
                 const normalString&,
                 const char

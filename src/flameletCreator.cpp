@@ -23,7 +23,8 @@
 //- user def. headers
 #include "database/elements.hpp"
 #include "chemistry/chemistry.hpp"
-
+#include "mixtureFraction/mixtureFraction.hpp"
+#include "functions/functions.hpp"
 
 int main()
 {
@@ -70,13 +71,34 @@ int main()
     //- check if each species has transport properties
     kinetic.checkTrans(fTransport);
 
+    //- create first mixture fraction object
+    //  delegate all species from kinetics and chemistry functions
+    MixtureFraction Z
+    (
+        kinetic.species(),
+        &kinetic
+    );
 
-    //- Read kinetic file
-    //readChemKinThermo(fKinetic, fThermo, species, chemistry);
+    Z.readAFCDict
+    (
+        fAFCDict
+    );
 
-    //- Read afcDict
-//    readAFCDict(fAFCDict, species);
+    Z.XToY();
+
+    //- scalar dissipation rates
+//    const scalarField sDR_ = scalarDissipationRates(fAFCDict);
+
+    //- mixtureFractionPoints
+//    const unsigned int nZ = mixtureFractionPoints(fAFCDict);
 //
+
+
+    //- generate >nPoints< objects of mixture fraction
+//    for (unsigned int i=0; i < nPoints; i++)
+//    {
+//    }
+
 //    //- calculate stochiometric mixture fraction Zst
 //    scalar Zst = stochiometricMF(species);
 //
