@@ -1,235 +1,192 @@
 /*---------------------------------------------------------------------------*\
-| =========                |                                                  |
-| \\      /  A utomatic    | Holzmann-cfd                                     |
-|  \\    /   F lamelet     | Version: 1.0                                     |
-|   \\  /    C onstructor  | Web: www.Holzmann-cfd.de                         |
-|    \\/                   |                                                  |
+  c-o-o-c-o-o-o             |
+  |     |     A utomatic    | Open Source Flamelet
+  c-o-o-c     F lamelet     | 
+  |     |     C onstructor  | Copyright (C) 2015 Holzmann-cfd
+  c     c-o-o-o             |
+-------------------------------------------------------------------------------
+License
+    This file is part of Automatic Flamelet Constructor.
+
+    AFC is free software; you can redistribute it and/or modify it under
+    the terms of the GNU General Public License as published by the
+    Free Software Foundation; either version 3 of the License, or 
+    (at your option) any later version.
+
+    AFC is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with AFC; if not, see <http://www.gnu.org/licenses/>
+
+Class
+    AFC::Chemistry
+    
+Description
+    Abstract AFC::Chemistry class for chemistry data and calculation
+
+SourceFiles
+    chemistry.cpp
+
 \*---------------------------------------------------------------------------*/
-/*
-»
-»
-»
-»
-»
-»
-»
-»
-»
-»
-\*---------------------------------------------------------------------------*/
+
 #ifndef Chemistry_hpp
 #define Chemistry_hpp
-//- system headers
 
+#include "chemistryReader.hpp"
+#include "chemistryData.hpp"
 
-//- user def. headers
-#include "../definitions/typedef.hpp"
-#include "../thermodynamic/thermodynamic.hpp"
-#include "../transport/transport.hpp"
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
+namespace AFC
+{
+
+// Forward declaration
+class ChemistryReader;
+
+/*---------------------------------------------------------------------------*\
+                            Class Chemistry Declaration
+\*---------------------------------------------------------------------------*/
 
 class Chemistry
-:
-    public Thermodynamic
 {
+    private:
+
+        // Private pointer data
+
+            //- Pointer to ChemistryReader object 
+            smartPtr<ChemistryReader> pCR_;
+
+            //- Pointer to ChemistryData object
+            smartPtr<ChemistryData> pCD_;
+    
+
     public:
 
-        //- constructor
+        //- Constructor
         Chemistry();
 
-        //- destructor
+        //- Destructor
         ~Chemistry();
 
 
-    public:
+        // Runtime object generation functions
 
-        //- functions
-
-            //- read the chemistry file
-            void readChemkin
+            //- chemistryReader 
+            void chemistryReader
             (
-                const normalString&
+                const string&
             );
 
-            //- increment the size of matrixes and vectors that are used
+
+        // Member Functions
+            
+            //- read chemistry file
+            void readChemistry();
+
+
+        // Insert functions from ChemistryReader:: (aggregation)
+        // -> delegate to ChemitryData::
+
+            //- Insert elements -> delegated
+            void insertElements
+            (
+                const word&
+            );
+
+            //- Insert species -> delegated
+            void insertSpecies
+            (
+                const word&
+            );
+
+            //- Insert elementar reaction -> delegated
+            void insertElementarReaction
+            (
+                const string& 
+            );
+
+            //- Insert arrhenius coeffs -> delegated
+            void insertArrheniusCoeffs
+            (
+                const scalar&,
+                const scalar&,
+                const scalar&
+            );
+
+            //- Insert LOW coeffs -> delegated
+            void insertLOWCoeffs
+            (
+                const scalar&,
+                const unsigned int&
+            );
+
+            //- Insert TROE coeffs -> delegated
+            void insertTROECoeffs
+            (
+                const scalar&,
+                const unsigned int&
+            );
+            
+            //- Insert SRI coeffs -> delegated
+            void insertSRICoeffs
+            (
+                const scalar&,
+                const unsigned int&
+            );
+
+            //- Insert ENHANCE value -> delegate
+            void insertMvalue
+            (
+                const scalar&
+            );
+
+            //- Insert ENHANCE comp -> delegate
+            void insertMcomp
+            (
+                const string&
+            );
+
+            //- Increment nDuplicated_ -> delegated
+            void incrementDuplicated();
+
+            //- Increment nReac_ -> delegated
+            void incrementReac();
+                
+            //- Increment vectors and matrix size -> delegated
             void incrementMatrixesVectors();
 
-            //- save elementar reaction as re-arranged string
-            void elementarReaction
-            (
-                const normalString&
-            );
 
-            //- set arrhenius coeffs
-            void arrheniusCoeffs
-            (
-                const normalString&
-            );
+        // Setter bool functions
 
-            //- update ENHANCED factors matrix
-            void enhancedFactors
-            (
-                const normalString&
-            );
+            //- Set the backward reaction boolean -> delegated
+            void setKB();
 
-            //- update LOW pressure arrhenius coeffs matrix
-            void LOWCoeffs
-            (
-                const normalString&
-            );
+            //- Set the TBR boolean -> delegated
+            void setTBR();
 
-            //- update TROE coeffs matrix
-            void TROECoeffs
-            (
-                const normalString&
-            );
+            //- Set the LOW boolean -> delegated
+            void setLOW();
 
-            //- update SRI coeffs matrix
-            void SRICoeffs
-            (
-                const normalString&
-            );
+            //- Set the TROE boolean -> delegated
+            void setTROE();
 
-            //- update backward reaction vector
-            void backwardReaction();
+            //- Set the SRI boolean -> delegated
+            void setSRI();
 
-            //- update reactants and products matrix (species)
-            void reactantsAndProducts();
-
-            //- update stochiometric matrix (pre-processing)
-            void updateStochiometricMatrix
-            (
-                const stringField&,
-                const unsigned int,
-                const unsigned int&
-            );
-
-            //- update stochiometric matrix (store data)
-            void updateStochiometricMatrix
-            (
-                const normalString&,
-                const scalar,
-                const unsigned int,
-                const unsigned int&
-            );
-
-            //- remove THIRD BODY from reaction
-            void removeThirdBody
-            (
-                normalString&,
-                const unsigned int&
-            );
-
-
-            //- summary
-            void summary() const;
-
-            //- read thermo data from chemistry file
-            void readChemKinThermo
-            (
-                const normalString&
-            );
-
-            //- create reaction rate matrix
-            void createReactionRateMatrix();
-
-            //- check thermo
-            void checkThermo
-            (
-                const normalString&
-            ) const;
-
-            //- check thermo
-            void checkTrans
-            (
-                const normalString&
-            ) const;
-
-            //- return thermodynamic_ value
-            bool thermo() const;
-
-            //- return species field
-            stringField species() const;
-
-
-
-    private:
-
-        //- vector of all elements that are used in the chemistry
-        stringField elements_;
-
-        //- vector of all species that are used in the chemistry
-        stringField species_;
-
-        //- matrix of stochiometric coeffs
-        matrix nu_;
-
-        //- matrix of arrhenius coeffs
-        matrix arrheniusCoeffs_;
-
-        //- vector of elementary reaction (as string)
-        stringField elementarReaction_;
-
-        //- amount of elementar reactions
-        int n_;
-
-        //- duplicated reactions
-        unsigned int nDuplicate_;
-
-        //- vector of backward reaction
-        std::vector<bool> kb_;
-
-
-        //- vector for THIRD BODY REACTION
-        std::vector<bool> TBR_;
-
-
-        //- SRI THIRD BODY
-
-            //- vector for SRI
-            std::vector<bool> SRI_;
-
-            //- SRI coeffs
-            matrix SRICoeffs_;
-
-
-        //- TROE THIRD BODY
-
-            //- vector for TROE
-            std::vector<bool> TROE_;
-
-            //- TROE coefficient
-            matrix TROECoeffs_;
-
-
-        //- LOW THIRD BODY
-
-            //- vector for low pressure
-            std::vector<bool> LOW_;
-
-            //- LOW pressure arrhenius coeffs
-            matrix LOWCoeffs_;
-
-
-        //- ENHANCED THIRD BODY
-
-            //- vector for THIRD BODY REACTION for ENHANCE
-            std::vector<bool> ENHANCE_;
-
-            //- matrix of THIRD BODY M (composition of species)
-            stringMatrix Mcomp_;
-
-            //- matrix of THIRD BODY M (values of species)
-            matrix Mvalue_;
-
-
-        //- reaction rate matrix (this matrix contain the
-        //  reaction no. that influence the species
-        matrix reactionRateMatrix_;
-
-        //- bool if thermodynamic is included in the chemkin file
-        bool themodynamic_;
-
+            //- Set the Enhance boolean --> delegated
+            void setENHANCE(); 
 };
+
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+} // End namespace AFC
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#endif // Chemistry_hpp included
+
 // ************************************************************************* //
-#endif // Chemistry_HPP

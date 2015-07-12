@@ -14,5 +14,8 @@ doxygen/
 latex/
 html/
 
+#prog
+automaticFlameletCreator
+
 #gedit
 *~
