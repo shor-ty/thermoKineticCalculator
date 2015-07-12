@@ -58,7 +58,7 @@ void AFC::ChemistryReader::readChemistry()
 
     readSpeciesBlock(fileContent);
 
-    readThermodynamicBlock(fileContent);
+    readThermoBlock(fileContent);
 
     readReactionBlock(fileContent);
 }
@@ -156,7 +156,7 @@ void AFC::ChemistryReader::readSpeciesBlock
 }
 
 
-void AFC::ChemistryReader::readThermodynamicBlock
+void AFC::ChemistryReader::readThermoBlock
 (
     const stringList& fileContent
 )

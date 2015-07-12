@@ -39,13 +39,12 @@ AFC::Chemistry::~Chemistry()
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-void AFC::Chemistry::chemistryReader
+void AFC::Chemistry::New
 (
     const string& fileName 
 )
 {
     pCR_ = smartPtr<ChemistryReader>(new ChemistryReader(fileName, this));
-    pCD_ = smartPtr<ChemistryData>(new ChemistryData);
 }
 
 

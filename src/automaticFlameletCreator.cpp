@@ -48,7 +48,7 @@ int main
     {
         FatalError
         (
-            "    Program needs eight arguments.\n"
+            "    Program needs eight arguments.\n\n"
             "    ./automaticFlameletCreator\n"
             "      -transport $pathToFile\n"
             "      -thermodynamic $pathToFile\n"
@@ -101,7 +101,7 @@ int main
 
     Chemistry chemistry;
 
-    chemistry.chemistryReader(file_Chemistry); 
+    chemistry.New(file_Chemistry); 
 
     chemistry.readChemistry();
 

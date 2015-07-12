@@ -72,10 +72,10 @@ class Chemistry
         ~Chemistry();
 
 
-        // Runtime object generation functions
+        // Runtime object creator
 
-            //- chemistryReader 
-            void chemistryReader
+            //- Generate new objects
+            void New
             (
                 const string&
             );
