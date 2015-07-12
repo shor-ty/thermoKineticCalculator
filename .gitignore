@@ -3,3 +3,19 @@
 # codeBlocks
 *.cbp
 *.layout
+*.depend
+
+#gcc 
+obj/
+bin/
+
+#doxygen
+doxygen/
+latex/
+html/
+
+#prog
+automaticFlameletCreator
+
+#gedit
+*~
