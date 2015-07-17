@@ -22,21 +22,21 @@ License
     along with AFC; if not, see <http://www.gnu.org/licenses/>
 
 Class
-    AFC::ChemistryReader    
+    AFC::ThermoReader    
 
 Description
     Reading the chemkin III file
 
 SourceFiles
-    chemistryReader.cpp
+    thermoReader.cpp
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef ChemistryReader_hpp
-#define ChemistryReader_hpp
+#ifndef ThermoReader_hpp
+#define ThermoReader_hpp
 
 #include "stringManipulator.hpp"
-#include "chemistryData.hpp"
+#include "thermoData.hpp"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -44,34 +44,24 @@ namespace AFC
 {
 
 /*---------------------------------------------------------------------------*\
-                      Class ChemistryReader Declaration
+                      Class ThermoReader Declaration
 \*---------------------------------------------------------------------------*/
 
-class ChemistryReader
+class ThermoReader
 :
     public StringManipulator
 {
     private:
 
-        //- List of available keywords for element block
-        wordList ELEMENT{ "ELEMENTS", "ELEM" };
-
-        //- List of available keywords for species block
-        wordList SPECIES{ "SPECIES", "SPEC" };
-
-        //- List of available keywords for thermo block
+        //- List of available keywords for thermo
         wordList THERMO{ "THERMO", "THERMO ALL" };
-
-        //- List of available keywords for reaction block
-        wordList REACTION{ "REACTIONS", "REACT" };
-
 
         // Private data
 
-            //- Adress to ChemistryData:: object
-            smartPtr<ChemistryData> pCD_;
+            //- Adress to ThermoData:: object
+            smartPtr<ThermoData> pTD_;
 
-            //- Chemistry file
+            //- Thermo file
             string file_;
 
 
@@ -79,47 +69,35 @@ class ChemistryReader
 
         // Constructor and Destructor
 
-            //- Constructor with file string and Chemistry:: obj adress
-            ChemistryReader
+            //- Constructor with file string and Thermo:: obj adress
+            ThermoReader
             (
                 const string&
             );
 
             //- Destructor
-            ~ChemistryReader();
+            ~ThermoReader();
 
 
         // Runtime object creator
 
-            //- Generate new ChemistryData objects and return pointer to obj
-            void newChemistryData();
+            //- Generate new ThermoData object and return pointer to obj
+            void newThermoData
+            (
+                const bool& 
+            );
 
         
         // Member functions
 
-            //- Read chemistry file and return pointer to ChemistryData:: obj
-            smartPtr<ChemistryData> readChemistry();
-
-            //- Take all data from ELEMENT block
-            void readElementBlock
+            //- Read thermo file and return pointer to ThermoData:: obj
+            smartPtr<ThermoData> readThermo
             (
-                const stringList&
+                const bool& 
             );
 
-            //- Take all data from SPECIES block
-            void readSpeciesBlock
-            (
-                const stringList&
-            );
-
-            //- Take all data from THERMO block
-            void readThermoBlock
-            (
-                const stringList&
-            );
-
-            //- Take all data from REACTION block
-            void readReactionBlock
+            //- Read file and get NASA polynomials
+            void readNasaPolynomials
             (
                 const stringList&
             );
@@ -132,50 +110,52 @@ class ChemistryReader
             (
                 int&,
                 unsigned int&,
-                const stringList&,
-                const string
+                const stringList&
             );
 
-            //- Return string between '/' and '/'
-            stringList extractData
+            //- Return the atomic weight of the atom
+            scalar calcWeight
             (
-                const string&
+                const word&,
+                const string&,
+                const word&
             );
 
 
         // Data manipulation functions
-        
-            //- Manipulate elementar reaction string and analyze reaction
-            void analyzeReaction
-            (
-                const string&
-            );
 
-            //- Manipulate LOW coeffs
-            void LOWCoeffs
+            //- NASAPolynomial reader for first line
+            void NASAPolynomialNo1
             (
                 const string&,
                 const unsigned int&
             );
 
-            //- Manipulate TROE coeffs
-            void TROECoeffs
+            //- NASAPolynomial reader for second line
+            void NASAPolynomialNo2
             (
                 const string&,
                 const unsigned int&
             );
 
-            //- Manipulate SRI coeffs
-            void SRICoeffs
+            //- NASAPolynomial reader for third line
+            void NASAPolynomialNo3
             (
                 const string&,
                 const unsigned int&
             );
 
-            //- Manipulate ENHANCE factors
-            void enhanceFactors
+            //- NASAPolynomial reader for fourth line
+            void NASAPolynomialNo4
             (
-                const string&
+                const string&,
+                const unsigned int&
+            );
+
+            //- Calculate molecular weight of species
+            scalar calcMolecularWeight
+            (
+                const word&
             );
 };
 

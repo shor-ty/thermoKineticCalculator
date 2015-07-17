@@ -23,43 +23,86 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "chemistry.hpp"
+#include "transportReader.hpp" 
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-AFC::Chemistry::Chemistry()
-{}
+AFC::TransportReader::TransportReader
+(
+    const string& file
+)
+:
+    file_(file)
+
+{
+
+}
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-AFC::Chemistry::~Chemistry()
-{}
-
-
-// * * * * * * * * * * * * * Runtime object creator *  * * * * * * * * * * * //
-
-void AFC::Chemistry::newChemistryReader
-(
-    const string& fileName 
-)
+AFC::TransportReader::~TransportReader()
 {
-    pCR_ = smartPtr<ChemistryReader>(new ChemistryReader(fileName));
+    Info<< "Destructor TransportReader\n";
+}
+
+
+// * * * * * * * * * * * * * Runtime object creator  * * * * * * * * * * * * //
+
+void AFC::TransportReader::newTransportData()
+{
+    pTrD_ = smartPtr<TransportData>(new TransportData());
 }
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-void AFC::Chemistry::readChemistry()
+AFC::smartPtr<AFC::TransportData> AFC::TransportReader::readTransport()
 {
-    pCD_ = std::move(pCR_->readChemistry());
+    Info<< " c-o Reading transport data\n" << endl;
+
+    newTransportData();
+
+    const auto fileContent = readFile(file_);
+
+    //- Reading transport properties
+    for (unsigned int line=0; line < fileContent.size(); line++)
+    {
+        stringList tmp = splitStrAtWS(fileContent[line]);
+
+        //- If line is not empty and no comment, proceed
+        if
+        (
+            !tmp.empty()
+         && tmp[0][0] != '!'
+        )
+        {
+            pTrD_->insertSpecies(tmp[0]);
+
+            pTrD_->insertGeoConfig(stoi(tmp[1]));
+
+            pTrD_->insertLenJonPot(stod(tmp[2]));
+
+            pTrD_->insertLenJonCollDia(stod(tmp[3]));
+
+            pTrD_->insertDipMom(stod(tmp[4]));
+
+            pTrD_->insertPol(stod(tmp[5]));
+
+            pTrD_->insertRotRelCollNumb(stod(tmp[6]));
+        }
+    }
+
+    return std::move(pTrD_);
 }
 
 
-bool AFC::Chemistry::thermo()
-{
-    return (pCD_->thermo());
-}
+// * * * * * * * * * * * * * * Helper functions  * * * * * * * * * * * * * * //
+
+
+
+// * * * * * * * * * * * * Data manipulation functions * * * * * * * * * * * //
+
 
 
 // ************************************************************************* //

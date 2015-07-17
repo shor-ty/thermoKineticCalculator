@@ -61,15 +61,18 @@ const AFC::stringList AFC::StringManipulator::readFile
         );
     }
 
-    string lineContent{""};
+    string lineContent;
     stringList fileContent;
-    
+
     //- Store all lines in fileContent and return
     while(!file.eof())
     {
         std::getline(file, lineContent);
         fileContent.push_back(lineContent);
     }
+
+    //- Remove last entry
+    fileContent.resize(fileContent.size()-1);
 
     return fileContent;
 }

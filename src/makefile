@@ -1,6 +1,9 @@
 WORK_DIR=home/shorty/OpenFOAM/development/flameletcreator/src
 
 INC_DIR=-I/$(WORK_DIR)/chemistry \
+		-I/$(WORK_DIR)/thermo \
+		-I/$(WORK_DIR)/transport \
+		-I/$(WORK_DIR)/constants \
 		-I/$(WORK_DIR)/typedef \
 		-I/$(WORK_DIR)/stringManipulator
 
@@ -8,6 +11,12 @@ SOURCE_FILES=automaticFlameletCreator.cpp \
 			 chemistry/chemistry.cpp \
 			 chemistry/chemistryReader.cpp \
 			 chemistry/chemistryData.cpp \
+			 thermo/thermo.cpp \
+			 thermo/thermoReader.cpp \
+			 thermo/thermoData.cpp \
+			 transport/transport.cpp \
+			 transport/transportReader.cpp \
+			 transport/transportData.cpp \
 			 typedef/typedef.cpp\
 			 stringManipulator/stringManipulator.cpp
 

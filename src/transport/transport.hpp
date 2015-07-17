@@ -22,21 +22,21 @@ License
     along with AFC; if not, see <http://www.gnu.org/licenses/>
 
 Class
-    AFC::Chemistry
+    AFC::Transport
     
 Description
-    Abstract AFC::Chemistry class for chemistry data and calculation
+    Abstract AFC::Transport class for transport data and calculation
 
 SourceFiles
-    chemistry.cpp
+    transport.cpp
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef Chemistry_hpp
-#define Chemistry_hpp
+#ifndef Transport_hpp
+#define Transport_hpp
 
-#include "chemistryReader.hpp"
-#include "chemistryData.hpp"
+#include "transportReader.hpp"
+#include "transportData.hpp"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -44,38 +44,38 @@ namespace AFC
 {
 
 // Forward declaration
-class ChemistryReader;
+class TransportReader;
 
 /*---------------------------------------------------------------------------*\
-                            Class Chemistry Declaration
+                            Class Transport Declaration
 \*---------------------------------------------------------------------------*/
 
-class Chemistry
+class Transport
 {
     private:
 
         // Private pointer data
 
-            //- Pointer to ChemistryReader object 
-            smartPtr<ChemistryReader> pCR_;
+            //- Pointer to TransportReader object 
+            smartPtr<TransportReader> pTrR_;
 
-            //- Pointer to ChemistryData object
-            smartPtr<ChemistryData> pCD_;
+            //- Pointer to TransportData object
+            smartPtr<TransportData> pTrD_;
     
 
     public:
 
         //- Constructor
-        Chemistry();
+        Transport();
 
         //- Destructor
-        ~Chemistry();
+        ~Transport();
 
 
         // Runtime object creator
 
-            //- Generate new ChemistryReader objects
-            void newChemistryReader
+            //- Generate new TransportReader obj
+            void newTransportReader
             (
                 const string&
             );
@@ -83,11 +83,8 @@ class Chemistry
 
         // Member Functions
             
-            //- Read chemistry file
-            void readChemistry();
-
-            //- Return chemistryData::thermo_
-            bool thermo();
+            //- Read transport file
+            void readTransport();
 };
 
 
@@ -97,6 +94,6 @@ class Chemistry
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-#endif // Chemistry_hpp included
+#endif // Transport_hpp included
 
 // ************************************************************************* //

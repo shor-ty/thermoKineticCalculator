@@ -118,11 +118,17 @@ class ChemistryData
         //- Destructor
         ~ChemistryData();
 
-        
+
         // Member functions
 
+            //- Set thermo_ if available in chemistry file
+            void setThermo();
 
-        // Insert functions, from Chemistry:: delegated 
+            //- Returnt thermo 
+            bool thermo();
+
+
+        // Insert functions, from ChemistryReader:: delegated 
 
             //- Insert elements
             void insertElements
@@ -193,8 +199,7 @@ class ChemistryData
             void incrementMatrixesVectors();
 
 
-        // Setter functions, from Chemistry:: delegated
-        // --> called from Chemistry::
+        // Setter functions, from ChemistryReader:: delegated
 
             //- Set the backward reaction boolean
             void setKB();
@@ -213,6 +218,7 @@ class ChemistryData
 
             //- Set the Enhance boolean
             void setENHANCE();
+
 };
 
 

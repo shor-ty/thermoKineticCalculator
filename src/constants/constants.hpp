@@ -1,9 +1,7 @@
 /*---------------------------------------------------------------------------*\
   c-o-o-c-o-o-o             |
   |     |     A utomatic    | Open Source Flamelet
-  c-o-o-c     F lamelet     | 
-  |     |     C onstructor  | Copyright (C) 2015 Holzmann-cfd
-  c     c-o-o-o             |
+  c-o-o-c     F lamelet     | |     |     C onstructor  | Copyright (C) 2015 Holzmann-cfd c     c-o-o-o             |
 -------------------------------------------------------------------------------
 License
     This file is part of Automatic Flamelet Constructor.
@@ -22,81 +20,51 @@ License
     along with AFC; if not, see <http://www.gnu.org/licenses/>
 
 Class
-    AFC::Chemistry
-    
+   AFC::Constants
+   
 Description
-    Abstract AFC::Chemistry class for chemistry data and calculation
+    This class contains all constant data used in the program.
 
 SourceFiles
-    chemistry.cpp
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef Chemistry_hpp
-#define Chemistry_hpp
-
-#include "chemistryReader.hpp"
-#include "chemistryData.hpp"
+#ifndef Constants_hpp
+#define Constants_hpp
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace AFC
 {
 
-// Forward declaration
-class ChemistryReader;
-
-/*---------------------------------------------------------------------------*\
-                            Class Chemistry Declaration
-\*---------------------------------------------------------------------------*/
-
-class Chemistry
+namespace Constants
 {
-    private:
 
-        // Private pointer data
+/*--------------------------------------------------------------------------*\
+                                    Constants
+\*--------------------------------------------------------------------------*/
 
-            //- Pointer to ChemistryReader object 
-            smartPtr<ChemistryReader> pCR_;
-
-            //- Pointer to ChemistryData object
-            smartPtr<ChemistryData> pCD_;
-    
-
-    public:
-
-        //- Constructor
-        Chemistry();
-
-        //- Destructor
-        ~Chemistry();
-
-
-        // Runtime object creator
-
-            //- Generate new ChemistryReader objects
-            void newChemistryReader
-            (
-                const string&
-            );
-
-
-        // Member Functions
-            
-            //- Read chemistry file
-            void readChemistry();
-
-            //- Return chemistryData::thermo_
-            bool thermo();
+//- Constants and their weight 
+map<string, scalar> AW
+{
+    { "H", 1.00790 },
+    { "O", 15.9994 },
+    { "C", 12.0110 },
+    { "N", 14.0067 },
+    { "AR", 39.9480 },
+    { "HE", 4.00260 }
 };
 
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+}   // Namespace Constants
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-} // End namespace AFC
+}   // Namespace AFC 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-#endif // Chemistry_hpp included
+#endif // Constants_hpp included
 
 // ************************************************************************* //

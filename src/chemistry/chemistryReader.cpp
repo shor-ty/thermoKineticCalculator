@@ -29,12 +29,9 @@ License
 
 AFC::ChemistryReader::ChemistryReader
 (
-    const string& file,
-    Chemistry* pC
+    const string& file
 )
 :
-    pC_(pC),
-
     file_(file)
 
 {}
@@ -48,10 +45,22 @@ AFC::ChemistryReader::~ChemistryReader()
 }
 
 
+// * * * * * * * * * * * * * Runtime object creator  * * * * * * * * * * * * //
+
+void AFC::ChemistryReader::newChemistryData()
+{
+    pCD_ = smartPtr<ChemistryData>(new ChemistryData);
+}
+
+
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-void AFC::ChemistryReader::readChemistry()
+AFC::smartPtr<AFC::ChemistryData> AFC::ChemistryReader::readChemistry()
 {
+    Info<< " c-o Reading chemistry data\n" << endl;
+
+    newChemistryData();
+
     const auto fileContent = readFile(file_);
 
     readElementBlock(fileContent);
@@ -61,6 +70,8 @@ void AFC::ChemistryReader::readChemistry()
     readThermoBlock(fileContent);
 
     readReactionBlock(fileContent);
+
+    return std::move(pCD_);
 }
 
 
@@ -70,7 +81,7 @@ void AFC::ChemistryReader::readElementBlock
 )
 {
     //- STEP 1: find line no. of wordList ELEMENTS and "END"
-    unsigned int lineNoKeyword{0};
+    int lineNoKeyword{-1};
     unsigned int lineNoEnd{0};
 
     findKeyword
@@ -80,6 +91,21 @@ void AFC::ChemistryReader::readElementBlock
         fileContent,
         "E"
     );
+
+    //- STEP 2: check if wordList ELEMENT found
+    if
+    (
+        lineNoKeyword == -1
+    )
+    {
+        FatalError
+        (
+            "    Keyword in wordList 'ELEMENT' not found in chemistry"
+            " file " + file_,
+            __FILE__,
+            __LINE__
+        );
+    }
 
     //- Reading ELEMENT block
     for (unsigned int line = lineNoKeyword+1; line < lineNoEnd; line++)
@@ -98,12 +124,12 @@ void AFC::ChemistryReader::readElementBlock
             {
                 forAll(tmp, element)
                 {
-                    pC_->insertElements(tmp[element]);
+                    pCD_->insertElements(tmp[element]);
                 }
             }
             else
             {
-                pC_->insertElements(tmp[0]);
+                pCD_->insertElements(tmp[0]);
             }
         }
     }
@@ -116,7 +142,7 @@ void AFC::ChemistryReader::readSpeciesBlock
 )
 {
     //- STEP 1: find line no. of wordList SPECIES and "END"
-    unsigned int lineNoKeyword{0};
+    int lineNoKeyword{-1};
     unsigned int lineNoEnd{0};
 
     findKeyword
@@ -126,6 +152,21 @@ void AFC::ChemistryReader::readSpeciesBlock
         fileContent,
         "S"
     );
+
+    //- STEP 2: check if wordList SPECIES found
+    if
+    (
+        lineNoKeyword == -1
+    )
+    {
+        FatalError
+        (
+            "    Keyword in wordList 'SPECIES' not found in chemistry"
+            " file " + file_,
+            __FILE__,
+            __LINE__
+        );
+    }
 
     //- Reading SPECIES block
     for (unsigned int line = lineNoKeyword+1; line < lineNoEnd; line++)
@@ -144,12 +185,12 @@ void AFC::ChemistryReader::readSpeciesBlock
             {
                 forAll(tmp, species)
                 {
-                    pC_->insertSpecies(tmp[species]);
+                    pCD_->insertSpecies(tmp[species]);
                 }
             }
             else
             {
-                pC_->insertSpecies(tmp[0]);
+                pCD_->insertSpecies(tmp[0]);
             }
         }
     }
@@ -162,7 +203,7 @@ void AFC::ChemistryReader::readThermoBlock
 )
 {
     //- STEP 1: find line no. of wordList THERMO and "END"
-    unsigned int lineNoKeyword{0};
+    int lineNoKeyword{-1};
     unsigned int lineNoEnd{0};
 
     findKeyword
@@ -174,7 +215,13 @@ void AFC::ChemistryReader::readThermoBlock
     );
 
     //- STEP 2: check if wordList THERMO found
-
+    if
+    (
+        lineNoKeyword != -1
+    )
+    {
+        pCD_->setThermo();
+    }
 }
 
 void AFC::ChemistryReader::readReactionBlock
@@ -183,7 +230,7 @@ void AFC::ChemistryReader::readReactionBlock
 )
 {
     //- STEP 1: find line no. of wordList REACTIONS and "END"
-    unsigned int lineNoKeyword{0};
+    int lineNoKeyword{-1};
     unsigned int lineNoEnd{0};
 
     findKeyword
@@ -193,6 +240,21 @@ void AFC::ChemistryReader::readReactionBlock
         fileContent,
         "R"
     );
+ 
+    //- STEP 2: check if wordList REACTION found
+    if
+    (
+        lineNoKeyword == -1
+    )
+    {
+        FatalError
+        (
+            "    Keyword in wordList 'REACTIONS' not found in chemistry"
+            " file " + file_,
+            __FILE__,
+            __LINE__
+        );
+    }
 
     //- Reading SPECIES block
     for (unsigned int line = lineNoKeyword+1; line < lineNoEnd; line++)
@@ -213,7 +275,7 @@ void AFC::ChemistryReader::readReactionBlock
                 line+= 2;
 
                 //- Increment duplicate entry
-                pC_->incrementDuplicated();
+                pCD_->incrementDuplicated();
             }
             else
             {
@@ -222,9 +284,9 @@ void AFC::ChemistryReader::readReactionBlock
 
                 if (found != std::string::npos)
                 {
-                    pC_->incrementReac();
+                    pCD_->incrementReac();
 
-                    pC_->incrementMatrixesVectors();
+                    pCD_->incrementMatrixesVectors();
 
                     analyzeReaction(fileContent[line]);
 
@@ -232,7 +294,7 @@ void AFC::ChemistryReader::readReactionBlock
 
                     if (found != std::string::npos)
                     {
-                        pC_->setTBR();
+                        pCD_->setTBR();
                     }
                 }
                 else
@@ -249,24 +311,24 @@ void AFC::ChemistryReader::readReactionBlock
                     if (foundLOW != std::string::npos)
                     {
                         LOWCoeffs(fileContent[line], line);
-                        pC_->setLOW();
+                        pCD_->setLOW();
                     }
                     //- TROE parameters
                     else if (foundTROE != std::string::npos)
                     {
                         TROECoeffs(fileContent[line], line);
-                        pC_->setTROE();
+                        pCD_->setTROE();
                     }
                     //- SRI parameters
                     else if (foundSRI != std::string::npos)
                     {
                         SRICoeffs(fileContent[line], line);
-                        pC_->setSRI();
+                        pCD_->setSRI();
                     }
                     else
                     {
                         enhanceFactors(fileContent[line]);
-                        pC_->setENHANCE();
+                        pCD_->setENHANCE();
                     }
                 }
             }
@@ -279,7 +341,7 @@ void AFC::ChemistryReader::readReactionBlock
 
 void AFC::ChemistryReader::findKeyword
 (
-    unsigned int& start,
+    int& start,
     unsigned int& end,
     const stringList& fileContent,
     const string search
@@ -327,7 +389,7 @@ void AFC::ChemistryReader::findKeyword
         }
 
         //- Search end after keyword found
-        if (tmp[0] == "END" && start != 0)
+        if (tmp[0] == "END" && start != -1)
         {
             end = line;
         }
@@ -386,7 +448,7 @@ void AFC::ChemistryReader::analyzeReaction
         tmp2 += tmp[i];
     }
 
-    pC_->insertElementarReaction(tmp2);
+    pCD_->insertElementarReaction(tmp2);
     
     //- STEP 2: analyze reaction
     string delimiter1 = "=";
@@ -413,7 +475,7 @@ void AFC::ChemistryReader::analyzeReaction
      && found3 == std::string::npos
     )
     {
-        pC_->setKB();
+        pCD_->setKB();
     }
     //- b)
     else if
@@ -423,7 +485,7 @@ void AFC::ChemistryReader::analyzeReaction
      && found3 != std::string::npos
     )
     {
-        pC_->setKB();
+        pCD_->setKB();
     }
     //- c)
     //  Not implemented, default is c)
@@ -449,7 +511,7 @@ void AFC::ChemistryReader::analyzeReaction
     }
 
     // STEP 3: insert arrhenius coeffs
-    pC_->insertArrheniusCoeffs
+    pCD_->insertArrheniusCoeffs
         (
             stod(tmp[tmp.size()-3]),
             stod(tmp[tmp.size()-2]),
@@ -484,7 +546,7 @@ void AFC::ChemistryReader::LOWCoeffs
     //- STEP 3: update matrix
     forAll(coeffs, i)
     {
-        pC_->insertLOWCoeffs(stod(coeffs[i]), i);
+        pCD_->insertLOWCoeffs(stod(coeffs[i]), i);
     }
 }
 
@@ -519,7 +581,7 @@ void AFC::ChemistryReader::TROECoeffs
     //- STEP 3: update matrix
     forAll(coeffs, i)
     {
-         pC_->insertTROECoeffs(stod(coeffs[i]), i);
+         pCD_->insertTROECoeffs(stod(coeffs[i]), i);
     }
 }
 
@@ -554,7 +616,7 @@ void AFC::ChemistryReader::SRICoeffs
     //- STEP 3: update matrix
     forAll(coeffs, i)
     {
-         pC_->insertSRICoeffs(stod(coeffs[i]), i);
+         pCD_->insertSRICoeffs(stod(coeffs[i]), i);
     }
 }
 
@@ -584,12 +646,12 @@ void AFC::ChemistryReader::enhanceFactors
         //- Insert value
         if (modul)
         {
-            pC_->insertMvalue(stod(tmp[i]));
+            pCD_->insertMvalue(stod(tmp[i]));
         }
         //- Insert species
         else
         {
-            pC_->insertMcomp(tmp[i]);
+            pCD_->insertMcomp(tmp[i]);
         }
     }
 }

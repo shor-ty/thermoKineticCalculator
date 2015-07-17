@@ -23,42 +23,39 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "chemistry.hpp"
+#include "thermo.hpp"
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-AFC::Chemistry::Chemistry()
+AFC::Thermo::Thermo()
 {}
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-AFC::Chemistry::~Chemistry()
+AFC::Thermo::~Thermo()
 {}
 
 
 // * * * * * * * * * * * * * Runtime object creator *  * * * * * * * * * * * //
 
-void AFC::Chemistry::newChemistryReader
+void AFC::Thermo::newThermoReader
 (
     const string& fileName 
 )
 {
-    pCR_ = smartPtr<ChemistryReader>(new ChemistryReader(fileName));
+    pTR_ = smartPtr<ThermoReader>(new ThermoReader(fileName));
 }
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-void AFC::Chemistry::readChemistry()
+void AFC::Thermo::readThermo
+(
+    const bool& thermo
+)
 {
-    pCD_ = std::move(pCR_->readChemistry());
-}
-
-
-bool AFC::Chemistry::thermo()
-{
-    return (pCD_->thermo());
+    pTD_ = std::move(pTR_->readThermo(thermo));
 }
 
 

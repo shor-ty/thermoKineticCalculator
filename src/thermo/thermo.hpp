@@ -22,21 +22,21 @@ License
     along with AFC; if not, see <http://www.gnu.org/licenses/>
 
 Class
-    AFC::Chemistry
+    AFC::Thermo
     
 Description
-    Abstract AFC::Chemistry class for chemistry data and calculation
+    Abstract AFC::Thermo class for thermo data and calculation
 
 SourceFiles
-    chemistry.cpp
+    thermo.cpp
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef Chemistry_hpp
-#define Chemistry_hpp
+#ifndef Thermo_hpp
+#define Thermo_hpp
 
-#include "chemistryReader.hpp"
-#include "chemistryData.hpp"
+#include "thermoReader.hpp"
+#include "thermoData.hpp"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -44,38 +44,38 @@ namespace AFC
 {
 
 // Forward declaration
-class ChemistryReader;
+class ThermoReader;
 
 /*---------------------------------------------------------------------------*\
-                            Class Chemistry Declaration
+                            Class Thermo Declaration
 \*---------------------------------------------------------------------------*/
 
-class Chemistry
+class Thermo
 {
     private:
 
         // Private pointer data
 
-            //- Pointer to ChemistryReader object 
-            smartPtr<ChemistryReader> pCR_;
+            //- Pointer to ThermoReader object 
+            smartPtr<ThermoReader> pTR_;
 
-            //- Pointer to ChemistryData object
-            smartPtr<ChemistryData> pCD_;
+            //- Pointer to ThermoData object
+            smartPtr<ThermoData> pTD_;
     
 
     public:
 
         //- Constructor
-        Chemistry();
+        Thermo();
 
         //- Destructor
-        ~Chemistry();
+        ~Thermo();
 
 
         // Runtime object creator
 
-            //- Generate new ChemistryReader objects
-            void newChemistryReader
+            //- Generate new ThermoReader obj
+            void newThermoReader
             (
                 const string&
             );
@@ -83,11 +83,11 @@ class Chemistry
 
         // Member Functions
             
-            //- Read chemistry file
-            void readChemistry();
-
-            //- Return chemistryData::thermo_
-            bool thermo();
+            //- Read thermo file and take ChemistryData::thermo_
+            void readThermo
+            (
+                const bool&
+            );
 };
 
 
@@ -97,6 +97,6 @@ class Chemistry
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-#endif // Chemistry_hpp included
+#endif // Thermo_hpp included
 
 // ************************************************************************* //

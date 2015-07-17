@@ -26,9 +26,16 @@ Description
 
 \*---------------------------------------------------------------------------*/
 
-#include "chemistry.hpp"
 #include "typedef.hpp" 
+#include "chemistry.hpp"
+#include "thermo.hpp"
+#include "transport.hpp"
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
 using namespace AFC;
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 int main
 (
@@ -36,6 +43,8 @@ int main
     char** argv
 )
 {
+    Header();
+
     string file_AFC;
     string file_Thermo;
     string file_Transport;
@@ -101,9 +110,24 @@ int main
 
     Chemistry chemistry;
 
-    chemistry.New(file_Chemistry); 
+    chemistry.newChemistryReader(file_Chemistry); 
 
     chemistry.readChemistry();
+
+    Thermo thermo;
+
+    thermo.newThermoReader(file_Thermo);
+
+    thermo.readThermo
+    (
+        chemistry.thermo()
+    );
+
+    Transport transport;
+
+    transport.newTransportReader(file_Transport);
+
+    transport.readTransport();
 
     return 0;
 }

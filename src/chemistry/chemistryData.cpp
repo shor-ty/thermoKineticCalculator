@@ -43,7 +43,20 @@ AFC::ChemistryData::~ChemistryData()
 }
 
 
-// * * * * * * * * * * Insert functions from Chemistry:: * * * * * * * * * * //
+// * * * * * * * * * * * * * * * Member functions  * * * * * * * * * * * * * //
+
+void AFC::ChemistryData::setThermo()
+{
+    thermo_ = true;
+}
+
+
+bool AFC::ChemistryData::thermo()
+{
+    return thermo_;
+}
+
+// * * * * * * * * * Insert functions from ChemistryReader:: * * * * * * * * //
 
 void AFC::ChemistryData::insertElements
 (

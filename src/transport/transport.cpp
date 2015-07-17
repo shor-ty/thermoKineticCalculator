@@ -23,42 +23,36 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "chemistry.hpp"
+#include "transport.hpp"
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-AFC::Chemistry::Chemistry()
+AFC::Transport::Transport()
 {}
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-AFC::Chemistry::~Chemistry()
+AFC::Transport::~Transport()
 {}
 
 
 // * * * * * * * * * * * * * Runtime object creator *  * * * * * * * * * * * //
 
-void AFC::Chemistry::newChemistryReader
+void AFC::Transport::newTransportReader
 (
     const string& fileName 
 )
 {
-    pCR_ = smartPtr<ChemistryReader>(new ChemistryReader(fileName));
+    pTrR_ = smartPtr<TransportReader>(new TransportReader(fileName));
 }
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-void AFC::Chemistry::readChemistry()
+void AFC::Transport::readTransport()
 {
-    pCD_ = std::move(pCR_->readChemistry());
-}
-
-
-bool AFC::Chemistry::thermo()
-{
-    return (pCD_->thermo());
+    pTrD_ = std::move(pTrR_->readTransport());
 }
 
 

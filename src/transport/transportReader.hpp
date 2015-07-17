@@ -22,74 +22,72 @@ License
     along with AFC; if not, see <http://www.gnu.org/licenses/>
 
 Class
-    AFC::Chemistry
-    
+    AFC::TransportReader    
+
 Description
-    Abstract AFC::Chemistry class for chemistry data and calculation
+    Reading the chemkin III file
 
 SourceFiles
-    chemistry.cpp
+    transportReader.cpp
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef Chemistry_hpp
-#define Chemistry_hpp
+#ifndef TransportReader_hpp
+#define TransportReader_hpp
 
-#include "chemistryReader.hpp"
-#include "chemistryData.hpp"
+#include "stringManipulator.hpp"
+#include "transportData.hpp"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace AFC
 {
 
-// Forward declaration
-class ChemistryReader;
-
 /*---------------------------------------------------------------------------*\
-                            Class Chemistry Declaration
+                      Class TransportReader Declaration
 \*---------------------------------------------------------------------------*/
 
-class Chemistry
+class TransportReader
+:
+    public StringManipulator
 {
     private:
 
-        // Private pointer data
+        // Private data
 
-            //- Pointer to ChemistryReader object 
-            smartPtr<ChemistryReader> pCR_;
+            //- Adress to TransportData:: object
+            smartPtr<TransportData> pTrD_;
 
-            //- Pointer to ChemistryData object
-            smartPtr<ChemistryData> pCD_;
-    
+            //- Transport file
+            string file_;
+
 
     public:
 
-        //- Constructor
-        Chemistry();
+        // Constructor and Destructor
 
-        //- Destructor
-        ~Chemistry();
-
-
-        // Runtime object creator
-
-            //- Generate new ChemistryReader objects
-            void newChemistryReader
+            //- Constructor with file string and Transport:: obj adress
+            TransportReader
             (
                 const string&
             );
 
+            //- Destructor
+            ~TransportReader();
 
-        // Member Functions
-            
-            //- Read chemistry file
-            void readChemistry();
 
-            //- Return chemistryData::thermo_
-            bool thermo();
+        // Runtime object creator
+
+            //- Generate new TransportData object and return pointer to obj
+            void newTransportData();
+
+        
+        // Member functions
+
+            //- Read transport file and return pointer to TransportData:: obj
+            smartPtr<TransportData> readTransport();
+
 };
-
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -97,6 +95,6 @@ class Chemistry
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-#endif // Chemistry_hpp included
+#endif
 
 // ************************************************************************* //

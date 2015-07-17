@@ -31,9 +31,11 @@ Description
 
 #include <vector>
 #include <string>
+#include <sstream>
 #include <string.h>
 #include <iostream>
 #include <memory>
+#include <map>
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -44,23 +46,23 @@ namespace AFC
                           AFC Defintions and typedef
 \*---------------------------------------------------------------------------*/
 
-typedef double scalar;
+using scalar = double;
 
-typedef std::vector<bool> boolList;
+using boolList = std::vector<bool>;
 
-typedef std::vector<double> scalarField;
+using scalarField = std::vector<double>;
 
-typedef std::vector<scalarField> matrix;
+using matrix = std::vector<scalarField>;
 
-typedef std::string word;
+using word = std::string;
 
-typedef std::vector<word> wordList;
+using wordList = std::vector<word>;
 
-typedef std::vector<wordList> wordMatrix;
+using wordMatrix = std::vector<wordList>;
 
-typedef std::string string;
+using string = std::string;
 
-typedef std::vector<string> stringList;
+using stringList = std::vector<string>;
 
 extern std::ostream& Info;
 
@@ -69,6 +71,8 @@ extern std::ostream& Error;
 extern std::basic_ostream<char>& (&endl)(std::basic_ostream<char>&);
 
 template<class T> using smartPtr = std::unique_ptr<T>;
+
+template<class T, class Z> using map = typename std::map<T, Z>;
 
 #define forAll(scalarField, i) for \
     (unsigned int i=0; i<(scalarField).size(); i++)
@@ -80,6 +84,7 @@ void FatalError
     const unsigned long
 );
 
+void Header();
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
