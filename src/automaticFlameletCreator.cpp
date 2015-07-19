@@ -129,6 +129,11 @@ int main
 
     transport.readTransport();
 
+
+    Info<< " c-o All data read successfully\n" << endl;
+
+    Info<< " c-o Re-organize data structure\n" << endl;
+
     return 0;
 }
 

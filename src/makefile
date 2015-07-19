@@ -1,4 +1,4 @@
-WORK_DIR=home/shorty/OpenFOAM/development/flameletcreator/src
+WORK_DIR=$(PWD)
 
 INC_DIR=-I/$(WORK_DIR)/chemistry \
 		-I/$(WORK_DIR)/thermo \
