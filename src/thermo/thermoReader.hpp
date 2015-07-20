@@ -58,9 +58,6 @@ class ThermoReader
 
         // Private data
 
-            //- Adress to ThermoData:: object
-            smartPtr<ThermoData> pTD_;
-
             //- Thermo file
             string file_;
 
@@ -78,22 +75,13 @@ class ThermoReader
             //- Destructor
             ~ThermoReader();
 
-
-        // Runtime object creator
-
-            //- Generate new ThermoData object and return pointer to obj
-            void newThermoData
-            (
-                const bool& 
-            );
-
         
         // Member functions
 
             //- Read thermo file and return pointer to ThermoData:: obj
-            smartPtr<ThermoData> readThermo
+            void read
             (
-                const bool& 
+                ThermoData&
             );
 
             //- Read file and get NASA polynomials
@@ -128,28 +116,35 @@ class ThermoReader
             void NASAPolynomialNo1
             (
                 const string&,
-                const unsigned int&
+                const unsigned int&,
+                ThermoData&
             );
 
             //- NASAPolynomial reader for second line
             void NASAPolynomialNo2
             (
                 const string&,
-                const unsigned int&
+                const unsigned int&,
+                ThermoData&
+
             );
 
             //- NASAPolynomial reader for third line
             void NASAPolynomialNo3
             (
                 const string&,
-                const unsigned int&
+                const unsigned int&,
+                ThermoData&
+
             );
 
             //- NASAPolynomial reader for fourth line
             void NASAPolynomialNo4
             (
                 const string&,
-                const unsigned int&
+                const unsigned int&,
+                ThermoData&
+
             );
 
             //- Calculate molecular weight of species

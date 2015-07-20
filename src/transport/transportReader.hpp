@@ -55,9 +55,6 @@ class TransportReader
 
         // Private data
 
-            //- Adress to TransportData:: object
-            smartPtr<TransportData> pTrD_;
-
             //- Transport file
             string file_;
 
@@ -75,17 +72,14 @@ class TransportReader
             //- Destructor
             ~TransportReader();
 
-
-        // Runtime object creator
-
-            //- Generate new TransportData object and return pointer to obj
-            void newTransportData();
-
         
         // Member functions
 
             //- Read transport file and return pointer to TransportData:: obj
-            smartPtr<TransportData> readTransport();
+            void read
+            (
+                TransportData& 
+            );
 
 };
 

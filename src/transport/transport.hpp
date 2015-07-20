@@ -43,9 +43,6 @@ SourceFiles
 namespace AFC
 {
 
-// Forward declaration
-class TransportReader;
-
 /*---------------------------------------------------------------------------*\
                             Class Transport Declaration
 \*---------------------------------------------------------------------------*/
@@ -56,35 +53,20 @@ class Transport
 
         // Private pointer data
 
-            //- Pointer to TransportReader object 
-            smartPtr<TransportReader> pTrR_;
+            //- TransportData
+            TransportData transData_;
 
-            //- Pointer to TransportData object
-            smartPtr<TransportData> pTrD_;
-    
 
     public:
 
         //- Constructor
-        Transport();
+        Transport
+        (
+            const string& 
+        );
 
         //- Destructor
         ~Transport();
-
-
-        // Runtime object creator
-
-            //- Generate new TransportReader obj
-            void newTransportReader
-            (
-                const string&
-            );
-
-
-        // Member Functions
-            
-            //- Read transport file
-            void readTransport();
 };
 
 

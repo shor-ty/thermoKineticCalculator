@@ -43,9 +43,6 @@ SourceFiles
 namespace AFC
 {
 
-// Forward declaration
-class ThermoReader;
-
 /*---------------------------------------------------------------------------*\
                             Class Thermo Declaration
 \*---------------------------------------------------------------------------*/
@@ -56,38 +53,21 @@ class Thermo
 
         // Private pointer data
 
-            //- Pointer to ThermoReader object 
-            smartPtr<ThermoReader> pTR_;
-
-            //- Pointer to ThermoData object
-            smartPtr<ThermoData> pTD_;
+            //- ThermoData object
+            ThermoData thermoData_;
     
 
     public:
 
-        //- Constructor
-        Thermo();
+        //- Constructor with fileName
+        Thermo
+        (
+            const string&,
+            const bool&
+        );
 
         //- Destructor
         ~Thermo();
-
-
-        // Runtime object creator
-
-            //- Generate new ThermoReader obj
-            void newThermoReader
-            (
-                const string&
-            );
-
-
-        // Member Functions
-            
-            //- Read thermo file and take ChemistryData::thermo_
-            void readThermo
-            (
-                const bool&
-            );
 };
 
 

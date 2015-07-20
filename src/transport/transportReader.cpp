@@ -43,25 +43,18 @@ AFC::TransportReader::TransportReader
 
 AFC::TransportReader::~TransportReader()
 {
-    Info<< "Destructor TransportReader\n";
-}
-
-
-// * * * * * * * * * * * * * Runtime object creator  * * * * * * * * * * * * //
-
-void AFC::TransportReader::newTransportData()
-{
-    pTrD_ = smartPtr<TransportData>(new TransportData());
+    Info<< "Destructor TransportReader\n" << endl;
 }
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-AFC::smartPtr<AFC::TransportData> AFC::TransportReader::readTransport()
+void AFC::TransportReader::read
+(
+    TransportData& data 
+)
 {
     Info<< " c-o Reading transport data\n" << endl;
-
-    newTransportData();
 
     const auto fileContent = readFile(file_);
 
@@ -77,23 +70,21 @@ AFC::smartPtr<AFC::TransportData> AFC::TransportReader::readTransport()
          && tmp[0][0] != '!'
         )
         {
-            pTrD_->insertSpecies(tmp[0]);
+            data.insertSpecies(tmp[0]);
 
-            pTrD_->insertGeoConfig(stoi(tmp[1]));
+            data.insertGeoConfig(stoi(tmp[1]));
 
-            pTrD_->insertLenJonPot(stod(tmp[2]));
+            data.insertLenJonPot(stod(tmp[2]));
 
-            pTrD_->insertLenJonCollDia(stod(tmp[3]));
+            data.insertLenJonCollDia(stod(tmp[3]));
 
-            pTrD_->insertDipMom(stod(tmp[4]));
+            data.insertDipMom(stod(tmp[4]));
 
-            pTrD_->insertPol(stod(tmp[5]));
+            data.insertPol(stod(tmp[5]));
 
-            pTrD_->insertRotRelCollNumb(stod(tmp[6]));
+            data.insertRotRelCollNumb(stod(tmp[6]));
         }
     }
-
-    return std::move(pTrD_);
 }
 
 

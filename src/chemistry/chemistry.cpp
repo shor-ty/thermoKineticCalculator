@@ -27,8 +27,15 @@ License
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-AFC::Chemistry::Chemistry()
-{}
+AFC::Chemistry::Chemistry
+(
+    const string& fileName 
+)
+{
+    ChemistryReader chemReader(fileName);
+    
+    chemReader.read(chemData_);
+}
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
@@ -37,28 +44,11 @@ AFC::Chemistry::~Chemistry()
 {}
 
 
-// * * * * * * * * * * * * * Runtime object creator *  * * * * * * * * * * * //
-
-void AFC::Chemistry::newChemistryReader
-(
-    const string& fileName 
-)
-{
-    pCR_ = smartPtr<ChemistryReader>(new ChemistryReader(fileName));
-}
-
-
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
-
-void AFC::Chemistry::readChemistry()
-{
-    pCD_ = std::move(pCR_->readChemistry());
-}
-
 
 bool AFC::Chemistry::thermo()
 {
-    return (pCD_->thermo());
+    return (chemData_.thermo());
 }
 
 

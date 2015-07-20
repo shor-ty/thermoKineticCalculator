@@ -44,31 +44,18 @@ AFC::ThermoReader::ThermoReader
 
 AFC::ThermoReader::~ThermoReader()
 {
-    Info<< "Destructor ThermoReader\n";
-}
-
-
-// * * * * * * * * * * * * * Runtime object creator  * * * * * * * * * * * * //
-
-void AFC::ThermoReader::newThermoData
-(
-    const bool& thermo 
-)
-{
-    pTD_ = smartPtr<ThermoData>(new ThermoData(thermo));
+    Info<< "Destructor ThermoReader\n" << endl;
 }
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-AFC::smartPtr<AFC::ThermoData> AFC::ThermoReader::readThermo
+void AFC::ThermoReader::read
 (
-    const bool& thermo 
+    ThermoData& data
 )
 {
     Info<< " c-o Reading thermodynamic data\n" << endl;
-
-    newThermoData(thermo);
 
     //- TODO if thermo true --> use chemistry file
 
@@ -98,15 +85,13 @@ AFC::smartPtr<AFC::ThermoData> AFC::ThermoReader::readThermo
         {
             if (fileContent[line][79] == '1')
             {
-                NASAPolynomialNo1(fileContent[line], line);
-                NASAPolynomialNo2(fileContent[++line], line);
-                NASAPolynomialNo3(fileContent[++line], line);
-                NASAPolynomialNo4(fileContent[++line], line);
+                NASAPolynomialNo1(fileContent[line], line, data);
+                NASAPolynomialNo2(fileContent[++line], line, data);
+                NASAPolynomialNo3(fileContent[++line], line, data);
+                NASAPolynomialNo4(fileContent[++line], line, data);
             }
         }
     }
-
-    return std::move(pTD_);
 }
 
 
@@ -195,7 +180,8 @@ AFC::scalar AFC::ThermoReader::calcWeight
 void AFC::ThermoReader::NASAPolynomialNo1
 (
     const string& lineContent,
-    const unsigned int& line
+    const unsigned int& line,
+    ThermoData& data
 )
 {
     // Species name [1-18]
@@ -204,7 +190,7 @@ void AFC::ThermoReader::NASAPolynomialNo1
 
         if (!species[0].empty())
         {
-            pTD_->insertSpecies(species[0]);
+            data.insertSpecies(species[0]);
         }
         else
         {
@@ -225,7 +211,7 @@ void AFC::ThermoReader::NASAPolynomialNo1
 
         word atomicComposition = lineContent.substr(24,20);
         
-        pTD_->insertMolecularWeight
+        data.insertMolecularWeight
             (
                 calcMolecularWeight
                 (
@@ -235,16 +221,16 @@ void AFC::ThermoReader::NASAPolynomialNo1
     }
 
     //- Phase [45]
-    pTD_->insertPhase(lineContent.substr(44,1));
+    data.insertPhase(lineContent.substr(44,1));
 
     //- Low temperature [46-55]
-    pTD_->insertLT(stod(lineContent.substr(45,10)));
+    data.insertLT(stod(lineContent.substr(45,10)));
 
     //- High temperature [56-65]
-    pTD_->insertHT(stod(lineContent.substr(55,10)));
+    data.insertHT(stod(lineContent.substr(55,10)));
 
     //- Common temperature [66-73]
-    pTD_->insertCT(stod(lineContent.substr(65,8)));
+    data.insertCT(stod(lineContent.substr(65,8)));
 
     //- Addition atomic symbolic and formula [74-78] 
     //  Not implemented yet (should be done before)
@@ -259,7 +245,8 @@ void AFC::ThermoReader::NASAPolynomialNo1
 void AFC::ThermoReader::NASAPolynomialNo2
 (
     const string& lineContent,
-    const unsigned int& line
+    const unsigned int& line,
+    ThermoData& data
 )
 {
     //- First check integer '2' [80]
@@ -275,26 +262,27 @@ void AFC::ThermoReader::NASAPolynomialNo2
     }
     
     //- Coefficient a1 [1-15]
-    pTD_->insertHTPolyCoeffs(stod(lineContent.substr(0,15)));
+    data.insertHTPolyCoeffs(stod(lineContent.substr(0,15)));
 
     //- Coefficient a2 [16-30]
-    pTD_->insertHTPolyCoeffs(stod(lineContent.substr(15,15)));
+    data.insertHTPolyCoeffs(stod(lineContent.substr(15,15)));
 
     //- Coefficient a3 [31-45]
-    pTD_->insertHTPolyCoeffs(stod(lineContent.substr(30,15)));
+    data.insertHTPolyCoeffs(stod(lineContent.substr(30,15)));
 
     //- Coefficient a4 [46-60]
-    pTD_->insertHTPolyCoeffs(stod(lineContent.substr(45,15)));
+    data.insertHTPolyCoeffs(stod(lineContent.substr(45,15)));
 
     //- Coefficient a5 [61-75]
-    pTD_->insertHTPolyCoeffs(stod(lineContent.substr(60,15)));
+    data.insertHTPolyCoeffs(stod(lineContent.substr(60,15)));
 }
 
 
 void AFC::ThermoReader::NASAPolynomialNo3
 (
     const string& lineContent,
-    const unsigned int& line
+    const unsigned int& line,
+    ThermoData& data
 )
 {
     //- First check integer '3' [80]
@@ -310,26 +298,27 @@ void AFC::ThermoReader::NASAPolynomialNo3
     }
     
     //- Coefficient a6 [1-15]
-    pTD_->insertHTPolyCoeffs(stod(lineContent.substr(0,15)));
+    data.insertHTPolyCoeffs(stod(lineContent.substr(0,15)));
 
     //- Coefficient a7 [16-30]
-    pTD_->insertHTPolyCoeffs(stod(lineContent.substr(15,15)));
+    data.insertHTPolyCoeffs(stod(lineContent.substr(15,15)));
 
     //- Coefficient b1 [31-45]
-    pTD_->insertLTPolyCoeffs(stod(lineContent.substr(30,15)));
+    data.insertLTPolyCoeffs(stod(lineContent.substr(30,15)));
 
     //- Coefficient b2 [46-60]
-    pTD_->insertLTPolyCoeffs(stod(lineContent.substr(45,15)));
+    data.insertLTPolyCoeffs(stod(lineContent.substr(45,15)));
 
     //- Coefficient b3 [61-75]
-    pTD_->insertLTPolyCoeffs(stod(lineContent.substr(60,15)));
+    data.insertLTPolyCoeffs(stod(lineContent.substr(60,15)));
 }
 
 
 void AFC::ThermoReader::NASAPolynomialNo4
 (
     const string& lineContent,
-    const unsigned int& line
+    const unsigned int& line,
+    ThermoData& data
 )
 {
     //- First check integer '4' [80]
@@ -345,16 +334,16 @@ void AFC::ThermoReader::NASAPolynomialNo4
     }
     
     //- Coefficient b4 [1-15]
-    pTD_->insertLTPolyCoeffs(stod(lineContent.substr(0,15)));
+    data.insertLTPolyCoeffs(stod(lineContent.substr(0,15)));
 
     //- Coefficient b5 [16-30]
-    pTD_->insertLTPolyCoeffs(stod(lineContent.substr(15,15)));
+    data.insertLTPolyCoeffs(stod(lineContent.substr(15,15)));
 
     //- Coefficient b6 [31-45]
-    pTD_->insertLTPolyCoeffs(stod(lineContent.substr(30,15)));
+    data.insertLTPolyCoeffs(stod(lineContent.substr(30,15)));
 
     //- Coefficient b7 [46-60]
-    pTD_->insertLTPolyCoeffs(stod(lineContent.substr(45,15)));
+    data.insertLTPolyCoeffs(stod(lineContent.substr(45,15)));
 }
 
 

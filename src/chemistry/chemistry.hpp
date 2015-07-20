@@ -43,9 +43,6 @@ SourceFiles
 namespace AFC
 {
 
-// Forward declaration
-class ChemistryReader;
-
 /*---------------------------------------------------------------------------*\
                             Class Chemistry Declaration
 \*---------------------------------------------------------------------------*/
@@ -56,29 +53,20 @@ class Chemistry
 
         // Private pointer data
 
-            //- Pointer to ChemistryReader object 
-            smartPtr<ChemistryReader> pCR_;
-
-            //- Pointer to ChemistryData object
-            smartPtr<ChemistryData> pCD_;
+            //- chemistryData obj
+            ChemistryData chemData_;
     
 
     public:
 
         //- Constructor
-        Chemistry();
+        Chemistry
+        (
+            const string&
+        );
 
         //- Destructor
         ~Chemistry();
-
-
-        // Runtime object creator
-
-            //- Generate new ChemistryReader objects
-            void newChemistryReader
-            (
-                const string&
-            );
 
 
         // Member Functions

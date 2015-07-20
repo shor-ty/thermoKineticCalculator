@@ -27,8 +27,18 @@ License
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-AFC::Thermo::Thermo()
-{}
+AFC::Thermo::Thermo
+(
+    const string& fileName,
+    const bool& thermo
+)
+:
+    thermoData_(thermo)
+{
+    ThermoReader thermoReader(fileName);
+
+    thermoReader.read(thermoData_);
+}
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
@@ -37,26 +47,7 @@ AFC::Thermo::~Thermo()
 {}
 
 
-// * * * * * * * * * * * * * Runtime object creator *  * * * * * * * * * * * //
-
-void AFC::Thermo::newThermoReader
-(
-    const string& fileName 
-)
-{
-    pTR_ = smartPtr<ThermoReader>(new ThermoReader(fileName));
-}
-
-
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
-
-void AFC::Thermo::readThermo
-(
-    const bool& thermo
-)
-{
-    pTD_ = std::move(pTR_->readThermo(thermo));
-}
 
 
 // ************************************************************************* //

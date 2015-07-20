@@ -27,8 +27,15 @@ License
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-AFC::Transport::Transport()
-{}
+AFC::Transport::Transport
+(
+    const string& fileName 
+)
+{
+    TransportReader transReader(fileName);
+    
+    transReader.read(transData_);
+}
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
@@ -37,23 +44,8 @@ AFC::Transport::~Transport()
 {}
 
 
-// * * * * * * * * * * * * * Runtime object creator *  * * * * * * * * * * * //
-
-void AFC::Transport::newTransportReader
-(
-    const string& fileName 
-)
-{
-    pTrR_ = smartPtr<TransportReader>(new TransportReader(fileName));
-}
-
-
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-void AFC::Transport::readTransport()
-{
-    pTrD_ = std::move(pTrR_->readTransport());
-}
 
 
 // ************************************************************************* //

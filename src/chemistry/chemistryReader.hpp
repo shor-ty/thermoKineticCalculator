@@ -68,9 +68,6 @@ class ChemistryReader
 
         // Private data
 
-            //- Adress to ChemistryData:: object
-            smartPtr<ChemistryData> pCD_;
-
             //- Chemistry file
             string file_;
 
@@ -88,40 +85,41 @@ class ChemistryReader
             //- Destructor
             ~ChemistryReader();
 
-
-        // Runtime object creator
-
-            //- Generate new ChemistryData objects and return pointer to obj
-            void newChemistryData();
-
         
         // Member functions
 
-            //- Read chemistry file and return pointer to ChemistryData:: obj
-            smartPtr<ChemistryData> readChemistry();
+            //- Read chemistry file and delegate data
+            void read
+            (
+                ChemistryData&
+            );
 
             //- Take all data from ELEMENT block
             void readElementBlock
             (
-                const stringList&
+                const stringList&,
+                ChemistryData&
             );
 
             //- Take all data from SPECIES block
             void readSpeciesBlock
             (
-                const stringList&
+                const stringList&,
+                ChemistryData&
             );
 
             //- Take all data from THERMO block
             void readThermoBlock
             (
-                const stringList&
+                const stringList&,
+                ChemistryData&
             );
 
             //- Take all data from REACTION block
             void readReactionBlock
             (
-                const stringList&
+                const stringList&,
+                ChemistryData&
             );
 
 
@@ -148,34 +146,39 @@ class ChemistryReader
             //- Manipulate elementar reaction string and analyze reaction
             void analyzeReaction
             (
-                const string&
+                const string&,
+                ChemistryData&
             );
 
             //- Manipulate LOW coeffs
             void LOWCoeffs
             (
                 const string&,
-                const unsigned int&
+                const unsigned int&,
+                ChemistryData&
             );
 
             //- Manipulate TROE coeffs
             void TROECoeffs
             (
                 const string&,
-                const unsigned int&
+                const unsigned int&,
+                ChemistryData&
             );
 
             //- Manipulate SRI coeffs
             void SRICoeffs
             (
                 const string&,
-                const unsigned int&
+                const unsigned int&,
+                ChemistryData&
             );
 
             //- Manipulate ENHANCE factors
             void enhanceFactors
             (
-                const string&
+                const string&,
+                ChemistryData&
             );
 };
 

@@ -41,43 +41,35 @@ AFC::ChemistryReader::ChemistryReader
 
 AFC::ChemistryReader::~ChemistryReader()
 {
-    Info<< "Destructor ChemistryReader\n";
-}
-
-
-// * * * * * * * * * * * * * Runtime object creator  * * * * * * * * * * * * //
-
-void AFC::ChemistryReader::newChemistryData()
-{
-    pCD_ = smartPtr<ChemistryData>(new ChemistryData);
+    Info<< "Destructor ChemistryReader\n" << endl;
 }
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-AFC::smartPtr<AFC::ChemistryData> AFC::ChemistryReader::readChemistry()
+void AFC::ChemistryReader::read
+(
+    ChemistryData& data
+)
 {
     Info<< " c-o Reading chemistry data\n" << endl;
 
-    newChemistryData();
-
     const auto fileContent = readFile(file_);
 
-    readElementBlock(fileContent);
+    readElementBlock(fileContent, data);
 
-    readSpeciesBlock(fileContent);
+    readSpeciesBlock(fileContent, data);
 
-    readThermoBlock(fileContent);
+    readThermoBlock(fileContent, data);
 
-    readReactionBlock(fileContent);
-
-    return std::move(pCD_);
+    readReactionBlock(fileContent, data);
 }
 
 
 void AFC::ChemistryReader::readElementBlock
 (
-    const stringList& fileContent
+    const stringList& fileContent,
+    ChemistryData& data
 )
 {
     //- STEP 1: find line no. of wordList ELEMENTS and "END"
@@ -124,12 +116,12 @@ void AFC::ChemistryReader::readElementBlock
             {
                 forAll(tmp, element)
                 {
-                    pCD_->insertElements(tmp[element]);
+                    data.insertElements(tmp[element]);
                 }
             }
             else
             {
-                pCD_->insertElements(tmp[0]);
+                data.insertElements(tmp[0]);
             }
         }
     }
@@ -138,7 +130,8 @@ void AFC::ChemistryReader::readElementBlock
 
 void AFC::ChemistryReader::readSpeciesBlock
 (
-   const stringList& fileContent
+   const stringList& fileContent,
+   ChemistryData& data
 )
 {
     //- STEP 1: find line no. of wordList SPECIES and "END"
@@ -185,12 +178,12 @@ void AFC::ChemistryReader::readSpeciesBlock
             {
                 forAll(tmp, species)
                 {
-                    pCD_->insertSpecies(tmp[species]);
+                    data.insertSpecies(tmp[species]);
                 }
             }
             else
             {
-                pCD_->insertSpecies(tmp[0]);
+                data.insertSpecies(tmp[0]);
             }
         }
     }
@@ -199,7 +192,8 @@ void AFC::ChemistryReader::readSpeciesBlock
 
 void AFC::ChemistryReader::readThermoBlock
 (
-    const stringList& fileContent
+    const stringList& fileContent,
+    ChemistryData& data
 )
 {
     //- STEP 1: find line no. of wordList THERMO and "END"
@@ -220,13 +214,14 @@ void AFC::ChemistryReader::readThermoBlock
         lineNoKeyword != -1
     )
     {
-        pCD_->setThermo();
+        data.setThermo();
     }
 }
 
 void AFC::ChemistryReader::readReactionBlock
 (
-    const stringList& fileContent
+    const stringList& fileContent,
+    ChemistryData& data
 )
 {
     //- STEP 1: find line no. of wordList REACTIONS and "END"
@@ -275,7 +270,7 @@ void AFC::ChemistryReader::readReactionBlock
                 line+= 2;
 
                 //- Increment duplicate entry
-                pCD_->incrementDuplicated();
+                data.incrementDuplicated();
             }
             else
             {
@@ -284,17 +279,17 @@ void AFC::ChemistryReader::readReactionBlock
 
                 if (found != std::string::npos)
                 {
-                    pCD_->incrementReac();
+                    data.incrementReac();
 
-                    pCD_->incrementMatrixesVectors();
+                    data.incrementMatrixesVectors();
 
-                    analyzeReaction(fileContent[line]);
+                    analyzeReaction(fileContent[line], data);
 
                     found = fileContent[line].find("+M");
 
                     if (found != std::string::npos)
                     {
-                        pCD_->setTBR();
+                        data.setTBR();
                     }
                 }
                 else
@@ -310,25 +305,25 @@ void AFC::ChemistryReader::readReactionBlock
                     //- LOW parameters
                     if (foundLOW != std::string::npos)
                     {
-                        LOWCoeffs(fileContent[line], line);
-                        pCD_->setLOW();
+                        LOWCoeffs(fileContent[line], line, data);
+                        data.setLOW();
                     }
                     //- TROE parameters
                     else if (foundTROE != std::string::npos)
                     {
-                        TROECoeffs(fileContent[line], line);
-                        pCD_->setTROE();
+                        TROECoeffs(fileContent[line], line, data);
+                        data.setTROE();
                     }
                     //- SRI parameters
                     else if (foundSRI != std::string::npos)
                     {
-                        SRICoeffs(fileContent[line], line);
-                        pCD_->setSRI();
+                        SRICoeffs(fileContent[line], line, data);
+                        data.setSRI();
                     }
                     else
                     {
-                        enhanceFactors(fileContent[line]);
-                        pCD_->setENHANCE();
+                        enhanceFactors(fileContent[line], data);
+                        data.setENHANCE();
                     }
                 }
             }
@@ -434,7 +429,8 @@ AFC::stringList AFC::ChemistryReader::extractData
 
 void AFC::ChemistryReader::analyzeReaction
 (
-    const string& reaction
+    const string& reaction,
+    ChemistryData& data
 )
 {
     //- STEP 1: manipulate string to get reaction
@@ -448,7 +444,7 @@ void AFC::ChemistryReader::analyzeReaction
         tmp2 += tmp[i];
     }
 
-    pCD_->insertElementarReaction(tmp2);
+    data.insertElementarReaction(tmp2);
     
     //- STEP 2: analyze reaction
     string delimiter1 = "=";
@@ -475,7 +471,7 @@ void AFC::ChemistryReader::analyzeReaction
      && found3 == std::string::npos
     )
     {
-        pCD_->setKB();
+        data.setKB();
     }
     //- b)
     else if
@@ -485,7 +481,7 @@ void AFC::ChemistryReader::analyzeReaction
      && found3 != std::string::npos
     )
     {
-        pCD_->setKB();
+        data.setKB();
     }
     //- c)
     //  Not implemented, default is c)
@@ -511,19 +507,20 @@ void AFC::ChemistryReader::analyzeReaction
     }
 
     // STEP 3: insert arrhenius coeffs
-    pCD_->insertArrheniusCoeffs
-        (
-            stod(tmp[tmp.size()-3]),
-            stod(tmp[tmp.size()-2]),
-            stod(tmp[tmp.size()-1])
-        );
+    data.insertArrheniusCoeffs
+    (
+        stod(tmp[tmp.size()-3]),
+        stod(tmp[tmp.size()-2]),
+        stod(tmp[tmp.size()-1])
+    );
 }
 
 
 void AFC::ChemistryReader::LOWCoeffs
 (
     const string& coeffStr,
-    const unsigned int& lineNo
+    const unsigned int& lineNo,
+    ChemistryData& data
 )
 {
     //- STEP 1: get data inbetween '/'
@@ -546,7 +543,7 @@ void AFC::ChemistryReader::LOWCoeffs
     //- STEP 3: update matrix
     forAll(coeffs, i)
     {
-        pCD_->insertLOWCoeffs(stod(coeffs[i]), i);
+        data.insertLOWCoeffs(stod(coeffs[i]), i);
     }
 }
 
@@ -554,7 +551,8 @@ void AFC::ChemistryReader::LOWCoeffs
 void AFC::ChemistryReader::TROECoeffs
 (
     const string& coeffStr,
-    const unsigned int& lineNo
+    const unsigned int& lineNo,
+    ChemistryData& data
 )
 {
     //- STEP 1: get data inbetween '/'
@@ -581,7 +579,7 @@ void AFC::ChemistryReader::TROECoeffs
     //- STEP 3: update matrix
     forAll(coeffs, i)
     {
-         pCD_->insertTROECoeffs(stod(coeffs[i]), i);
+         data.insertTROECoeffs(stod(coeffs[i]), i);
     }
 }
 
@@ -589,7 +587,8 @@ void AFC::ChemistryReader::TROECoeffs
 void AFC::ChemistryReader::SRICoeffs
 (
     const string& coeffStr,
-    const unsigned int& lineNo
+    const unsigned int& lineNo,
+    ChemistryData& data
 )
 {
     //- STEP 1: get data inbetween '/'
@@ -616,14 +615,15 @@ void AFC::ChemistryReader::SRICoeffs
     //- STEP 3: update matrix
     forAll(coeffs, i)
     {
-         pCD_->insertSRICoeffs(stod(coeffs[i]), i);
+         data.insertSRICoeffs(stod(coeffs[i]), i);
     }
 }
 
 
 void AFC::ChemistryReader::enhanceFactors
 (
-    const string& enhanceFactors
+    const string& enhanceFactors,
+    ChemistryData& data
 )
 {
     //- STEP 1: split string at whitespace and re-arrange
@@ -646,12 +646,12 @@ void AFC::ChemistryReader::enhanceFactors
         //- Insert value
         if (modul)
         {
-            pCD_->insertMvalue(stod(tmp[i]));
+            data.insertMvalue(stod(tmp[i]));
         }
         //- Insert species
         else
         {
-            pCD_->insertMcomp(tmp[i]);
+            data.insertMcomp(tmp[i]);
         }
     }
 }
