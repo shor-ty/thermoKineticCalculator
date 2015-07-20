@@ -3,6 +3,7 @@ WORK_DIR=$(PWD)
 INC_DIR=-I/$(WORK_DIR)/chemistry \
 		-I/$(WORK_DIR)/thermo \
 		-I/$(WORK_DIR)/transport \
+		-I/$(WORK_DIR)/mixtureFraction \
 		-I/$(WORK_DIR)/constants \
 		-I/$(WORK_DIR)/typedef \
 		-I/$(WORK_DIR)/stringManipulator
@@ -17,6 +18,8 @@ SOURCE_FILES=automaticFlameletCreator.cpp \
 			 transport/transport.cpp \
 			 transport/transportReader.cpp \
 			 transport/transportData.cpp \
+			 mixtureFraction/mixtureFraction.cpp \
+			 mixtureFraction/mixtureFractionReader.cpp \
 			 typedef/typedef.cpp\
 			 stringManipulator/stringManipulator.cpp
 
