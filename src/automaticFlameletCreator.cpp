@@ -30,6 +30,7 @@ Description
 #include "chemistry.hpp"
 #include "thermo.hpp"
 #include "transport.hpp"
+#include "mixtureFraction.hpp"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -108,27 +109,13 @@ int main
         }
     }
 
-    Chemistry chemistry;
+    Chemistry chemistry(file_Chemistry);
 
-    chemistry.newChemistryReader(file_Chemistry); 
+    Thermo thermo(file_Thermo, chemistry.thermo());
 
-    chemistry.readChemistry();
+    Transport transport(file_Transport);
 
-    Thermo thermo;
-
-    thermo.newThermoReader(file_Thermo);
-
-    thermo.readThermo
-    (
-        chemistry.thermo()
-    );
-
-    Transport transport;
-
-    transport.newTransportReader(file_Transport);
-
-    transport.readTransport();
-
+    MixtureFraction Z0(file_AFC);
 
     Info<< " c-o All data read successfully\n" << endl;
 
