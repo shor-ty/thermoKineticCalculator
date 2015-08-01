@@ -195,5 +195,12 @@ void AFC::TransportData::insertRotRelCollNumb
 // * * * * * * * * * * * * * Setter bool functions * * * * * * * * * * * * * //
 
 
+// * * * * * * * * * * * * * * Return functions  * * * * * * * * * * * * * * //
+
+AFC::wordList AFC::TransportData::species() const
+{
+    return species_;
+}
+
 
 // ************************************************************************* //

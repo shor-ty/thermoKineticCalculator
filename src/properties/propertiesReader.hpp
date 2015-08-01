@@ -22,21 +22,21 @@ License
     along with AFC; if not, see <http://www.gnu.org/licenses/>
 
 Class
-    AFC::MixtureFractionReader    
+    AFC::PropertiesReader    
 
 Description
     Reading the AFCDict file
 
 SourceFiles
-    mixtureFractionReader.cpp
+    propertiesReader.cpp
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef MixtureFractionReader_hpp
-#define MixtureFractionReader_hpp
+#ifndef PropertiesReader_hpp
+#define PropertiesReader_hpp
 
 #include "stringManipulator.hpp"
-#include "mixtureFraction.hpp"
+#include "properties.hpp"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -44,13 +44,13 @@ namespace AFC
 {
 
 
-class MixtureFraction;
+class Properties;
 
 /*---------------------------------------------------------------------------*\
-                      Class MixtureFractionReader Declaration
+                      Class PropertiesReader Declaration
 \*---------------------------------------------------------------------------*/
 
-class MixtureFractionReader
+class PropertiesReader
 :
     public StringManipulator
 {
@@ -58,7 +58,7 @@ class MixtureFractionReader
 
         // Private data
 
-            //- MixtureFraction file
+            //- Properties file
             string file_;
 
 
@@ -66,35 +66,66 @@ class MixtureFractionReader
 
         // Constructor and Destructor
 
-            //- Constructor with file string and MixtureFraction:: obj adress
-            MixtureFractionReader
+            //- Constructor with file string and Properties:: obj adress
+            PropertiesReader
             (
                 const string&
             );
 
             //- Destructor
-            ~MixtureFractionReader();
+            ~PropertiesReader();
 
         
         // Member functions
 
-            //- Read mixtureFraction file and delegate data
+            //- Read properties file and delegate data
             void read
             (
-                MixtureFraction&
+                Properties&
             );
 
 
         // Helper functions
         
             //- Find line number of keyword
+            void findKeyword
+            (
+                int&,
+                unsigned int&,
+                const stringList&,
+                unsigned int
+            );
 
             //- Return string between '/' and '/'
 
 
         // Data manipulation functions
         
-            //- Manipulate elementar reaction string and analyze reaction
+            //- Reading scalar dissipation rate dictionary
+            void scalarDissipationRates
+            (
+                const stringList&,
+                unsigned int&,
+                Properties&
+            );
+
+            //- Reading mol fraction oxidizer dictionary
+            void molFractionOxidizer
+            (
+                const stringList&,
+                unsigned int&,
+                Properties&
+            );
+                
+            //- Reading mol fraction fuel dictionary
+            void molFractionFuel    
+            (
+                const stringList&,
+                unsigned int&,
+                Properties&
+            );
+
+            //- 
 };
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

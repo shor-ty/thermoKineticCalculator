@@ -137,6 +137,11 @@ class TransportData
                 const scalar&
             );
 
+
+        // Return functions
+        
+            //- Return species as wordList
+            wordList species() const;
 };
 
 

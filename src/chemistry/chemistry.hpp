@@ -76,6 +76,12 @@ class Chemistry
 
             //- Return chemistryData::thermo_
             bool thermo();
+
+
+        // Return functions
+        
+            //- Retrun species
+            wordList species() const;
 };
 
 

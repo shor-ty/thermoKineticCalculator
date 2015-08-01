@@ -30,7 +30,7 @@ Description
 #include "chemistry.hpp"
 #include "thermo.hpp"
 #include "transport.hpp"
-#include "mixtureFraction.hpp"
+#include "properties.hpp"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -115,11 +115,128 @@ int main
 
     Transport transport(file_Transport);
 
-    MixtureFraction Z0(file_AFC);
+    Properties properties(file_AFC);
 
     Info<< " c-o All data read successfully\n" << endl;
 
-    Info<< " c-o Re-organize data structure\n" << endl;
+    Info<< " c-o Check transportData (all species available)\n" << endl;
+
+    //- Proof if all species used in chemistryData have transportData
+    {
+        wordList speciesCH = chemistry.species();
+        wordList speciesTD = transport.species();
+
+        forAll(speciesCH, i)
+        {
+            bool found{false};
+
+            forAll(speciesTD, j)
+            {
+                if (speciesCH[i] == speciesTD[j])
+                {
+                    found = true;
+                }
+            }
+
+            //- Chemistry species not found in transportData
+            if (!found)
+            {
+                FatalError
+                (
+                    "    Species " + speciesCH[i] + " was not found in "
+                    "the transportData class.\n"
+                    "    Please be sure that the transport properties of "
+                    "this species is available\n"
+                    "    in the transport file.",
+                    __FILE__,
+                    __LINE__
+                );
+            }
+        }
+    }
+
+    Info<< " c-o Check thermodynamicData (all species available)\n" << endl;
+
+    //- Proof if all species used in chemistryData have thermodynamicData
+    {
+        wordList speciesCH = chemistry.species();
+        wordList speciesTHD = thermo.species();
+
+        forAll(speciesCH, i)
+        {
+            bool found{false};
+
+            forAll(speciesTHD, j)
+            {
+                if (speciesCH[i] == speciesTHD[j])
+                {
+                    found = true;
+                }
+            }
+
+            //- Chemistry species not found in thermodynamicData
+            if (!found)
+            {
+                FatalError
+                (
+                    "    Species " + speciesCH[i] + " was not found in "
+                    "the thermodynamicData class.\n"
+                    "    Please be sure that the thermodynamic properties of "
+                    "this species is available\n"
+                    "    in the thermodynamic file.",
+                    __FILE__,
+                    __LINE__
+                );
+            }
+        }
+    }
+
+    Info<< " c-o Check if species used for combustion are available\n" << endl;
+
+    //- Proof if all species in afcDict are in chemistryData
+    {
+        wordList speciesOAFC = properties.speciesOxidizer();
+        wordList speciesFAFC = properties.speciesFuel();
+        wordList speciesAFC = speciesOAFC;
+
+        //- Add fuel species
+        forAll(speciesFAFC, i)
+        {
+            speciesAFC.push_back(speciesFAFC[i]);
+        }
+
+        wordList speciesCH = chemistry.species();
+
+        forAll(speciesAFC, i)
+        {
+            bool found{false};
+
+            forAll(speciesCH, j)
+            {
+                if (speciesAFC[i] == speciesCH[j])
+                {
+                    found = true;
+                }
+            }
+
+            //- afc species not found in chemistryData 
+            if (!found)
+            {
+                FatalError
+                (
+                    "    Species " + speciesAFC[i] + " was not found in "
+                    "the chemistryData class.\n"
+                    "    Please be sure that the species is available in all "
+                    "files; chemistry, tranpsort\n"
+                    "    and the thermodynamic file.",
+                    __FILE__,
+                    __LINE__
+                );
+            }
+        }
+
+        Info<< " c-o Data O.K.\n" << endl;
+    }
 
     return 0;
 }

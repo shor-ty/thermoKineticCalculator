@@ -68,6 +68,15 @@ class Thermo
 
         //- Destructor
         ~Thermo();
+
+
+        // Member functions
+
+
+        // Return functions
+        
+            //- Return species as word list
+            wordList species() const;
 };
 
 

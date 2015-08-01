@@ -241,4 +241,12 @@ void AFC::ChemistryData::setENHANCE()
 }
 
 
+// * * * * * * * * * * * * * * * Return functions  * * * * * * * * * * * * * //
+
+AFC::wordList AFC::ChemistryData::species() const
+{
+    return species_;
+}
+
+
 // ************************************************************************* //

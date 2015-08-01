@@ -202,5 +202,12 @@ void AFC::ThermoData::insertLTPolyCoeffs
 // * * * * * * * * * * * * * Setter bool functions * * * * * * * * * * * * * //
 
 
+// * * * * * * * * * * * * * * Return functions  * * * * * * * * * * * * * * //
+
+AFC::wordList AFC::ThermoData::species() const
+{
+    return species_;
+}
+
 
 // ************************************************************************* //

@@ -1,28 +1,27 @@
 
-    mixtureFractionPoints 20
+    mixtureFractionPoints 4
+
+    varianzOfMixtureFractionPoints 20
 
     scalarDissipationRates
     {
         1e-6
-        1e-3
-        1e-2
-        1
-        10
     }
          
 
     temperatureOxidizer 298
 
-    moleFractionOxidizer
+    molFractionOxidizer
     {
-        O2    0.21
-        N2    0.79
+        O2    0.210
+        N2    0.690
+        AR    0.1
     }
 
     temperatureFuel 298
 
-    moleFractionFuel
+    molFractionFuel
     {
-        H2  0.3
-        CO  0.7 
+        O2    0.21
+        N2    0.79
     }   

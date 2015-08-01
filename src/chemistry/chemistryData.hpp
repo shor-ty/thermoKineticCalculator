@@ -219,6 +219,11 @@ class ChemistryData
             //- Set the Enhance boolean
             void setENHANCE();
 
+        
+        // Return functions
+
+            //- Return all species as wordList
+            wordList species() const;
 };
 
 

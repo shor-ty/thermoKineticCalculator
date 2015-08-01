@@ -50,4 +50,12 @@ AFC::Thermo::~Thermo()
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
 
+// * * * * * * * * * * * * * * * Return Functions  * * * * * * * * * * * * * //
+
+AFC::wordList AFC::Thermo::species() const
+{
+    return thermoData_.species();
+}
+
+
 // ************************************************************************* //

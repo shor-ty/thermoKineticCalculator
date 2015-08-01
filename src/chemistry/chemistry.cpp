@@ -52,4 +52,12 @@ bool AFC::Chemistry::thermo()
 }
 
 
+// * * * * * * * * * * * * * * * Return Functions  * * * * * * * * * * * * * //
+
+AFC::wordList AFC::Chemistry::species() const
+{
+    return chemData_.species();
+}
+
+
 // ************************************************************************* //

@@ -148,6 +148,10 @@ class ThermoData
 
         // Setter functions, from ThermoReader:: delegated
 
+        // Return functions
+
+            //- Return species as wordList
+            wordList species() const;
 };
 
 

@@ -67,6 +67,15 @@ class Transport
 
         //- Destructor
         ~Transport();
+
+
+        // Member functions
+        
+
+        // Return functions
+
+            //- Return species as wordList
+            wordList species() const;
 };
 
 

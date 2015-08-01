@@ -47,5 +47,12 @@ AFC::Transport::~Transport()
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
 
+// * * * * * * * * * * * * * * * Return Functions  * * * * * * * * * * * * * //
+
+AFC::wordList AFC::Transport::species() const
+{
+    return transData_.species();
+}
+
 
 // ************************************************************************* //
