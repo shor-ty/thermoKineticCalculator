@@ -31,6 +31,7 @@ Description
 #include "thermo.hpp"
 #include "transport.hpp"
 #include "properties.hpp"
+#include "mixtureFraction.hpp"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -50,8 +51,6 @@ int main
     string file_Thermo;
     string file_Transport;
     string file_Chemistry;
-
-    stringList test;
 
     //- Arguments
     if (argc != 9)
@@ -236,6 +235,49 @@ int main
         }
 
         Info<< " c-o Data O.K.\n" << endl;
+    }
+
+    Info<< " c-o Create mixture fraction points\n" << endl;
+
+    //- Definition
+    //  |
+    //  |-> scalarDissipationRate
+    //      |
+    //      |-> MixtureFraction point [0-1]
+    //          |
+    //          |-> Class of MixtureFraction
+
+    map<word, map<unsigned int, MixtureFraction> > flame;
+    flamelets flamelet;
+
+    {
+        const scalarField sDR = properties.sDR();
+        const unsigned int Zpoints = properties.mfPoints();
+        scalar delta = 1./Zpoints;
+
+        forAll(sDR, chi)
+        {
+            Info<< "    ... for scalar dissipation rate " << sDR[chi] << "\n";
+
+            flamelet.push_back(vector<MixtureFraction>());
+
+            for(unsigned int i=0; i < Zpoints+1; i++)
+            {
+                scalar zPointValue = i*delta;
+
+                flamelet[chi].push_back
+                (
+                    MixtureFraction
+                    (
+                        chemistry,
+                        thermo,
+                        transport,
+                        properties,
+                        zPointValue
+                    )
+                );
+            }
+        }
     }
 
     return 0;

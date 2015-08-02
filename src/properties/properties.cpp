@@ -275,9 +275,51 @@ AFC::wordList AFC::Properties::speciesOxidizer() const
 }
 
 
+AFC::map<AFC::word, AFC::scalar> AFC::Properties::oxidizerCompMol() const
+{
+    return oxidizerCompMol_;
+}
+
+
 AFC::wordList AFC::Properties::speciesFuel() const
 {
     return speciesFuel_;
+}
+
+
+AFC::map<AFC::word, AFC::scalar> AFC::Properties::fuelCompMol() const
+{
+    return fuelCompMol_;
+}
+
+
+AFC::scalarField AFC::Properties::sDR() const
+{
+    return sDR_;
+}
+
+
+int AFC::Properties::mfPoints() const
+{
+    return mfPoints_;
+}
+
+
+int AFC::Properties::vmfPoints() const
+{
+    return vmfPoints_;
+}
+
+
+AFC::scalar AFC::Properties::oxidizerTemperature() const
+{
+    return TOxidizer_;
+}
+
+
+AFC::scalar AFC::Properties::fuelTemperature() const
+{
+    return TFuel_;
 }
 
 

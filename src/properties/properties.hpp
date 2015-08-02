@@ -154,8 +154,29 @@ class Properties
             //- Return oxidizer species
             wordList speciesOxidizer() const;
 
+            //- Return oxidizer mole fraction
+            map<word, scalar> oxidizerCompMol() const;
+
             //- Return fuel species
             wordList speciesFuel() const;
+
+            //- Return fuel mole fraction
+            map<word, scalar> fuelCompMol() const;
+
+            //- Return scalar dissipation rates
+            scalarField sDR() const;
+
+            //- Return mixture fraction points
+            int mfPoints() const;
+
+            //- Return varianz of mixture fraction points
+            int vmfPoints() const;
+
+            //- Return oxidizer temperature
+            scalar oxidizerTemperature() const;
+
+            //- Return fuel temperature
+            scalar fuelTemperature() const;
 };
 
 
