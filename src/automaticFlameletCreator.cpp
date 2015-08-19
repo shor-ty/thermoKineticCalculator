@@ -114,7 +114,7 @@ int main
 
     Transport transport(file_Transport);
 
-    Properties properties(file_AFC);
+    Properties properties(file_AFC, thermo, chemistry);
 
     Info<< " c-o All data read successfully\n" << endl;
 
@@ -190,7 +190,7 @@ int main
         }
     }
 
-    Info<< " c-o Check if species used for combustion are available\n" << endl;
+    Info<< " c-o Check if species used in afcDict are are available\n" << endl;
 
     //- Proof if all species in afcDict are in chemistryData
     {
@@ -237,7 +237,7 @@ int main
         Info<< " c-o Data O.K.\n" << endl;
     }
 
-    Info<< " c-o Create mixture fraction points\n" << endl;
+    Info<< " c-o Create Look-Up-Table ...\n" << endl;
 
     //- Definition
     //  |
@@ -246,37 +246,126 @@ int main
     //      |-> MixtureFraction point [0-1]
     //          |
     //          |-> Class of MixtureFraction
-
-    map<word, map<unsigned int, MixtureFraction> > flame;
-    flamelets flamelet;
+    //map<word, map<unsigned int, MixtureFraction> > flame;
+    lookUpTable lookUpTables;
 
     {
-        const scalarField sDR = properties.sDR();
+        const scalarField defects = properties.defects();
+        const scalarField sDRs = properties.sDRs();
         const unsigned int Zpoints = properties.mfPoints();
+
         scalar delta = 1./Zpoints;
 
-        forAll(sDR, chi)
+        //- Adiabatic flamelet (always available)
         {
-            Info<< "    ... for scalar dissipation rate " << sDR[chi] << "\n";
+            Info<< "    ... for adiabatic condition\n\n";
 
-            flamelet.push_back(vector<MixtureFraction>());
+            lookUpTables.push_back(vector<vector<MixtureFraction> >());
 
-            for(unsigned int i=0; i < Zpoints+1; i++)
+            forAll(sDRs, rate)
             {
-                scalar zPointValue = i*delta;
+                Info<< "        Create flamelets for scalar dissipation rate "
+                    << sDRs[rate] << " Hz\n";
 
-                flamelet[chi].push_back
-                (
-                    MixtureFraction
+                lookUpTables[0].push_back(vector<MixtureFraction>());
+
+                for(unsigned int i=0; i < Zpoints+1; i++)
+                {
+                    scalar zPointValue = i*delta;
+
+                    lookUpTables[0][rate].push_back
                     (
-                        chemistry,
-                        thermo,
-                        transport,
-                        properties,
-                        zPointValue
-                    )
-                );
+                        MixtureFraction
+                        (
+                            chemistry,
+                            thermo,
+                            transport,
+                            properties,
+                            zPointValue,
+                            scalar(0)
+                        )
+                    );
+
+                //- Z points
+                }
+
+            //- sDR points
             }
+            Info<< "\n";
+
+        //- adiabatic condition
+        }
+
+        //- Non-adiabatic flamelets
+        forAll(defects, defect)
+        {
+            Info<< "    ... for enthalpy defect " << defects[defect] << " J/kg\n\n";
+
+            lookUpTables.push_back(vector<vector<MixtureFraction> >());
+
+            forAll(sDRs, rate)
+            {
+                Info<< "        Create flamelets for scalar dissipation rate "
+                    << sDRs[rate] << " Hz\n";
+
+                lookUpTables[defect+1].push_back(vector<MixtureFraction>());
+
+                for(unsigned int i=0; i < Zpoints+1; i++)
+                {
+                    scalar zPointValue = i*delta;
+
+                    lookUpTables[defect+1][rate].push_back
+                    (
+                        MixtureFraction
+                        (
+                            chemistry,
+                            thermo,
+                            transport,
+                            properties,
+                            zPointValue,
+                            defects[defect]
+                        )
+                    );
+
+                //- Z points
+                }
+
+            //- sDR points
+            }
+            Info<< "\n";
+
+        //- defect points
+        }
+        Info<< "\n";
+    }
+
+    //- Calculation start
+    Info<< " c-o Start flamelet calculation\n" << endl;
+    
+    //- Defect loop
+    for
+    (
+        unsigned int defectNo = 0;
+        defectNo <= properties.nDefects();
+        defectNo++
+    )
+    {
+        Info<< "Calculate Look-Up-Table with defect: "
+            << properties.defect(defectNo) << defectNo 
+            << " J/kg\n";
+
+        //- Time loop
+        for
+        (
+            scalar time = 0;
+            time < properties.runTime();
+            time += properties.deltaT()
+        )
+        {
+            //- Equations (in *.pdf file)
+            //  Laminar flamelet model for temperature Eqn (1)
+            //  Laminar flamelet model for species Eqn (2) 
+
         }
     }
 

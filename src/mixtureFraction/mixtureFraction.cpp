@@ -33,15 +33,18 @@ AFC::MixtureFraction::MixtureFraction
     const Thermo& therm,
     const Transport& trans,
     const Properties& prop,
-    const scalar& Zvalue
+    const scalar& Zvalue,
+    const scalar& defect
 )
 : 
+    defect_(defect),
+
     thermo_(therm),
 
     transport_(trans)
-
 {
-    //- Calculate mole fraction (linear)
+
+    //- Calculate mole fraction (initial linear distribution)
     {
         wordList species = chem.species();
 
@@ -62,6 +65,11 @@ AFC::MixtureFraction::MixtureFraction
                     oxidizerMolFraction[species[i]]
                   * (-1 * Zvalue + 1);
             }
+            else
+            {
+                speciesMol_[species[i]] = 0;
+            }
+
         }
 
         //- Set the fuel mole fraction
@@ -73,7 +81,11 @@ AFC::MixtureFraction::MixtureFraction
             {
                 speciesMol_[species[i]] =
                     fuelMolFraction[species[i]]
-                  * (-1 * Zvalue + 1);
+                  * Zvalue;
+            }
+            else
+            {
+                speciesMol_[species[i]] = 0;
             }
         }
     }
@@ -107,5 +119,12 @@ AFC::MixtureFraction::~MixtureFraction()
 
 // * * * * * * * * * * * * * * * Return Functions  * * * * * * * * * * * * * //
 
+AFC::scalar AFC::MixtureFraction::mol
+(
+    const word& species
+)
+{
+    return speciesMol_[species];
+}
 
 // ************************************************************************* //

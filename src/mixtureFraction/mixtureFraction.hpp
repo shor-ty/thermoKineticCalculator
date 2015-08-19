@@ -74,6 +74,9 @@ class MixtureFraction
             //- Viscosity of species i at discrete point Z
             map<word, scalar> muSpecies_;
 
+            //- Defect value
+            scalar defect_{0};
+
     
         // Class data
 
@@ -97,6 +100,7 @@ class MixtureFraction
             const Thermo&,
             const Transport&,
             const Properties&,
+            const scalar&,
             const scalar&
         );
 
@@ -112,6 +116,11 @@ class MixtureFraction
 
         // Return functions
 
+            //- Return species mol fraction
+            scalar mol
+            (
+                const word&
+            );
 };
 
 

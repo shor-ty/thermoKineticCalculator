@@ -152,6 +152,12 @@ class ThermoData
 
             //- Return species as wordList
             wordList species() const;
+
+            //- Return moleculare weight of species i
+            scalar MW
+            (
+                const word&
+            ) const;
 };
 
 

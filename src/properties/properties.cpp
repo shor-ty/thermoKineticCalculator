@@ -29,16 +29,14 @@ License
 
 AFC::Properties::Properties
 (
-    const string& fileName
+    const string& fileName,
+    const Thermo& thermo,
+    const Chemistry& chemistry
 )
 :
-    mfPoints_(0),
+    thermo_(thermo),
 
-    vmfPoints_(0),
-
-    TOxidizer_(0),
-
-    TFuel_(0)
+    chemistry_(chemistry)
 {
     PropertiesReader mixFracReader(fileName);
 
@@ -77,12 +75,21 @@ void AFC::Properties::insertVMFPoints
 }
 
 
+void AFC::Properties::insertEnthalpyDefects
+(
+    const scalar& defect
+)
+{
+    defects_.push_back(defect);
+}
+
+
 void AFC::Properties::insertScalarDissipationRates
 (
     const scalar& sDR
 )
 {
-    sDR_.push_back(sDR);
+    sDRs_.push_back(sDR);
 }
 
 
@@ -117,7 +124,8 @@ void AFC::Properties::insertTemperatureFuel
 void AFC::Properties::insertCompositionOxidizerMol
 (
     const word& species,
-    const scalar& molFraction
+    const scalar& molFraction,
+    const bool& lastEntry
 )
 {
     if (debug)
@@ -127,14 +135,20 @@ void AFC::Properties::insertCompositionOxidizerMol
 
     speciesOxidizer_.push_back(species);
 
-    oxidizerCompMol_[species] = molFraction;
+    oxidizerX_[species] = molFraction;
+
+    if (lastEntry)
+    {
+        XtoY("O");
+    }
 }
 
 
 void AFC::Properties::insertCompositionFuelMol
 (
     const word& species,
-    const scalar& molFraction
+    const scalar& molFraction,
+    const bool& lastEntry
 )
 {
     if (debug)
@@ -144,11 +158,72 @@ void AFC::Properties::insertCompositionFuelMol
 
     speciesFuel_.push_back(species);
 
-    fuelCompMol_[species] = molFraction;
+    fuelX_[species] = molFraction;
+
+    if (lastEntry)
+    {
+        XtoY("F");
+    }
 }
 
 
-// * * * * * * * * * * * * * * * * Check function  * * * * * * * * * * * * * //
+void AFC::Properties::insertRunTime
+(
+    const scalar& runTime 
+)
+{
+    if (debug)
+    {
+        Info<< "Run time of calculation: " << runTime << endl;
+    }
+
+    runTime_ = runTime;
+}
+
+
+void AFC::Properties::insertWriteControl
+(
+    const word& writeControl
+)
+{
+    if (debug)
+    {
+        Info<< "Write control: " << writeControl << endl;
+    }
+
+    writeControl_ = writeControl;
+}
+
+
+void AFC::Properties::insertWriteControlInterval
+(
+    const scalar& writeControlInterval
+)
+{
+    if (debug)
+    {
+        Info<< "Write control interval: " << writeControlInterval << endl;
+    }
+
+    writeControlInterval_ = writeControlInterval;
+}
+
+
+void AFC::Properties::insertDeltaT
+(
+    const scalar& deltaT 
+)
+{
+    if (debug)
+    {
+        Info<< "Algorithm deltaT: " << deltaT << endl;
+    }
+
+    deltaT_ = deltaT;
+}
+
+
+// * * * * * * * * * * * * * * * Other functions * * * * * * * * * * * * * * //
 
 void AFC::Properties::check()
 {
@@ -192,7 +267,7 @@ void AFC::Properties::check()
         );
     }
 
-    if (sDR_.empty())
+    if (sDRs_.empty())
     {
         FatalError
         (
@@ -202,7 +277,7 @@ void AFC::Properties::check()
         );
     }
 
-    if (oxidizerCompMol_.empty())
+    if (oxidizerX_.empty())
     {
         FatalError
         (
@@ -212,7 +287,7 @@ void AFC::Properties::check()
         );
     }
 
-    if (fuelCompMol_.empty())
+    if (fuelX_.empty())
     {
         FatalError
         (
@@ -226,7 +301,7 @@ void AFC::Properties::check()
 
     forAll(speciesOxidizer_, i)
     {
-        sum += oxidizerCompMol_[speciesOxidizer_[i]];
+        sum += oxidizerX_[speciesOxidizer_[i]];
     } 
 
     scalar epsilon{1e-12};
@@ -248,7 +323,7 @@ void AFC::Properties::check()
     sum = 0;
     forAll(speciesFuel_, i)
     {
-        sum += fuelCompMol_[speciesFuel_[i]];
+        sum += fuelX_[speciesFuel_[i]];
     }
 
     //- Double comparison; with epsilon
@@ -264,6 +339,90 @@ void AFC::Properties::check()
             __LINE__
         );
     }
+
+    // Algorihm control check
+
+        //- TODO
+}
+
+
+void AFC::Properties::XtoY
+(
+    const word tmp
+)
+{
+    scalar YbyM{0};
+
+    //- get all species from chemistry 
+    const wordList& speciesChem = chemistry_.species();
+
+    forAll(speciesChem, speciesI)
+    {
+        YbyM +=
+            thermo_.MW(speciesChem[speciesI])
+          * oxidizerX_[speciesChem[speciesI]];
+    } 
+
+    if (tmp == "O")
+    {    
+        forAll(speciesOxidizer_, speciesI)
+        {
+            oxidizerY_[speciesOxidizer_[speciesI]] =
+                (oxidizerX_.find(speciesOxidizer_[speciesI])->second
+              / thermo_.MW(speciesOxidizer_[speciesI]))
+              / YbyM;
+        }
+    }
+
+    if (tmp == "F")
+    {
+        forAll(speciesFuel_, speciesI)
+        {
+            fuelY_[speciesFuel_[speciesI]] =
+                (fuelX_.find(speciesFuel_[speciesI])->second
+              / thermo_.MW(speciesFuel_[speciesI]))
+              / YbyM;
+        }
+    }
+}
+
+
+void AFC::Properties::YtoX
+(
+    const word tmp
+)
+{
+    scalar YbyM{0};
+
+    //- get all species from chemistry 
+    const wordList& speciesChem = chemistry_.species();
+
+    forAll(speciesChem, speciesI)
+    {
+        const word& speciesI_ = speciesChem[speciesI];
+
+        YbyM += thermo_.MW(speciesI_) * oxidizerX_[speciesChem[speciesI]];
+    } 
+
+    if (tmp == "O")
+    {    
+        forAll(speciesOxidizer_, speciesI)
+        {
+            oxidizerY_[speciesOxidizer_[speciesI]] =
+                oxidizerX_.find(speciesOxidizer_[speciesI])->second
+              / YbyM;
+        }
+    }
+
+    if (tmp == "F")
+    {
+        forAll(speciesFuel_, speciesI)
+        {
+            fuelY_[speciesFuel_[speciesI]] =
+                fuelX_.find(speciesFuel_[speciesI])->second
+              / YbyM;
+        }
+    }
 }
 
 
@@ -277,7 +436,7 @@ AFC::wordList AFC::Properties::speciesOxidizer() const
 
 AFC::map<AFC::word, AFC::scalar> AFC::Properties::oxidizerCompMol() const
 {
-    return oxidizerCompMol_;
+    return oxidizerX_;
 }
 
 
@@ -289,13 +448,19 @@ AFC::wordList AFC::Properties::speciesFuel() const
 
 AFC::map<AFC::word, AFC::scalar> AFC::Properties::fuelCompMol() const
 {
-    return fuelCompMol_;
+    return fuelX_;
 }
 
 
-AFC::scalarField AFC::Properties::sDR() const
+AFC::scalarField AFC::Properties::defects() const
 {
-    return sDR_;
+    return defects_;
+}
+
+
+AFC::scalarField AFC::Properties::sDRs() const
+{
+    return sDRs_;
 }
 
 
@@ -320,6 +485,33 @@ AFC::scalar AFC::Properties::oxidizerTemperature() const
 AFC::scalar AFC::Properties::fuelTemperature() const
 {
     return TFuel_;
+}
+
+
+AFC::scalar AFC::Properties::runTime() const
+{
+    return runTime_;
+}
+
+
+AFC::scalar AFC::Properties::deltaT() const
+{
+    return deltaT_;
+}
+
+
+unsigned int AFC::Properties::nDefects() const
+{
+    return defects_.size();
+}
+
+
+AFC::scalar AFC::Properties::defect
+(
+    const int& defectNo
+) const
+{
+    return defects_[defectNo];
 }
 
 

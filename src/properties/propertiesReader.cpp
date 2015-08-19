@@ -77,7 +77,7 @@ void AFC::PropertiesReader::read
                 {
                     FatalError
                     (
-                        "No mixtureFractionPoints specified (" + file_ + ")",
+                        "    No mixtureFractionPoints specified (" + file_ + ")",
                         __FILE__,
                         __LINE__
                     );
@@ -91,7 +91,7 @@ void AFC::PropertiesReader::read
                 {
                     FatalError
                     (
-                        "No varianzOfMixtureFractionPoints specified ("
+                        "   No varianzOfMixtureFractionPoints specified ("
                         + file_ + ")",
                         __FILE__,
                         __LINE__
@@ -100,16 +100,42 @@ void AFC::PropertiesReader::read
 
                 data.insertVMFPoints(stoi(tmp[1]));
             }
+            else if (tmp[0] == "enthalpyDefects")
+            {
+                enthalpyDefects(fileContent, line, data);
+            }
             else if (tmp[0] == "scalarDissipationRates")
             {
                 scalarDissipationRates(fileContent, line, data);
             }
             else if (tmp[0] == "temperatureOxidizer")
             {
+                if (tmp[1].empty())
+                {
+                    FatalError
+                    (
+                        "   No temperature for oxidizer specified ("
+                        + file_ + ")",
+                        __FILE__,
+                        __LINE__
+                    );
+                }
+
                 data.insertTemperatureOxidizer(stod(tmp[1]));
             }
             else if (tmp[0] == "temperatureFuel")
             {
+                if (tmp[1].empty())
+                {
+                    FatalError
+                    (
+                        "   No temperature for fuel specified ("
+                        + file_ + ")",
+                        __FILE__,
+                        __LINE__
+                    );
+                }
+
                 data.insertTemperatureFuel(stod(tmp[1]));
             }
             else if (tmp[0] == "molFractionOxidizer")
@@ -119,6 +145,10 @@ void AFC::PropertiesReader::read
             else if (tmp[0] == "molFractionFuel")
             {
                 molFractionFuel(fileContent, line, data);
+            }
+            else if (tmp[0] == "afcControl")
+            {
+                control(fileContent, line, data);
             }
         }
     }
@@ -142,31 +172,82 @@ void AFC::PropertiesReader::findKeyword
         //- Split string; delimiter ' ' 
         stringList tmp = splitStrAtWS(fileContent[line]);
 
-        if (tmp[0] == "{")
-        {
-            start = line; 
-        }
-
-        //- Search end after keyword found
-        if (tmp[0] == "}" && start != -1)
-        {
-            end = line;
-        }
-
-        //- Both found exit loop
+        //- If line is not empty and no comment, proceed
         if
         (
-            start != 0
-         && end != 0
+            !tmp.empty()
+         && tmp[0][0] != '!'
         )
         {
-            break;
+            if (tmp[0] == "{")
+            {
+                start = line; 
+            }
+
+            //- Search end after keyword found
+            if (tmp[0] == "}" && start != -1)
+            {
+                end = line;
+            }
+
+            //- Both found exit loop
+            if
+            (
+                start != 0
+             && end != 0
+            )
+            {
+                break;
+            }
         }
     }
 }
 
 
 // * * * * * * * * * * * * Data manipulation functions * * * * * * * * * * * //
+
+void AFC::PropertiesReader::enthalpyDefects
+(
+    const stringList& fileContent,
+    unsigned int& line,
+    Properties& data
+)
+{
+    int dictBegin{-1};
+    unsigned int dictEnd{0};
+    
+    findKeyword(dictBegin, dictEnd, fileContent, line);
+
+    line = dictBegin+1;
+
+    for(; line < dictEnd; line++)
+    {
+        //- Split string; delimiter ' ' 
+        stringList tmp = splitStrAtWS(fileContent[line]);
+        
+        //- If line is not empty and no comment, proceed
+        if
+        (
+            !tmp.empty()
+         && tmp[0][0] != '!'
+        )
+        {
+            //- If more elements in one line
+            if (tmp.size() > 1)
+            {
+                forAll(tmp, element)
+                {
+                    data.insertEnthalpyDefects(stod(tmp[element]));
+                }
+            }
+            else
+            {
+                data.insertEnthalpyDefects(stod(tmp[0]));
+            }
+        }
+    }
+}
+
 
 void AFC::PropertiesReader::scalarDissipationRates
 (
@@ -257,11 +338,27 @@ void AFC::PropertiesReader::molFractionOxidizer
                             );
                         }
 
-                        data.insertCompositionOxidizerMol
+                        if
                         (
-                            tmp[element],
-                            stod(tmp[element+1])
-                        );
+                            line < dictEnd-1
+                         && element == tmp.size()
+                        )
+                        {
+                            data.insertCompositionOxidizerMol
+                            (
+                                tmp[element],
+                                stod(tmp[element+1]),
+                                true
+                            );
+                        }
+                        else
+                        {
+                            data.insertCompositionOxidizerMol
+                            (
+                                tmp[element],
+                                stod(tmp[element+1])
+                            );
+                        }
                     }
                 }
             }
@@ -278,11 +375,23 @@ void AFC::PropertiesReader::molFractionOxidizer
                     );
                 }
 
-                data.insertCompositionOxidizerMol
-                (
-                    tmp[0],
-                    stod(tmp[1])
-                );
+                if (line == dictEnd-1)
+                {
+                    data.insertCompositionOxidizerMol
+                    (
+                        tmp[0],
+                        stod(tmp[1]),
+                        true
+                    );
+                }
+                else
+                {
+                    data.insertCompositionOxidizerMol
+                    (
+                        tmp[0],
+                        stod(tmp[1])
+                    );
+                }
             }
         }
     }
@@ -366,5 +475,112 @@ void AFC::PropertiesReader::molFractionFuel
     }
 }
 
+
+void AFC::PropertiesReader::control
+(
+    const stringList& fileContent,
+    unsigned int& line,
+    Properties& data
+)
+{
+    int dictBegin{-1};
+    unsigned int dictEnd{0};
+    
+    findKeyword(dictBegin, dictEnd, fileContent, line);
+
+    line = dictBegin+1;
+
+    for(; line < dictEnd; line++)
+    {
+        //- Split string; delimiter ' ' 
+        stringList tmp = splitStrAtWS(fileContent[line]);
+        
+        //- If line is not empty and no comment, proceed
+        if
+        (
+            !tmp.empty()
+         && tmp[0][0] != '!'
+        )
+        {
+            if (tmp[0] == "runTime")
+            {
+                if (tmp[1].empty())
+                {
+                    FatalError
+                    (
+                        "    No runTime specified in afcDict after keyword runTime ("
+                        + file_ + ")",
+                        __FILE__,
+                        __LINE__
+                    );
+                }
+
+                data.insertRunTime(stod(tmp[1]));
+            }
+            else if (tmp[0] == "deltaT")
+            {
+                if (tmp[1].empty())
+                {
+                    FatalError
+                    (
+                        "   No deltaT specified in afcDict after keyword deltaT ("
+                        + file_ + ")",
+                        __FILE__,
+                        __LINE__
+                    );
+                }
+
+                data.insertDeltaT(stod(tmp[1]));
+            }
+            else if (tmp[0] == "writeInterval")
+            {
+                if (tmp[1].empty())
+                {
+                    FatalError
+                    (
+                        "   No writeInterval specified in afcDict after keyword "
+                        "writeInterval ("
+                        + file_ + ")",
+                        __FILE__,
+                        __LINE__
+                    );
+                }
+
+                data.insertWriteControlInterval(stod(tmp[1]));
+            }
+            else if (tmp[0] == "writeControl")
+            {
+                if (tmp[1].empty())
+                {
+                    FatalError
+                    (
+                        "   No writeControl specified in afcDict after keyword "
+                        "writeControl ("
+                        + file_ + ")",
+                        __FILE__,
+                        __LINE__
+                    );
+                }
+
+                if
+                (
+                    tmp[1] != "endTime"
+                 && tmp[1] != "interval"
+                )
+                {
+                    Info<< "    + writeControl definition '" << tmp[1] << "' is not"
+                        << " defined. Using endTime instead\n"
+                        << endl;
+
+                    data.insertWriteControl(tmp[1]);
+                }
+                else
+                {
+                    data.insertWriteControl(tmp[1]);
+                }
+            }
+        }
+    }
+}
 
 // ************************************************************************* //

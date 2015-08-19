@@ -42,6 +42,8 @@ Description
 namespace AFC
 {
 
+class MixtureFraction; 
+
 /*---------------------------------------------------------------------------*\
                           AFC Defintions and typedef
 \*---------------------------------------------------------------------------*/
@@ -64,11 +66,15 @@ using string = std::string;
 
 using stringList = std::vector<string>;
 
+using lookUpTable = std::vector<std::vector<std::vector<MixtureFraction> > >;
+
 extern std::ostream& Info;
 
 extern std::ostream& Error;
 
 extern std::basic_ostream<char>& (&endl)(std::basic_ostream<char>&);
+
+template<class T> using vector = std::vector<T>;
 
 template<class T> using smartPtr = std::unique_ptr<T>;
 

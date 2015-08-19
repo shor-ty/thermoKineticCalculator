@@ -101,6 +101,14 @@ class PropertiesReader
 
         // Data manipulation functions
         
+            //- Reading enthalpy defects dictionary
+            void enthalpyDefects 
+            (
+                const stringList&,
+                unsigned int&,
+                Properties&
+            );
+        
             //- Reading scalar dissipation rate dictionary
             void scalarDissipationRates
             (
@@ -125,7 +133,13 @@ class PropertiesReader
                 Properties&
             );
 
-            //- 
+            //- Reading control dictionary
+            void control
+            (
+                const stringList&,
+                unsigned int&,
+                Properties&
+            );
 };
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

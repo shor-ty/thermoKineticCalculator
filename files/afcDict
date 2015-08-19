@@ -1,11 +1,15 @@
 
-    mixtureFractionPoints 4
+    mixtureFractionPoints 40
 
     varianzOfMixtureFractionPoints 20
 
     scalarDissipationRates
     {
         1e-6
+        2e-5
+        6
+        10
+        400
     }
          
 
@@ -13,15 +17,31 @@
 
     molFractionOxidizer
     {
-        O2    0.210
-        N2    0.690
-        AR    0.1
+        O2    1
     }
 
     temperatureFuel 298
 
     molFractionFuel
     {
-        O2    0.21
-        N2    0.79
+        H2    0.3
+        CO2   0.7
     }   
+
+    enthalpyDefects
+    {
+        -10
+        -400
+        -300
+    }
+
+    afcControl
+    {
+        runTime     1e5
+        deltaT      0.01
+
+        writeInterval   1
+        writeControl    endTime
+
+    }
+

@@ -36,6 +36,8 @@ SourceFiles
 #define Properties_hpp
 
 #include "propertiesReader.hpp"
+#include "thermo.hpp"
+#include "chemistry.hpp"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -58,26 +60,64 @@ class Properties
             //- Varianz of mixture fraction discrete points
             int vmfPoints_{0};
 
+            //- Enthalpy defects
+            scalarField defects_;
+
             //- ScalarDissipation rate
-            scalarField sDR_;
+            scalarField sDRs_;
 
             //- Oxidizer species
             wordList speciesOxidizer_;
 
-            //- Composition of oxidizer [mol]
-            map<word, scalar> oxidizerCompMol_;
+            //- Composition of oxidizer [mol] mol fraction X
+            map<word, scalar> oxidizerX_;
+
+            //- Composition of oxidizer [kg] mass fraction Y
+            map<word, scalar> oxidizerY_;
 
             //- Fuel species
             wordList speciesFuel_;
 
-            //- Composition of fuel [mol]
-            map<word, scalar> fuelCompMol_;
+            //- Composition of fuel [mol] mol fraction X
+            map<word, scalar> fuelX_;
+
+            //- Composition of fuel [kg] mass fraction Y
+            map<word, scalar> fuelY_;
 
             //- Temperature of oxidizer stream
             scalar TOxidizer_{0};
 
             //- Temperature of fuel stream
             scalar TFuel_{0};
+
+            
+        // Algorithm settings
+
+            //- End time of calculation
+            //  If time is high -> ddt(rho, Z)  == 0 steady state
+            //  If time is low  -> ddt(rho, Z)  != 0 transient
+            scalar runTime_{1e5};
+
+            //- Write control of solution
+            //  
+            //      + endTime
+            //      + iteration
+            word writeControl_{"endTime"};
+
+            //- Write control interval
+            scalar writeControlInterval_{0};
+
+            //- DeltaT
+            scalar deltaT_{0};
+
+
+        // Class object
+            
+            //- Reference to thermo object (XtoY and YtoX)
+            const Thermo& thermo_;
+
+            //- Reference to chemistry object (XtoY and YtoX)
+            const Chemistry& chemistry_;
 
 
         // Debug
@@ -89,7 +129,9 @@ class Properties
         //- Constructor
         Properties
         (
-            const string& 
+            const string&,
+            const Thermo&,
+            const Chemistry&
         );
 
         //- Destructor
@@ -108,6 +150,12 @@ class Properties
             void insertVMFPoints
             (
                 const int&
+            );
+
+            //- Insert 
+            void insertEnthalpyDefects
+            (
+                const scalar&
             );
 
             //- Insert scalar dissipation rates
@@ -132,21 +180,61 @@ class Properties
             void insertCompositionOxidizerMol
             (
                 const word&,
-                const scalar&
+                const scalar&,
+                const bool& lastEntry = false
             );
             
             //- Insert fuel mol composition 
             void insertCompositionFuelMol
             (
                 const word&,
+                const scalar&,
+                const bool& lastEntry = false
+            );
+
+            //- Insert endTime of calculation
+            void insertRunTime
+            (
                 const scalar&
             );
-            
 
-        // Check functions
+            //- Insert control of write the solution
+            void insertWriteControl
+            (
+                const word&
+            );
+            
+            //- Insert write control (save each x iterations)
+            void insertWriteControlInterval
+            (
+                const scalar&
+            );
+
+            //- Insert deltaT
+            void insertDeltaT
+            (
+                const scalar&
+            );
+
+
+        // Other functions
 
             //- Check if all data are set
             void check();
+
+            //- Mol fraction to mass fraction
+            //  + word -> oxidizer (O) or fuel (F)
+            void XtoY
+            (
+                const word 
+            );
+
+            //- Mass fraction to mol fraction
+            //  + word -> oxidizer (O) or fuel (F)
+            void YtoX
+            (
+                const word 
+            );
 
 
         // Return functions
@@ -164,7 +252,10 @@ class Properties
             map<word, scalar> fuelCompMol() const;
 
             //- Return scalar dissipation rates
-            scalarField sDR() const;
+            scalarField sDRs() const;
+
+            //- Return enthalpy defects
+            scalarField defects() const;
 
             //- Return mixture fraction points
             int mfPoints() const;
@@ -177,6 +268,21 @@ class Properties
 
             //- Return fuel temperature
             scalar fuelTemperature() const;
+
+            //- Return runTime
+            scalar runTime() const;
+
+            //- Return deltaT
+            scalar deltaT() const;
+
+            //- Return number of defects
+            unsigned int nDefects() const;
+
+            //- Return defect value
+            scalar defect
+            (
+                const int&
+            ) const;
 };
 
 

@@ -210,4 +210,13 @@ AFC::wordList AFC::ThermoData::species() const
 }
 
 
+AFC::scalar AFC::ThermoData::MW
+(
+    const word& species
+) const
+{
+    return MW_.find(species)->second;
+}
+
+
 // ************************************************************************* //

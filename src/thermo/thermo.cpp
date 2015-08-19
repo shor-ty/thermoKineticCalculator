@@ -58,4 +58,12 @@ AFC::wordList AFC::Thermo::species() const
 }
 
 
+AFC::scalar AFC::Thermo::MW
+(
+    const word& species
+) const
+{
+    return thermoData_.MW(species);
+}
+
 // ************************************************************************* //
