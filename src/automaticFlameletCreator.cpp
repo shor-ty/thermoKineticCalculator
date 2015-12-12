@@ -32,6 +32,7 @@ Description
 #include "transport.hpp"
 #include "properties.hpp"
 #include "mixtureFraction.hpp"
+#include "numerics.cpp"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -237,7 +238,7 @@ int main
         Info<< " c-o Data O.K.\n" << endl;
     }
 
-    Info<< " c-o Create Look-Up-Table ...\n" << endl;
+    Info<< " c-o Overview of Look-Up-Tables ...\n" << endl;
 
     //- Definition
     //  |
@@ -341,31 +342,50 @@ int main
 
     //- Calculation start
     Info<< " c-o Start flamelet calculation\n" << endl;
-    
-    //- Defect loop
-    for
-    (
-        unsigned int defectNo = 0;
-        defectNo <= properties.nDefects();
-        defectNo++
-    )
-    {
-        Info<< "Calculate Look-Up-Table with defect: "
-            << properties.defect(defectNo) << defectNo 
-            << " J/kg\n";
 
-        //- Time loop
+    {
+        const scalarField sDRs = properties.sDRs();
+        const scalarField defects = properties.defects();
+        const unsigned int Zpoints = properties.mfPoints();
+    
+        //- Defect loop
         for
         (
-            scalar time = 0;
-            time < properties.runTime();
-            time += properties.deltaT()
+            unsigned int defectNo = 0;
+            defectNo < properties.nDefects();
+            defectNo++
         )
         {
-            //- Equations (in *.pdf file)
-            //  Laminar flamelet model for temperature Eqn (1)
-            //  Laminar flamelet model for species Eqn (2) 
+            Info<< "    Calculate Look-Up-Table with defect: "
+                << defects[defectNo]
+                << " J/kg\n";
 
+            //- Scalar dissiaption loop
+            forAll(sDRs, rate)
+            {
+
+                //- Time loo
+                for
+                (
+                    scalar time = 0;
+                    time < properties.runTime();
+                    time += properties.deltaT()
+                )
+                {
+                    Info<< "Time: " << time << " s\n";
+                    //- Equations (in *.pdf file)
+                    //  Laminar flamelet model for temperature Eqn (1)
+                    //  Laminar flamelet model for species Eqn (2) 
+                    calculate
+                    (
+                        lookUpTables,
+                        rate,
+                        defectNo,
+                        Zpoints,
+                        chemistry
+                    );
+                }
+            }
         }
     }
 

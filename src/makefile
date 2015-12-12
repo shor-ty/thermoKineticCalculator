@@ -7,7 +7,8 @@ INC_DIR=-I$(WORK_DIR)/chemistry \
 		-I$(WORK_DIR)/mixtureFraction \
 		-I$(WORK_DIR)/constants \
 		-I$(WORK_DIR)/typedef \
-		-I$(WORK_DIR)/stringManipulator
+		-I$(WORK_DIR)/stringManipulator \
+		-I$(WORK_DIR)/numerics
 
 SOURCE_FILES=automaticFlameletCreator.cpp \
 			 chemistry/chemistry.cpp \
