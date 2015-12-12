@@ -36,6 +36,7 @@ SourceFiles
 #define ChemistryData_hpp
 
 #include "typedef.hpp"
+#include "math.h"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -105,6 +106,10 @@ class ChemistryData
 
             //- Matrix of SRI coeffs
             matrix SRICoeffs_;
+
+            //- Reaction rates
+            scalarField reacRates_;
+
 
         //- Thermodynamic available in chemistry file
         bool thermo_;
@@ -219,11 +224,70 @@ class ChemistryData
             //- Set the Enhance boolean
             void setENHANCE();
 
-        
+
+        // Update functions
+
+            //- Update reaction rates k
+            void update_k
+            (
+                const scalarField&
+            );
+
         // Return functions
+
+            //- Return bool
+
+                //- LOW
+                bool LOW
+                (
+                    const int&
+                ) const;
+
+                //- TROE
+                bool TROE
+                (
+                    const int&
+                ) const;
+
+                //- TBR
+                bool TBR
+                (
+                    const int&
+                ) const;
+
+                //- SRI
+                bool SRI
+                (
+                    const int&
+                ) const;
+
+                //- ENHANCED
+                bool ENHANCED
+                (
+                    const int&
+                ) const;
+
 
             //- Return all species as wordList
             wordList species() const;
+
+            //- Return no. of reaction
+            int nReac() const;
+
+            //- Return arrhenius coeffs for reaction no.
+            scalarField arrheniusCoeffs
+            (
+                const int&
+            ) const;
+
+            //- Return reaction rates
+            scalarField k() const;
+
+            //- Return reaction rate for reaction no.
+            scalar k
+            (
+                const int&
+            ) const;
 };
 
 

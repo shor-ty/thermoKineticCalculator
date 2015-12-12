@@ -24,6 +24,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "chemistry.hpp"
+#include "constants.hpp"
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
@@ -52,12 +53,83 @@ bool AFC::Chemistry::thermo()
 }
 
 
+// * * * * * * * * * * * * * Calculation Functions * * * * * * * * * * * * * //
+
+void AFC::Chemistry::k
+(
+    const scalar& T
+)
+{
+    //- No. of reactions
+    const int& reac = chemData_.nReac();
+
+    scalarField k;
+
+    //- Calculate reaction rates k
+    for (int r=0; r<reac; r++)
+    {
+        //- Arrhenius coeffs
+        const scalarField& arrCoeffs = chemData_.arrheniusCoeffs(r);
+
+        //- Pre-exponential factor
+        const scalar A = arrCoeffs[0];
+
+        //- Expontent
+        const scalar beta = arrCoeffs[1];
+
+        //- Activation energy
+        const scalar Ea  = arrCoeffs[2];  
+
+        //- Normal calculation
+        if
+        (
+            !chemData_.LOW(r)
+         && !chemData_.TROE(r)
+         && !chemData_.SRI(r)
+         && !chemData_.ENHANCED(r)
+         && !chemData_.TBR(r)
+        )
+        {
+            //- ARRHENIUS EQUATION
+            // * * * * * * * * * * * * * * * * * * //
+            k.push_back(A * pow(T, beta) * exp(Ea/(AFC::Constants::R*T)));
+            // * * * * * * * * * * * * * * * * * * //
+            //
+        }
+    }
+
+    //- Move calculated reaction rates into chemData_::reacRates_
+    chemData_.update_k(k);
+}
+
+
 // * * * * * * * * * * * * * * * Return Functions  * * * * * * * * * * * * * //
 
 AFC::wordList AFC::Chemistry::species() const
 {
     return chemData_.species();
 }
+
+
+int AFC::Chemistry::nReac() const
+{
+    return chemData_.nReac();
+}
+
+
+AFC::scalarField AFC::Chemistry::k() const
+{
+    return chemData_.k();
+}
+
+
+/*AFC::scalar AFC::Chemistry::k
+(
+    const int& reacNo 
+) const
+{
+    return chemData_.k(reacNo);
+}*/
 
 
 // ************************************************************************* //

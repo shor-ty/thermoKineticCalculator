@@ -78,10 +78,32 @@ class Chemistry
             bool thermo();
 
 
-        // Return functions
+        // Calculation Functions
+
+            //- Calculate the reaction rate k
+            void k
+            (
+                const scalar&
+            );
+
+
+        // Return Functions
         
             //- Retrun species
             wordList species() const;
+
+            //- Return no. of elementar reaction
+            int nReac() const;
+
+            //- Return reaction rates k
+            scalarField k() const;
+
+            //- Return reaction rate k of reaction no.
+/*            scalar k
+            (
+                const int& 
+            ) const;*/
+
 };
 
 

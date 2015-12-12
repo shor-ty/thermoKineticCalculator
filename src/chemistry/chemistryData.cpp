@@ -200,6 +200,10 @@ void AFC::ChemistryData::incrementMatrixesVectors()
 
     //- Matrix of SRI coeffs
     SRICoeffs_.push_back(scalarField(5));
+
+    //- Reaction rates k
+    reacRates_.push_back(scalar(0));
+
 }
 
 
@@ -243,9 +247,95 @@ void AFC::ChemistryData::setENHANCE()
 
 // * * * * * * * * * * * * * * * Return functions  * * * * * * * * * * * * * //
 
+void AFC::ChemistryData::update_k
+(
+    const scalarField& k
+)
+{
+    reacRates_ = k;
+}
+
+
+// * * * * * * * * * * * * * * * Return functions  * * * * * * * * * * * * * //
+
+bool AFC::ChemistryData::LOW
+(
+    const int& reacNo
+) const
+{
+    return LOW_[reacNo];
+}
+
+
+bool AFC::ChemistryData::TROE
+(
+    const int& reacNo
+) const
+{
+    return TROE_[reacNo];
+}
+
+
+bool AFC::ChemistryData::TBR
+(
+    const int& reacNo
+) const
+{
+    return TBR_[reacNo];
+}
+
+
+bool AFC::ChemistryData::SRI
+(
+    const int& reacNo
+) const
+{
+    return SRI_[reacNo];
+}
+
+
+bool AFC::ChemistryData::ENHANCED
+(
+    const int& reacNo
+) const
+{
+    return ENHANCE_[reacNo];
+}
+
+
 AFC::wordList AFC::ChemistryData::species() const
 {
     return species_;
+}
+
+
+int AFC::ChemistryData::nReac() const
+{
+    return nReac_;
+}
+
+
+AFC::scalarField AFC::ChemistryData::arrheniusCoeffs
+(
+    const int& reacNo
+) const
+{
+    return arrheniusCoeffs_[reacNo];
+}
+
+
+AFC::scalarField AFC::ChemistryData::k() const
+{
+    return reacRates_;
+}
+
+
+AFC::scalar AFC::ChemistryData::k
+(
+    const int& reacNo 
+) const
+{
+    return reacRates_[reacNo];
 }
 
 
