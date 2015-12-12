@@ -26,11 +26,14 @@ Description
     This class contains all constant data used in the program.
 
 SourceFiles
+    constants.cpp
 
 \*---------------------------------------------------------------------------*/
 
 #ifndef Constants_hpp
 #define Constants_hpp
+
+#include "typedef.hpp"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -44,8 +47,8 @@ namespace Constants
                                     Constants
 \*--------------------------------------------------------------------------*/
 
-//- Constants and their weight 
-map<string, scalar> AW
+//- Constants and their weight [g/mol]
+const map<string, scalar> AW
 {
     { "H", 1.00790 },
     { "O", 15.9994 },
@@ -54,6 +57,9 @@ map<string, scalar> AW
     { "AR", 39.9480 },
     { "HE", 4.00260 }
 };
+
+//- Universal gas constant [J/K/mol]
+constexpr scalar R = 8.314459848;
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

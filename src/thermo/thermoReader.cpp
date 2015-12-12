@@ -171,7 +171,7 @@ AFC::scalar AFC::ThermoReader::calcWeight
         );
     }
 
-    return AFC::Constants::AW[atom] * stod(multiplicator);
+    return AFC::Constants::AW.at(atom) * stod(multiplicator);
 }
 
 

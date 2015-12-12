@@ -251,7 +251,7 @@ void AFC::ChemistryReader::readReactionBlock
         );
     }
 
-    //- Reading SPECIES block
+    //- Reading REACTION block
     for (unsigned int line = lineNoKeyword+1; line < lineNoEnd; line++)
     {
         stringList tmp = splitStrAtWS(fileContent[line]);

@@ -69,7 +69,6 @@ AFC::MixtureFraction::MixtureFraction
             {
                 speciesMol_[species[i]] = 0;
             }
-
         }
 
         //- Set the fuel mole fraction
@@ -126,5 +125,12 @@ AFC::scalar AFC::MixtureFraction::mol
 {
     return speciesMol_[species];
 }
+
+
+AFC::scalar AFC::MixtureFraction::T() const
+{
+    return temperature_;
+}
+
 
 // ************************************************************************* //

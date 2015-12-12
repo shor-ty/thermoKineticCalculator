@@ -121,6 +121,11 @@ class MixtureFraction
             (
                 const word&
             );
+
+            //- Tmperature [K]
+            scalar T() const;
+
+
 };
 
 
