@@ -256,8 +256,6 @@ void AFC::ChemistryData::update_k
 }
 
 
-// * * * * * * * * * * * * * * * Return functions  * * * * * * * * * * * * * //
-
 bool AFC::ChemistryData::LOW
 (
     const int& reacNo
@@ -321,6 +319,15 @@ AFC::scalarField AFC::ChemistryData::arrheniusCoeffs
 ) const
 {
     return arrheniusCoeffs_[reacNo];
+}
+
+
+AFC::wordList AFC::ChemistryData::Mcomp
+(
+    const int& reacNo
+)
+{
+    return Mcomp_[reacNo];
 }
 
 

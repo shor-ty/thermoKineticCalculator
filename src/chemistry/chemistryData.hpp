@@ -280,6 +280,12 @@ class ChemistryData
                 const int&
             ) const;
 
+            //- Return Mcomp for reaction no.
+            wordList Mcomp
+            (
+                const int&
+            );
+
             //- Return reaction rates
             scalarField k() const;
 

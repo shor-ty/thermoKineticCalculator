@@ -83,6 +83,29 @@ class Chemistry
             //- Calculate the reaction rate k
             void k
             (
+                const scalar&,
+                const map<word, scalar>&
+            );
+
+            //- Calculate [M] partner
+            scalar calcM
+            (
+                const map<word, scalar>&,
+                const int&
+            );
+
+            //- Calculate [M] partner out of [10]
+            scalar calcM_Warnatz
+            (
+                const map<word, scalar>&
+            );
+
+            //- Calculate k with standard arrhenius
+            scalar arrhenius
+            (
+                const scalar&,
+                const scalar&,
+                const scalar&,
                 const scalar&
             );
 

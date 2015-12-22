@@ -57,7 +57,8 @@ bool AFC::Chemistry::thermo()
 
 void AFC::Chemistry::k
 (
-    const scalar& T
+    const scalar& T,
+    const map<word, scalar>& speciesMol
 )
 {
     //- No. of reactions
@@ -71,14 +72,31 @@ void AFC::Chemistry::k
         //- Arrhenius coeffs
         const scalarField& arrCoeffs = chemData_.arrheniusCoeffs(r);
 
-        //- Pre-exponential factor
+        //- Pre-exponential factor [cm^3/mol/s]
+        //  combustion.berkeley.edu
         const scalar A = arrCoeffs[0];
 
         //- Expontent
         const scalar beta = arrCoeffs[1];
 
-        //- Activation energy
+        //- Activation energy [cal/mol]
         const scalar Ea  = arrCoeffs[2];  
+
+        //- Calculate [M] if necessary
+        
+        scalar M{0};
+
+        //- Calculate [M] out of literature [10] 
+        //  TODO | check this
+        if (!chemData_.ENHANCED(r))
+        {
+            M = calcM_Warnatz(speciesMol);    
+        }
+        else
+        {
+            M = calcM(speciesMol, r);    
+        }
+        
 
         //- Normal calculation
         if
@@ -90,16 +108,89 @@ void AFC::Chemistry::k
          && !chemData_.TBR(r)
         )
         {
-            //- ARRHENIUS EQUATION
-            // * * * * * * * * * * * * * * * * * * //
-            k.push_back(A * pow(T, beta) * exp(Ea/(AFC::Constants::R*T)));
-            // * * * * * * * * * * * * * * * * * * //
-            //
+            k.push_back(arrhenius(A, beta, Ea, T));
         }
+        //- LOW calculation
+        /*else if
+        (
+            chemData_.LOW(r)
+         && !chemData_.TROE(r)
+         && !chemData_.SRI(r)
+         && !chemData_.ENHANCED(r)
+         && !chemData_.TBR(r)
+        )
+        {
+            
+        }
+        //- TROE calculation
+        else if
+        (
+            chemData_.LOW(r)
+         && chemData_.TROE(r)
+         && !chemData_.SRI(r)
+         && !chemData_.ENHANCED(r)
+         && !chemData_.TBR(r)
+        )
+        {
+            scalar a, b, c, d;
+            scalar Fcent = ((1-a) exp(-T/b) + a exp (-T/c) + exp (-d/T));
+        }*/
     }
 
     //- Move calculated reaction rates into chemData_::reacRates_
     chemData_.update_k(k);
+}
+
+
+AFC::scalar AFC::Chemistry::calcM
+(
+    const map<word, scalar>& speciesMol,
+    const int& r
+)
+{
+    const wordList& species = chemData_.species();
+
+    const wordList& Mcomp = chemData_.Mcomp(r);
+    forAll (Mcomp, s)
+    {
+        Info << r << ": species: " << s << " -> " << Mcomp.at(s) << endl;
+    }
+
+/*    forAll(speciesMol, i)
+    {
+        Info<< "speciesMol:" << species[i] << " -- " <<speciesMol.at(species[i]) << endl;
+    }*/
+    return 1;
+}
+
+
+AFC::scalar AFC::Chemistry::calcM_Warnatz
+(
+    const map<word, scalar>& C
+)
+{
+    return
+    (
+        C.at("H2")
+      + 6.5*C.at("H2O")
+      + 0.4*C.at("O2")
+      + 0.4*C.at("N2")
+      + 0.75*C.at("CO")
+      + 1.5*C.at("CO2")
+      + 3.0*C.at("CH4")
+    );
+}
+
+
+AFC::scalar AFC::Chemistry::arrhenius
+(
+    const scalar& A,
+    const scalar& beta,
+    const scalar& Ea,
+    const scalar& T
+)
+{
+    return (A * pow(T, beta) * exp(Ea/(AFC::Constants::R*T)));
 }
 
 
