@@ -1,15 +1,13 @@
 
-    mixtureFractionPoints 40
+    pressure 1e5
+
+    mixtureFractionPoints 20
 
     varianzOfMixtureFractionPoints 20
 
     scalarDissipationRates
     {
         1e-6
-        2e-5
-        6
-        10
-        400
     }
          
 
@@ -37,7 +35,7 @@
 
     afcControl
     {
-        runTime     1e5
+        runTime     0.01
         deltaT      0.01
 
         writeInterval   1

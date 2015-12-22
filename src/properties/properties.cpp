@@ -223,6 +223,15 @@ void AFC::Properties::insertDeltaT
 }
 
 
+void AFC::Properties::insertPressure
+(
+    const scalar& pressure
+)
+{
+    p_ = pressure;
+}
+
+
 // * * * * * * * * * * * * * * * Other functions * * * * * * * * * * * * * * //
 
 void AFC::Properties::check()
@@ -340,9 +349,23 @@ void AFC::Properties::check()
         );
     }
 
+    //- Check if pressure is set
+    if (p_ <= 0)
+    {
+        FatalError
+        (
+            "    Pressure is not set or set not correct.\n"
+            "    Please set the pressure in afcDict.",
+            __FILE__,
+            __LINE__
+        );
+    }
+
+
     // Algorihm control check
 
         //- TODO
+    // Output summary
 }
 
 
@@ -512,6 +535,12 @@ AFC::scalar AFC::Properties::defect
 ) const
 {
     return defects_[defectNo];
+}
+
+
+AFC::scalar AFC::Properties::p() const
+{
+    return p_;
 }
 
 

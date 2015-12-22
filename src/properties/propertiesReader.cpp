@@ -71,7 +71,21 @@ void AFC::PropertiesReader::read
          && tmp[0][0] != '!'
         )
         {
-            if (tmp[0] == "mixtureFractionPoints")
+            if (tmp[0] == "pressure")
+            {
+                if (tmp[1].empty())
+                {
+                    FatalError
+                    (
+                        "    No pressure specified (" + file_ +")",
+                        __FILE__,
+                        __LINE__
+                    );
+                }
+
+                data.insertPressure(stod(tmp[1]));
+            }
+            else if (tmp[0] == "mixtureFractionPoints")
             {
                 if (tmp[1].empty())
                 {

@@ -90,6 +90,9 @@ class Properties
             //- Temperature of fuel stream
             scalar TFuel_{0};
 
+            //- Pressure at which the calculation take place
+            scalar p_{0};
+
             
         // Algorithm settings
 
@@ -216,6 +219,12 @@ class Properties
                 const scalar&
             );
 
+            //- Insert pressure
+            void insertPressure
+            (
+                const scalar&
+            );
+
 
         // Other functions
 
@@ -283,6 +292,9 @@ class Properties
             (
                 const int&
             ) const;
+
+            //- Return pressure
+            scalar p() const;
 };
 
 
