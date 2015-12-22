@@ -38,6 +38,7 @@ SourceFiles
 #include "chemistry.hpp"
 #include "thermo.hpp"
 #include "transport.hpp"
+#include "chemistry.hpp"
 #include "properties.hpp"
 #include "typedef.hpp"
 
@@ -56,14 +57,23 @@ class MixtureFraction
 
         // Private Data
 
-            //- Mole fractions of species at discrete point Z
+            //- Mole fractions X of species at discrete point Z
             map<word, scalar> speciesMol_;
+
+            //- Mass fractions Y of species at discrete point Z
+            map<word, scalar> speciesMass_;
+
+            //- Concentration [X] of species at discrete point Z
+            map<word, scalar> speciesCon_;
 
             //- Temperature at discrete point Z
             scalar temperature_{0};
 
             //- Density at discrete point Z
             scalar rho_{0};
+
+            //- Mean molecular weight at discrete point Z
+            scalar MW_{0};
         
             //- Density of species i at discrete point Z
             map<word, scalar> rhoSpecies_;
@@ -77,6 +87,9 @@ class MixtureFraction
             //- Defect value
             scalar defect_{0};
 
+            //- Mixture fraction value Z
+            scalar Z_{0};
+
     
         // Class data
 
@@ -86,9 +99,17 @@ class MixtureFraction
             //- Transport class
             const Transport& transport_;
 
+            //- Chemistry class
+            const Chemistry& chemistry_;
+
+            //- Properties class
+            const Properties& properties_;
+
 
         // Debug
-        const bool debug{false};
+        const bool debug{true};
+
+        const bool debugMW{false};
 
 
     public:
@@ -110,17 +131,40 @@ class MixtureFraction
 
         // Member functions
         
+            //- Calculate the mean molecular weight
+            void calcMeanMW
+            (
+                const word&
+            );
+
+            //- Calculate mol fraction out of mass fraction
+            void YtoX();
+
+            //- Calculate mass fraction out of mol fraction
+            void XtoY();
+
+            //- Calculate concentration out of mass fraction
+            void YtoCon();
+
+            //- Calculate concentration out of mol fraction
+            void XtoCon();
+        
 
         // Check functions
 
 
         // Return functions
 
+            void mols(const word) const;
+
             //- Return species mol fraction
-            scalar mol
+/*            scalar mol
             (
                 const word&
-            );
+            );*/
+
+            //- Return species mol fraction (map)
+            map<word, scalar> mol() const;
 
             //- Tmperature [K]
             scalar T() const;
