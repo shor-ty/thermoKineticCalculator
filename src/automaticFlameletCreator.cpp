@@ -191,7 +191,7 @@ int main
         }
     }
 
-    Info<< " c-o Check if species used in afcDict are are available\n" << endl;
+    Info<< " c-o Check if species used in afcDict are available\n" << endl;
 
     //- Proof if all species in afcDict are in chemistryData
     {
@@ -238,6 +238,7 @@ int main
         Info<< " c-o Data O.K.\n" << endl;
     }
 
+
     Info<< " c-o Overview of Look-Up-Tables ...\n" << endl;
 
     //- Definition
@@ -248,6 +249,7 @@ int main
     //          |
     //          |-> Class of MixtureFraction
     //map<word, map<unsigned int, MixtureFraction> > flame;
+
     lookUpTable lookUpTables;
 
     {
@@ -296,7 +298,7 @@ int main
 
         //- adiabatic condition
         }
-
+    
         //- Non-adiabatic flamelets
         forAll(defects, defect)
         {
@@ -341,8 +343,7 @@ int main
     }
 
     //- Calculation start
-    Info<< " c-o Start flamelet calculation\n" << endl;
-
+    /*Info<< " c-o Start flamelet calculation\n" << endl;
     {
         const scalarField sDRs = properties.sDRs();
         const scalarField defects = properties.defects();
@@ -387,7 +388,7 @@ int main
                 }
             }
         }
-    }
+    }*/
 
     return 0;
 }
