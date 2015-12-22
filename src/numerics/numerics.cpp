@@ -46,7 +46,7 @@ void calculate
     //- TODO
     //- Calculate reaction rate factors k for each reaction
 
-    for (unsigned int point=0; point < nDisPoints_; point++)
+    for (unsigned int point=0; point <= nDisPoints_; point++)
     {
         //- Object of discrete mixture fraction
         MixtureFraction& dMF = lut_[defect_][sDR_][point];
@@ -54,7 +54,10 @@ void calculate
         //- Calculate reaction rates k (T dependend)
         const scalar& T =  dMF.T();
 
-        chem_.k(T);
+        const map<word, scalar>& speciesMol = dMF.mol();
+
+        //- Calc three-body-collision if needed
+        chem_.k(T, speciesMol);
     }
 }
 
