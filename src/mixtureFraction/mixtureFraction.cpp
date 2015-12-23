@@ -50,12 +50,6 @@ AFC::MixtureFraction::MixtureFraction
 
     properties_(prop)
 {
-
-    if (debug)
-    {
-        Info<< "Constructor MixtureFraction\n" << endl;
-    }
-
     //- Calculate temperature profile (linear)
     {
         scalar oxidizerTemperature = prop.oxidizerTemperature();
@@ -102,11 +96,32 @@ AFC::MixtureFraction::MixtureFraction
                 }
             }
 
+            if (debug)
+            {
+                Info<< "Discrete point Z: " << Z_ << endl;
+
+                forAll(species, i)
+                {
+                    if (speciesMol_.at(species[i]) > 0)
+                    {
+                        Info<< species[i] << ": " << speciesMol_.at(species[i]) << endl;
+                    }
+                }
+            }
+
             //- Calculate mass fraction Y
             XtoY();
 
             //- Calculate concentration [X]
-            XtoCon();
+            XtoC();
+
+            //- Calculate mean density rho
+            XtoRho();
+
+            if (debug)
+            {
+                Info<< endl;
+            }
         }
     //}
 
@@ -258,18 +273,18 @@ void AFC::MixtureFraction::XtoY()
 }
 
 
-void AFC::MixtureFraction::YtoCon()
+void AFC::MixtureFraction::YtoC()
 {
     const wordList& species = chemistry_.species();
 
     // update mean molecular weight
     calcMeanMW("mass");
 
-    scalar byYTMW{0};
+    scalar YTMW{0};
 
     forAll(species, s)
     {
-        byYTMW += speciesMass_.at(species[s]) * T() / thermo_.MW(species[s]);
+        YTMW += speciesMass_.at(species[s]) * T() / thermo_.MW(species[s]);
     }
 
     const scalar& p = properties_.p();
@@ -278,7 +293,7 @@ void AFC::MixtureFraction::YtoCon()
     {
         speciesCon_[species[s]]
             = (p * speciesMass_.at(species[s]) / thermo_.MW(species[s]))
-            / (AFC::Constants::R * byYTMW);
+            / (AFC::Constants::R * YTMW);
     }
 
     if (debug)
@@ -295,30 +310,28 @@ void AFC::MixtureFraction::YtoCon()
 }
 
 
-void AFC::MixtureFraction::XtoCon()
+void AFC::MixtureFraction::XtoC()
 {
     const wordList& species = chemistry_.species();
 
     // update mean molecular weight
     calcMeanMW("mol");
 
-    scalar byXT{0};
-
-    Info << "TEMP: " << T() << endl;
+    scalar XT{0};
 
     forAll(species, s)
     {
-        byXT += speciesMol_.at(species[s]) * T();
+        XT += speciesMol_.at(species[s]) * T();
     }
 
-    Info<< "byXT: " << byXT << endl;
+    Info<< "XT: " << XT << endl;
 
     const scalar& p = properties_.p();
 
     forAll(species, s)
     {
         speciesCon_[species[s]] 
-            = speciesMol_.at(species[s]) * p / (byXT * AFC::Constants::R);
+            = speciesMol_.at(species[s]) * p / (XT * AFC::Constants::R);
     }
 
     if (debug)
@@ -331,6 +344,36 @@ void AFC::MixtureFraction::XtoCon()
         }
 
         Info<< "XtoCon(), sum of concentration = " << sum << endl;
+    }
+}
+
+
+void AFC::MixtureFraction::XtoRho()
+{
+    const wordList& species = chemistry_.species();
+
+    scalar XT{0};
+
+    forAll(species, s)
+    {
+        XT += speciesMol_.at(species[s]) * T();
+    }
+
+    scalar tmp{0};
+
+    const scalar& p = properties_.p();
+   
+    forAll(species, s)
+    {
+       tmp += speciesMol_.at(species[s]) * p 
+           / (AFC::Constants::R * XT) * thermo_.MW(species[s]);
+    }
+
+    rho_ = tmp;
+
+    if (debug)
+    {
+        Info<< "   Mean density: " << rho_ << endl;
     }
 }
 

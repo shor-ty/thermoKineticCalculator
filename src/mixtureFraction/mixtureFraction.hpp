@@ -69,7 +69,7 @@ class MixtureFraction
             //- Temperature at discrete point Z
             scalar temperature_{0};
 
-            //- Density at discrete point Z
+            //- Mean density at discrete point Z
             scalar rho_{0};
 
             //- Mean molecular weight at discrete point Z
@@ -144,10 +144,19 @@ class MixtureFraction
             void XtoY();
 
             //- Calculate concentration out of mass fraction
-            void YtoCon();
+            void YtoC();
 
             //- Calculate concentration out of mol fraction
-            void XtoCon();
+            void XtoC();
+
+            //- Calculate mean density out of mol fraction
+            void XtoRho();
+
+            //- Calculate mean density out of mass fraction
+            void YtoRho();
+
+            //- Calculate mean density out of concentration fraction
+            void CtoRho();
         
 
         // Check functions
