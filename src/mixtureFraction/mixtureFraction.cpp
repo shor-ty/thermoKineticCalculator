@@ -5,8 +5,7 @@
   |     |     C onstructor  | Copyright (C) 2015 Holzmann-cfd
   c     c-o-o-o             |
 -------------------------------------------------------------------------------
-License
-    This file is part of Automatic Flamelet Constructor.
+License This file is part of Automatic Flamelet Constructor.
 
     AFC is free software; you can redistribute it and/or modify it under
     the terms of the GNU General Public License as published by the
@@ -62,17 +61,17 @@ AFC::MixtureFraction::MixtureFraction
     }
 
     // Initialize with mole fraction
-    // if ()
-    // {
+    if (prop.input() == "mol")
+    {
 
         //- Calculate mole fraction (initial linear distribution)
         {
             const wordList& species = chem.species();
 
-            //- Set the oxidizer mole fraction
+            //- Set the oxidizer mol fraction
             map<word, scalar> oxidizerMolFraction = prop.oxidizerCompMol();
             //
-            //- Set the fuel mole fraction
+            //- Set the fuel mol fraction
             map<word, scalar> fuelMolFraction = prop.fuelCompMol();
 
             //- Set all species to zero
@@ -98,37 +97,83 @@ AFC::MixtureFraction::MixtureFraction
 
             if (debug)
             {
-                Info<< "Discrete point Z: " << Z_ << endl;
+                Info<< "Discrete point Z (mol): " << Z_ << endl;
 
                 forAll(species, i)
                 {
                     if (speciesMol_.at(species[i]) > 0)
                     {
-                        Info<< species[i] << ": " << speciesMol_.at(species[i]) << endl;
+                        Info<< species[i] << ": " 
+                            << speciesMol_.at(species[i]) << endl;
                     }
                 }
             }
 
             //- Calculate mass fraction Y
             XtoY();
+        }
+    }
 
-            //- Calculate concentration [X]
-            XtoC();
+    // Initialize with mass fraction
+    else if (prop.input() == "mass")
+    {
+        //- Calculate mole fraction (initial linear distribution)
+        {
+            const wordList& species = chem.species();
 
-            //- Calculate mean density rho
-            XtoRho();
+            //- Set the oxidizer mass fraction
+            map<word, scalar> oxidizerMassFraction = prop.oxidizerCompMass();
+            //
+            //- Set the fuel mass fraction
+            map<word, scalar> fuelMassFraction = prop.fuelCompMass();
+
+            //- Set all species to zero
+            forAll(species, i)
+            {
+                if (oxidizerMassFraction[species[i]] > 1e-10)
+                {
+                    speciesMass_[species[i]] =
+                        oxidizerMassFraction[species[i]]
+                      * (-1 * Zvalue + 1);
+                }
+                else if (fuelMassFraction[species[i]] > 1e-10)
+                {
+                    speciesMass_[species[i]] =
+                        fuelMassFraction[species[i]]
+                      * Zvalue;
+                }
+                else
+                {
+                    speciesMass_[species[i]] = 0;
+                }
+            }
 
             if (debug)
             {
-                Info<< endl;
-            }
-        }
-    //}
+                Info<< "Discrete point Z (mass): " << Z_ << endl;
 
-    // Initialize with mass fraction
-    // else if ()
-    // {
-    // }
+                forAll(species, i)
+                {
+                    if (speciesMass_.at(species[i]) > 0)
+                    {
+                        Info<< species[i] << ": " 
+                            << speciesMass_.at(species[i]) << endl;
+                    }
+                }
+            }
+            //- Calculate mol fraction X
+            YtoX();
+        }
+    }
+
+    //- Initiate all other stuff
+    {
+        //- Calculate concentration [X]
+        XtoC();
+
+        //- Calculate mean density rho
+        rhoX();
+    }
 }
 
 
@@ -138,7 +183,7 @@ AFC::MixtureFraction::~MixtureFraction()
 {
     if (debug)
     {
-        Info<< "Destruct MixtureFraction\n" << endl;
+//        Info<< "Destruct MixtureFraction\n" << endl;
     }
 }
 
@@ -152,6 +197,9 @@ void AFC::MixtureFraction::calcMeanMW
 {
     const wordList& species = chemistry_.species();        
 
+    //- Reset
+    MW_ = 0;
+
     //- Calculate mean moleculare weight with mol fraction
     if (funcSW == "mol")
     {
@@ -159,15 +207,15 @@ void AFC::MixtureFraction::calcMeanMW
         {
             if (debugMW)
             {
-                Info<< "MW calc, Species: " << species[s]
+                Info<< "    MW calc, Species: " << species[s]
                     << " << MW: " << thermo_.MW(species[s])
                     << " << X: " << speciesMol_.at(species[s]) << endl;
             }
 
             MW_ += speciesMol_.at(species[s])*thermo_.MW(species[s]);
         }
-    }
-    //- Calculate mean moleculare weight with mass fraction
+
+        updatedMW_ = true; } //- Calculate mean moleculare weight with mass fraction
     else if (funcSW == "mass")
     {
         scalar tmp{0};
@@ -176,12 +224,12 @@ void AFC::MixtureFraction::calcMeanMW
         {
             if (debugMW)
             {
-                Info<< "MW calc, Species: " << species[s]
+                Info<< "    MW calc, Species: " << species[s]
                     << " << MW: " << thermo_.MW(species[s])
                     << " << Y: " << speciesMass_.at(species[s]) << endl;
             }
 
-            tmp += speciesMass_.at(species[s])*thermo_.MW(species[s]);
+            tmp += speciesMass_.at(species[s])/thermo_.MW(species[s]);
         }
 
         MW_ = 1/tmp;
@@ -195,7 +243,7 @@ void AFC::MixtureFraction::calcMeanMW
         {
             if (debugMW)
             {
-                Info<< "MW calc, Species: " << species[s]
+                Info<< "    MW calc, Species: " << species[s]
                     << " << MW: " << thermo_.MW(species[s])
                     << " << [X]: " << speciesCon_.at(species[s]) << endl;
             }
@@ -241,7 +289,7 @@ void AFC::MixtureFraction::YtoX()
             sum += speciesMol_.at(species[s]);
         }
 
-        Info<< "YtoX(), sum of mol = " << sum << endl;
+        Info<< "    YtoX(), sum of mol = " << sum << endl;
     }
 }
 
@@ -259,16 +307,24 @@ void AFC::MixtureFraction::XtoY()
             = speciesMol_.at(species[s]) * thermo_.MW(species[s]) / MW_;
     }
 
+
+
     if (debug)
     {
         scalar sum{0};
 
         forAll(species, s)
         {
+            if (speciesMass_.at(species[s]) > 0)
+            {
+                Info<< species[s] << ": " << speciesMass_.at(species[s])
+                    << endl;
+            }
+
             sum += speciesMass_.at(species[s]);
         }
 
-        Info<< "XtoY(), sum of mass = " << sum << endl;
+        Info<< "    XtoY(), sum of mass = " << sum << endl;
     }
 }
 
@@ -305,7 +361,7 @@ void AFC::MixtureFraction::YtoC()
             sum += speciesCon_.at(species[s]);
         }
 
-        Info<< "YtoCon(), sum of concentration = " << sum << endl;
+        Info<< "    YtoCon(), sum of concentration = " << sum << endl;
     }
 }
 
@@ -324,8 +380,6 @@ void AFC::MixtureFraction::XtoC()
         XT += speciesMol_.at(species[s]) * T();
     }
 
-    Info<< "XT: " << XT << endl;
-
     const scalar& p = properties_.p();
 
     forAll(species, s)
@@ -343,12 +397,12 @@ void AFC::MixtureFraction::XtoC()
             sum += speciesCon_.at(species[s]);
         }
 
-        Info<< "XtoCon(), sum of concentration = " << sum << endl;
+        Info<< "    XtoCon(), sum of concentration = " << sum << endl;
     }
 }
 
 
-void AFC::MixtureFraction::XtoRho()
+void AFC::MixtureFraction::rhoX()
 {
     const wordList& species = chemistry_.species();
 
@@ -359,21 +413,68 @@ void AFC::MixtureFraction::XtoRho()
         XT += speciesMol_.at(species[s]) * T();
     }
 
-    scalar tmp{0};
-
     const scalar& p = properties_.p();
+
+    //- Reset rho_
+    rho_ = 0;
    
     forAll(species, s)
     {
-       tmp += speciesMol_.at(species[s]) * p 
+       rho_ += speciesMol_.at(species[s]) * p 
            / (AFC::Constants::R * XT) * thermo_.MW(species[s]);
     }
 
-    rho_ = tmp;
+    if (debug)
+    {
+        Info<< "    Mean density (rhoX): " << rho_ << endl;
+    }
+}
+
+
+void AFC::MixtureFraction::rhoY()
+{
+    const wordList& species = chemistry_.species();
+
+    scalar YTByMW{0};
+
+    forAll(species, s)
+    {
+        YTByMW += speciesMass_.at(species[s]) * T() / thermo_.MW(species[s]);
+    }
+
+    //- Reset rho_
+    rho_ = 0;
+
+    const scalar& p = properties_.p();
+
+    forAll(species, s)
+    {
+        rho_ += (p * speciesMass_.at(species[s])) 
+             / (AFC::Constants::R * YTByMW); 
+    }
 
     if (debug)
     {
-        Info<< "   Mean density: " << rho_ << endl;
+        Info<< "    Mean density (rhoY): " << rho_ << endl;
+    }
+}
+
+
+void AFC::MixtureFraction::rhoC()
+{
+    const wordList& species = chemistry_.species();
+
+    //- Reset rho_
+    rho_ = 0;
+
+    forAll(species, s)
+    {
+        rho_ += speciesCon_.at(species[s]) * thermo_.MW(species[s]);
+    }
+
+    if (debug)
+    {
+        Info<< "    Mean density (rhoC): " << rho_ << endl;
     }
 }
 

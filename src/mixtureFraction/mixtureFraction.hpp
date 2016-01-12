@@ -69,26 +69,32 @@ class MixtureFraction
             //- Temperature at discrete point Z
             scalar temperature_{0};
 
-            //- Mean density at discrete point Z
+            //- Mean density at discrete point Z [g/m^3]
             scalar rho_{0};
 
-            //- Mean molecular weight at discrete point Z
+            //- Mean molecular weight at discrete point Z [g/mol]
             scalar MW_{0};
         
-            //- Density of species i at discrete point Z
-            map<word, scalar> rhoSpecies_;
+            //- Density of species i at discrete point Z [g/m^3]
+            //map<word, scalar> rhoSpecies_;
 
-            //- Viscosity at discrete point Z
+            //- Viscosity at discrete point Z [m^2/s^2]
             scalar mu_{0};
 
-            //- Viscosity of species i at discrete point Z
-            map<word, scalar> muSpecies_;
+            //- Viscosity of species i at discrete point Z [m^2/s^2]
+            //map<word, scalar> muSpecies_;
 
             //- Defect value
             scalar defect_{0};
 
             //- Mixture fraction value Z
             scalar Z_{0};
+
+
+        // Booleans
+        
+            //- Mean molecular weight updated?
+            bool updatedMW_;
 
     
         // Class data
@@ -150,13 +156,13 @@ class MixtureFraction
             void XtoC();
 
             //- Calculate mean density out of mol fraction
-            void XtoRho();
+            void rhoX();
 
             //- Calculate mean density out of mass fraction
-            void YtoRho();
+            void rhoY();
 
             //- Calculate mean density out of concentration fraction
-            void CtoRho();
+            void rhoC();
         
 
         // Check functions
