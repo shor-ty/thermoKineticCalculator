@@ -124,9 +124,25 @@ class PropertiesReader
                 unsigned int&,
                 Properties&
             );
+
+            //- Reading mass fraction oxidizer dictionary
+            void massFractionOxidizer
+            (
+                const stringList&,
+                unsigned int&,
+                Properties&
+            );
                 
             //- Reading mol fraction fuel dictionary
             void molFractionFuel    
+            (
+                const stringList&,
+                unsigned int&,
+                Properties&
+            );
+                
+            //- Reading mass fraction fuel dictionary
+            void massFractionFuel    
             (
                 const stringList&,
                 unsigned int&,
@@ -138,6 +154,13 @@ class PropertiesReader
             (
                 const stringList&,
                 unsigned int&,
+                Properties&
+            );
+
+            //- Set wheater input is mol or mass fraction
+            void input
+            (
+                const word&,
                 Properties&
             );
 };

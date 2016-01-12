@@ -144,6 +144,29 @@ void AFC::Properties::insertCompositionOxidizerMol
 }
 
 
+void AFC::Properties::insertCompositionOxidizerMass
+(
+    const word& species,
+    const scalar& massFraction,
+    const bool& lastEntry
+)
+{
+    if (debug)
+    {
+        Info<< "Oxidizer species: " << species << "  " << massFraction << endl;
+    }
+
+    speciesOxidizer_.push_back(species);
+
+    oxidizerY_[species] = massFraction;
+
+    if (lastEntry)
+    {
+        YtoX("O");
+    }
+}
+
+
 void AFC::Properties::insertCompositionFuelMol
 (
     const word& species,
@@ -163,6 +186,29 @@ void AFC::Properties::insertCompositionFuelMol
     if (lastEntry)
     {
         XtoY("F");
+    }
+}
+
+
+void AFC::Properties::insertCompositionFuelMass
+(
+    const word& species,
+    const scalar& massFraction,
+    const bool& lastEntry
+)
+{
+    if (debug)
+    {
+        Info<< "Fuel species: " << species << "  " << massFraction << endl;
+    }
+
+    speciesFuel_.push_back(species);
+
+    fuelY_[species] = massFraction;
+
+    if (lastEntry)
+    {
+        YtoX("F");
     }
 }
 
@@ -229,6 +275,18 @@ void AFC::Properties::insertPressure
 )
 {
     p_ = pressure;
+}
+
+
+void AFC::Properties::inputMol()
+{
+    inputMol_ = true;
+}
+
+
+void AFC::Properties::inputMass()
+{
+    inputMass_ = true;
 }
 
 
@@ -463,6 +521,12 @@ AFC::map<AFC::word, AFC::scalar> AFC::Properties::oxidizerCompMol() const
 }
 
 
+AFC::map<AFC::word, AFC::scalar> AFC::Properties::oxidizerCompMass() const
+{
+    return oxidizerY_;
+}
+
+
 AFC::wordList AFC::Properties::speciesFuel() const
 {
     return speciesFuel_;
@@ -472,6 +536,12 @@ AFC::wordList AFC::Properties::speciesFuel() const
 AFC::map<AFC::word, AFC::scalar> AFC::Properties::fuelCompMol() const
 {
     return fuelX_;
+}
+
+
+AFC::map<AFC::word, AFC::scalar> AFC::Properties::fuelCompMass() const
+{
+    return fuelY_;
 }
 
 
@@ -541,6 +611,37 @@ AFC::scalar AFC::Properties::defect
 AFC::scalar AFC::Properties::p() const
 {
     return p_;
+}
+
+
+AFC::word AFC::Properties::input() const
+{
+    if
+    (
+        !inputMol_
+     && !inputMass_
+    )
+    {
+        FatalError
+        (
+            "    Input problems for mass or mol fraction",
+            __FILE__,
+            __LINE__
+        );
+    }
+
+    word ret{"none"};
+
+    if (inputMol_)
+    {
+        ret = "mol";
+    }
+    else if (inputMass_)
+    {
+        ret = "mass";
+    }
+
+    return ret;
 }
 
 

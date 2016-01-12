@@ -93,6 +93,14 @@ class Properties
             //- Pressure at which the calculation take place
             scalar p_{0};
 
+
+        // Boolean
+
+            //- Input uses mol or mass fraction
+            bool inputMol_{false};
+
+            bool inputMass_{false};
+
             
         // Algorithm settings
 
@@ -187,8 +195,24 @@ class Properties
                 const bool& lastEntry = false
             );
             
+            //- Insert oxidizer mass composition 
+            void insertCompositionOxidizerMass
+            (
+                const word&,
+                const scalar&,
+                const bool& lastEntry = false
+            );
+            
             //- Insert fuel mol composition 
             void insertCompositionFuelMol
+            (
+                const word&,
+                const scalar&,
+                const bool& lastEntry = false
+            );
+            
+            //- Insert fuel mass composition 
+            void insertCompositionFuelMass
             (
                 const word&,
                 const scalar&,
@@ -225,6 +249,12 @@ class Properties
                 const scalar&
             );
 
+            //- Insert bool for inputMol
+            void inputMol();
+
+            //- Insert bool for inputMass
+            void inputMass();
+
 
         // Other functions
 
@@ -251,14 +281,20 @@ class Properties
             //- Return oxidizer species
             wordList speciesOxidizer() const;
 
-            //- Return oxidizer mole fraction
+            //- Return oxidizer mol fraction
             map<word, scalar> oxidizerCompMol() const;
+            //
+            //- Return oxidizer mass fraction
+            map<word, scalar> oxidizerCompMass() const;
 
             //- Return fuel species
             wordList speciesFuel() const;
 
-            //- Return fuel mole fraction
+            //- Return fuel mol fraction
             map<word, scalar> fuelCompMol() const;
+
+            //- Return fuel mass fraction
+            map<word, scalar> fuelCompMass() const;
 
             //- Return scalar dissipation rates
             scalarField sDRs() const;
@@ -295,6 +331,9 @@ class Properties
 
             //- Return pressure
             scalar p() const;
+
+            //- Return word of input (mol or mass)
+            word input() const;
 };
 
 

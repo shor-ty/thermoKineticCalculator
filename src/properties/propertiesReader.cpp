@@ -155,10 +155,24 @@ void AFC::PropertiesReader::read
             else if (tmp[0] == "molFractionOxidizer")
             {
                 molFractionOxidizer(fileContent, line, data);
+
+                //- Input is mol fraction
+                input("mol", data);
             }
             else if (tmp[0] == "molFractionFuel")
             {
                 molFractionFuel(fileContent, line, data);
+            }
+            else if (tmp[0] == "massFractionOxidizer")
+            {
+                massFractionOxidizer(fileContent, line, data);
+
+                //- Input is mass fraction
+                input("mass", data);
+            }
+            else if (tmp[0] == "massFractionFuel")
+            {
+                massFractionFuel(fileContent, line, data);
             }
             else if (tmp[0] == "afcControl")
             {
@@ -412,6 +426,112 @@ void AFC::PropertiesReader::molFractionOxidizer
 }
 
 
+void AFC::PropertiesReader::massFractionOxidizer
+(
+    const stringList& fileContent,
+    unsigned int& line,
+    Properties& data
+)
+{
+    int dictBegin{-1};
+    unsigned int dictEnd{0};
+    
+    findKeyword(dictBegin, dictEnd, fileContent, line);
+
+    line = dictBegin+1;
+
+    for(; line < dictEnd; line++)
+    {
+        //- Split string; delimiter ' ' 
+        stringList tmp = splitStrAtWS(fileContent[line]);
+
+        //- If line is not empty and no comment, proceed
+        if
+        (
+            !tmp.empty()
+         && tmp[0][0] != '!'
+        )
+        {
+            //- If more elements in one line
+            if (tmp.size() > 2)
+            {
+                forAll(tmp, element)
+                {
+                    unsigned int modul = element%2;
+
+                    if (modul)
+                    {
+                        if (tmp[element+1].empty())
+                        {
+                            FatalError
+                            (
+                                "    Error in dictionary massFractionOxidizer "
+                                "(" + file_ + ")",
+                                __FILE__,
+                                __LINE__
+                            );
+                        }
+
+                        if
+                        (
+                            line < dictEnd-1
+                         && element == tmp.size()
+                        )
+                        {
+                            data.insertCompositionOxidizerMass
+                            (
+                                tmp[element],
+                                stod(tmp[element+1]),
+                                true
+                            );
+                        }
+                        else
+                        {
+                            data.insertCompositionOxidizerMass
+                            (
+                                tmp[element],
+                                stod(tmp[element+1])
+                            );
+                        }
+                    }
+                }
+            }
+            else
+            {
+                if (tmp[1].empty())
+                {
+                    FatalError
+                    (
+                        "    Error in dictionary massFractionOxidizer "
+                        "(" + file_ + ")",
+                        __FILE__,
+                        __LINE__
+                    );
+                }
+
+                if (line == dictEnd-1)
+                {
+                    data.insertCompositionOxidizerMass
+                    (
+                        tmp[0],
+                        stod(tmp[1]),
+                        true
+                    );
+                }
+                else
+                {
+                    data.insertCompositionOxidizerMass
+                    (
+                        tmp[0],
+                        stod(tmp[1])
+                    );
+                }
+            }
+        }
+    }
+}
+
+
 void AFC::PropertiesReader::molFractionFuel
 (
     const stringList& fileContent,
@@ -480,6 +600,84 @@ void AFC::PropertiesReader::molFractionFuel
                 }
 
                 data.insertCompositionFuelMol
+                (
+                    tmp[0],
+                    stod(tmp[1])
+                );
+            }
+        }
+    }
+}
+
+
+void AFC::PropertiesReader::massFractionFuel
+(
+    const stringList& fileContent,
+    unsigned int& line,
+    Properties& data
+)
+{
+    int dictBegin{-1};
+    unsigned int dictEnd{0};
+    
+    findKeyword(dictBegin, dictEnd, fileContent, line);
+
+    line = dictBegin+1;
+
+    for(; line < dictEnd; line++)
+    {
+        //- Split string; delimiter ' ' 
+        stringList tmp = splitStrAtWS(fileContent[line]);
+
+        //- If line is not empty and no comment, proceed
+        if
+        (
+            !tmp.empty()
+         && tmp[0][0] != '!'
+        )
+        {
+            //- If more elements in one line
+            if (tmp.size() > 2)
+            {
+                forAll(tmp, element)
+                {
+                    unsigned int modul = element%2;
+
+                    if (tmp[element+1].empty())
+                    {
+                        FatalError
+                        (
+                            "    Error in dictionary massFractionFuel "
+                            "(" + file_ + ")",
+                            __FILE__,
+                            __LINE__
+                        );
+                    }
+
+                    if (modul)
+                    {
+                        data.insertCompositionFuelMass
+                        (
+                            tmp[element],
+                            stod(tmp[element+1])
+                        );
+                    }
+                }
+            }
+            else
+            {
+                if (tmp[1].empty())
+                {
+                    FatalError
+                    (
+                        "    Error in dictionary massFractionFuel " 
+                        "(" + file_ + ")",
+                       __FILE__,
+                        __LINE__
+                    );
+                }
+
+                data.insertCompositionFuelMass
                 (
                     tmp[0],
                     stod(tmp[1])
@@ -594,6 +792,33 @@ void AFC::PropertiesReader::control
                 }
             }
         }
+    }
+}
+
+
+void AFC::PropertiesReader::input
+(
+    const word& inp,
+    Properties& data
+)
+{
+    if (inp == "mol")
+    {
+        data.inputMol();
+    }
+    else if (inp == "mass")
+    {
+        data.inputMass();
+    }
+    else
+    {
+        FatalError
+        (
+            "    No fraction input found. Specify either mol or mass \n"
+            "    fraction in the afcDict.",
+            __FILE__,
+            __LINE__
+        );
     }
 }
 
