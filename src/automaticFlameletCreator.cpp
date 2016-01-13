@@ -343,7 +343,7 @@ int main
     }
 
     //- Calculation start
-    /*Info<< " c-o Start flamelet calculation\n" << endl;
+    Info<< " c-o Start flamelet calculation\n" << endl;
     {
         const scalarField sDRs = properties.sDRs();
         const scalarField defects = properties.defects();
@@ -388,7 +388,7 @@ int main
                 }
             }
         }
-    }*/
+    }
 
     return 0;
 }

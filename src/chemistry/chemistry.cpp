@@ -64,6 +64,7 @@ void AFC::Chemistry::k
     //- No. of reactions
     const int& reac = chemData_.nReac();
 
+    //- Store reaction rates (tmp)
     scalarField k;
 
     //- Calculate reaction rates k
@@ -86,9 +87,11 @@ void AFC::Chemistry::k
         
         scalar M{0};
 
+        k.push_back(arrhenius(A, beta, Ea, T));
+
         //- Calculate [M] out of literature [10] 
         //  TODO | check this
-        if (!chemData_.ENHANCED(r))
+        /*if (!chemData_.ENHANCED(r))
         {
             M = calcM_Warnatz(speciesMol);    
         }
@@ -111,7 +114,7 @@ void AFC::Chemistry::k
             k.push_back(arrhenius(A, beta, Ea, T));
         }
         //- LOW calculation
-        /*else if
+        else if
         (
             chemData_.LOW(r)
          && !chemData_.TROE(r)
@@ -151,10 +154,6 @@ AFC::scalar AFC::Chemistry::calcM
     const wordList& species = chemData_.species();
 
     const wordList& Mcomp = chemData_.Mcomp(r);
-    forAll (Mcomp, s)
-    {
-        Info << r << ": species: " << s << " -> " << Mcomp.at(s) << endl;
-    }
 
 /*    forAll(speciesMol, i)
     {

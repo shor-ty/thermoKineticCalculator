@@ -130,7 +130,7 @@ void AFC::Properties::insertCompositionOxidizerMol
 {
     if (debug)
     {
-        Info<< "Oxidizer species: " << species << "  " << molFraction << endl;
+        Info<< "Oxidizer species (mol): " << species << "  " << molFraction << endl;
     }
 
     speciesOxidizer_.push_back(species);
@@ -153,7 +153,7 @@ void AFC::Properties::insertCompositionOxidizerMass
 {
     if (debug)
     {
-        Info<< "Oxidizer species: " << species << "  " << massFraction << endl;
+        Info<< "Oxidizer species (mass): " << species << "  " << massFraction << endl;
     }
 
     speciesOxidizer_.push_back(species);
@@ -176,7 +176,7 @@ void AFC::Properties::insertCompositionFuelMol
 {
     if (debug)
     {
-        Info<< "Fuel species: " << species << "  " << molFraction << endl;
+        Info<< "Fuel species (mol): " << species << "  " << molFraction << endl;
     }
 
     speciesFuel_.push_back(species);
@@ -199,7 +199,7 @@ void AFC::Properties::insertCompositionFuelMass
 {
     if (debug)
     {
-        Info<< "Fuel species: " << species << "  " << massFraction << endl;
+        Info<< "Fuel species (mass): " << species << "  " << massFraction << endl;
     }
 
     speciesFuel_.push_back(species);
@@ -344,7 +344,11 @@ void AFC::Properties::check()
         );
     }
 
-    if (oxidizerX_.empty())
+    if
+    (
+        oxidizerX_.empty()
+     && oxidizerY_.empty()
+    )
     {
         FatalError
         (
@@ -354,7 +358,11 @@ void AFC::Properties::check()
         );
     }
 
-    if (fuelX_.empty())
+    if
+    (
+        fuelX_.empty()
+     && fuelY_.empty()
+    )
     {
         FatalError
         (
@@ -366,42 +374,112 @@ void AFC::Properties::check()
 
     scalar sum{0};
 
-    forAll(speciesOxidizer_, i)
-    {
-        sum += oxidizerX_[speciesOxidizer_[i]];
-    } 
-
     scalar epsilon{1e-12};
 
-    //- Double comparison; with epsilon
-    if ((1.0 - sum) > epsilon)
+    if (inputMol_)
+    {
+        if (debug)
+        {
+            Info<< "Input of fraction is mol.\n" << endl;
+        }
+
+        //- Oxidizer
+        forAll(speciesOxidizer_, i)
+        {
+            sum += oxidizerX_[speciesOxidizer_[i]];
+        } 
+
+        //- Double comparison; with epsilon
+        if ((1.0 - sum) > epsilon)
+        {
+            FatalError
+            (
+                "    Sum of mol fraction of oxidizer is not 1 ("
+                + std::to_string(sum) + ").\n"
+                "    Please check your fraction composition for the oxidizer "
+                "stream in your afcDict.",
+                __FILE__,
+                __LINE__
+            );
+        }
+
+        //- Fuel
+        sum = 0;
+
+        forAll(speciesFuel_, i)
+        {
+            sum += fuelX_[speciesFuel_[i]];
+        }
+
+        //- Double comparison; with epsilon
+        if ((1.0 - sum) > epsilon)
+        {
+            FatalError
+            (
+                "    Sum of mol fraction of fuel is not 1 ("
+                + std::to_string(sum) + ").\n"
+                "    Please check your fraction composition for the fuel "
+                "stream in your afcDict.",
+                __FILE__,
+                __LINE__
+            );
+        }
+    }
+    else if (inputMass_)
+    {
+        if (debug)
+        {
+            Info<< "Input of fraction is mass.\n" << endl;
+        }
+
+        //- Oxidizer
+        forAll(speciesOxidizer_, i)
+        {
+            sum += oxidizerY_[speciesOxidizer_[i]];
+        } 
+
+        //- Double comparison; with epsilon
+        if ((1.0 - sum) > epsilon)
+        {
+            FatalError
+            (
+                "    Sum of mass fraction of oxidizer is not 1 ("
+                + std::to_string(sum) + ").\n"
+                "    Please check your fraction composition for the oxidizer "
+                "stream in your afcDict.",
+                __FILE__,
+                __LINE__
+            );
+        }
+
+        //-Fuel
+        sum = 0;
+
+        forAll(speciesFuel_, i)
+        {
+            sum += fuelY_[speciesFuel_[i]];
+        }
+
+        //- Double comparison; with epsilon
+        if ((1.0 - sum) > epsilon)
+        {
+            FatalError
+            (
+                "    Sum of mass fraction of fuel is not 1 ("
+                + std::to_string(sum) + ").\n"
+                "    Please check your fraction composition for the fuel "
+                "stream in your afcDict.",
+                __FILE__,
+                __LINE__
+            );
+        }
+    }
+    else
     {
         FatalError
         (
-            "    Sum of mole fraction of oxidizer is not 1 ("
-            + std::to_string(sum) + ").\n"
-            "    Please check your fraction composition for the oxidizer "
-            "stream in your afcDict.",
-            __FILE__,
-            __LINE__
-        );
-    }
-
-    sum = 0;
-    forAll(speciesFuel_, i)
-    {
-        sum += fuelX_[speciesFuel_[i]];
-    }
-
-    //- Double comparison; with epsilon
-    if ((1.0 - sum) > epsilon)
-    {
-        FatalError
-        (
-            "    Sum of mole fraction of fuel is not 1 ("
-            + std::to_string(sum) + ").\n"
-            "    Please check your fraction composition for the fuel "
-            "stream in your afcDict.",
+            "    Either mol fraction or mass fraction defined for oxidizer"
+            " stream.",
             __FILE__,
             __LINE__
         );
@@ -422,7 +500,6 @@ void AFC::Properties::check()
 
     // Algorihm control check
 
-        //- TODO
     // Output summary
 }
 
