@@ -68,6 +68,10 @@ class ChemistryData
             //- stringList for elementar reaction
             stringList elementarReaction_;
 
+            //- Matrix that contains all reactions and for each
+            //  reaction all included species
+            wordMatrix speciesInReactions_;
+
             //- boolList for TBR  
             boolList TBR_;
 
@@ -199,6 +203,18 @@ class ChemistryData
 
             //- Increment nReac_
             void incrementReac();
+
+            //- Insert stochiometric coeffs
+            void insertNu
+            (
+                const int&
+            );
+
+            //- Insert species (reac|prod) 
+            void insertReacProd
+            (
+                const word&
+            );
 
             //- Increment vectors and matrix size
             void incrementMatrixesVectors();

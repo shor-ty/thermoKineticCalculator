@@ -157,10 +157,31 @@ void AFC::ChemistryData::incrementReac()
 }
 
 
+void AFC::ChemistryData::insertNu
+(
+    const int& nu
+)
+{
+    nu_[nReac_].push_back(nu);
+}
+
+
+void AFC::ChemistryData::insertReacProd
+(
+    const word& species
+)
+{
+    speciesInReactions_[nReac_].push_back(species);
+}
+
+
 void AFC::ChemistryData::incrementMatrixesVectors()
 {
     //- stringList for saving reactions
     elementarReaction_.push_back("");
+
+    //- matrixWordList for species in reaction
+    speciesInReactions_.push_back(wordList(0));
 
     //- boolList for THIRD BODY REACTION
     TBR_.push_back(false);
@@ -203,7 +224,6 @@ void AFC::ChemistryData::incrementMatrixesVectors()
 
     //- Reaction rates k
     reacRates_.push_back(scalar(0));
-
 }
 
 

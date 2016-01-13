@@ -185,7 +185,8 @@ class ChemistryReader
             void analyzeReacSite
             (
                 const word&,
-                const word
+                const word,
+                ChemistryData&
             );
 };
 

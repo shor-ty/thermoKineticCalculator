@@ -527,12 +527,13 @@ void AFC::ChemistryReader::analyzeReaction
     // b) Check if the first char is a number,
     //    if not nu = 1
     //    if its a number, check next letter for number
-
+    {
         //- Reactant site
-        analyzeReacSite(reac, "r");
+        analyzeReacSite(reac, "r", data);
 
         //- Product site
-        analyzeReacSite(prod, "p");
+        analyzeReacSite(prod, "p", data);
+    }
     
 }
 
@@ -681,12 +682,13 @@ void AFC::ChemistryReader::enhanceFactors
 void AFC::ChemistryReader::analyzeReacSite
 (
     const word& tmp,
-    const word site
+    const word site,
+    ChemistryData& data
 )
 {
     word stochiometricFactor;
 
-    word speciesName;
+    word species;
 
     int startPos{0};
 
@@ -760,7 +762,7 @@ void AFC::ChemistryReader::analyzeReacSite
         //- Extract species
         if (extractSpecies)
         {
-            speciesName = tmp.substr(startPos, (endPos-startPos));
+            species = tmp.substr(startPos, (endPos-startPos));
 
             extractSpecies = false;
 
@@ -785,12 +787,13 @@ void AFC::ChemistryReader::analyzeReacSite
                 );
             }
 
-            Info << tmp << endl;
-
-            Info << nu << " ->  " << speciesName << endl << endl;
-
             startPos = 0;
             endPos = 0;
+
+            //- Store data
+            data.insertNu(nu);
+
+            data.insertReacProd(species);
         }
     }
 }
