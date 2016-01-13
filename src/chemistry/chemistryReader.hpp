@@ -180,6 +180,13 @@ class ChemistryReader
                 const string&,
                 ChemistryData&
             );
+
+            //- Analyse reaction site (product or reactants)
+            void analyzeReacSite
+            (
+                const word&,
+                const word
+            );
 };
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

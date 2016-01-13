@@ -513,6 +513,27 @@ void AFC::ChemistryReader::analyzeReaction
         stod(tmp[tmp.size()-2]),
         stod(tmp[tmp.size()-1])
     );
+
+    // STEP 4: get stochiometric values
+    //  + product negativ
+    //  + reactants positiv
+
+    // a) split into reactants and products
+    stringList tmp3 = splitStrAtDelimiter(tmp2, '=');
+
+    const string reac = tmp3[0];
+    const string prod = tmp3[1];
+
+    // b) Check if the first char is a number,
+    //    if not nu = 1
+    //    if its a number, check next letter for number
+
+        //- Reactant site
+        analyzeReacSite(reac, "r");
+
+        //- Product site
+        analyzeReacSite(prod, "p");
+    
 }
 
 
@@ -656,5 +677,122 @@ void AFC::ChemistryReader::enhanceFactors
     }
 }
 
+
+void AFC::ChemistryReader::analyzeReacSite
+(
+    const word& tmp,
+    const word site
+)
+{
+    word stochiometricFactor;
+
+    word speciesName;
+
+    int startPos{0};
+
+    int endPos{0};
+
+    bool foundDigit{false};
+
+    bool firstChar{false};
+
+    bool extractSpecies{false};
+
+    //- Reactant analyse
+    for(unsigned int i=0; i<tmp.size(); i++)
+    {
+        if (!firstChar)
+        {
+            if (isdigit(tmp[i]))
+            {
+                if (foundDigit)
+                {
+                    stochiometricFactor += tmp[i];
+                }
+                else
+                {
+                    stochiometricFactor = tmp[i];
+                }
+
+                foundDigit = true;
+            }
+            //- If first char is not a number, species name starts
+            else
+            {
+                firstChar = true;
+
+                startPos = i;
+                
+                if (!foundDigit)
+                {
+                    stochiometricFactor = "1";
+                }
+                else
+                {
+                    foundDigit = false;
+                }
+            }
+        }
+
+        {
+            //- Move on till + comes or end of string reached
+            if
+            (
+                tmp[i] == '+'
+             || i == tmp.size()-1    
+            )
+            {
+                if (i == tmp.size()-1)
+                {
+                    endPos = i+1;
+                }
+                else
+                {
+                    endPos = i;
+                }
+
+                firstChar = false;
+
+                extractSpecies = true;
+            }
+        }
+
+        //- Extract species
+        if (extractSpecies)
+        {
+            speciesName = tmp.substr(startPos, (endPos-startPos));
+
+            extractSpecies = false;
+
+            int nu{0};
+
+            if (site == "p")
+            {
+                nu = stoi(stochiometricFactor) * -1;
+            }
+            else if (site == "r")
+            {
+                nu = stoi(stochiometricFactor);
+            }
+            else
+            {
+                FatalError
+                (
+                    "    You only can call this function with 'r' or"
+                    " 'p' arguments.",
+                    __FILE__,
+                    __LINE__
+                );
+            }
+
+            Info << tmp << endl;
+
+            Info << nu << " ->  " << speciesName << endl << endl;
+
+            startPos = 0;
+            endPos = 0;
+        }
+    }
+}
 
 // ************************************************************************* //
