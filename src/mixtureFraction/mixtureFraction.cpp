@@ -190,7 +190,7 @@ AFC::MixtureFraction::~MixtureFraction()
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-void AFC::MixtureFraction::calcMeanMW
+void AFC::MixtureFraction::calculateMeanMW
 (
     const word& funcSW
 )
@@ -205,35 +205,25 @@ void AFC::MixtureFraction::calcMeanMW
     {
         forAll(species, s)
         {
-            if (debugMW)
-            {
-                Info<< "    MW calc, Species: " << species[s]
-                    << " << MW: " << thermo_.MW(species[s])
-                    << " << X: " << speciesMol_.at(species[s]) << endl;
-            }
-
-            MW_ += speciesMol_.at(species[s])*thermo_.MW(species[s]);
+            MW_ += speciesMol_.at(species[s]) * thermo_.MW(species[s]);
         }
 
-        updatedMW_ = true; } //- Calculate mean moleculare weight with mass fraction
+        updatedMW_ = true; 
+    } 
+    
+    //- Calculate mean moleculare weight with mass fraction
     else if (funcSW == "mass")
     {
         scalar tmp{0};
 
         forAll(species, s)
         {
-            if (debugMW)
-            {
-                Info<< "    MW calc, Species: " << species[s]
-                    << " << MW: " << thermo_.MW(species[s])
-                    << " << Y: " << speciesMass_.at(species[s]) << endl;
-            }
-
-            tmp += speciesMass_.at(species[s])/thermo_.MW(species[s]);
+            tmp += speciesMass_.at(species[s]) / thermo_.MW(species[s]);
         }
 
         MW_ = 1/tmp;
     }
+    //- Calculate mean moleculare weight with concentration 
     else if (funcSW == "con")
     {
         scalar numerator{0};
@@ -241,13 +231,6 @@ void AFC::MixtureFraction::calcMeanMW
 
         forAll(species, s)
         {
-            if (debugMW)
-            {
-                Info<< "    MW calc, Species: " << species[s]
-                    << " << MW: " << thermo_.MW(species[s])
-                    << " << [X]: " << speciesCon_.at(species[s]) << endl;
-            }
-
             numerator += speciesCon_.at(species[s])*thermo_.MW(species[s]);
             denominator += speciesCon_.at(species[s]);
         }
@@ -267,12 +250,92 @@ void AFC::MixtureFraction::calcMeanMW
 }
 
 
+void AFC::MixtureFraction::calculateMeanCp
+(
+    const scalar& T 
+)
+{
+    const wordList& species = chemistry_.species();        
+
+    //- Reset
+    cp_ = 0;
+
+    forAll(species, s)
+    {
+        cp_ += speciesMass_.at(species[s]) * thermo_.cp(species[s], T);
+    }
+}
+
+
+void AFC::MixtureFraction::calculateMeanH
+(
+    const scalar& T 
+)
+{
+    const wordList& species = chemistry_.species();        
+
+    //- Reset
+    H_ = 0;
+
+    forAll(species, s)
+    {
+        H_ += speciesMass_.at(species[s]) * thermo_.H(species[s], T);
+    }
+}
+
+
+void AFC::MixtureFraction::calculateMeanS
+(
+    const scalar& T 
+)
+{
+    const wordList& species = chemistry_.species();        
+
+    //- Reset
+    S_ = 0;
+
+    forAll(species, s)
+    {
+        S_ += speciesMass_.at(species[s]) * thermo_.S(species[s], T);
+    }
+}
+
+
+void AFC::MixtureFraction::calculateMeanG
+(
+    const scalar& T 
+)
+{
+    const wordList& species = chemistry_.species();        
+
+    //- Reset
+    G_ = 0;
+
+    forAll(species, s)
+    {
+        G_ += speciesMass_.at(species[s]) * thermo_.G(species[s], T);
+    }
+}
+
+
+void AFC::MixtureFraction::calculateMeanG
+(
+    const scalar& H,
+    const scalar& S,
+    const scalar& T 
+)
+{
+    //- Calculate Gibbs energy with known values
+    G_ = thermo_.G(H, S, T);
+}
+
+
 void AFC::MixtureFraction::YtoX()
 {
     const wordList& species = chemistry_.species();
 
     //- update mean molecular weight
-    calcMeanMW("mass");
+    calculateMeanMW("mass");
 
     forAll(species, s)
     {
@@ -299,7 +362,7 @@ void AFC::MixtureFraction::XtoY()
     const wordList& species = chemistry_.species();
 
     // update mean molecular weight
-    calcMeanMW("mol");
+    calculateMeanMW("mol");
 
     forAll(species, s)
     {
@@ -334,7 +397,7 @@ void AFC::MixtureFraction::YtoC()
     const wordList& species = chemistry_.species();
 
     // update mean molecular weight
-    calcMeanMW("mass");
+    calculateMeanMW("mass");
 
     scalar YTMW{0};
 
@@ -371,7 +434,7 @@ void AFC::MixtureFraction::XtoC()
     const wordList& species = chemistry_.species();
 
     // update mean molecular weight
-    calcMeanMW("mol");
+    calculateMeanMW("mol");
 
     scalar XT{0};
 
@@ -481,21 +544,6 @@ void AFC::MixtureFraction::rhoC()
 
 // * * * * * * * * * * * * * * * Return Functions  * * * * * * * * * * * * * //
 
-void AFC::MixtureFraction::mols(const word spec) const
-{
-//    Info<< "Species " << spec << ": " << speciesMol_.at(spec) << endl;   
-}
-
-
-/*AFC::scalar AFC::MixtureFraction::mol
-(
-    const word& species
-)
-{
-    return speciesMol_[species];
-}
-
-*/
 AFC::map<AFC::word, AFC::scalar> AFC::MixtureFraction::mol() const
 {
     return speciesMol_;
@@ -507,5 +555,28 @@ AFC::scalar AFC::MixtureFraction::T() const
     return temperature_;
 }
 
+
+AFC::scalar AFC::MixtureFraction::cp() const
+{
+    return cp_;
+}
+
+
+AFC::scalar AFC::MixtureFraction::H() const
+{
+    return H_;
+}
+
+
+AFC::scalar AFC::MixtureFraction::S() const
+{
+    return S_; 
+}
+
+
+AFC::scalar AFC::MixtureFraction::G() const
+{
+    return G_;
+}
 
 // ************************************************************************* //

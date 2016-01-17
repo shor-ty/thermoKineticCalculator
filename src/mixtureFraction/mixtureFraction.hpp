@@ -74,6 +74,18 @@ class MixtureFraction
 
             //- Mean molecular weight at discrete point Z [g/mol]
             scalar MW_{0};
+
+            //- Mean heat capacity at discrete point Z [J/
+            scalar cp_{0};
+
+            //- Mean enthalpy H at discrete point Z
+            scalar H_{0};
+
+            //- Mean entropy S at discrete point Z
+            scalar S_{0};
+
+            //- Mean free Gibbs energy at discrete point Z
+            scalar G_{0};
         
             //- Density of species i at discrete point Z [g/m^3]
             //map<word, scalar> rhoSpecies_;
@@ -96,19 +108,19 @@ class MixtureFraction
             //- Mean molecular weight updated?
             bool updatedMW_;
 
-    
-        // Class data
 
+        // Class data
+        
             //- Thermodynamic class
             const Thermo& thermo_;
 
             //- Transport class
             const Transport& transport_;
 
-            //- Chemistry class
+            // Chemistry class
             const Chemistry& chemistry_;
 
-            //- Properties class
+            // Properties class
             const Properties& properties_;
 
 
@@ -138,9 +150,41 @@ class MixtureFraction
         // Member functions
         
             //- Calculate the mean molecular weight
-            void calcMeanMW
+            void calculateMeanMW
             (
-                const word&
+                const word& 
+            );
+
+            //- Calculate the mean heat capacity
+            void calculateMeanCp
+            (
+                const scalar&
+            );
+
+            //- Calculate the mean enthalpy
+            void calculateMeanH
+            (
+                const scalar&
+            );
+
+            //- Calculate the mean entropy
+            void calculateMeanS
+            (
+                const scalar&
+            );
+
+            //- Calculate the mean free gibs
+            void calculateMeanG
+            (
+                const scalar&
+            );
+
+            //- Calculate the mean free gibs
+            void calculateMeanG
+            (
+                const scalar&,
+                const scalar&,
+                const scalar&
             );
 
             //- Calculate mol fraction out of mass fraction
@@ -170,20 +214,23 @@ class MixtureFraction
 
         // Return functions
 
-            void mols(const word) const;
-
-            //- Return species mol fraction
-/*            scalar mol
-            (
-                const word&
-            );*/
-
             //- Return species mol fraction (map)
             map<word, scalar> mol() const;
 
-            //- Tmperature [K]
+            //- Return temperature [K]
             scalar T() const;
 
+            //- return heat capacity
+            scalar cp() const;
+
+            //- Return enthalpy
+            scalar H() const;
+
+            //- Return entropy
+            scalar S() const;
+
+            //- Return free Gibbs energy
+            scalar G() const;
 
 };
 
