@@ -40,9 +40,7 @@ void calculate
     lookUpTable& lut,
     const scalar& sDR,
     const scalar& defect,
-    const unsigned int& nDisPoints,
-    const Thermo& thermo,
-    Chemistry& chem
+    const unsigned int& nDisPoints
 )
 {
     //- TODO

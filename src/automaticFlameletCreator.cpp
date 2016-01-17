@@ -382,8 +382,7 @@ int main
                         lookUpTables,
                         rate,
                         defectNo,
-                        Zpoints,
-                        chemistry
+                        Zpoints
                     );
                 }
             }
