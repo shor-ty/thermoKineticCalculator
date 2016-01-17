@@ -66,4 +66,56 @@ AFC::scalar AFC::Thermo::MW
     return thermoData_.MW(species);
 }
 
+
+AFC::scalar AFC::Thermo::cp
+(
+    const word& species,
+    const scalar& T
+) const
+{
+    return thermoCalc_.cp(species, T, thermoData_);
+}
+
+
+AFC::scalar AFC::Thermo::H
+(
+    const word& species,
+    const scalar& T
+) const
+{
+    return thermoCalc_.H(species, T, thermoData_);
+}
+
+
+AFC::scalar AFC::Thermo::S
+(
+    const word& species,
+    const scalar& T
+) const
+{
+    return thermoCalc_.S(species, T, thermoData_);
+}
+
+
+AFC::scalar AFC::Thermo::G
+(
+    const word& species,
+    const scalar& T
+) const
+{
+    return thermoCalc_.G(species, T, thermoData_);
+}
+
+
+AFC::scalar AFC::Thermo::G
+(
+    const scalar& H,
+    const scalar& S,
+    const scalar& T
+) const
+{
+    return thermoCalc_.G(H, S, T);
+}
+
+
 // ************************************************************************* //

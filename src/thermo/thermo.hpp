@@ -37,6 +37,7 @@ SourceFiles
 
 #include "thermoReader.hpp"
 #include "thermoData.hpp"
+#include "thermoCalc.hpp"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -55,6 +56,9 @@ class Thermo
 
             //- ThermoData object
             ThermoData thermoData_;
+
+            //- ThermoCalc object
+            ThermoCalc thermoCalc_;
     
 
     public:
@@ -73,15 +77,51 @@ class Thermo
         // Member functions
 
 
-        // Return functions
+        // Return | calculation functions
         
             //- Return species as word list
             wordList species() const;
 
-            //- Return moleculare weight of species i
+            //- Return moleculare weight of species s
             scalar MW
             (
                 const word&
+            ) const;
+
+            //- Return heat capacity of species s
+            scalar cp
+            (
+                const word&,
+                const scalar&
+            ) const;
+
+            //- Return enthalpy of species s
+            scalar H
+            (
+                const word&,
+                const scalar&
+            ) const;
+
+            //- Return entropy of species s
+            scalar S
+            (
+                const word&,
+                const scalar&
+            ) const;
+
+            //- Return free Gibbs of species s
+            scalar G
+            (
+                const word&,
+                const scalar&
+            ) const;
+
+            //- Return mean free Gibbs of species s
+            scalar G
+            (
+                const scalar&,
+                const scalar&,
+                const scalar&
             ) const;
 };
 
