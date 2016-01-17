@@ -471,7 +471,7 @@ void AFC::ChemistryReader::analyzeReaction
      && found3 == std::string::npos
     )
     {
-        data.setKB();
+        data.setBR();
     }
     //- b)
     else if
@@ -481,7 +481,7 @@ void AFC::ChemistryReader::analyzeReaction
      && found3 != std::string::npos
     )
     {
-        data.setKB();
+        data.setBR();
     }
     //- c)
     //  Not implemented, default is c)
