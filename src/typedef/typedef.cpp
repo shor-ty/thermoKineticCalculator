@@ -34,6 +34,7 @@ std::ostream& AFC::Error = std::cerr;
 std::basic_ostream<char>& (& AFC::endl)(std::basic_ostream<char>&)
     = std::endl;
 
+
 void AFC::FatalError
 (
     const string msg,
@@ -49,6 +50,19 @@ void AFC::FatalError
          << " Tobias.Holzmann@holzmann-cfd.de.\n" << endl;
 
     std::terminate();
+}
+
+
+void AFC::Warning
+(
+    const string msg,
+    const char* file, 
+    const unsigned long line
+)
+{
+    Error<< "\n"
+         << "    * Warning in " << file << " line " << line << endl
+         << msg << "\n" << endl;
 }
 
 

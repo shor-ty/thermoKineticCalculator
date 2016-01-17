@@ -90,6 +90,13 @@ void FatalError
     const unsigned long
 );
 
+void Warning
+(
+    const string,
+    const char*, 
+    const unsigned long
+);
+
 void Header();
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
