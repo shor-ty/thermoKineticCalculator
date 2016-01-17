@@ -14,9 +14,11 @@ SOURCE_FILES=automaticFlameletCreator.cpp \
 			 chemistry/chemistry.cpp \
 			 chemistry/chemistryReader.cpp \
 			 chemistry/chemistryData.cpp \
+			 chemistry/chemistryCalc.cpp \
 			 thermo/thermo.cpp \
 			 thermo/thermoReader.cpp \
 			 thermo/thermoData.cpp \
+			 thermo/thermoCalc.cpp \
 			 transport/transport.cpp \
 			 transport/transportReader.cpp \
 			 transport/transportData.cpp \
