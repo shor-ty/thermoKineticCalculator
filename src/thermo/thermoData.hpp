@@ -71,10 +71,10 @@ class ThermoData
             map<word, scalar> CT_;
 
             //- Hashtable of polycoeffs for high temperature range
-            map<word, scalarField> NASAPolyHT_;
+            map<word, scalarField> NASACoeffsHT_;
 
             //- Hashtable of polycoeffs for high temperature range
-            map<word, scalarField> NASAPolyLT_;
+            map<word, scalarField> NASACoeffsLT_;
 
         //- Thermodynamic available in chemistry file
         bool thermo_;
@@ -135,13 +135,13 @@ class ThermoData
             );
 
             //- Insert hight temperature poly coeffs
-            void insertHTPolyCoeffs
+            void insertNASACoeffsHT
             (
                 const scalar&
             );
 
             //- Insert low temperature poly coeffs
-            void insertLTPolyCoeffs
+            void insertNASACoeffsLT
             (
                 const scalar&
             );
@@ -153,11 +153,42 @@ class ThermoData
             //- Return species as wordList
             wordList species() const;
 
-            //- Return moleculare weight of species i
+            //- Return moleculare weight of species s
             scalar MW
             (
                 const word&
             ) const;
+
+            //- Return LOW temperature of polynomials of species s
+            scalar LT
+            (
+                const word&
+            ) const;
+
+            //- Return COMMON temperature of polynomials of species s
+            scalar CT 
+            (
+                const word&
+            ) const;
+
+            //- Return HIGH temperature of polynomials of species s
+            scalar HT 
+            (
+                const word&
+            ) const;
+
+            //- Return polyCoeffs for HIGH temperature
+            scalarField NASACoeffsHT 
+            (
+                const word&
+            ) const;
+
+            //- Return polyCoeffs for LOW temperature
+            scalarField NASACoeffsLT 
+            (
+                const word&
+            ) const;
+                
 };
 
 

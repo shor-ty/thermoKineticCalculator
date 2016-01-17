@@ -179,23 +179,23 @@ void AFC::ThermoData::insertCT
 }
 
 
-void AFC::ThermoData::insertHTPolyCoeffs
+void AFC::ThermoData::insertNASACoeffsHT
 (
     const scalar& pc
 )
 {
     //- Insert value
-    NASAPolyHT_[species_[species_.size()-1]].push_back(pc);
+    NASACoeffsHT_[species_[species_.size()-1]].push_back(pc);
 }
 
 
-void AFC::ThermoData::insertLTPolyCoeffs
+void AFC::ThermoData::insertNASACoeffsLT
 (
     const scalar& pc
 )
 {
     //- Insert value
-    NASAPolyHT_[species_[species_.size()-1]].push_back(pc);
+    NASACoeffsLT_[species_[species_.size()-1]].push_back(pc);
 }
 
 
@@ -215,7 +215,53 @@ AFC::scalar AFC::ThermoData::MW
     const word& species
 ) const
 {
-    return MW_.find(species)->second;
+//    return MW_.find(species)->second;
+    return MW_.at(species);
+}
+
+
+AFC::scalar AFC::ThermoData::LT
+(
+    const word& species
+) const
+{
+    return LT_.at(species);
+}
+
+
+AFC::scalar AFC::ThermoData::CT
+(
+    const word& species
+) const
+{
+    return CT_.at(species);
+}
+
+
+AFC::scalar AFC::ThermoData::HT
+(
+    const word& species
+) const
+{
+    return HT_.at(species);
+}
+
+
+AFC::scalarField AFC::ThermoData::NASACoeffsHT
+(
+    const word& species
+) const
+{
+    return NASACoeffsHT_.at(species); 
+}
+
+
+AFC::scalarField AFC::ThermoData::NASACoeffsLT
+(
+    const word& species
+) const
+{
+    return NASACoeffsLT_.at(species); 
 }
 
 
