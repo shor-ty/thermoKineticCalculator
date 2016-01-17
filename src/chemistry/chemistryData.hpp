@@ -65,12 +65,21 @@ class ChemistryData
             //- Number of elementar reactions
             int nReac_;
 
+            //- Reaction rate kf (forward) for each reaction
+            scalarField kf_;
+
+            //- Reaction rate kb (backward) for each reaction
+            scalarField kb_;
+
             //- stringList for elementar reaction
             stringList elementarReaction_;
 
             //- Matrix that contains all reactions and for each
             //  reaction all included species
             wordMatrix speciesInReactions_;
+
+            //- Contains all reaction no. where species i is included
+            matrix reacNoSpecies_;
 
             //- boolList for TBR  
             boolList TBR_;
@@ -88,7 +97,7 @@ class ChemistryData
             boolList ENHANCE_;
 
             //- boolList for backward reaction 
-            boolList kb_;
+            boolList backwardReaction_;
 
             //- Matrix of stochiometric coeffs
             matrix nu_;
@@ -111,8 +120,8 @@ class ChemistryData
             //- Matrix of SRI coeffs
             matrix SRICoeffs_;
 
-            //- Reaction rates
-            scalarField reacRates_;
+            //- Omega
+            scalarField omega_;
 
 
         //- Thermodynamic available in chemistry file
@@ -223,7 +232,7 @@ class ChemistryData
         // Setter functions, from ChemistryReader:: delegated
 
             //- Set the backward reaction boolean
-            void setKB();
+            void setBR();
 
             //- Set the TBR boolean
             void setTBR();
@@ -240,18 +249,52 @@ class ChemistryData
             //- Set the Enhance boolean
             void setENHANCE();
 
+            //- Set the reaction no. (for species)
+            void setReacNoSpecies
+            (
+                const int&,
+                const int&
+            );
+
 
         // Update functions
 
-            //- Update reaction rates k
-            void update_k
+            //- Update reaction rates kf
+            void updateKf
+            (
+                const scalarField&
+            );
+            
+            //- Update reaction rates kb
+            void updateKb
+            (
+                const scalarField&
+            );
+            
+            //- Update source term omega for species s
+            void updateOmega
+            (
+                const int&,
+                const scalar&
+            );
+            
+            //- Update source term omega for all species
+            void updateOmega
             (
                 const scalarField&
             );
 
+
+
         // Return functions
 
             //- Return bool
+
+                //- Backward reaction
+                bool BR
+                (
+                    const int&
+                ) const;
 
                 //- LOW
                 bool LOW
@@ -290,6 +333,21 @@ class ChemistryData
             //- Return no. of reaction
             int nReac() const;
 
+            //- Return elementar reaction (as string)
+            word elementarReaction
+            (
+                const int&
+            ) const;
+
+            //- Return matrix of reaction no. for species
+            scalarField reacNoForSpecies
+            (
+                const int&
+            ) const;
+
+            //- Return species matrix for reactions
+            wordMatrix speciesInReactions() const;
+
             //- Return arrhenius coeffs for reaction no.
             scalarField arrheniusCoeffs
             (
@@ -300,16 +358,35 @@ class ChemistryData
             wordList Mcomp
             (
                 const int&
-            );
+            ) const;
 
-            //- Return reaction rates
-            scalarField k() const;
-
-            //- Return reaction rate for reaction no.
-            scalar k
+            //- Return reaction rate kf for reaction no.
+            scalar kf
             (
                 const int&
             ) const;
+
+            //- Return reaction rates kf
+            scalarField kf() const;
+
+            //- Return reaction rate kb for reaction no.
+            scalar kb
+            (
+                const int&
+            ) const;
+
+            //- Return reaction rates kb
+            scalarField kb() const;
+            
+            //- Return omega of species s
+            scalar omega
+            (
+                const int&
+            ) const;
+
+            //- Return omega field
+            scalarField omega() const;
+
 };
 
 
