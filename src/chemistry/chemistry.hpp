@@ -37,6 +37,8 @@ SourceFiles
 
 #include "chemistryReader.hpp"
 #include "chemistryData.hpp"
+#include "chemistryCalc.hpp"
+#include "thermo.hpp"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -49,13 +51,19 @@ namespace AFC
 
 class Chemistry
 {
-    private:
+    public:
 
-        // Private pointer data
+        // Private reference data
 
-            //- chemistryData obj
+            //- ChemistryData obj
             ChemistryData chemData_;
-    
+
+            //- ChemistryCalc obj
+            ChemistryCalc chemCalc_;
+
+
+        // Debug 
+        bool debug{false};
 
     public:
 
@@ -80,33 +88,31 @@ class Chemistry
 
         // Calculation Functions
 
-            //- Calculate the reaction rate k
+            //- Calculate the reaction rate k 
             void k
             (
                 const scalar&,
-                const map<word, scalar>&
-            );
-
-            //- Calculate [M] partner
-            scalar calcM
-            (
                 const map<word, scalar>&,
-                const int&
+                const Thermo&
             );
 
-            //- Calculate [M] partner out of [10]
-            scalar calcM_Warnatz
+            //- Calculate the source term of each species (omega)
+            void omega
             (
                 const map<word, scalar>&
             );
 
-            //- Calculate k with standard arrhenius
-            scalar arrhenius
+
+        // Create Functions
+
+            //- Create field that contains all reaction no. for each species
+            void createSpeciesInReaction();
+
+            //- Insert reaction no. for species ::DELEGATED to CHEMISTRYDATA
+            void insertReacNoForSpecies
             (
-                const scalar&,
-                const scalar&,
-                const scalar&,
-                const scalar&
+                const int&,
+                const int&
             );
 
 
@@ -116,13 +122,28 @@ class Chemistry
             wordList species() const;
 
             //- Return no. of elementar reaction
-            int nReac() const;
+            /*/int nReac() const;
+
+            //- Return elementar reaction (as string) DELEGATED
+            word elementarReaction
+            (
+                const int&
+            ) const;
+
+            //- Return all reaction no of species DELEGATED
+            scalarField reacNoForSpecies
+            (
+                const int&
+            ) const;
 
             //- Return reaction rates k
             scalarField k() const;
 
+            //- Return wordMatrix for species in reactions
+            wordMatrix speciesInReactions() const;
+
             //- Return reaction rate k of reaction no.
-/*            scalar k
+            scalar k
             (
                 const int& 
             ) const;*/

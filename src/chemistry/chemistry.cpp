@@ -24,6 +24,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "chemistry.hpp"
+#include "thermo.hpp"
 #include "constants.hpp"
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
@@ -36,6 +37,9 @@ AFC::Chemistry::Chemistry
     ChemistryReader chemReader(fileName);
     
     chemReader.read(chemData_);
+
+    //- Reactions that include species i
+    createSpeciesInReaction();
 }
 
 
@@ -58,138 +62,90 @@ bool AFC::Chemistry::thermo()
 void AFC::Chemistry::k
 (
     const scalar& T,
+    const map<word, scalar>& speciesMol,
+    const Thermo& thermo
+)
+{
+    //- Calculate reaction rates k
+    chemCalc_.k(T, speciesMol, thermo, chemData_);
+}
+
+
+void AFC::Chemistry::omega
+(
     const map<word, scalar>& speciesMol
 )
 {
-    //- No. of reactions
-    const int& reac = chemData_.nReac();
-
-    //- Store reaction rates (tmp)
-    scalarField k;
-
-    //- Calculate reaction rates k
-    for (int r=0; r<reac; r++)
-    {
-        //- Arrhenius coeffs
-        const scalarField& arrCoeffs = chemData_.arrheniusCoeffs(r);
-
-        //- Pre-exponential factor [cm^3/mol/s]
-        //  combustion.berkeley.edu
-        const scalar A = arrCoeffs[0];
-
-        //- Expontent
-        const scalar beta = arrCoeffs[1];
-
-        //- Activation energy [cal/mol]
-        const scalar Ea  = arrCoeffs[2];  
-
-        //- Calculate [M] if necessary
-        
-        scalar M{0};
-
-        k.push_back(arrhenius(A, beta, Ea, T));
-
-        //- Calculate [M] out of literature [10] 
-        //  TODO | check this
-        /*if (!chemData_.ENHANCED(r))
-        {
-            M = calcM_Warnatz(speciesMol);    
-        }
-        else
-        {
-            M = calcM(speciesMol, r);    
-        }
-        
-
-        //- Normal calculation
-        if
-        (
-            !chemData_.LOW(r)
-         && !chemData_.TROE(r)
-         && !chemData_.SRI(r)
-         && !chemData_.ENHANCED(r)
-         && !chemData_.TBR(r)
-        )
-        {
-            k.push_back(arrhenius(A, beta, Ea, T));
-        }
-        //- LOW calculation
-        else if
-        (
-            chemData_.LOW(r)
-         && !chemData_.TROE(r)
-         && !chemData_.SRI(r)
-         && !chemData_.ENHANCED(r)
-         && !chemData_.TBR(r)
-        )
-        {
-            
-        }
-        //- TROE calculation
-        else if
-        (
-            chemData_.LOW(r)
-         && chemData_.TROE(r)
-         && !chemData_.SRI(r)
-         && !chemData_.ENHANCED(r)
-         && !chemData_.TBR(r)
-        )
-        {
-            scalar a, b, c, d;
-            scalar Fcent = ((1-a) exp(-T/b) + a exp (-T/c) + exp (-d/T));
-        }*/
-    }
-
-    //- Move calculated reaction rates into chemData_::reacRates_
-    chemData_.update_k(k);
+    //- Calculate source term omega
+    chemCalc_.omega(speciesMol, chemData_);
 }
 
 
-AFC::scalar AFC::Chemistry::calcM
-(
-    const map<word, scalar>& speciesMol,
-    const int& r
-)
+// * * * * * * * * * * * * * * * Create Functions  * * * * * * * * * * * * * //
+
+void AFC::Chemistry::createSpeciesInReaction()
 {
+    //- Species list
     const wordList& species = chemData_.species();
 
-    const wordList& Mcomp = chemData_.Mcomp(r);
+    //- Reaction no.
+    const int& nReac = chemData_.nReac();
 
-/*    forAll(speciesMol, i)
+    //- Wordmatrix that contains all species in each reaction
+    const wordMatrix& speciesInReaction = chemData_.speciesInReactions();
+
+    forAll(species, s)
     {
-        Info<< "speciesMol:" << species[i] << " -- " <<speciesMol.at(species[i]) << endl;
-    }*/
-    return 1;
+        //- If found species in reaction -> true
+        bool found{false};
+
+        //- Loop through all elementar reactions 
+        for(int r=0; r<=nReac; r++)
+        {
+            //- Loop through the species i in elementar reaction r
+            for(unsigned int i=0; i<speciesInReaction[r].size(); i++)
+            {
+                if
+                (
+                  ! found
+                 && speciesInReaction[r][i] == species[s]
+                )
+                {
+                    found = true;
+
+                    //- Insert reaction no to matrix
+                    this->insertReacNoForSpecies(s, r);
+                }
+            }
+
+            //- Reset
+            found = false;
+        }
+    }
+
+    if (debug)
+    {
+        forAll(species, s)
+        {
+            const scalarField& no = chemData_.reacNoForSpecies(s);
+
+            for(unsigned int i=0; i<no.size(); i++)
+            {
+                Info<< no[i] << ", ";
+            }
+            Info<< "." << endl;
+        }
+    }
 }
 
 
-AFC::scalar AFC::Chemistry::calcM_Warnatz
+void AFC::Chemistry::insertReacNoForSpecies
 (
-    const map<word, scalar>& C
+    const int& s,
+    const int& i
 )
 {
-    return
-    (
-        C.at("H2")
-      + 6.5*C.at("H2O")
-      + 0.4*C.at("O2")
-      + 0.4*C.at("N2")
-      + 0.75*C.at("CO")
-      + 1.5*C.at("CO2")
-      + 3.0*C.at("CH4")
-    );
-}
-
-
-AFC::scalar AFC::Chemistry::arrhenius
-(
-    const scalar& A,
-    const scalar& beta,
-    const scalar& Ea,
-    const scalar& T
-)
-{
-    return (A * pow(T, beta) * exp(Ea/(AFC::Constants::R*T)));
+    chemData_.setReacNoSpecies(s, i);
 }
 
 
@@ -199,7 +155,7 @@ AFC::wordList AFC::Chemistry::species() const
 {
     return chemData_.species();
 }
-
+/*
 
 int AFC::Chemistry::nReac() const
 {
@@ -207,10 +163,34 @@ int AFC::Chemistry::nReac() const
 }
 
 
+AFC::word AFC::Chemistry::elementarReaction
+(
+    const int& r
+) const
+{
+    return chemData_.elementarReaction(r);
+}
+
+
+AFC::scalarField AFC::Chemistry::reacNoForSpecies
+(
+    const int& s
+) const
+{
+    return chemData_.reacNoForSpecies(s);
+}
+
+
 AFC::scalarField AFC::Chemistry::k() const
 {
     return chemData_.k();
-}
+}*/
+
+
+/*AFC::wordMatrix AFC::Chemistry::speciesInReactions() const
+{
+    return chemData_.speciesInReactions();
+}*/
 
 
 /*AFC::scalar AFC::Chemistry::k
