@@ -25,6 +25,7 @@ License
 
 #include "typedef.hpp"
 #include "chemistry.hpp"
+#include "thermo.hpp"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -36,29 +37,57 @@ namespace AFC
 
 void calculate
 (
-    lookUpTable& lut_,
-    const scalar& sDR_,
-    const scalar& defect_,
-    const unsigned int& nDisPoints_,
-    Chemistry& chem_
+    lookUpTable& lut,
+    const scalar& sDR,
+    const scalar& defect,
+    const unsigned int& nDisPoints,
+    const Thermo& thermo,
+    Chemistry& chem
 )
 {
     //- TODO
     //- Calculate reaction rate factors k for each reaction
 
-    for (unsigned int point=0; point <= nDisPoints_; point++)
+    for (unsigned int point=0; point <= nDisPoints; point++)
     {
         //- Object of discrete mixture fraction
-        MixtureFraction& dMF = lut_[defect_][sDR_][point];
+        MixtureFraction& dMF = lut[defect][sDR][point];
 
-        //- Calculate reaction rates k (T dependend)
+        //- Temperature at discrete point Z
+        const scalar& T = dMF.T();
+
+        //- Mol fractions at discrete point
+//        const map<word, scalar>& speciesMol = dMF.mol();
+
         {
-            const scalar& T =  dMF.T();
+            //- a) calculate mean molecular weight MW (using mol)
+            dMF.calculateMeanMW("mol");
 
-            const map<word, scalar>& speciesMol = dMF.mol();
+            //- b) calculate mean heat capacity cp
+            dMF.calculateMeanCp(T);
+            
+            //- c) calculate mean enthalpy H
+            dMF.calculateMeanH(T);
 
-            //- Calc y-collision if needed
-            chem_.k(T, speciesMol);
+            //- d) calculate mean entropy S
+            dMF.calculateMeanS(T);
+            
+            //- e) calculate mean free gibbs energy
+            {
+                const scalar& H = dMF.H();
+
+                const scalar& S = dMF.S();
+
+                dMF.calculateMeanG(H, S, T);
+            }
+
+
+            //- Calc k with mol fractions and k 
+            //chem.k(T, speciesMol, thermo);
+
+            //- Calc for each species the source term omega
+            //chem_.omega(speciesMol);
+        }
     }
 }
 
