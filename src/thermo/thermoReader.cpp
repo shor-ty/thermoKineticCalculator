@@ -262,19 +262,19 @@ void AFC::ThermoReader::NASAPolynomialNo2
     }
     
     //- Coefficient a1 [1-15]
-    data.insertHTPolyCoeffs(stod(lineContent.substr(0,15)));
+    data.insertNASACoeffsHT(stod(lineContent.substr(0,15)));
 
     //- Coefficient a2 [16-30]
-    data.insertHTPolyCoeffs(stod(lineContent.substr(15,15)));
+    data.insertNASACoeffsHT(stod(lineContent.substr(15,15)));
 
     //- Coefficient a3 [31-45]
-    data.insertHTPolyCoeffs(stod(lineContent.substr(30,15)));
+    data.insertNASACoeffsHT(stod(lineContent.substr(30,15)));
 
     //- Coefficient a4 [46-60]
-    data.insertHTPolyCoeffs(stod(lineContent.substr(45,15)));
+    data.insertNASACoeffsHT(stod(lineContent.substr(45,15)));
 
     //- Coefficient a5 [61-75]
-    data.insertHTPolyCoeffs(stod(lineContent.substr(60,15)));
+    data.insertNASACoeffsHT(stod(lineContent.substr(60,15)));
 }
 
 
@@ -298,19 +298,19 @@ void AFC::ThermoReader::NASAPolynomialNo3
     }
     
     //- Coefficient a6 [1-15]
-    data.insertHTPolyCoeffs(stod(lineContent.substr(0,15)));
+    data.insertNASACoeffsHT(stod(lineContent.substr(0,15)));
 
     //- Coefficient a7 [16-30]
-    data.insertHTPolyCoeffs(stod(lineContent.substr(15,15)));
+    data.insertNASACoeffsHT(stod(lineContent.substr(15,15)));
 
     //- Coefficient b1 [31-45]
-    data.insertLTPolyCoeffs(stod(lineContent.substr(30,15)));
+    data.insertNASACoeffsLT(stod(lineContent.substr(30,15)));
 
     //- Coefficient b2 [46-60]
-    data.insertLTPolyCoeffs(stod(lineContent.substr(45,15)));
+    data.insertNASACoeffsLT(stod(lineContent.substr(45,15)));
 
     //- Coefficient b3 [61-75]
-    data.insertLTPolyCoeffs(stod(lineContent.substr(60,15)));
+    data.insertNASACoeffsLT(stod(lineContent.substr(60,15)));
 }
 
 
@@ -334,16 +334,16 @@ void AFC::ThermoReader::NASAPolynomialNo4
     }
     
     //- Coefficient b4 [1-15]
-    data.insertLTPolyCoeffs(stod(lineContent.substr(0,15)));
+    data.insertNASACoeffsLT(stod(lineContent.substr(0,15)));
 
     //- Coefficient b5 [16-30]
-    data.insertLTPolyCoeffs(stod(lineContent.substr(15,15)));
+    data.insertNASACoeffsLT(stod(lineContent.substr(15,15)));
 
     //- Coefficient b6 [31-45]
-    data.insertLTPolyCoeffs(stod(lineContent.substr(30,15)));
+    data.insertNASACoeffsLT(stod(lineContent.substr(30,15)));
 
     //- Coefficient b7 [46-60]
-    data.insertLTPolyCoeffs(stod(lineContent.substr(45,15)));
+    data.insertNASACoeffsLT(stod(lineContent.substr(45,15)));
 }
 
 
