@@ -288,19 +288,31 @@ void AFC::ChemistryData::setReacNoSpecies
 
 void AFC::ChemistryData::updateKf
 (
-    const scalarField& kf
+    const int& r,
+    const scalar& kf
 )
 {
-    kf_ = kf;
+    kf_[r] = kf;
 }
 
 
 void AFC::ChemistryData::updateKb
 (
-    const scalarField& kb
+    const int& r,
+    const scalar& kb
 )
 {
-    kb_ = kb;
+    kb_[r] = kb;
+}
+
+
+void AFC::ChemistryData::updateKc
+(
+    const int& r,
+    const scalar& Kc
+)
+{
+    Kc_[r] = Kc;
 }
 
 
@@ -400,7 +412,7 @@ AFC::word AFC::ChemistryData::elementarReaction
 }
 
 
-AFC::scalarField AFC::ChemistryData::reacNoForSpecies
+AFC::scalarList AFC::ChemistryData::reacNoForSpecies
 (
     const int& s
 ) const
@@ -415,7 +427,7 @@ AFC::wordMatrix AFC::ChemistryData::speciesInReactions() const
 }
 
 
-AFC::scalarField AFC::ChemistryData::arrheniusCoeffs
+AFC::scalarList AFC::ChemistryData::arrheniusCoeffs
 (
     const int& reacNo
 ) const
@@ -442,7 +454,7 @@ AFC::scalar AFC::ChemistryData::kf
 }
 
 
-AFC::scalarField AFC::ChemistryData::kf() const
+AFC::scalarList AFC::ChemistryData::kf() const
 {
     return kf_;
 }
@@ -457,9 +469,24 @@ AFC::scalar AFC::ChemistryData::kb
 }
 
 
-AFC::scalarField AFC::ChemistryData::kb() const
+AFC::scalarList AFC::ChemistryData::kb() const
 {
     return kb_;
+}
+
+
+AFC::scalar AFC::ChemistryData::Kc
+(
+    const int& reacNo
+) const
+{
+    return Kc_[reacNo];
+}
+
+
+AFC::scalarList AFC::ChemistryData::Kc() const
+{
+    return Kc_;
 }
 
 
@@ -475,6 +502,15 @@ AFC::scalar AFC::ChemistryData::omega
 AFC::scalarField AFC::ChemistryData::omega() const
 {
     return omega_;
+}
+
+
+AFC::scalarList AFC::ChemistryData::nu
+(
+    const int& r
+) const
+{
+    return nu_[r];
 }
 
 

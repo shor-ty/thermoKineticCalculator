@@ -65,7 +65,12 @@ class ChemistryCalc
 
         // Calculation Functions
 
-            //- Calculate the reaction rates kf and kb
+            void k
+            (
+                const ChemistryData&
+            ) const;
+
+            //- Calculate the reaction rates kf and kb [units depend]
             void k
             (
                 const scalar&,
@@ -75,23 +80,25 @@ class ChemistryCalc
             );
 
             //- Calculate kf
-            void calculateKf
+            void updateKf 
             (
-                scalarField&,
                 const int&,
                 const scalar&,
-                const map<word, scalar>&,
                 ChemistryData&
             );
 
             //- Calculate kb
-            void calculateKb
+            void updateKb
             (
-                scalarField&,
-                const scalarField&,
+                const int&,
+                ChemistryData&
+            );
+
+            //- Calculate Kc
+            void updateKc
+            (
                 const int&,
                 const scalar&,
-                const map<word, scalar>&,
                 const Thermo&,
                 ChemistryData&
             );
@@ -109,14 +116,14 @@ class ChemistryCalc
                 const map<word, scalar>&
             );
 
-            //- Calculate k with standard arrhenius
+            //- Calculate k with standard arrhenius [units depend]
             scalar arrhenius
             (
                 const scalar&,
                 const scalar&,
                 const scalar&,
                 const scalar&
-            );
+            ) const;
 
             //- Calculate the source term of each species (omega)
             void omega

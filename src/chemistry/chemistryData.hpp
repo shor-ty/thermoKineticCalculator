@@ -69,7 +69,10 @@ class ChemistryData
             scalarField kf_;
 
             //- Reaction rate kb (backward) for each reaction
-            scalarField kb_;
+            scalarList kb_;
+
+            //- Reaction rate constant Kc for each reaction
+            scalarList Kc_;
 
             //- stringList for elementar reaction
             stringList elementarReaction_;
@@ -262,13 +265,22 @@ class ChemistryData
             //- Update reaction rates kf
             void updateKf
             (
-                const scalarField&
+                const int&,
+                const scalar&
             );
             
             //- Update reaction rates kb
             void updateKb
             (
-                const scalarField&
+                const int&,
+                const scalar&
+            );
+            
+            //- Update reaction rates constant Kc
+            void updateKc
+            (
+                const int&,
+                const scalar&
             );
             
             //- Update source term omega for species s
@@ -340,7 +352,7 @@ class ChemistryData
             ) const;
 
             //- Return matrix of reaction no. for species
-            scalarField reacNoForSpecies
+            scalarList reacNoForSpecies
             (
                 const int&
             ) const;
@@ -349,7 +361,7 @@ class ChemistryData
             wordMatrix speciesInReactions() const;
 
             //- Return arrhenius coeffs for reaction no.
-            scalarField arrheniusCoeffs
+            scalarList arrheniusCoeffs
             (
                 const int&
             ) const;
@@ -367,7 +379,7 @@ class ChemistryData
             ) const;
 
             //- Return reaction rates kf
-            scalarField kf() const;
+            scalarList kf() const;
 
             //- Return reaction rate kb for reaction no.
             scalar kb
@@ -376,7 +388,16 @@ class ChemistryData
             ) const;
 
             //- Return reaction rates kb
-            scalarField kb() const;
+            scalarList kb() const;
+            
+            //- Return reaction rate constant Kc for reaction no.
+            scalar Kc
+            (
+                const int&
+            ) const;
+
+            //- Return reaction rate constant Kc
+            scalarList Kc() const;
             
             //- Return omega of species s
             scalar omega
@@ -386,6 +407,12 @@ class ChemistryData
 
             //- Return omega field
             scalarField omega() const;
+
+            //- Return stochiometric factors of reaction r
+            scalarList nu
+            (
+                const int&
+            ) const;
 
 };
 
