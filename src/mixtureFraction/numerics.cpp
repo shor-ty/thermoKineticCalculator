@@ -61,30 +61,38 @@ void calculate
             //- a) calculate mean molecular weight MW (using mol)
             dMF.calculateMeanMW("mol");
 
-            //- b) calculate mean heat capacity cp
-            dMF.calculateMeanCp(T);
-            
-            //- c) calculate mean enthalpy H
-            dMF.calculateMeanH(T);
-
-            //- d) calculate mean entropy S
-            dMF.calculateMeanS(T);
-            
-            //- e) calculate mean free gibbs energy
+            for(int i=1; i<11; i++)
             {
-                const scalar& H = dMF.H();
+                scalar T = 300 + i*100;
 
-                const scalar& S = dMF.S();
+                //- b) calculate mean heat capacity cp [J/mol/K]
+                dMF.calculateMeanCp(T);
 
-                dMF.calculateMeanG(H, S, T);
+                //- c) calculate mean enthalpy H [J/mol]
+                dMF.calculateMeanH(T);
+
+                //- d) calculate mean entropy S [J/mol/K]
+                dMF.calculateMeanS(T);
+                
+                //- e) calculate mean free gibbs energy
+                {
+                    const scalar& H = dMF.H();
+
+                    const scalar& S = dMF.S();
+
+                    dMF.calculateMeanG(H, S, T);
+
+                    Info<< dMF.G() << endl;
+                }
             }
 
-
             //- Calc k with mol fractions and k 
-            //chem.k(T, speciesMol, thermo);
+            dMF.k();
 
             //- Calc for each species the source term omega
             //chem_.omega(speciesMol);
+            //
+            std::terminate();
         }
     }
 }
