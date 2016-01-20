@@ -54,6 +54,8 @@ using boolList = std::vector<bool>;
 
 using scalarField = std::vector<double>;
 
+using scalarList = std::vector<double>;
+
 using matrix = std::vector<scalarField>;
 
 using word = std::string;
