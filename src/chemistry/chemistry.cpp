@@ -59,15 +59,14 @@ bool AFC::Chemistry::thermo()
 
 // * * * * * * * * * * * * * Calculation Functions * * * * * * * * * * * * * //
 
-void AFC::Chemistry::k
+void AFC::Chemistry::updatekfkb
 (
     const scalar& T,
-    const map<word, scalar>& speciesMol,
     const Thermo& thermo
 )
 {
     //- Calculate reaction rates k
-    chemCalc_.k(T, speciesMol, thermo, chemData_);
+    chemCalc_.updatekfkb(T, thermo, chemData_);
 }
 
 

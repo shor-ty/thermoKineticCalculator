@@ -165,7 +165,7 @@ void AFC::ChemistryData::incrementReac()
 
 void AFC::ChemistryData::insertNu
 (
-    const int& nu
+    const scalar& nu
 )
 {
     nu_[nReac_].push_back(nu);
@@ -208,7 +208,7 @@ void AFC::ChemistryData::incrementMatrixesVectors()
     backwardReaction_.push_back(false);
 
     //- Matrix for stochiometric coeffs
-    nu_.push_back(scalarField(species_.size()));
+    nu_.push_back(scalarField(0));
 
     //- Matrix of THIRD BODY M (composition of species)
     Mcomp_.push_back(wordList(0));
@@ -233,6 +233,9 @@ void AFC::ChemistryData::incrementMatrixesVectors()
 
     //- Reaction rates kb
     kb_.push_back(scalar(0));
+
+    //- Equilibrium constant Kc
+    Kc_.push_back(scalar(0));
 }
 
 
@@ -424,6 +427,15 @@ AFC::scalarList AFC::ChemistryData::reacNoForSpecies
 AFC::wordMatrix AFC::ChemistryData::speciesInReactions() const
 {
     return speciesInReactions_;
+}
+
+
+AFC::wordList AFC::ChemistryData::speciesInReaction
+(
+    const int& r 
+) const
+{
+    return speciesInReactions_[r];
 }
 
 

@@ -219,7 +219,7 @@ class ChemistryData
             //- Insert stochiometric coeffs
             void insertNu
             (
-                const int&
+                const scalar&
             );
 
             //- Insert species (reac|prod) 
@@ -351,7 +351,7 @@ class ChemistryData
                 const int&
             ) const;
 
-            //- Return matrix of reaction no. for species
+            //- Return scalarList of reaction nos. for species
             scalarList reacNoForSpecies
             (
                 const int&
@@ -359,6 +359,12 @@ class ChemistryData
 
             //- Return species matrix for reactions
             wordMatrix speciesInReactions() const;
+
+            //- Return species list for reaction r
+            wordList speciesInReaction
+            (
+                const int& 
+            ) const;
 
             //- Return arrhenius coeffs for reaction no.
             scalarList arrheniusCoeffs

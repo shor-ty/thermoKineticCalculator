@@ -705,7 +705,11 @@ void AFC::ChemistryReader::analyzeReacSite
     {
         if (!firstChar)
         {
-            if (isdigit(tmp[i]))
+            if
+            (
+                isdigit(tmp[i])
+             || tmp[i] == '.'
+            )
             {
                 if (foundDigit)
                 {
@@ -766,15 +770,15 @@ void AFC::ChemistryReader::analyzeReacSite
 
             extractSpecies = false;
 
-            int nu{0};
+            scalar nu = 0;
 
             if (site == "p")
             {
-                nu = stoi(stochiometricFactor) * -1;
+                nu = stod(stochiometricFactor);
             }
             else if (site == "r")
             {
-                nu = stoi(stochiometricFactor);
+                nu = stod(stochiometricFactor) * -1;
             }
             else
             {
@@ -789,6 +793,8 @@ void AFC::ChemistryReader::analyzeReacSite
 
             startPos = 0;
             endPos = 0;
+
+            Info<< nu << " * " << species << endl;
 
             //- Store data
             data.insertNu(nu);

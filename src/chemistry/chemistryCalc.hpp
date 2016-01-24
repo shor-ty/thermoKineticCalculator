@@ -70,11 +70,10 @@ class ChemistryCalc
                 const ChemistryData&
             ) const;
 
-            //- Calculate the reaction rates kf and kb [units depend]
-            void k
+            //- Update the reaction rates kf and kb [units depend]
+            void updatekfkb
             (
                 const scalar&,
-                const map<word, scalar>&,
                 const Thermo&,
                 ChemistryData&
             );

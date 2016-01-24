@@ -45,62 +45,15 @@ AFC::ChemistryCalc::~ChemistryCalc()
 
 // * * * * * * * * * * * * * Calculation Functions * * * * * * * * * * * * * //
 
-void AFC::ChemistryCalc::k
-(
-    const ChemistryData& chemData
-) const
-{
-    int r = 1;
-    
-    //- Arrhenius coeffs
-    const scalarField& arrCoeffs = chemData.arrheniusCoeffs(r);
-
-    //- Pre-exponential factor [cm^3/mol/s]
-    //  combustion.berkeley.edu
-    const scalar A = arrCoeffs[0];
-
-    //- Expontent
-    const scalar beta = arrCoeffs[1];
-
-    //- Activation energy [cal/mol]
-    const scalar Ea  = arrCoeffs[2];  
-
-    const scalar T{300};
-
-    scalar kf = this->arrhenius(A, beta, Ea, T);
-
-    Info<< "kf: " << kf << endl;
-
-    scalar H = -104200; //- cal
-
-    scalar S = -23.6; //- cal / mol K
-
-    scalar G = H - S * T;
-
-    scalar p = 1e6;
-
-    scalar Kp = exp(-1 * G / (AFC::Constants::Rcal * T));
-
-    scalar Kc = Kp * pow((p/(8.3144598e7 * T)), -1);
-
-    Info<< "Kp = " << Kp << " --> K: " << (kf / Kp) << endl;
-    Info<< "Kc = " << Kc << " --> K: " << (kf / Kc) << endl;
-
-}
-
-void AFC::ChemistryCalc::k
+void AFC::ChemistryCalc::updatekfkb
 (
     const scalar& T,
-    const map<word,scalar>& speciesMol,
     const Thermo& thermo,
     ChemistryData& chemData
 )
 {
     //- No. of reactions
     const int& reac = chemData.nReac();
-
-    //- Store forward reaction rates kf (tmp)
-    scalar G;
 
     //- Calculate reaction rates k
     for (int r=0; r<=reac; r++)
@@ -154,11 +107,14 @@ void AFC::ChemistryCalc::updateKf
     const scalar Ea  = arrCoeffs[2];  
 
     //- Stardard elementar reaction without any TBR
-    //  For SI units cal -> joule
+    //  UNITS:
+    //  + uni-moleculare reaction: [1/s]
+    //  + bi--moleculare reaction: [cm^3/mol/s]
+    //  + tri-moleculare reaction: [cm^6/mol^2/s]
     chemData.updateKf
     (
         r,
-        this->arrhenius(A, beta, Ea, T) * AFC::Constants::calToJoule
+        this->arrhenius(A, beta, Ea, T)
     );
 }
 
@@ -186,16 +142,27 @@ void AFC::ChemistryCalc::updateKc
     ChemistryData& chemData
 )
 {
-    //- Get free Gibbs energy G
-    //const scalar& G = thermo.G();
+    //- Calculate sum of entropy of species in reaction r
+    scalar deltaH{0};
+    scalar deltaS{0};
 
-    scalar G{0};
+    //- Scalar list of stochiometric factors of reaction r
+    const scalarList& nu = chemData.nu(r);
+
+    {
+        const wordList& species = chemData.speciesInReaction(r); 
+
+        forAll(species, s)
+        {
+            deltaH += thermo.H(species[s], T) * nu[s];
+            deltaS += thermo.S(species[s], T) * nu[s];
+        }
+    }
+
+    const scalar deltaG = deltaH - deltaS * T ;
 
     //- Calculate reaction rate constant Kp
-    const scalar Kp = exp(G / (AFC::Constants::R * T ));
-        
-    //- Get stochiometric factors
-    const scalarList& nu = chemData.nu(r);
+    const scalar Kp = exp(-1 * deltaG / (AFC::Constants::Rcal * T ));
 
     //- Calculate exponent
     int exponent{0}; 
@@ -205,33 +172,17 @@ void AFC::ChemistryCalc::updateKc
         exponent += nu[i];
     }
 
-    scalar p{0};
+    //- Get the pressure of the calculation
+    const scalar& p = thermo.p();
 
-    const scalar Kc = Kp * pow(exp(p/AFC::Constants::R/T), exponent);
+    //- Calculate the equilibrium constant Kc
+    //  + Pressure in atm (maybe always 1e6?)
+    const scalar Kc = Kp * pow(exp(p*10/AFC::Constants::Rcal/T), exponent);
 
     //- Update Kc
     chemData.updateKc(r, Kc);
 }
     
-
-AFC::scalar AFC::ChemistryCalc::calcM
-(
-    const map<word, scalar>& speciesMol,
-    const int& r
-)
-{
-//    const wordList& species = this->species();
-
-//    const wordList& Mcomp = chemData_.Mcomp(r);
-
-/*    forAll(speciesMol, i)
-    {
-        Info<< "speciesMol:" << species[i] << " -- " <<speciesMol.at(species[i]) << endl;
-    }*/
-    // TODO
-    return speciesMol.at("H2") * r;
-}
-
 
 AFC::scalar AFC::ChemistryCalc::calcM_Warnatz
 (
@@ -259,7 +210,6 @@ AFC::scalar AFC::ChemistryCalc::arrhenius
     const scalar& T
 ) const
 {
-    //- Unit depend on reaction
     return
     (
         A * pow(T, beta) *

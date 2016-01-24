@@ -88,11 +88,10 @@ class Chemistry
 
         // Calculation Functions
 
-            //- Calculate the reaction rate k 
-            void k
+            //- Update the reaction rate kf and kb
+            void updatekfkb
             (
                 const scalar&,
-                const map<word, scalar>&,
                 const Thermo&
             );
 
