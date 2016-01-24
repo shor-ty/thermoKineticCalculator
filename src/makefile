@@ -7,8 +7,7 @@ INC_DIR=-I$(WORK_DIR)/chemistry \
 		-I$(WORK_DIR)/mixtureFraction \
 		-I$(WORK_DIR)/constants \
 		-I$(WORK_DIR)/typedef \
-		-I$(WORK_DIR)/stringManipulator \
-		-I$(WORK_DIR)/numerics
+		-I$(WORK_DIR)/stringManipulator
 
 SOURCE_FILES=automaticFlameletCreator.cpp \
 			 chemistry/chemistry.cpp \
@@ -29,7 +28,7 @@ SOURCE_FILES=automaticFlameletCreator.cpp \
 			 stringManipulator/stringManipulator.cpp
 
 
-CPPFLAGS=-g -Wall -Wextra -pedantic-errors -std=c++11
+CPPFLAGS=-g -Wall -Wextra -pedantic-errors -std=c++11 -Wno-unused-parameter -Wno-unused-variable
 
 automaticFlameltCreator : automaticFlameletCreator.cpp
 	g++ $(CPPFLAGS) $(INC_DIR) $(SOURCE_FILES) -o automaticFlameletCreator 
