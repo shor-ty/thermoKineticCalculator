@@ -118,7 +118,7 @@ class MixtureFraction
             const Transport& transport_;
 
             // Chemistry class
-            const Chemistry& chemistry_;
+            Chemistry& chemistry_;
 
             // Properties class
             const Properties& properties_;
@@ -135,7 +135,7 @@ class MixtureFraction
         //- Constructor
         MixtureFraction
         (
-            const Chemistry&,
+            Chemistry&,
             const Thermo&,
             const Transport&,
             const Properties&,
@@ -187,6 +187,21 @@ class MixtureFraction
                 const scalar&
             );
 
+            //- Update the reaction rates kf and kb  
+            void updatekfkb
+            (
+                const scalar&
+            );
+
+            //- Calculate the formation enthalpy [J/mol]
+            void calculateHf
+            (
+                const word&,
+                const scalar&
+            ) const;
+
+        // Conversation functions
+
             //- Calculate mol fraction out of mass fraction
             void YtoX();
 
@@ -220,18 +235,45 @@ class MixtureFraction
             //- Return temperature [K]
             scalar T() const;
 
-            //- return heat capacity
+            //- Return heat capacity [J/mol/K]
             scalar cp() const;
 
-            //- Return enthalpy
+            //- Return heat capacity of species s [J/mol/K]
+            scalar calculateCp
+            (
+                const word&,
+                const scalar&
+            ) const;
+
+            //- Return mean enthalpy [J/mol]
             scalar H() const;
 
-            //- Return entropy
+            //- Return enthalpy of species s [J/mol]
+            scalar calculateH
+            (
+                const word&,
+                const scalar&
+            ) const;
+
+            //- Return mean entropy [J/mol/K]
             scalar S() const;
 
-            //- Return free Gibbs energy
+            //- Return entropy of species s [J/mol/K]
+            scalar calculateS
+            (
+                const word&,
+                const scalar&
+            ) const;
+
+            //- Return mean free Gibbs energy
             scalar G() const;
 
+            //- Return free Gibbs energy of species s [J/mol]
+            scalar calculateG
+            (
+                const word&,
+                const scalar&
+            ) const;
 };
 
 

@@ -29,7 +29,7 @@ License This file is part of Automatic Flamelet Constructor.
 
 AFC::MixtureFraction::MixtureFraction
 (
-    const Chemistry& chem,
+    Chemistry& chem,
     const Thermo& therm,
     const Transport& trans,
     const Properties& prop,
@@ -330,6 +330,28 @@ void AFC::MixtureFraction::calculateMeanG
 }
 
 
+void AFC::MixtureFraction::updatekfkb
+(
+    const scalar& T    
+)
+{
+    //- For the update procedure we need thermo and chemistry stuff
+    chemistry_.updatekfkb(T, thermo_);
+}
+
+
+void AFC::MixtureFraction::calculateHf
+(
+    const word& species,
+    const scalar& T
+) const
+{
+    Info<< "dHf("<<species<<") = " <<  thermo_.Hf(species, T) * AFC::Constants::jouleToCal / 1000 << endl;
+}
+
+
+// * * * * * * * * * * * * Conversation Functions  * * * * * * * * * * * * * //
+
 void AFC::MixtureFraction::YtoX()
 {
     const wordList& species = chemistry_.species();
@@ -562,9 +584,29 @@ AFC::scalar AFC::MixtureFraction::cp() const
 }
 
 
+AFC::scalar AFC::MixtureFraction::calculateCp
+(
+    const word& species,
+    const scalar& T
+) const
+{
+    return thermo_.cp(species, T);
+}
+
+
 AFC::scalar AFC::MixtureFraction::H() const
 {
     return H_;
+}
+
+
+AFC::scalar AFC::MixtureFraction::calculateH
+(
+    const word& species,
+    const scalar& T
+) const
+{
+    return thermo_.H(species, T);
 }
 
 
@@ -574,9 +616,20 @@ AFC::scalar AFC::MixtureFraction::S() const
 }
 
 
+AFC::scalar AFC::MixtureFraction::calculateS
+(
+    const word& species,
+    const scalar& T
+) const
+{
+    return thermo_.S(species, T);
+}
+
+
 AFC::scalar AFC::MixtureFraction::G() const
 {
     return G_;
 }
+
 
 // ************************************************************************* //
