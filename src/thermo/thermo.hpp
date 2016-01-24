@@ -74,7 +74,13 @@ class Thermo
         ~Thermo();
 
 
-        // Member functions
+        // Insert functions delegated to thermoData
+
+            //- Insert pressure (from properties)
+            void p
+            (
+               const scalar&
+            );
 
 
         // Return | calculation functions
@@ -88,39 +94,49 @@ class Thermo
                 const word&
             ) const;
 
-            //- Return heat capacity of species s
+            //- Return heat capacity of species s [J/mol/K]
             scalar cp
             (
                 const word&,
                 const scalar&
             ) const;
 
-            //- Return enthalpy of species s
+            //- Return enthalpy of species s [J/mol]
             scalar H
             (
                 const word&,
                 const scalar&
             ) const;
 
-            //- Return entropy of species s
+            //- Return entropy of species s [J/mol/K]
             scalar S
             (
                 const word&,
                 const scalar&
             ) const;
 
-            //- Return free Gibbs of species s
+            //- Return free Gibbs of species s [J/mol]
             scalar G
             (
                 const word&,
                 const scalar&
             ) const;
 
-            //- Return mean free Gibbs of species s
+            //- Return mean free Gibbs of species s [J/mol]
             scalar G
             (
                 const scalar&,
                 const scalar&,
+                const scalar&
+            ) const;
+
+            //- Return the pressure [Pa]
+            scalar p() const;
+
+            //- Return formation enthalpy hf [J/mol]
+            scalar Hf
+            (
+                const word&,
                 const scalar&
             ) const;
 };

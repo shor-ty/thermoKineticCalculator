@@ -113,6 +113,14 @@ class ThermoCalc
                 const scalar&
             ) const;
 
+            //- Calculate temperature dependend formation enthalpy hf [J/mol]
+            scalar Hf
+            (
+                const word&,
+                const scalar&,
+                const ThermoData&
+            ) const;
+
 
         // Return functions
         

@@ -47,7 +47,15 @@ AFC::Thermo::~Thermo()
 {}
 
 
-// * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
+// * * * * * * * * * * * * * * * Insert Functions  * * * * * * * * * * * * * //
+
+void AFC::Thermo::p
+(
+    const scalar& pressure
+)
+{
+    thermoData_.p(pressure);
+}
 
 
 // * * * * * * * * * * * * * * * Return Functions  * * * * * * * * * * * * * //
@@ -115,6 +123,22 @@ AFC::scalar AFC::Thermo::G
 ) const
 {
     return thermoCalc_.G(H, S, T);
+}
+
+
+AFC::scalar AFC::Thermo::p() const
+{
+    return thermoData_.p();
+}
+
+
+AFC::scalar AFC::Thermo::Hf
+(
+    const word& species,
+    const scalar& T
+) const
+{
+    return thermoCalc_.Hf(species, T, thermoData_);
 }
 
 

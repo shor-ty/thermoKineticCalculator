@@ -101,12 +101,27 @@ class ThermoReader
                 const stringList&
             );
 
-            //- Return the atomic weight of the atom
+            //- Return the atomic weight of the atoms
             scalar calcWeight
             (
                 const word&,
-                const string&,
+                const scalar&,
                 const word&
+            );
+
+            //- Construct species formula
+            word constructFormula
+            (
+                const string&
+            );
+            
+            //- Split formula into species and factors
+            //  + Store atoms
+            //  + Store atomic factors
+            void atomsAndFactors
+            (
+                const string&,
+                ThermoData&
             );
 
 
@@ -148,10 +163,12 @@ class ThermoReader
             );
 
             //- Calculate molecular weight of species
-            scalar calcMolecularWeight
+            void calcMolecularWeight
             (
-                const word&
+                const word&,
+                ThermoData&
             );
+            
 };
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

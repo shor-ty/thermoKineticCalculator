@@ -60,6 +60,32 @@ void AFC::ThermoData::insertSpecies
 }
 
 
+void AFC::ThermoData::insertChemicalFormula
+(
+    const word& chemFormula 
+)
+{
+    formula_.push_back(chemFormula);
+}
+
+
+void AFC::ThermoData::insertAtomAndFactor
+(
+    const word& atom,
+    const unsigned int& factor
+)
+{
+    //- Using normal names
+    const word& actualSpecies = species_[species_.size()-1];
+
+    //- Insert atom to correct position
+    speciesAtoms_[actualSpecies].push_back(atom);
+
+    //- Insert multiplication factor
+    atomFactors_[actualSpecies].push_back(factor);
+}
+
+
 void AFC::ThermoData::insertMolecularWeight
 (
     const scalar& MW 
@@ -199,6 +225,17 @@ void AFC::ThermoData::insertNASACoeffsLT
 }
 
 
+// * * * * * * * * * * * Insert functions from Thermo::  * * * * * * * * * * //
+
+void AFC::ThermoData::p
+(
+    const scalar& pressure
+) 
+{
+    p_ = pressure;
+}
+
+
 // * * * * * * * * * * * * * Setter bool functions * * * * * * * * * * * * * //
 
 
@@ -262,6 +299,30 @@ AFC::scalarField AFC::ThermoData::NASACoeffsLT
 ) const
 {
     return NASACoeffsLT_.at(species); 
+}
+
+
+AFC::scalar AFC::ThermoData::p() const
+{
+    return p_;
+}
+
+
+AFC::wordList AFC::ThermoData::speciesAtoms
+(
+    const word& species
+) const
+{
+    return speciesAtoms_.at(species);
+}
+
+
+AFC::scalarList AFC::ThermoData::atomFactors
+(
+    const word& species
+) const
+{
+    return atomFactors_.at(species);
 }
 
 

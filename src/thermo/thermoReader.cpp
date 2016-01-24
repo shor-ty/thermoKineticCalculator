@@ -34,9 +34,7 @@ AFC::ThermoReader::ThermoReader
 )
 :
     file_(file)
-
 {
-
 }
 
 
@@ -58,7 +56,7 @@ void AFC::ThermoReader::read
     Info<< " c-o Reading thermodynamic data\n" << endl;
 
     //- TODO if thermo true --> use chemistry file
-
+    
     const auto fileContent = readFile(file_);
 
     int lineNoKeyword{-1};
@@ -143,7 +141,7 @@ void AFC::ThermoReader::findKeyword
 AFC::scalar AFC::ThermoReader::calcWeight
 (
     const word& atom,
-    const string& multiplicator,
+    const scalar& multiplicator,
     const word& formula
 )
 {
@@ -160,18 +158,38 @@ AFC::scalar AFC::ThermoReader::calcWeight
     }
 
     //- Multiplicator
-    if (multiplicator.empty())
+    if (multiplicator <= 0)
     {
         FatalError
         (
-            "    No multplicator found for atom '" + atom + " in formula "
+            "    Multiplicator is less than 0 of '" + atom + " in formula "
             + formula + ".",
             __FILE__,
             __LINE__
         );
     }
 
-    return AFC::Constants::AW.at(atom) * stod(multiplicator);
+    return AFC::Constants::AW.at(atom) * multiplicator;
+}
+
+
+AFC::word AFC::ThermoReader::constructFormula
+(
+    const string& composition 
+)
+{
+    //- Remove whitespaces
+    wordList tmp = splitStrAtWS(composition);
+
+    word formula;
+
+    //- Form formula
+    forAll(tmp, i)
+    {
+        formula += tmp[i];
+    }
+
+    return formula;
 }
 
 
@@ -185,9 +203,8 @@ void AFC::ThermoReader::NASAPolynomialNo1
 )
 {
     // Species name [1-18]
+    wordList species = splitStrAtWS(lineContent.substr(0,18));
     {
-        wordList species = splitStrAtWS(lineContent.substr(0,18));
-
         if (!species[0].empty())
         {
             data.insertSpecies(species[0]);
@@ -204,20 +221,23 @@ void AFC::ThermoReader::NASAPolynomialNo1
         }
     }
 
-    // Species formula [22-44]
+    // Species formula [22-44] || more complex stuff
     {
 
-        //- Calculate molecular weight
+        //- Get all information about the atoms and factors of the species
+        const word atomicComposition = lineContent.substr(24,20);
 
-        word atomicComposition = lineContent.substr(24,20);
-        
-        data.insertMolecularWeight
-            (
-                calcMolecularWeight
-                (
-                    atomicComposition
-                )
-            );
+        //- Build the species (formula)
+        const word formula = constructFormula(atomicComposition);
+
+        //- Insert chemical formula
+        data.insertChemicalFormula(formula);
+
+        //- Split formula into atoms and factors and store them
+        atomsAndFactors(formula, data);
+
+        //- Calculate molecular weight and store them
+        calcMolecularWeight(species[0], data);
     }
 
     //- Phase [45]
@@ -347,21 +367,36 @@ void AFC::ThermoReader::NASAPolynomialNo4
 }
 
 
-AFC::scalar AFC::ThermoReader::calcMolecularWeight
+void AFC::ThermoReader::calcMolecularWeight
 (
-    const word& atomicComposition
+    const word& species,
+    ThermoData& data
 )
 {
-    wordList tmp = splitStrAtWS(atomicComposition);
+    //- Atoms of species
+    const wordList& atoms = data.speciesAtoms(species);
 
-    word formula;
+    //- Factors of atoms
+    const scalarList& factors = data.atomFactors(species);
 
-    //- Form formula
-    forAll(tmp, i)
+    //- Temp molecular weight
+    scalar tmp = 0;
+
+    forAll(atoms, a)
     {
-        formula += tmp[i];
+        tmp += calcWeight(atoms[a], factors[a], species);
     }
 
+    data.insertMolecularWeight(tmp);
+}
+
+
+void AFC::ThermoReader::atomsAndFactors
+(
+    const word& formula,
+    ThermoData& data
+)
+{
     bool foundLetter{false};
     bool foundNumber{false};
 
@@ -402,8 +437,8 @@ AFC::scalar AFC::ThermoReader::calcMolecularWeight
         //- If letter found and last letter was a number (new element)
         if (foundLetter && lastNumber)
         {
-            //- Calculate weight for [pos] atom
-            tmpMW += calcWeight(atom, multiplicator, formula);
+            //- Insert atom and its factor
+            data.insertAtomAndFactor(atom, stoi(multiplicator));
 
             //- Reset
             atom.clear();
@@ -426,13 +461,13 @@ AFC::scalar AFC::ThermoReader::calcMolecularWeight
         //- If pos is at last position
         if (pos == formula.size()-1)
         {
-            //- Calculate weight for last atom
-            tmpMW += calcWeight(atom, multiplicator, formula);
+            //- Insert atom and its factor
+            data.insertAtomAndFactor(atom, stoi(multiplicator));
+
+            //- Everything is done
             break;
         }
     }
-    
-    return tmpMW;
 }
 
 

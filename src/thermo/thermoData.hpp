@@ -52,8 +52,23 @@ class ThermoData
 
         // Private data
 
-            //- List of species
+            //- Pressure for calculation
+            scalar p_;
+
+            //- List of species (official species name)
             wordList species_;
+
+            //- List of species formula (chemical formula)
+            //  + ACETOL -> C3H6O2
+            wordList formula_;
+
+            //- map of List of atoms of each species
+            // wordMatrix speciesAtoms_;
+            map<word, wordList> speciesAtoms_;
+
+            //- map of List of coeffs of atoms
+            // matrix atomFactors_;
+            map<word, scalarList> atomFactors_;
 
             //- Hashtable of molecular weight of species
             map<word, scalar> MW_;
@@ -75,6 +90,7 @@ class ThermoData
 
             //- Hashtable of polycoeffs for high temperature range
             map<word, scalarField> NASACoeffsLT_;
+
 
         //- Thermodynamic available in chemistry file
         bool thermo_;
@@ -102,6 +118,19 @@ class ThermoData
             void insertSpecies
             (
                 const word&
+            );
+
+            //- Insert chemical species (formula)
+            void insertChemicalFormula
+            (
+                const word&
+            );
+
+            //- Insert atom and factor of species
+            void insertAtomAndFactor
+            (
+                const word&,
+                const unsigned int&
             );
 
             //- Insert molecular weight
@@ -146,6 +175,16 @@ class ThermoData
                 const scalar&
             );
 
+
+        // Insert functions, from Thermo:: delegated
+
+            //- Insert the pressure
+            void p
+            (
+                const scalar&
+            );
+
+
         // Setter functions, from ThermoReader:: delegated
 
         // Return functions
@@ -188,7 +227,35 @@ class ThermoData
             (
                 const word&
             ) const;
-                
+
+            //- Return the pressure [Pa]
+            scalar p() const;
+
+            //- Return the atoms of species
+            wordList speciesAtoms
+            (
+                const word&
+            ) const;
+            
+            //- Return the atoms of species (chemical form)
+            //  Not implemented
+            wordList speciesAtomsChem
+            (
+                const word&
+            ) const;
+
+            //- Return the factor of atoms in species
+            scalarList atomFactors
+            (
+                const word&
+            ) const;
+
+            //- Return the factor of atoms in species (chemical form)
+            //  Not implemented
+            scalarList atomFactorsChem
+            (
+                const word&
+            ) const;
 };
 
 

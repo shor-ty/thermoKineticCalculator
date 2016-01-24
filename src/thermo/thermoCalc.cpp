@@ -52,7 +52,7 @@ AFC::scalar AFC::ThermoCalc::cp
 {
     scalarField coeffs = getCoeffs(species, T, thermoData);
 
-    //- calculate and return
+    //- calculate and return [J/mol/K]
     return
     (
         (
@@ -75,7 +75,7 @@ AFC::scalar AFC::ThermoCalc::H
 {
     scalarField coeffs = getCoeffs(species, T, thermoData);
 
-    //- calculate and return
+    //- calculate and return [J/mol]
     return
     (
         (
@@ -99,7 +99,7 @@ AFC::scalar AFC::ThermoCalc::S
 {
     const scalarField coeffs = getCoeffs(species, T, thermoData);
 
-    //- calculate and return
+    //- calculate and return [J/mol/K]
     return
     (
         (
@@ -141,6 +141,104 @@ AFC::scalar AFC::ThermoCalc::G
 {
     //- calculate mean free Gibbs energy
     return ( h - s * T);
+}
+
+
+AFC::scalar AFC::ThermoCalc::Hf
+(
+    const word& species,
+    const scalar& T,
+    const ThermoData& data
+) const
+{
+    //- Get information about species (atoms)
+    const wordList& atoms = data.speciesAtoms(species);
+
+    //- Get information about multiplicator
+    const scalarList& factors = data.atomFactors(species);
+
+    //- New multiplicator based on stable species
+    scalarList newFactors;
+
+    //- New species word list
+    wordList newAtoms;
+
+    //- First: Stable atoms O2, H2, N2 etc...
+    forAll(atoms, a)
+    {
+        //- FACTORS:: If we find these atoms we divide factors by 2
+        {
+            if
+            (
+                atoms[a] == "O"
+             || atoms[a] == "H"
+             || atoms[a] == "N"
+            )
+            {
+                newFactors.push_back(factors[a]/2);
+            }
+            else if (atoms[a] == "AR")
+            {
+                newFactors.push_back(factors[a]);
+            }
+            else
+            {
+                newFactors.push_back(factors[a]);
+            }
+        }
+        //- ATOMS:: Convert to stable atoms
+        {
+            if (atoms[a] == "O")
+            {
+                newAtoms.push_back("O2");
+            }
+            else if (atoms[a] == "H")
+            {
+                newAtoms.push_back("H2");
+            }
+            else if (atoms[a] == "N")
+            {
+                newAtoms.push_back("N2");
+            }
+            else if (atoms[a] == "C")
+            {
+                newAtoms.push_back("CSOLID");
+            }
+            else
+            {
+                newAtoms.push_back(atoms[a]);
+            }
+        }
+    }
+
+    forAll(newFactors, a)
+    {
+//        Info<< atoms[a] << " -> " << factors[a] << " | new -> " << newFactors[a] << endl;
+    }
+
+    //- Second: calculate temperature depended H of species
+    const scalar Hspecies = H(species, T, data);
+
+    //- Third: calculate temperature dependend H of stable atoms 
+    //  + H2
+    //  + O2
+    //  + N2
+    scalarList Hatoms;
+
+    forAll(newAtoms, a)
+    {
+        Hatoms.push_back(H(newAtoms[a], T, data));
+    }
+
+    scalar deltaHf = Hspecies;
+
+    //- Fourth: Calculate delta Hf of species
+    forAll(newAtoms, a)
+    {
+       deltaHf -= Hatoms[a] * newFactors[a]; 
+    }
+
+    return deltaHf;
 }
 
 
