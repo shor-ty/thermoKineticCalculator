@@ -64,6 +64,8 @@ using wordList = std::vector<word>;
 
 using wordMatrix = std::vector<wordList>;
 
+using wordScalarList = std::vector<std::map<word, scalar> >;
+
 using string = std::string;
 
 using stringList = std::vector<string>;
@@ -81,6 +83,8 @@ template<class T> using vector = std::vector<T>;
 template<class T> using smartPtr = std::unique_ptr<T>;
 
 template<class T, class Z> using map = typename std::map<T, Z>;
+
+template<class T, class Z> using mapList = typename std::vector<map<T, Z> >;
 
 #define forAll(scalarField, i) for \
     (unsigned int i=0; i<(scalarField).size(); i++)
