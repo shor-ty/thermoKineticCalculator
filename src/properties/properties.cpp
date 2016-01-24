@@ -30,7 +30,7 @@ License
 AFC::Properties::Properties
 (
     const string& fileName,
-    const Thermo& thermo,
+    Thermo& thermo,
     const Chemistry& chemistry
 )
 :
@@ -41,6 +41,9 @@ AFC::Properties::Properties
     PropertiesReader mixFracReader(fileName);
 
     mixFracReader.read(*this);
+
+    //- Add pressure to thermoData for better handling
+    thermo.p(this->p());
 }
 
 

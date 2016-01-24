@@ -141,7 +141,7 @@ class Properties
         Properties
         (
             const string&,
-            const Thermo&,
+            Thermo&,
             const Chemistry&
         );
 
