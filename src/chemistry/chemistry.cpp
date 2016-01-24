@@ -62,11 +62,12 @@ bool AFC::Chemistry::thermo()
 void AFC::Chemistry::updatekfkb
 (
     const scalar& T,
+    const map<word, scalar>& speciesCon,
     const Thermo& thermo
 )
 {
     //- Calculate reaction rates k
-    chemCalc_.updatekfkb(T, thermo, chemData_);
+    chemCalc_.updatekfkb(T, speciesCon, thermo, chemData_);
 }
 
 
@@ -99,7 +100,7 @@ void AFC::Chemistry::createSpeciesInReaction()
         bool found{false};
 
         //- Loop through all elementar reactions 
-        for(int r=0; r<=nReac; r++)
+        for(int r=0; r<nReac; r++)
         {
             //- Loop through the species i in elementar reaction r
             for(unsigned int i=0; i<speciesInReaction[r].size(); i++)

@@ -85,9 +85,17 @@ class ChemistryData
             matrix reacNoSpecies_;
 
             //- boolList for TBR  
+            //  + true if [M] is there
+            //  + false if [M] is not included
             boolList TBR_;
 
+            //- boolList for TBR Enhanced Factors
+            //  + ture if [M] is modified
+            //  + false if [M] represend all species
+            boolList ENHANCE_;
+
             //- boolList for TBR LOW
+            //  + true if 
             boolList LOW_;
 
             //- boolList for TBR TROE 
@@ -96,20 +104,14 @@ class ChemistryData
             //- boolList for TBR SRI 
             boolList SRI_;
 
-            //- boolList for TBR Enhanced Factors
-            boolList ENHANCE_;
-
             //- boolList for backward reaction 
             boolList backwardReaction_;
 
             //- Matrix of stochiometric coeffs
             matrix nu_;
 
-            //- Matrix of TB M (composition of species)
-            wordMatrix Mcomp_;
-
-            //- Matrix of TB M (values of species)
-            matrix Mvalue_;
+            //- Composition of enhanced factors (species + value)
+            mapList<word, scalar> enhancedFactors_;
 
             //- Matrix of Arrhenius coeffs
             matrix arrheniusCoeffs_;
@@ -117,7 +119,7 @@ class ChemistryData
             //- Matrix of TROE coeffs
             matrix TROECoeffs_;
 
-            //- Matrix of Arrhenius coeffs for LOW pressure
+            //- Matrix of Arrhenius coeffs for high pressure
             matrix LOWCoeffs_;
 
             //- Matrix of SRI coeffs
@@ -198,16 +200,11 @@ class ChemistryData
                 const unsigned int&
             );
 
-            //- Insert ENHANCE value
-            void insertMvalue
+            //- Insert ENHANCE factors (species + value) 
+            void insertEnhanceFactors
             (
+                const word&,
                 const scalar&
-            );
-
-            //- Insert ENHANCE comp
-            void insertMcomp
-            (
-                const string&
             );
 
             //- Increment nDuplicated_
@@ -297,7 +294,6 @@ class ChemistryData
             );
 
 
-
         // Return functions
 
             //- Return bool
@@ -345,6 +341,9 @@ class ChemistryData
             //- Return no. of reaction
             int nReac() const;
 
+            //- Return elementar reaction 
+            wordList elementarReaction() const;
+
             //- Return elementar reaction (as string)
             word elementarReaction
             (
@@ -372,10 +371,41 @@ class ChemistryData
                 const int&
             ) const;
 
-            //- Return Mcomp for reaction no.
-            wordList Mcomp
+            //- Return arrhenius coeffs for high pressure for reaction no.
+            scalarList LOWCoeffs
             (
                 const int&
+            ) const;
+
+            //- Return TROE coeffs
+            scalarList TROECoeffs
+            (
+                const int&
+            ) const;
+
+            //- Return SRI coeffs
+            scalarList SRICoeffs
+            (
+                const int&
+            ) const;
+
+            //- Return ENHANCED species of reac no.
+            wordList enhancedSpecies
+            (
+                const int&
+            ) const;
+
+            //- Return ENHANCED factors (species + value) of reac no.
+            map<word, scalar> enhancedFactors
+            (
+                const int&
+            ) const;
+
+            //- Return ENHANCED factors (value) of reac no.
+            scalar enhancedFactors
+            (
+                const int&,
+                const word&
             ) const;
 
             //- Return reaction rate kf for reaction no.

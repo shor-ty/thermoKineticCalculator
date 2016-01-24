@@ -134,22 +134,15 @@ void AFC::ChemistryData::insertSRICoeffs
 }
 
 
-void AFC::ChemistryData::insertMvalue
+void AFC::ChemistryData::insertEnhanceFactors
 (
+    const word& species,
     const scalar& value
 )
 {
-    Mvalue_[nReac_].push_back(value);
+    enhancedFactors_[nReac_][species] = value;
 }
 
-
-void AFC::ChemistryData::insertMcomp
-(
-    const string& comp
-)
-{
-    Mcomp_[nReac_].push_back(comp);
-}
 
 void AFC::ChemistryData::incrementDuplicated()
 {
@@ -210,23 +203,31 @@ void AFC::ChemistryData::incrementMatrixesVectors()
     //- Matrix for stochiometric coeffs
     nu_.push_back(scalarField(0));
 
-    //- Matrix of THIRD BODY M (composition of species)
-    Mcomp_.push_back(wordList(0));
-
-    //- Matrix of THIRD BODY M (values of species)
-    Mvalue_.push_back(scalarField(0));
+    //- MapList of enhanced factors (species + value)
+    enhancedFactors_.push_back(map<word,scalar>());
 
     //- Matrix of Arrhenius coeffs
     arrheniusCoeffs_.push_back(scalarField(3));
 
-    //- Matrix of TROE coeffs
-    TROECoeffs_.push_back(scalarField(5));
-
     //- Matrix of ARRHENIUS coeffs for LOW pressure
     LOWCoeffs_.push_back(scalarField(3));
 
+    //- Matrix of TROE coeffs
+    TROECoeffs_.push_back(scalarField(4));
+
+    //- Update entrys in TROE, if Tss not used = 0
+    {
+        TROECoeffs_[nReac_][4] = 0;
+    }
+
     //- Matrix of SRI coeffs
     SRICoeffs_.push_back(scalarField(5));
+
+    //- Update entrys in SRI, d and e if not used
+    {
+        SRICoeffs_[nReac_][3] = 1;
+        SRICoeffs_[nReac_][4] = 0;
+    }
 
     //- Reaction rates kf
     kf_.push_back(scalar(0));
@@ -406,6 +407,12 @@ int AFC::ChemistryData::nReac() const
 }
 
 
+AFC::wordList AFC::ChemistryData::elementarReaction() const
+{
+    return elementarReaction_;
+}
+
+
 AFC::word AFC::ChemistryData::elementarReaction
 (
     const int& r
@@ -448,12 +455,74 @@ AFC::scalarList AFC::ChemistryData::arrheniusCoeffs
 }
 
 
-AFC::wordList AFC::ChemistryData::Mcomp
+AFC::scalarList AFC::ChemistryData::LOWCoeffs
 (
     const int& reacNo
 ) const
 {
-    return Mcomp_[reacNo];
+    return LOWCoeffs_[reacNo];
+}
+
+
+AFC::scalarList AFC::ChemistryData::TROECoeffs
+(
+    const int& reacNo
+) const
+{
+    return TROECoeffs_[reacNo];
+}
+
+
+AFC::scalarList AFC::ChemistryData::SRICoeffs
+(
+    const int& reacNo
+) const
+{
+    return SRICoeffs_[reacNo];
+}
+
+
+AFC::wordList AFC::ChemistryData::enhancedSpecies
+(
+    const int& reacNo
+) const
+{
+    wordList enhancedSpecies;
+
+    //- Need map iterator
+    map<word, scalar>::iterator iter;
+    map<word, scalar> tmp = enhancedFactors_[reacNo];
+
+    for
+    (
+        iter = tmp.begin();
+        iter != tmp.end();
+        iter++
+    )
+    {
+        enhancedSpecies.push_back((*iter).first);
+    }
+
+    return enhancedSpecies;
+}
+
+
+AFC::map<AFC::word, AFC::scalar> AFC::ChemistryData::enhancedFactors
+(
+    const int& reacNo
+) const
+{
+    return enhancedFactors_[reacNo];
+}
+
+
+AFC::scalar AFC::ChemistryData::enhancedFactors
+(
+    const int& reacNo,
+    const word& species
+) const
+{
+    return enhancedFactors_[reacNo].at(species);
 }
 
 

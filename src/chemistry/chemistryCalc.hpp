@@ -74,6 +74,7 @@ class ChemistryCalc
             void updatekfkb
             (
                 const scalar&,
+                const map<word, scalar>&,
                 const Thermo&,
                 ChemistryData&
             );
@@ -82,6 +83,7 @@ class ChemistryCalc
             void updateKf 
             (
                 const int&,
+                const scalar&,
                 const scalar&,
                 ChemistryData&
             );
@@ -100,13 +102,6 @@ class ChemistryCalc
                 const scalar&,
                 const Thermo&,
                 ChemistryData&
-            );
-
-            //- Calculate [M] partner
-            scalar calcM
-            (
-                const map<word, scalar>&,
-                const int&
             );
 
             //- Calculate [M] partner out of [10]
@@ -129,6 +124,23 @@ class ChemistryCalc
             (
                 const map<word, scalar>&,
                 ChemistryData&
+            );
+            
+            //- Calculate [M] partner [mol/m^3]
+            scalar calculateM
+            (
+                const int&,
+                const map<word, scalar>&,
+                const ChemistryData&
+            );
+
+            //- Get information about TBR (if [M] is included or not) and
+            //  if we have to use enhanced factors for calculating [M]
+            bool thirdBodyReaction
+            (
+                const int&,
+                bool&,
+                const ChemistryData&
             );
 };
 

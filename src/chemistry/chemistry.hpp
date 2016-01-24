@@ -92,6 +92,7 @@ class Chemistry
             void updatekfkb
             (
                 const scalar&,
+                const map<word, scalar>&,
                 const Thermo&
             );
 

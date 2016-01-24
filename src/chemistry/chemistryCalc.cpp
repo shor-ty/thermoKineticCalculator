@@ -48,6 +48,7 @@ AFC::ChemistryCalc::~ChemistryCalc()
 void AFC::ChemistryCalc::updatekfkb
 (
     const scalar& T,
+    const map<word, scalar>& speciesCon,
     const Thermo& thermo,
     ChemistryData& chemData
 )
@@ -55,9 +56,24 @@ void AFC::ChemistryCalc::updatekfkb
     //- No. of reactions
     const int& reac = chemData.nReac();
 
-    //- Calculate reaction rates k
-    for (int r=0; r<=reac; r++)
+    //- Calculate reaction rates kf and kb (<- if needed)
+    for (int r=0; r<reac; r++)
     {
+        //- a) Check if third body reaction and if yes, which one
+        //  + enhanced -> false, calculated [M] with all species
+        //  + enhanced -> true, calculated [M] with enhanced factors
+        bool enhanced = false;
+
+        const bool TBR = thirdBodyReaction(r, enhanced, chemData);
+
+        scalar M = 0;
+
+        //- Calculate [M] if needed
+        if (TBR)
+        {
+            M = calculateM(r, speciesCon, chemData);
+        }
+
         //- Take backward reaction into account?
         bool BW{false};
 
@@ -68,10 +84,11 @@ void AFC::ChemistryCalc::updatekfkb
         }
 
         //- a) Update kf
-        updateKf(r, T, chemData);
+        updateKf(r, T, M, chemData);
 
         //- b) if reversible reaction, backward reaction is needed
         //  therefore we need free gibbs energy
+        
         if (BW)
         {
             //- 1) Update Kc
@@ -88,9 +105,13 @@ void AFC::ChemistryCalc::updateKf
 (
     const int& r,
     const scalar& T,
+    const scalar& M,
     ChemistryData& chemData
 )
 {
+    //- Reaction rate kf
+    scalar kf = 0;
+
     //- Arrhenius coeffs
     const scalarField& arrCoeffs = chemData.arrheniusCoeffs(r);
 
@@ -98,15 +119,115 @@ void AFC::ChemistryCalc::updateKf
     //  + unimolecular reaction [1/s]
     //  + bimolecular reaction [cm^3/mol/s]
     //  + trimolecular reaction [cm^6/mol^2/s]
-    const scalar A = arrCoeffs[0];
+    const scalar& A = arrCoeffs[0];
 
     //- Expontent
-    const scalar beta = arrCoeffs[1];
+    const scalar& beta = arrCoeffs[1];
 
     //- Activation energy [cal/mol]
-    const scalar Ea  = arrCoeffs[2];  
+    const scalar& Ea  = arrCoeffs[2];  
 
-    //- Stardard elementar reaction without any TBR
+    //- Lindemann (LOW) | TROE or SRI
+    if (chemData.LOW(r))
+    {
+        //- a) calculate kinf with normal (high) arrhenius coeffs 
+        scalar kinf = arrhenius(A, beta, Ea, T);
+
+        //- b) get arrhenius coeffs for low pressure
+        const scalarField& arrCoeffsLow = chemData.LOWCoeffs(r);
+
+            //- Pre-exponental factor
+            const scalar& ALow = arrCoeffsLow[0];
+            
+            //- Exponent
+            const scalar& betaLow = arrCoeffsLow[1];
+
+            // Activation energy [cal/mol]
+            const scalar& EaLow = arrCoeffsLow[2];
+
+        //- c) calculate k0 with low coeffs 
+        scalar k0 = arrhenius(ALow, betaLow, EaLow, T);
+
+        //- d) calculate reduced pressure pred
+        scalar pred = k0 * M / kinf; 
+
+        //- e) Calculate F
+        //  + Complex functions if TROE or SRI
+        //  + For Lindemann = 1
+        scalar F = 1;
+
+        //- TROE formula for F
+        if (chemData.TROE(r))
+        {
+            //- i) Get TROE coeffs
+            const scalarField& troeCoeffs = chemData.TROECoeffs(r);
+
+            //- Alpha
+            const scalar& alpha = troeCoeffs[0];
+
+            //- T***
+            const scalar& Tsss = troeCoeffs[1];
+
+            //- T**
+            const scalar& Tss = troeCoeffs[2];
+
+            //- T*
+            const scalar& Ts = troeCoeffs[3];
+            
+            //- ii) calculate Fcent
+            const scalar Fcent = (1 - alpha) * exp(-1 * T / Tsss) +
+                alpha * exp(-1 * T / Ts) + exp(-1 * Tss / T);
+            
+            //- iii) calculate constants
+            const scalar c = -0.4 - 0.67 * log(Fcent);
+            const scalar n = 0.75 - 1.27 * log(Fcent);
+            const scalar d = 0.14;
+
+            //- iv) calculate logF
+            const scalar logF = 
+                pow((1 + pow((log(pred) + c)/(n - d*(log(pred)+c)),2)), -1) * log(Fcent);
+
+            //- v) get F
+            F = exp(logF);
+        }
+        //- SRI formula for F
+        if (chemData.SRI(r))
+        {
+            //- i) Get SRI coeffs
+            const scalarField& sriCoeffs = chemData.SRICoeffs(r);
+
+            //- a
+            const scalar a = sriCoeffs[0];
+
+            //- b
+            const scalar b = sriCoeffs[1];
+
+            //- c
+            const scalar c = sriCoeffs[2];
+
+            //- d
+            const scalar d = sriCoeffs[3];
+
+            //- e
+            const scalar e = sriCoeffs[4];
+
+            //- ii) calculate X
+            const scalar X = 1 / (1 + pow(log(pred), 2));
+
+            //- iii) calculate F
+            F = d * pow(a * exp(-1 * b / T) + exp (-1 * T / c), X) * pow(T, e);
+        } 
+
+        //- f) calculate kf
+        kf = kinf * (pred / (1 + pred)) * F;
+    }
+    //- Normal reaction
+    else
+    {
+        kf = arrhenius(A, beta, Ea, T);
+    }
+
+    //- Update
     //  UNITS:
     //  + uni-moleculare reaction: [1/s]
     //  + bi--moleculare reaction: [cm^3/mol/s]
@@ -114,7 +235,7 @@ void AFC::ChemistryCalc::updateKf
     chemData.updateKf
     (
         r,
-        this->arrhenius(A, beta, Ea, T)
+        kf
     );
 }
 
@@ -236,6 +357,82 @@ void AFC::ChemistryCalc::omega
 
         t = t+1;
     }
+}
+
+
+AFC::scalar AFC::ChemistryCalc::calculateM
+(
+    const int& r,
+    const map<word, scalar>& speciesCon,
+    const ChemistryData& data 
+)
+{
+    //- Tmp M
+    scalar M{0};
+
+    //- ENHANCED species
+    wordList enhancedSpecies;
+
+    const bool& EH = data.ENHANCED(r);
+
+
+    //- Use enhance values
+    if (EH)
+    {
+        //- Get information
+        enhancedSpecies = data.enhancedSpecies(r);
+    }
+
+    //- Each species is used as third body partner
+    {
+        const wordList& species = data.species();
+
+        //- [M] = sum of all concentrations
+        forAll(species, s)
+        {
+            if (EH)
+            {
+                //- Search if Species available
+                forAll(enhancedSpecies, e)
+                {
+                    //- If found, then use modified value
+                    if (enhancedSpecies[e] == species[s])
+                    {
+                        M += speciesCon.at(species[s]) * data.enhancedFactors(r, species[s]);
+                    }
+                    //- otherwise use value 1
+                    else
+                    {
+                        M += speciesCon.at(species[s]);
+                    }
+                }
+            }
+            else
+            {
+                M += speciesCon.at(species[s]);
+            }
+        }
+    }
+
+    //- Return M [mol/m^3]
+    return M;
+}
+
+
+bool AFC::ChemistryCalc::thirdBodyReaction
+(
+    const int& r,    
+    bool& enhanced,
+    const ChemistryData& data
+)
+{
+    //- Get third body information
+    const bool& TBR = data.TBR(r);
+
+    //- Get information about enhanced factors
+    enhanced = data.ENHANCED(r);
+
+    return TBR;
 }
 
 
