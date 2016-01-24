@@ -116,4 +116,19 @@ const AFC::stringList AFC::StringManipulator::splitStrAtDelimiter
 }
 
 
+const AFC::string AFC::StringManipulator::removeAtEnd
+(
+    const string& str,
+    const string& str2
+)
+{
+    Info<< str << endl;
+    //- Find position of str2
+    std::size_t pos = str.find(str2);
+
+    //- Return string von pos 0 to pos
+    return str.substr(0,pos);
+}
+
+
 // ************************************************************************* //

@@ -83,6 +83,13 @@ class StringManipulator
                 const string&,
                 const char delimiter
             );
+
+            //- Remove str2 from str and return str from 0 - pos
+            const string removeAtEnd
+            (
+                const string&,
+                const string&
+            );
 };
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
