@@ -305,30 +305,33 @@ void AFC::ChemistryReader::readReactionBlock
                     //- LOW parameters
                     if (foundLOW != std::string::npos)
                     {
-                        LOWCoeffs(fileContent[line], line, data);
                         data.setLOW();
+                        LOWCoeffs(fileContent[line], line, data);
                     }
                     //- TROE parameters
                     else if (foundTROE != std::string::npos)
                     {
-                        TROECoeffs(fileContent[line], line, data);
                         data.setTROE();
+                        TROECoeffs(fileContent[line], line, data);
                     }
                     //- SRI parameters
                     else if (foundSRI != std::string::npos)
                     {
-                        SRICoeffs(fileContent[line], line, data);
                         data.setSRI();
+                        SRICoeffs(fileContent[line], line, data);
                     }
                     else
                     {
-                        enhanceFactors(fileContent[line], data);
                         data.setENHANCE();
+                        enhanceFactors(fileContent[line], data);
                     }
                 }
             }
         }
     }
+
+    //- At the end we have to increase nReac because it is initialized as -1
+    data.incrementReac();
 }
 
 
@@ -584,12 +587,12 @@ void AFC::ChemistryReader::TROECoeffs
     if
     (
         coeffs.size() < 3
-     || coeffs.size() > 5
+     || coeffs.size() > 4
     )
     {
         FatalError
         (
-            "    More than 5 or less than 3 TROE coeffs found.\n"
+            "    More than 4 or less than 3 TROE coeffs found.\n"
             "    TROE coeffs: " + std::to_string(coeffs.size()) +
             " found in line " + std::to_string(lineNo) + ".\n"
             "    Problem occur in file " + file_,
@@ -663,29 +666,26 @@ void AFC::ChemistryReader::enhanceFactors
 
     forAll(tmp, i)
     {
-        unsigned int modul=i%2;
+        data.insertEnhanceFactors(tmp[i], stod(tmp[i+1]));
 
-        //- Insert value
-        if (modul)
-        {
-            data.insertMvalue(stod(tmp[i]));
-        }
-        //- Insert species
-        else
-        {
-            data.insertMcomp(tmp[i]);
-        }
+        i++;
     }
 }
 
 
 void AFC::ChemistryReader::analyzeReacSite
 (
-    const word& tmp,
+    const string& reactionSite,
     const word site,
     ChemistryData& data
 )
 {
+    //- First: remove (+M) if it is there
+    string removed1 = removeAtEnd(reactionSite, "(+M)");
+
+    //- Second: remove +M if it is there
+    string tmp = removeAtEnd(removed1, "+M");
+
     word stochiometricFactor;
 
     word species;
@@ -794,8 +794,6 @@ void AFC::ChemistryReader::analyzeReacSite
             startPos = 0;
             endPos = 0;
 
-            Info<< nu << " * " << species << endl;
-
             //- Store data
             data.insertNu(nu);
 
@@ -803,5 +801,6 @@ void AFC::ChemistryReader::analyzeReacSite
         }
     }
 }
+
 
 // ************************************************************************* //

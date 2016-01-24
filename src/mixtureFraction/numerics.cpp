@@ -24,8 +24,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "typedef.hpp"
-#include "chemistry.hpp"
-#include "thermo.hpp"
+#include "mixtureFraction.hpp"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -33,7 +32,6 @@ namespace AFC
 {
 
 // * * * * * * * * * * * * * AFC Numerics functions  * * * * * * * * * * * * //
-
 
 void calculate
 (
@@ -48,6 +46,7 @@ void calculate
 
     for (unsigned int point=0; point <= nDisPoints; point++)
     {
+        Info<< "Z = " << point << "\n";
         //- Object of discrete mixture fraction
         MixtureFraction& dMF = lut[defect][sDR][point];
 
@@ -56,14 +55,9 @@ void calculate
 
         //- Mol fractions at discrete point
 //        const map<word, scalar>& speciesMol = dMF.mol();
-
         {
             //- a) calculate mean molecular weight MW (using mol)
             dMF.calculateMeanMW("mol");
-
-            for(int i=1; i<11; i++)
-            {
-                scalar T = 300 + i*100;
 
                 //- b) calculate mean heat capacity cp [J/mol/K]
                 dMF.calculateMeanCp(T);
@@ -73,7 +67,7 @@ void calculate
 
                 //- d) calculate mean entropy S [J/mol/K]
                 dMF.calculateMeanS(T);
-                
+
                 //- e) calculate mean free gibbs energy
                 {
                     const scalar& H = dMF.H();
@@ -81,18 +75,16 @@ void calculate
                     const scalar& S = dMF.S();
 
                     dMF.calculateMeanG(H, S, T);
-
-                    Info<< dMF.G() << endl;
                 }
             }
 
-            //- Calc k with mol fractions and k 
-            dMF.k();
+            //- Update kf and kb using the new T field
+            dMF.updatekfkb(T);
 
             //- Calc for each species the source term omega
             //chem_.omega(speciesMol);
             //
-            std::terminate();
+            //I
         }
     }
 }
@@ -103,5 +95,6 @@ void calculate
 } // End namespace AFC
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
 
 // ************************************************************************* //

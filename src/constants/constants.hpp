@@ -48,7 +48,7 @@ namespace Constants
 \*--------------------------------------------------------------------------*/
 
 //- Constants and their weight [g/mol]
-const map<string, scalar> AW
+const map<word, scalar> AW
 {
     { "H", 1.00790 },
     { "O", 15.9994 },
@@ -58,14 +58,14 @@ const map<string, scalar> AW
     { "HE", 4.00260 }
 };
 
-//- Universal gas constant [J/K/mol]
-constexpr scalar R = 8.314459848;
-
 //- Converstion from cal to joule [J/cal]
 constexpr scalar calToJoule = 4.1858;
 
 //- Converstion from cal to joule [J/cal]
 constexpr scalar jouleToCal = 1/calToJoule;
+
+//- Universal gas constant [J/K/mol]
+constexpr scalar R = 8.314459848;
 
 //- Converstion from cal to joule [J/cal]
 constexpr scalar Rcal = R * jouleToCal;
