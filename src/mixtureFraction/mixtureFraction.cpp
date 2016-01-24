@@ -336,18 +336,18 @@ void AFC::MixtureFraction::updatekfkb
 )
 {
     //- For the update procedure we need thermo and chemistry stuff
-    chemistry_.updatekfkb(T, thermo_);
+    chemistry_.updatekfkb(T, speciesCon_, thermo_);
 }
 
 
-void AFC::MixtureFraction::calculateHf
+/*AFC::scalar AFC::MixtureFraction::calculateHf
 (
     const word& species,
     const scalar& T
 ) const
 {
-    Info<< "dHf("<<species<<") = " <<  thermo_.Hf(species, T) * AFC::Constants::jouleToCal / 1000 << endl;
-}
+    return thermo_.Hf(species, T);
+}*/
 
 
 // * * * * * * * * * * * * Conversation Functions  * * * * * * * * * * * * * //

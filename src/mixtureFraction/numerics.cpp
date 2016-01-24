@@ -59,24 +59,24 @@ void calculate
             //- a) calculate mean molecular weight MW (using mol)
             dMF.calculateMeanMW("mol");
 
-                //- b) calculate mean heat capacity cp [J/mol/K]
-                dMF.calculateMeanCp(T);
+            //- b) calculate mean heat capacity cp [J/mol/K]
+            dMF.calculateMeanCp(T);
 
-                //- c) calculate mean enthalpy H [J/mol]
-                dMF.calculateMeanH(T);
+            //- c) calculate mean enthalpy H [J/mol]
+            dMF.calculateMeanH(T);
 
-                //- d) calculate mean entropy S [J/mol/K]
-                dMF.calculateMeanS(T);
+            //- d) calculate mean entropy S [J/mol/K]
+            dMF.calculateMeanS(T);
 
-                //- e) calculate mean free gibbs energy
-                {
-                    const scalar& H = dMF.H();
+            //- e) calculate mean free gibbs energy
+            {
+                const scalar& H = dMF.H();
 
-                    const scalar& S = dMF.S();
+                const scalar& S = dMF.S();
 
-                    dMF.calculateMeanG(H, S, T);
-                }
+                dMF.calculateMeanG(H, S, T);
             }
+        }
 
             //- Update kf and kb using the new T field
             dMF.updatekfkb(T);
@@ -85,7 +85,6 @@ void calculate
             //chem_.omega(speciesMol);
             //
             //I
-        }
     }
 }
 

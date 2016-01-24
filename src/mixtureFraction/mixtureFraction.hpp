@@ -64,6 +64,7 @@ class MixtureFraction
             map<word, scalar> speciesMass_;
 
             //- Concentration [X] of species at discrete point Z
+            //  [mol/m^3]
             map<word, scalar> speciesCon_;
 
             //- Temperature at discrete point Z
