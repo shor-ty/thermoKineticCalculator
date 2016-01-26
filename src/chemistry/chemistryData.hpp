@@ -77,12 +77,11 @@ class ChemistryData
             //- stringList for elementar reaction
             stringList elementarReaction_;
 
-            //- Matrix that contains all reactions and for each
-            //  reaction all included species
+            //- Matrix that contains all species in the reaction
             wordMatrix speciesInReactions_;
 
-            //- Contains all reaction no. where species i is included
-            matrix reacNoSpecies_;
+            //- Contains all reaction no. where species is included
+            map<word, intList> reacNumbers_;
 
             //- boolList for TBR  
             //  + true if [M] is there
@@ -249,10 +248,10 @@ class ChemistryData
             //- Set the Enhance boolean
             void setENHANCE();
 
-            //- Set the reaction no. (for species)
-            void setReacNoSpecies
+            //- Set the reaction no. where species is included
+            void setReacNumbers
             (
-                const int&,
+                const word&,
                 const int&
             );
 
@@ -281,14 +280,14 @@ class ChemistryData
             );
             
             //- Update source term omega for species s
-            void updateOmega
+            void calculateOmega
             (
                 const int&,
                 const scalar&
             );
             
             //- Update source term omega for all species
-            void updateOmega
+            void calculateOmega
             (
                 const scalarField&
             );
@@ -350,10 +349,10 @@ class ChemistryData
                 const int&
             ) const;
 
-            //- Return scalarList of reaction nos. for species
-            scalarList reacNoForSpecies
+            //- Return List of reaction no. of species
+            intList reacNumbers
             (
-                const int&
+                const word&
             ) const;
 
             //- Return species matrix for reactions

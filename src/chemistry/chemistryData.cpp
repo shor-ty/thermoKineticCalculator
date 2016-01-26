@@ -75,7 +75,7 @@ void AFC::ChemistryData::insertSpecies
     species_.push_back(species);
     
     //- Increment matrix
-    reacNoSpecies_.push_back(scalarField(0));
+    reacNumbers_[species] = intList(0);
 
     //- Increment omega field
     omega_.push_back(scalar(0));
@@ -278,13 +278,13 @@ void AFC::ChemistryData::setENHANCE()
 }
 
 
-void AFC::ChemistryData::setReacNoSpecies
+void AFC::ChemistryData::setReacNumbers
 (
-    const int& s,
+    const word& species,
     const int& r
 )
 {
-    reacNoSpecies_[s].push_back(r);
+    reacNumbers_.at(species).push_back(r);
 }
 
 
@@ -320,7 +320,7 @@ void AFC::ChemistryData::updateKc
 }
 
 
-void AFC::ChemistryData::updateOmega
+void AFC::ChemistryData::calculateOmega
 (
     const int& s,
     const scalar& omega
@@ -330,7 +330,7 @@ void AFC::ChemistryData::updateOmega
 }
 
 
-void AFC::ChemistryData::updateOmega
+void AFC::ChemistryData::calculateOmega
 (
     const scalarField& omega
 )
@@ -422,12 +422,12 @@ AFC::word AFC::ChemistryData::elementarReaction
 }
 
 
-AFC::scalarList AFC::ChemistryData::reacNoForSpecies
+AFC::intList AFC::ChemistryData::reacNumbers
 (
-    const int& s
+    const word& species
 ) const
 {
-    return reacNoSpecies_[s];
+    return reacNumbers_.at(species);
 }
 
 
