@@ -70,44 +70,41 @@ class ChemistryCalc
                 const ChemistryData&
             ) const;
 
-            //- Update the reaction rates kf and kb [units depend]
-            void updatekfkb
+            //- Calculate the reaction rates kf and kb [units depend]
+            void calculatekfkb 
             (
+                const int&,
+                scalar&,
+                scalar&,
                 const scalar&,
                 const map<word, scalar>&,
                 const Thermo&,
-                ChemistryData&
+                const ChemistryData&
             );
 
             //- Calculate kf
-            void updateKf 
+            scalar calculateKf 
             (
                 const int&,
                 const scalar&,
                 const scalar&,
-                ChemistryData&
+                const ChemistryData&
             );
 
             //- Calculate kb
-            void updateKb
+            scalar calculateKb 
             (
-                const int&,
-                ChemistryData&
+                const scalar&,
+                const scalar&
             );
 
             //- Calculate Kc
-            void updateKc
+            scalar calculateKc 
             (
                 const int&,
                 const scalar&,
                 const Thermo&,
-                ChemistryData&
-            );
-
-            //- Calculate [M] partner out of [10]
-            scalar calcM_Warnatz
-            (
-                const map<word, scalar>&
+                const ChemistryData&
             );
 
             //- Calculate k with standard arrhenius [units depend]
@@ -120,10 +117,12 @@ class ChemistryCalc
             ) const;
 
             //- Calculate the source term of each species (omega)
-            void omega
+            void calculateOmega
             (
-                const map<word, scalar>&,
-                ChemistryData&
+                const scalar&,
+                map<word, scalar>&,
+                const Thermo&,
+                const ChemistryData&
             );
             
             //- Calculate [M] partner [mol/m^3]

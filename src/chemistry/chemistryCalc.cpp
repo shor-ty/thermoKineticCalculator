@@ -45,73 +45,60 @@ AFC::ChemistryCalc::~ChemistryCalc()
 
 // * * * * * * * * * * * * * Calculation Functions * * * * * * * * * * * * * //
 
-void AFC::ChemistryCalc::updatekfkb
+void AFC::ChemistryCalc::calculatekfkb
 (
+    const int& r,
+    scalar& kf,
+    scalar& kb,
     const scalar& T,
     const map<word, scalar>& speciesCon,
     const Thermo& thermo,
-    ChemistryData& chemData
+    const ChemistryData& chemData
 )
 {
-    //- No. of reactions
-    const int& reac = chemData.nReac();
+    //- a) Check if third body reaction and if yes, which one
+    //  + enhanced -> false, calculated [M] with all species
+    //  + enhanced -> true, calculated [M] with enhanced factors
+    bool enhanced = false;
 
-    //- Calculate reaction rates kf and kb (<- if needed)
-    for (int r=0; r<reac; r++)
+    const bool TBR = thirdBodyReaction(r, enhanced, chemData);
+
+    scalar M = 0;
+
+    //- Calculate [M] if needed
+    if (TBR)
     {
-        //- a) Check if third body reaction and if yes, which one
-        //  + enhanced -> false, calculated [M] with all species
-        //  + enhanced -> true, calculated [M] with enhanced factors
-        bool enhanced = false;
+        M = calculateM(r, speciesCon, chemData);
+    }
 
-        const bool TBR = thirdBodyReaction(r, enhanced, chemData);
+    //- Take backward reaction into account?
+    const bool& BW = chemData.BR(r);
 
-        scalar M = 0;
+    //- a) calculate kf
+    kf = calculateKf(r, T, M, chemData);
 
-        //- Calculate [M] if needed
-        if (TBR)
-        {
-            M = calculateM(r, speciesCon, chemData);
-        }
+    //- b) if reversible reaction, backward reaction is needed
+    //  therefore we need free gibbs energy
+    
+    if (BW)
+    {
+        //- 1) calculate Kc
+        const scalar Kc = calculateKc(r, T, thermo, chemData);
 
-        //- Take backward reaction into account?
-        bool BW{false};
-
-        //- Backward reaction included
-        if (chemData.BR(r))
-        {
-            BW = true; 
-        }
-
-        //- a) Update kf
-        updateKf(r, T, M, chemData);
-
-        //- b) if reversible reaction, backward reaction is needed
-        //  therefore we need free gibbs energy
-        
-        if (BW)
-        {
-            //- 1) Update Kc
-            updateKc(r, T, thermo, chemData);
-
-            //- 2) Update kb
-            //updateKb();
-        }
+        //- 2) calculate kb
+        kb = calculateKb(kf, Kc);
     }
 }
 
 
-void AFC::ChemistryCalc::updateKf
+AFC::scalar AFC::ChemistryCalc::calculateKf
 (
     const int& r,
     const scalar& T,
     const scalar& M,
-    ChemistryData& chemData
+    const ChemistryData& chemData
 )
 {
-    //- Reaction rate kf
-    scalar kf = 0;
-
     //- Arrhenius coeffs
     const scalarField& arrCoeffs = chemData.arrheniusCoeffs(r);
 
@@ -146,10 +133,10 @@ void AFC::ChemistryCalc::updateKf
             const scalar& EaLow = arrCoeffsLow[2];
 
         //- c) calculate k0 with low coeffs 
-        scalar k0 = arrhenius(ALow, betaLow, EaLow, T);
+        const scalar k0 = arrhenius(ALow, betaLow, EaLow, T);
 
         //- d) calculate reduced pressure pred
-        scalar pred = k0 * M / kinf; 
+        const scalar pred = k0 * M / kinf; 
 
         //- e) Calculate F
         //  + Complex functions if TROE or SRI
@@ -168,11 +155,11 @@ void AFC::ChemistryCalc::updateKf
             //- T***
             const scalar& Tsss = troeCoeffs[1];
 
-            //- T**
-            const scalar& Tss = troeCoeffs[2];
-
             //- T*
-            const scalar& Ts = troeCoeffs[3];
+            const scalar& Ts = troeCoeffs[2];
+
+            //- T**
+            const scalar& Tss = troeCoeffs[3];
             
             //- ii) calculate Fcent
             const scalar Fcent = (1 - alpha) * exp(-1 * T / Tsss) +
@@ -185,10 +172,10 @@ void AFC::ChemistryCalc::updateKf
 
             //- iv) calculate logF
             const scalar logF = 
-                pow((1 + pow((log(pred) + c)/(n - d*(log(pred)+c)),2)), -1) * log(Fcent);
+                pow((1 + pow((log(pred) + c)/(n - d*(log10(pred)+c)),2)), -1) * log10(Fcent);
 
             //- v) get F
-            F = exp(logF);
+            F = pow(10, logF);
         }
         //- SRI formula for F
         if (chemData.SRI(r))
@@ -219,48 +206,39 @@ void AFC::ChemistryCalc::updateKf
         } 
 
         //- f) calculate kf
-        kf = kinf * (pred / (1 + pred)) * F;
+        return kinf * (pred / (1 + pred)) * F;
     }
     //- Normal reaction
     else
     {
-        kf = arrhenius(A, beta, Ea, T);
+        return arrhenius(A, beta, Ea, T);
     }
 
-    //- Update
+    //- Return
     //  UNITS:
     //  + uni-moleculare reaction: [1/s]
     //  + bi--moleculare reaction: [cm^3/mol/s]
     //  + tri-moleculare reaction: [cm^6/mol^2/s]
-    chemData.updateKf
-    (
-        r,
-        kf
-    );
 }
 
 
-void AFC::ChemistryCalc::updateKb
+AFC::scalar AFC::ChemistryCalc::calculateKb
 (
-    const int& r,
-    ChemistryData& chemData
+    const scalar& kf,
+    const scalar& Kc
 )
 {
     //- Update kb
-    chemData.updateKb
-    (
-        r,
-        chemData.kf(r) / chemData.Kc(r)
-    );
+    return (kf / Kc);
 }
 
 
-void AFC::ChemistryCalc::updateKc
+AFC::scalar AFC::ChemistryCalc::calculateKc
 (
     const int& r,
     const scalar& T,
     const Thermo& thermo,
-    ChemistryData& chemData
+    const ChemistryData& chemData
 )
 {
     //- Calculate sum of entropy of species in reaction r
@@ -283,7 +261,7 @@ void AFC::ChemistryCalc::updateKc
     const scalar deltaG = deltaH - deltaS * T ;
 
     //- Calculate reaction rate constant Kp
-    const scalar Kp = exp(-1 * deltaG / (AFC::Constants::Rcal * T ));
+    const scalar Kp = exp(-1 * deltaG / (AFC::Constants::R * T ));
 
     //- Calculate exponent
     int exponent{0}; 
@@ -296,32 +274,15 @@ void AFC::ChemistryCalc::updateKc
     //- Get the pressure of the calculation
     const scalar& p = thermo.p();
 
-    //- Calculate the equilibrium constant Kc
-    //  + Pressure in atm (maybe always 1e6?)
-    const scalar Kc = Kp * pow(exp(p*10/AFC::Constants::Rcal/T), exponent);
+    //- Calculate the equilibrium constant Kc and return it
+    //  In the formulation p is normally in [dyn/cm^2] and R in [ergs/K/mol]
+    //  We use [Pa] and [J/K/mol] therefore the have to multiply p * 10 and
+    //  R by 10e7
+    scalar Kc = (Kp * pow((p*10/AFC::Constants::R/1e7/T), exponent));
 
-    //- Update Kc
-    chemData.updateKc(r, Kc);
+    return Kc;
 }
     
-
-AFC::scalar AFC::ChemistryCalc::calcM_Warnatz
-(
-    const map<word, scalar>& C
-)
-{
-    return
-    (
-        C.at("H2")
-      + 6.5*C.at("H2O")
-      + 0.4*C.at("O2")
-      + 0.4*C.at("N2")
-      + 0.75*C.at("CO")
-      + 1.5*C.at("CO2")
-      + 3.0*C.at("CH4")
-    );
-}
-
 
 AFC::scalar AFC::ChemistryCalc::arrhenius
 (
@@ -339,24 +300,35 @@ AFC::scalar AFC::ChemistryCalc::arrhenius
 }
 
 
-void AFC::ChemistryCalc::omega
+void AFC::ChemistryCalc::calculateOmega
 (
-    const map<word, scalar>& speciesMol,
-    ChemistryData& chemData
+    const scalar& T,
+    map<word, scalar>& con,
+    const Thermo& thermo,
+    const ChemistryData& chemData
 )
 {
     //- Species list
     const wordList& species = chemData.species();
 
-    //- Calculate omega for each species
+    //- Calculate Omega using GAUSS-SEIDEL
+    //  Each species has to be calculated
     forAll(species, s)
     {
-        //- Reaction no. where the species[s] is invoken
-        //const scalarField& reacNo = chemData.reacNoForSpecies(s);
-        scalar t =  speciesMol.at("H");
+        //- Get reaction no. where species is included
+        const intList& inReaction = chemData.reacNumbers(species[s]); 
 
-        t = t+1;
+        forAll(inReaction, r)
+        {
+            //- Temporar fields
+            scalar kf{0};
+            scalar kb{0};
+
+            //- Calculate reaction rate kf and kb for reaction i
+            calculatekfkb(r, kf, kb, T, con, thermo, chemData);
+        }
     }
+
 }
 
 
@@ -392,19 +364,24 @@ AFC::scalar AFC::ChemistryCalc::calculateM
         {
             if (EH)
             {
+                //- Species in enhanced found?
+                bool found{false};
+
                 //- Search if Species available
                 forAll(enhancedSpecies, e)
                 {
                     //- If found, then use modified value
                     if (enhancedSpecies[e] == species[s])
                     {
+                        //- Species found, use modified value and skip using value 1
+                        found = true;
                         M += speciesCon.at(species[s]) * data.enhancedFactors(r, species[s]);
                     }
-                    //- otherwise use value 1
-                    else
-                    {
-                        M += speciesCon.at(species[s]);
-                    }
+                }
+
+                if (!found)
+                {
+                    M += speciesCon.at(species[s]);
                 }
             }
             else
@@ -414,8 +391,9 @@ AFC::scalar AFC::ChemistryCalc::calculateM
         }
     }
 
-    //- Return M [mol/m^3]
-    return M;
+    //- Return M [mol/cm^3]
+    //  M is in mol/m^3 therefore divide by 1000000 cm^3/m^3
+    return (M / 1000000);
 }
 
 
