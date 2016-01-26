@@ -57,34 +57,46 @@ void calculate
 //        const map<word, scalar>& speciesMol = dMF.mol();
         {
             //- a) calculate mean molecular weight MW (using mol)
-            dMF.calculateMeanMW("mol");
+            //dMF.calculateMeanMW("mol");
 
             //- b) calculate mean heat capacity cp [J/mol/K]
-            dMF.calculateMeanCp(T);
+            //dMF.calculateMeanCp(T);
 
             //- c) calculate mean enthalpy H [J/mol]
-            dMF.calculateMeanH(T);
+            //dMF.calculateMeanH(T);
 
             //- d) calculate mean entropy S [J/mol/K]
-            dMF.calculateMeanS(T);
+            //dMF.calculateMeanS(T);
 
             //- e) calculate mean free gibbs energy
             {
-                const scalar& H = dMF.H();
+             //   const scalar& H = dMF.H();
 
-                const scalar& S = dMF.S();
+             //   const scalar& S = dMF.S();
 
-                dMF.calculateMeanG(H, S, T);
+             //   dMF.calculateMeanG(H, S, T);
             }
         }
 
+        //- Calculate the source term of species omega
+        {
+            //- Actual concentration of species at point Zi
+            const map<word, scalar>& con1 = dMF.con();
+
+            //- Copy of species concentration
+            map<word, scalar> con = con1;
+
+            Info<< "   Starting calculation of omega\n";
+
+            dMF.calculateOmega(T, con);
+
             //- Update kf and kb using the new T field
-            dMF.updatekfkb(T);
 
             //- Calc for each species the source term omega
             //chem_.omega(speciesMol);
             //
             //I
+        }
     }
 }
 
