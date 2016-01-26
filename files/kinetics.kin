@@ -1,3 +1,21 @@
+! 
+!
+! CRECK Modeling Group (Politecnico di Milano)
+! http://creckmodeling.chem.polimi.it/
+!
+! H2/CO kinetic mechanism 
+! Version 1412, December 2014
+! Detailed mechanism of hydrogen oxidation.
+!
+! Kinetic scheme: 14 species and 33 reactions
+!
+! References
+!
+!E. Ranzi, A. Frassoldati, R. Grana, A. Cuoci, T. Faravelli, A.P. Kelley, C.K. Law, Hierarchical and comparative kinetic modeling of laminar flame speeds of hydrocarbon and oxygenated fuels, 
+!Progress in Energy and Combustion Science, 38 (4), pp. 468-501 (2012), DOI: 10.1016/j.pecs.2012.03.004
+!
+!
+!
 ELEMENTS
 C 
 H 
@@ -8,20 +26,13 @@ AR
 HE
 END
 SPECIES
-H O2 OH H2 H2O HO2 CO2 CO O H2O2 HCO
+HE             AR             N2             O2             H2             
+H2O            H2O2           CO             CO2            
+O              H              OH             HO2            HCO            
 END
 REACTIONS
-H+O2=OH+O                                .9600E+15   -.200  16625.0
-O+H2=OH+H                                .4330E+14    .000  10000.0
-OH+HO2=H2O+O2                            .5000E+14    .000   1000.0
-H+HO2=OH+OH                              .2500E+15    .000   1900.0
-O+HO2=O2+OH                              .3250E+14    .000       .0
-OH+OH=O+H2O                              .3570E+05   2.400  -2110.0
-H+HO2=H2+O2                              .2500E+14    .000    700.0
-HO2+HO2=H2O2+O2                          .2110E+13    .000       .0
-O2+CO=CO2+O                              .2530E+13    .000  47700.0
-O2+HCO=HO2+CO                            .3000E+13    .000       .0
-CO+OH=CO2+H                              .9600E+12    .140   7352.0
-CO+HO2=CO2+OH                            .3000E+14    .000  23000.0
-CO+H2O=CO2+H2                            .2000E+12    .000  38000.0
+OH+OH(+M)=H2O2(+M)                           .7400E+14  -.370       .0
+ LOW/  .2300E+19   -.900  1700.0/
+TROE/     .735        94.00        1756.        5182.    /
+H2/  2.00/H2O/  6.00/CO/  1.50/CO2/  2.00/AR/   .70/HE/   .70/N2/   .90/
 END
