@@ -62,6 +62,8 @@ using word = std::string;
 
 using wordList = std::vector<word>;
 
+using intList = std::vector<int>;
+
 using wordMatrix = std::vector<wordList>;
 
 using wordScalarList = std::vector<std::map<word, scalar> >;

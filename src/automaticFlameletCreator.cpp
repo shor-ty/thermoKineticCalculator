@@ -48,6 +48,7 @@ int main
 {
     Header();
 
+
     string file_AFC;
     string file_Thermo;
     string file_Transport;
@@ -272,7 +273,7 @@ int main
 
                 lookUpTables[0].push_back(vector<MixtureFraction>());
 
-                for(unsigned int i=0; i < Zpoints+1; i++)
+                for(unsigned int i=0; i <= Zpoints; i++)
                 {
                     scalar zPointValue = i*delta;
 
