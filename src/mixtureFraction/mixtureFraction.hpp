@@ -188,10 +188,11 @@ class MixtureFraction
                 const scalar&
             );
 
-            //- Update the reaction rates kf and kb  
-            void updatekfkb
+            //- Update the source term omega
+            void calculateOmega
             (
-                const scalar&
+                const scalar&,
+                map<word, scalar>&
             );
 
             //- Calculate the formation enthalpy [J/mol]
@@ -232,6 +233,9 @@ class MixtureFraction
 
             //- Return species mol fraction (map)
             map<word, scalar> mol() const;
+
+            //- Return species concentration
+            map<word, scalar> con();
 
             //- Return temperature [K]
             scalar T() const;

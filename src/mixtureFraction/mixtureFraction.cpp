@@ -63,6 +63,7 @@ AFC::MixtureFraction::MixtureFraction
     // Initialize with mole fraction
     if (prop.input() == "mol")
     {
+        Info<< "Z: " << Zvalue << "\n";
 
         //- Calculate mole fraction (initial linear distribution)
         {
@@ -77,17 +78,15 @@ AFC::MixtureFraction::MixtureFraction
             //- Set all species to zero
             forAll(species, i)
             {
-                if (oxidizerMolFraction[species[i]] > 1e-10)
+                if
+                (
+                    oxidizerMolFraction[species[i]] > 1e-10
+                 || fuelMolFraction[species[i]] > 1e-10
+                )
                 {
                     speciesMol_[species[i]] =
-                        oxidizerMolFraction[species[i]]
-                      * (-1 * Zvalue + 1);
-                }
-                else if (fuelMolFraction[species[i]] > 1e-10)
-                {
-                    speciesMol_[species[i]] =
-                        fuelMolFraction[species[i]]
-                      * Zvalue;
+                        oxidizerMolFraction[species[i]] * (1 - Zvalue)
+                      + fuelMolFraction[species[i]] * Zvalue;
                 }
                 else
                 {
@@ -330,13 +329,13 @@ void AFC::MixtureFraction::calculateMeanG
 }
 
 
-void AFC::MixtureFraction::updatekfkb
+void AFC::MixtureFraction::calculateOmega
 (
-    const scalar& T    
+    const scalar& T,
+    map<word, scalar>& con
 )
 {
-    //- For the update procedure we need thermo and chemistry stuff
-    chemistry_.updatekfkb(T, speciesCon_, thermo_);
+    chemistry_.calculateOmega(T, con, thermo_);
 }
 
 
@@ -455,9 +454,6 @@ void AFC::MixtureFraction::XtoC()
 {
     const wordList& species = chemistry_.species();
 
-    // update mean molecular weight
-    calculateMeanMW("mol");
-
     scalar XT{0};
 
     forAll(species, s)
@@ -471,18 +467,6 @@ void AFC::MixtureFraction::XtoC()
     {
         speciesCon_[species[s]] 
             = speciesMol_.at(species[s]) * p / (XT * AFC::Constants::R);
-    }
-
-    if (debug)
-    {
-        scalar sum{0};
-
-        forAll(species, s)
-        {
-            sum += speciesCon_.at(species[s]);
-        }
-
-        Info<< "    XtoCon(), sum of concentration = " << sum << endl;
     }
 }
 
@@ -570,6 +554,13 @@ AFC::map<AFC::word, AFC::scalar> AFC::MixtureFraction::mol() const
 {
     return speciesMol_;
 }
+
+
+AFC::map<AFC::word, AFC::scalar> AFC::MixtureFraction::con()
+{
+    return speciesCon_;
+}
+
 
 
 AFC::scalar AFC::MixtureFraction::T() const
