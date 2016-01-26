@@ -1,7 +1,9 @@
 /*---------------------------------------------------------------------------*\
   c-o-o-c-o-o-o             |
   |     |     A utomatic    | Open Source Flamelet
-  c-o-o-c     F lamelet     | |     |     C onstructor  | Copyright (C) 2015 Holzmann-cfd c     c-o-o-o             |
+  c-o-o-c     F lamelet     |
+  |     |     C onstructor  | Copyright (C) 2015 Holzmann-cfd
+  c     c-o-o-o             |
 -------------------------------------------------------------------------------
 License
     This file is part of Automatic Flamelet Constructor.
