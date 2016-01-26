@@ -59,25 +59,15 @@ bool AFC::Chemistry::thermo()
 
 // * * * * * * * * * * * * * Calculation Functions * * * * * * * * * * * * * //
 
-void AFC::Chemistry::updatekfkb
+void AFC::Chemistry::calculateOmega
 (
     const scalar& T,
-    const map<word, scalar>& speciesCon,
+    map<word, scalar>& con,
     const Thermo& thermo
 )
 {
-    //- Calculate reaction rates k
-    chemCalc_.updatekfkb(T, speciesCon, thermo, chemData_);
-}
-
-
-void AFC::Chemistry::omega
-(
-    const map<word, scalar>& speciesMol
-)
-{
     //- Calculate source term omega
-    chemCalc_.omega(speciesMol, chemData_);
+    chemCalc_.calculateOmega(T, con, thermo, chemData_);
 }
 
 
@@ -114,7 +104,7 @@ void AFC::Chemistry::createSpeciesInReaction()
                     found = true;
 
                     //- Insert reaction no to matrix
-                    this->insertReacNoForSpecies(s, r);
+                    chemData_.setReacNumbers(species[s], r);
                 }
             }
 
@@ -122,30 +112,6 @@ void AFC::Chemistry::createSpeciesInReaction()
             found = false;
         }
     }
-
-    if (debug)
-    {
-        forAll(species, s)
-        {
-            const scalarField& no = chemData_.reacNoForSpecies(s);
-
-            for(unsigned int i=0; i<no.size(); i++)
-            {
-                Info<< no[i] << ", ";
-            }
-            Info<< "." << endl;
-        }
-    }
-}
-
-
-void AFC::Chemistry::insertReacNoForSpecies
-(
-    const int& s,
-    const int& i
-)
-{
-    chemData_.setReacNoSpecies(s, i);
 }
 
 

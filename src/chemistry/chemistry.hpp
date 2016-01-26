@@ -88,18 +88,12 @@ class Chemistry
 
         // Calculation Functions
 
-            //- Update the reaction rate kf and kb
-            void updatekfkb
+            //- Calculate the source term of each species (omega)
+            void calculateOmega
             (
                 const scalar&,
-                const map<word, scalar>&,
+                map<word, scalar>&,
                 const Thermo&
-            );
-
-            //- Calculate the source term of each species (omega)
-            void omega
-            (
-                const map<word, scalar>&
             );
 
 
