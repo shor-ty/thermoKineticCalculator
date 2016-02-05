@@ -52,7 +52,7 @@ class ThermoData
 
         // Private data
 
-            //- Pressure for calculation
+            //- Pressure for calculation [Pa]
             scalar p_;
 
             //- List of species (official species name)
@@ -70,7 +70,7 @@ class ThermoData
             // matrix atomFactors_;
             map<word, scalarList> atomFactors_;
 
-            //- Hashtable of molecular weight of species
+            //- Hashtable of molecular weight of species [g/mol]
             map<word, scalar> MW_;
 
             //- Hashtable of phase of species
@@ -133,7 +133,7 @@ class ThermoData
                 const unsigned int&
             );
 
-            //- Insert molecular weight
+            //- Insert molecular weight [g/mol]
             void insertMolecularWeight
             (
                 const scalar&

@@ -88,7 +88,7 @@ class Thermo
             //- Return species as word list
             wordList species() const;
 
-            //- Return moleculare weight of species s
+            //- Return moleculare weight of species s [g/mol]
             scalar MW
             (
                 const word&

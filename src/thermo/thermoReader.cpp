@@ -142,7 +142,7 @@ AFC::scalar AFC::ThermoReader::calcWeight
 (
     const word& atom,
     const scalar& multiplicator,
-    const word& formula
+    const word& species 
 )
 {
     if (!(AFC::Constants::AW.find(atom) != AFC::Constants::AW.end()))
@@ -162,8 +162,8 @@ AFC::scalar AFC::ThermoReader::calcWeight
     {
         FatalError
         (
-            "    Multiplicator is less than 0 of '" + atom + " in formula "
-            + formula + ".",
+            "    Multiplicator is less than 0 of '" + atom + " in species "
+            + species + ".",
             __FILE__,
             __LINE__
         );
@@ -387,6 +387,7 @@ void AFC::ThermoReader::calcMolecularWeight
         tmp += calcWeight(atoms[a], factors[a], species);
     }
 
+    //- Molecular weight [g/mol]
     data.insertMolecularWeight(tmp);
 }
 
