@@ -58,7 +58,7 @@ class MixtureFraction
         // Private Data
 
             //- Mole fractions X of species at discrete point Z
-            map<word, scalar> speciesMol_;
+            //map<word, scalar> speciesMol_;
 
             //- Mass fractions Y of species at discrete point Z
             map<word, scalar> speciesMass_;
@@ -76,13 +76,13 @@ class MixtureFraction
             //- Mean molecular weight at discrete point Z [g/mol]
             scalar MW_{0};
 
-            //- Mean heat capacity at discrete point Z [J/
+            //- Mean molar heat capacity at discrete point Z [J/mol/K]
             scalar cp_{0};
 
-            //- Mean enthalpy H at discrete point Z
+            //- Mean molar enthalpy H at discrete point Z [J/mol]
             scalar H_{0};
 
-            //- Mean entropy S at discrete point Z
+            //- Mean molar entropy S at discrete point Z [J/mol/K]
             scalar S_{0};
 
             //- Mean free Gibbs energy at discrete point Z
@@ -137,9 +137,9 @@ class MixtureFraction
         MixtureFraction
         (
             Chemistry&,
+            Properties&,
             const Thermo&,
             const Transport&,
-            const Properties&,
             const scalar&,
             const scalar&
         );
@@ -151,10 +151,7 @@ class MixtureFraction
         // Member functions
         
             //- Calculate the mean molecular weight
-            void calculateMeanMW
-            (
-                const word& 
-            );
+            void calculateMeanMW();
 
             //- Calculate the mean heat capacity
             void calculateMeanCp
@@ -188,13 +185,6 @@ class MixtureFraction
                 const scalar&
             );
 
-            //- Update the source term omega
-            void calculateOmega
-            (
-                const scalar&,
-                map<word, scalar>&
-            );
-
             //- Calculate the formation enthalpy [J/mol]
             void calculateHf
             (
@@ -202,27 +192,45 @@ class MixtureFraction
                 const scalar&
             ) const;
 
+            //- Calculate the source term omega of species s
+            scalar calculateOmega
+            (
+                const word&,
+                const scalar&,
+                map<word, scalar>&
+            );
+
+            
+        // Update functions
+
+            //- Update the mean density [g/m^3]
+            void updateRho
+            (
+                const wordList& 
+            );
+
+
         // Conversation functions
 
             //- Calculate mol fraction out of mass fraction
-            void YtoX();
+            //void YtoX();
 
             //- Calculate mass fraction out of mol fraction
-            void XtoY();
+            //void XtoY();
 
-            //- Calculate concentration out of mass fraction
+            //- Calculate concentration out of mass fraction [g/mol]
             void YtoC();
 
-            //- Calculate concentration out of mol fraction
-            void XtoC();
+            //- Calculate concentration out of mol fraction [g/mol]
+            //void XtoC();
 
-            //- Calculate mean density out of mol fraction
-            void rhoX();
+            //- Calculate mean density out of mol fraction [g/m^3]
+            //void rhoX();
 
-            //- Calculate mean density out of mass fraction
+            //- Calculate mean density out of mass fraction [g/m^3]
             void rhoY();
 
-            //- Calculate mean density out of concentration fraction
+            //- Calculate mean density out of concentration fraction [g/m^3]
             void rhoC();
         
 
@@ -231,14 +239,32 @@ class MixtureFraction
 
         // Return functions
 
-            //- Return species mol fraction (map)
-            map<word, scalar> mol() const;
+            //- Return Zvalue at discrete point
+            scalar Z() const;
 
-            //- Return species concentration
-            map<word, scalar> con();
+            //- Return mean density [g/m^3]
+            scalar rho() const;
+
+            //- Return species mol fraction [-]
+            //map<word, scalar>& mol();
+
+            //- Return species mol fraction [-]
+            //map<word, scalar> mol() const;
+
+            //- Return species mass fraction [-]
+            map<word, scalar>& mass();
+
+            //- Return species mass fraction [-]
+            map<word, scalar> mass() const;
+            
+            //- Return species concentration [g/mol]
+            map<word, scalar>& con();
+
+            //- Return species names
+            wordList species() const;
 
             //- Return temperature [K]
-            scalar T() const;
+            scalar& T();
 
             //- Return heat capacity [J/mol/K]
             scalar cp() const;
