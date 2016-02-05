@@ -38,64 +38,101 @@ void calculate
     lookUpTable& lut,
     const scalar& sDR,
     const scalar& defect,
-    const unsigned int& nDisPoints
+    const unsigned int& nPoints,
+    const scalar& dt
 )
 {
-    //- TODO
-    //- Calculate reaction rate factors k for each reaction
+    //- Copy of lut
+    const lookUpTable lut_old = lut;
 
-    for (unsigned int point=0; point <= nDisPoints; point++)
+    //- Solve the Flamelet-Equation
+    //  + Point 0 -> Oxidizer boundary
+    //  + Point nPoints -> Fuel boundary
+    for (unsigned int point=1; point <= nPoints-1; point++)
     {
         Info<< "Z = " << point << "\n";
+
         //- Object of discrete mixture fraction
         MixtureFraction& dMF = lut[defect][sDR][point];
 
+        //- Object of old discrete mixture fraction
+        const MixtureFraction& dMF_old = lut_old[defect][sDR][point];
+
+        //- Object of discrete mixture fraction at Z-1 (l: left)
+        const MixtureFraction& dMFl = lut[defect][sDR][point-1];
+
+        //- Object of discrete mixture fraction at Z+1 (r: right)
+        const MixtureFraction& dMFr = lut[defect][sDR][point+1];
+
         //- Temperature at discrete point Z
-        const scalar& T = dMF.T();
+        scalar& T = dMF.T();
 
-        //- Mol fractions at discrete point
-//        const map<word, scalar>& speciesMol = dMF.mol();
+        //- Species mass fraction calculation
         {
-            //- a) calculate mean molecular weight MW (using mol)
-            //dMF.calculateMeanMW("mol");
+            //- Get all species
+            const wordList& species = dMF.species();
 
-            //- b) calculate mean heat capacity cp [J/mol/K]
-            //dMF.calculateMeanCp(T);
+            //- Concentration of species at point Z [g/mol]
+            map<word, scalar>& con = dMF.con();
 
-            //- c) calculate mean enthalpy H [J/mol]
-            //dMF.calculateMeanH(T);
+            //- Mass fraction of species at point Z 
+            map<word, scalar>& mass = dMF.mass();
 
-            //- d) calculate mean entropy S [J/mol/K]
-            //dMF.calculateMeanS(T);
+            //- Mass fraction of species at point Z (old)
+            const map<word, scalar>& massOld = dMF_old.mass();
 
-            //- e) calculate mean free gibbs energy
+            forAll(species, s)
             {
-             //   const scalar& H = dMF.H();
-
-             //   const scalar& S = dMF.S();
-
-             //   dMF.calculateMeanG(H, S, T);
+                Info<< "Concentration of " << species[s] << ": " << con.at(species[s]) << "\n";
             }
-        }
 
-        //- Calculate the source term of species omega
-        {
-            //- Actual concentration of species at point Zi
-            const map<word, scalar>& con1 = dMF.con();
+            //- Mass fraction of species at Point Z-1
+            const map<word, scalar>& massl = dMFl.mass(); 
 
-            //- Copy of species concentration
-            map<word, scalar> con = con1;
+            //- Mass fraction of species at Point Z+1
+            const map<word, scalar>& massr = dMFr.mass();
 
-            Info<< "   Starting calculation of omega\n";
+            //- dx
+            const scalar& dx = dMF.Z() - dMFl.Z(); 
 
-            dMF.calculateOmega(T, con);
+            //- Source term of species s
+            scalar omega{0};
 
-            //- Update kf and kb using the new T field
+            //- a) Calculate the source term of species s
+            forAll(species, s)
+            {
+                Info << "++ Update " << species[s] << "\n";
+                //- Calculate source term [g/m^3/s]
+                omega = dMF.calculateOmega(species[s], T, con);
 
-            //- Calc for each species the source term omega
-            //chem_.omega(speciesMol);
-            //
-            //I
+                //- b) Update density
+                {
+                    dMF.updateRho(species);
+                }
+
+                //- c) Update mass fraction of species s using central difference
+                {
+                    //- Omega in [g/m^3]
+                    Info<< "    " << massl.at(species[s]) << " - " << 2*mass.at(species[s])
+                        << " + " << massr.at(species[s]) << " = ";
+                    //mass[species[s]] =
+                    scalar test =
+                        (
+                            sDR/2
+                            *(
+                                massl.at(species[s])
+                              - 2* mass.at(species[s])
+                              + massr.at(species[s])
+                             )/ pow(dx, 2)
+                             + omega / dMF.rho()
+                        ) * 1e-8 + massOld.at(species[s]);
+                    Info<< test << " | " << massOld.at(species[s]) << endl;
+                    Info<< "Rho: " << dMF.rho() << "\n";
+                    Info<< "omega/rho: " << omega /dMF.rho() << endl;
+                }
+            }
+        
+            std::terminate();
         }
     }
 }
