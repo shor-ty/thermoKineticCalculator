@@ -127,8 +127,7 @@ void AFC::Properties::insertTemperatureFuel
 void AFC::Properties::insertCompositionOxidizerMol
 (
     const word& species,
-    const scalar& molFraction,
-    const bool& lastEntry
+    const scalar& molFraction
 )
 {
     if (debug)
@@ -139,19 +138,13 @@ void AFC::Properties::insertCompositionOxidizerMol
     speciesOxidizer_.push_back(species);
 
     oxidizerX_[species] = molFraction;
-
-    if (lastEntry)
-    {
-        XtoY("O");
-    }
 }
 
 
 void AFC::Properties::insertCompositionOxidizerMass
 (
     const word& species,
-    const scalar& massFraction,
-    const bool& lastEntry
+    const scalar& massFraction
 )
 {
     if (debug)
@@ -162,19 +155,13 @@ void AFC::Properties::insertCompositionOxidizerMass
     speciesOxidizer_.push_back(species);
 
     oxidizerY_[species] = massFraction;
-
-    if (lastEntry)
-    {
-        YtoX("O");
-    }
 }
 
 
 void AFC::Properties::insertCompositionFuelMol
 (
     const word& species,
-    const scalar& molFraction,
-    const bool& lastEntry
+    const scalar& molFraction
 )
 {
     if (debug)
@@ -185,19 +172,13 @@ void AFC::Properties::insertCompositionFuelMol
     speciesFuel_.push_back(species);
 
     fuelX_[species] = molFraction;
-
-    if (lastEntry)
-    {
-        XtoY("F");
-    }
 }
 
 
 void AFC::Properties::insertCompositionFuelMass
 (
     const word& species,
-    const scalar& massFraction,
-    const bool& lastEntry
+    const scalar& massFraction
 )
 {
     if (debug)
@@ -208,11 +189,6 @@ void AFC::Properties::insertCompositionFuelMass
     speciesFuel_.push_back(species);
 
     fuelY_[species] = massFraction;
-
-    if (lastEntry)
-    {
-        YtoX("F");
-    }
 }
 
 
@@ -507,10 +483,7 @@ void AFC::Properties::check()
 }
 
 
-void AFC::Properties::XtoY
-(
-    const word tmp
-)
+void AFC::Properties::XtoY()
 {
     scalar YbyM{0};
 
@@ -524,7 +497,7 @@ void AFC::Properties::XtoY
           * oxidizerX_[speciesChem[speciesI]];
     } 
 
-    if (tmp == "O")
+    //- Oxidizer
     {    
         forAll(speciesOxidizer_, speciesI)
         {
@@ -535,7 +508,7 @@ void AFC::Properties::XtoY
         }
     }
 
-    if (tmp == "F")
+    //- Fuel
     {
         forAll(speciesFuel_, speciesI)
         {
@@ -548,7 +521,7 @@ void AFC::Properties::XtoY
 }
 
 
-void AFC::Properties::YtoX
+/*void AFC::Properties::YtoX
 (
     const word tmp
 )
@@ -584,7 +557,7 @@ void AFC::Properties::YtoX
               / YbyM;
         }
     }
-}
+}*/
 
 
 // * * * * * * * * * * * * * * * Return Functions  * * * * * * * * * * * * * //

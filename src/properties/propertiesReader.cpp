@@ -366,27 +366,11 @@ void AFC::PropertiesReader::molFractionOxidizer
                             );
                         }
 
-                        if
+                        data.insertCompositionOxidizerMol
                         (
-                            line < dictEnd-1
-                         && element == tmp.size()
-                        )
-                        {
-                            data.insertCompositionOxidizerMol
-                            (
-                                tmp[element],
-                                stod(tmp[element+1]),
-                                true
-                            );
-                        }
-                        else
-                        {
-                            data.insertCompositionOxidizerMol
-                            (
-                                tmp[element],
-                                stod(tmp[element+1])
-                            );
-                        }
+                            tmp[element],
+                            stod(tmp[element+1])
+                        );
                     }
                 }
             }
@@ -403,23 +387,11 @@ void AFC::PropertiesReader::molFractionOxidizer
                     );
                 }
 
-                if (line == dictEnd-1)
-                {
-                    data.insertCompositionOxidizerMol
-                    (
-                        tmp[0],
-                        stod(tmp[1]),
-                        true
-                    );
-                }
-                else
-                {
-                    data.insertCompositionOxidizerMol
-                    (
-                        tmp[0],
-                        stod(tmp[1])
-                    );
-                }
+                data.insertCompositionOxidizerMol
+                (
+                    tmp[0],
+                    stod(tmp[1])
+                );
             }
         }
     }
@@ -472,27 +444,11 @@ void AFC::PropertiesReader::massFractionOxidizer
                             );
                         }
 
-                        if
+                        data.insertCompositionOxidizerMass
                         (
-                            line < dictEnd-1
-                         && element == tmp.size()
-                        )
-                        {
-                            data.insertCompositionOxidizerMass
-                            (
-                                tmp[element],
-                                stod(tmp[element+1]),
-                                true
-                            );
-                        }
-                        else
-                        {
-                            data.insertCompositionOxidizerMass
-                            (
-                                tmp[element],
-                                stod(tmp[element+1])
-                            );
-                        }
+                            tmp[element],
+                            stod(tmp[element+1])
+                        );
                     }
                 }
             }
@@ -509,23 +465,11 @@ void AFC::PropertiesReader::massFractionOxidizer
                     );
                 }
 
-                if (line == dictEnd-1)
-                {
-                    data.insertCompositionOxidizerMass
-                    (
-                        tmp[0],
-                        stod(tmp[1]),
-                        true
-                    );
-                }
-                else
-                {
-                    data.insertCompositionOxidizerMass
-                    (
-                        tmp[0],
-                        stod(tmp[1])
-                    );
-                }
+                data.insertCompositionOxidizerMass
+                (
+                    tmp[0],
+                    stod(tmp[1])
+                );
             }
         }
     }
