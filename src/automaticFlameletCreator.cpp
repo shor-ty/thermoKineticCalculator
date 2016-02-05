@@ -110,6 +110,8 @@ int main
         }
     }
 
+    Info<< "Create Objects\n" << endl;
+
     Chemistry chemistry(file_Chemistry);
 
     Thermo thermo(file_Thermo, chemistry.thermo());
@@ -282,9 +284,9 @@ int main
                         MixtureFraction
                         (
                             chemistry,
+                            properties,
                             thermo,
                             transport,
-                            properties,
                             zPointValue,
                             scalar(0)
                         )
@@ -323,9 +325,9 @@ int main
                         MixtureFraction
                         (
                             chemistry,
+                            properties,
                             thermo,
                             transport,
-                            properties,
                             zPointValue,
                             defects[defect]
                         )
@@ -383,7 +385,8 @@ int main
                         lookUpTables,
                         rate,
                         defectNo,
-                        Zpoints
+                        Zpoints,
+                        properties.deltaT()
                     );
                 }
             }
