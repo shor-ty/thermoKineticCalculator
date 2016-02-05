@@ -34,7 +34,9 @@ AFC::ChemistryReader::ChemistryReader
 :
     file_(file)
 
-{}
+{
+    Info<< "Constructor ChemistryReader\n" << endl;
+}
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
@@ -775,10 +777,12 @@ void AFC::ChemistryReader::analyzeReacSite
             if (site == "p")
             {
                 nu = stod(stochiometricFactor);
+                data.insertProd(species, nu); 
             }
             else if (site == "r")
             {
                 nu = stod(stochiometricFactor) * -1;
+                data.insertEduc(species, nu * -1);
             }
             else
             {

@@ -74,11 +74,20 @@ class ChemistryData
             //- Reaction rate constant Kc for each reaction
             scalarList Kc_;
 
+            //- Thirdbody [M] concentration [g/cm^3]
+            scalar M_;
+
             //- stringList for elementar reaction
             stringList elementarReaction_;
 
             //- Matrix that contains all species in the reaction
             wordMatrix speciesInReactions_;
+
+            //- Species of product side of reaction r
+            wordMatrix speciesInReactionProd_;
+
+            //- Species of educt side of reaction r
+            wordMatrix speciesInReactionEduc_;
 
             //- Contains all reaction no. where species is included
             map<word, intList> reacNumbers_;
@@ -108,6 +117,12 @@ class ChemistryData
 
             //- Matrix of stochiometric coeffs
             matrix nu_;
+
+        //- Stochiometric coeffs of species of products
+        vector<map<word, scalar> > nuProd_;
+        
+        //- Stochiometric coeffs of species of educts
+        vector<map<word, scalar> > nuEduc_;
 
             //- Composition of enhanced factors (species + value)
             mapList<word, scalar> enhancedFactors_;
@@ -218,6 +233,20 @@ class ChemistryData
                 const scalar&
             );
 
+            //- Insert stochiometric coeffs for products and species
+            void insertProd
+            (
+                const word&,
+                const scalar&
+            );
+
+            //- Insert stochiometric coeffs for educts and species
+            void insertEduc
+            (
+                const word&,
+                const scalar&
+            );
+
             //- Insert species (reac|prod) 
             void insertReacProd
             (
@@ -229,6 +258,12 @@ class ChemistryData
 
 
         // Setter functions, from ChemistryReader:: delegated
+
+            //- Set [M]
+            void setM
+            (
+                const scalar& 
+            );
 
             //- Set the backward reaction boolean
             void setBR();
@@ -333,6 +368,8 @@ class ChemistryData
                     const int&
                 ) const;
 
+            //- Return M_ [g/cm^3]
+            scalar M() const;
 
             //- Return all species as wordList
             wordList species() const;
@@ -362,6 +399,18 @@ class ChemistryData
             wordList speciesInReaction
             (
                 const int& 
+            ) const;
+
+            //- Return species list that act as product in reaction r
+            wordList prodSpecies
+            (
+                const int&
+            ) const;
+            
+            //- Return species list that act as educt in reaction r
+            wordList educSpecies
+            (
+                const int&
             ) const;
 
             //- Return arrhenius coeffs for reaction no.
@@ -445,6 +494,18 @@ class ChemistryData
 
             //- Return stochiometric factors of reaction r
             scalarList nu
+            (
+                const int&
+            ) const;
+
+            //- Return stochiometric factors of products of reaction r
+            map<word, scalar> nuProd
+            (
+                const int&
+            ) const;
+
+            //- Return stochiometric factors of products of reaction r
+            map<word, scalar> nuEduc
             (
                 const int&
             ) const;

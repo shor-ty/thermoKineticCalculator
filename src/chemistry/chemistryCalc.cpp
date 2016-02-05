@@ -31,13 +31,16 @@ License
 
 AFC::ChemistryCalc::ChemistryCalc()
 {
+    Info<< "Constructor ChemistryCalc\n" << endl;
 }
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
 AFC::ChemistryCalc::~ChemistryCalc()
-{}
+{
+    Info<< "Destructor ChemistryCalc\n" << endl;
+}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
@@ -53,7 +56,7 @@ void AFC::ChemistryCalc::calculatekfkb
     const scalar& T,
     const map<word, scalar>& speciesCon,
     const Thermo& thermo,
-    const ChemistryData& chemData
+    ChemistryData& chemData
 )
 {
     //- a) Check if third body reaction and if yes, which one
@@ -63,13 +66,16 @@ void AFC::ChemistryCalc::calculatekfkb
 
     const bool TBR = thirdBodyReaction(r, enhanced, chemData);
 
-    scalar M = 0;
+    scalar M{0};
 
-    //- Calculate [M] if needed
+    //- Calculate [M] if needed and store
     if (TBR)
     {
         M = calculateM(r, speciesCon, chemData);
     }
+
+    //- Set third body reaction concentration [M] [g/cm^3]
+    chemData.setM(M);
 
     //- Take backward reaction into account?
     const bool& BW = chemData.BR(r);
@@ -294,41 +300,105 @@ AFC::scalar AFC::ChemistryCalc::arrhenius
 {
     return
     (
-        A * pow(T, beta) *
-        exp( Ea / (AFC::Constants::Rcal * T) ) 
+        A * pow(T, beta) * exp(-1*Ea / (AFC::Constants::Rcal * T))
     );
 }
 
 
-void AFC::ChemistryCalc::calculateOmega
+AFC::scalar AFC::ChemistryCalc::calculateOmega
 (
+    const word& species,
     const scalar& T,
     map<word, scalar>& con,
     const Thermo& thermo,
-    const ChemistryData& chemData
+    ChemistryData& chemData
 )
 {
-    //- Species list
-    const wordList& species = chemData.species();
+    //- Source term of species
+    scalar omega{0};
 
-    //- Calculate Omega using GAUSS-SEIDEL
-    //  Each species has to be calculated
-    forAll(species, s)
+    //- Get reaction no. where species is included
+    const intList& inReaction = chemData.reacNumbers(species); 
+
+    forAll(inReaction, i)
     {
-        //- Get reaction no. where species is included
-        const intList& inReaction = chemData.reacNumbers(species[s]); 
 
-        forAll(inReaction, r)
+        //- Elementarreaction no.
+        const unsigned int& r = inReaction[i];
+
+        if (species == "H2")
         {
-            //- Temporar fields
-            scalar kf{0};
-            scalar kb{0};
+            Info<< "  " << species << "\n";
 
-            //- Calculate reaction rate kf and kb for reaction i
-            calculatekfkb(r, kf, kb, T, con, thermo, chemData);
+            Info<< "  " << chemData.elementarReaction(r) << endl;
         }
-    }
 
+        //- Temporar fields
+        scalar kf{0};
+        scalar kb{0};
+
+        //- Calculate reaction rate kf and kb for reaction r
+        calculatekfkb(r, kf, kb, T, con, thermo, chemData);
+
+        //- Get all species that are used in reaction r
+        const wordList& speciesInReaction = chemData.speciesInReaction(r);
+
+
+        //- Get all species that are acting as products in reaction r
+        const wordList& prodSpecies = chemData.prodSpecies(r);
+
+        //- Get all species that act as educts in reaction r
+        const wordList& educSpecies = chemData.educSpecies(r);
+
+        //- Scalar list of stochiometric factors of reaction r
+        const scalarList& nu = chemData.nu(r);
+
+        //- Stochiometric factors of products
+        map<word, scalar> nuProd = chemData.nuProd(r);
+
+        //- Stochiometric factors of educts
+        map<word, scalar> nuEduc = chemData.nuEduc(r);
+
+        //- TMP fields
+        scalar prod{1};
+        scalar educ{1};
+
+        //- Product side, con is in [mol/m^3]
+        //  Convert to mol/cm^3 (100cm * 100cm * 100cm / m^3)
+        forAll(prodSpecies, s)
+        {
+            prod *= pow(con.at(prodSpecies[s])/1e6, nuProd.at(prodSpecies[s]));
+        }
+
+        //- Educt side, con is in [mol/m^3]
+        //  Convert to mol/cm^3 (100cm * 100cm * 100cm / m^3)
+        forAll(educSpecies, s)
+        {
+            educ *= pow(con.at(educSpecies[s])/1e6, nuEduc.at(educSpecies[s]));
+        }
+
+        const scalar nuSpecies = nuProd[species] - nuEduc[species];
+
+        //- kf is in cm^3, prod and educ in mol/m^3
+        
+        omega += chemData.M() * nuSpecies * (kf * prod + kb * educ);
+
+        if (species == "H2")
+        {
+            Info<< "   kf = " << kf << "    kb: " << kb << endl;
+            Info<< "   nu   = " << nuSpecies << "\n";
+            Info<< "   prod = " << prod << "\n";
+            Info<< "   educ = " << educ << "\n";
+            Info<< "   M    = " << chemData.M() << "\n";
+            Info<< "omega: " << chemData.M() * nuSpecies * (kf*prod + kb*educ) << "\n" ;
+            Info<< "omega: " << omega << endl;
+        }
+    } 
+
+    Info<< "Final omega: " << omega << endl;
+
+    //- Omega in mol/cm^3 convert to mol/m^3
+    return omega * 1e6;
 }
 
 
@@ -336,7 +406,7 @@ AFC::scalar AFC::ChemistryCalc::calculateM
 (
     const int& r,
     const map<word, scalar>& speciesCon,
-    const ChemistryData& data 
+    ChemistryData& data 
 )
 {
     //- Tmp M
@@ -375,25 +445,29 @@ AFC::scalar AFC::ChemistryCalc::calculateM
                     {
                         //- Species found, use modified value and skip using value 1
                         found = true;
-                        M += speciesCon.at(species[s]) * data.enhancedFactors(r, species[s]);
+
+                        //- Concentration in g/m^3 transform to g/cm^3
+                        M += speciesCon.at(species[s])/1e6
+                            * data.enhancedFactors(r, species[s]);
                     }
                 }
 
                 if (!found)
                 {
-                    M += speciesCon.at(species[s]);
+                    //- Concentration in g/m^3 transform to g/cm^3
+                    M += speciesCon.at(species[s])/1e6;
                 }
             }
             else
             {
-                M += speciesCon.at(species[s]);
+                //- Concentration in g/m^3 transform to g/cm^3
+                M += speciesCon.at(species[s])/1e6;
             }
         }
     }
 
     //- Return M [mol/cm^3]
-    //  M is in mol/m^3 therefore divide by 1000000 cm^3/m^3
-    return (M / 1000000);
+    return M;
 }
 
 

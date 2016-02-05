@@ -32,7 +32,9 @@ AFC::ChemistryData::ChemistryData()
     nReac_{-1},
 
     thermo_{false}
-{}
+{
+    Info<< "Constructor ChemistryData\n";
+}
 
 
 // * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * * //
@@ -165,6 +167,28 @@ void AFC::ChemistryData::insertNu
 }
 
 
+void AFC::ChemistryData::insertProd
+(
+    const word& species,
+    const scalar& nu
+)
+{
+    nuProd_[nReac_][species] = nu;
+    speciesInReactionProd_[nReac_].push_back(species);
+}
+
+
+void AFC::ChemistryData::insertEduc
+(
+    const word& species,
+    const scalar& nu
+)
+{
+    nuEduc_[nReac_][species] = nu;
+    speciesInReactionEduc_[nReac_].push_back(species);
+}
+
+
 void AFC::ChemistryData::insertReacProd
 (
     const word& species
@@ -181,6 +205,9 @@ void AFC::ChemistryData::incrementMatrixesVectors()
 
     //- matrixWordList for species in reaction
     speciesInReactions_.push_back(wordList(0));
+
+    speciesInReactionProd_.push_back(wordList(0));
+    speciesInReactionEduc_.push_back(wordList(0));
 
     //- boolList for THIRD BODY REACTION
     TBR_.push_back(false);
@@ -202,6 +229,12 @@ void AFC::ChemistryData::incrementMatrixesVectors()
 
     //- Matrix for stochiometric coeffs
     nu_.push_back(scalarField(0));
+
+    //- Stochiometric coeffs prod
+    nuProd_.push_back(map<word, scalar>());
+
+    //- Stochiometric coeffs educ
+    nuEduc_.push_back(map<word, scalar>());
 
     //- MapList of enhanced factors (species + value)
     enhancedFactors_.push_back(map<word,scalar>());
@@ -241,6 +274,15 @@ void AFC::ChemistryData::incrementMatrixesVectors()
 
 
 // * * * * * * * * * * * * * Setter bool functions * * * * * * * * * * * * * //
+
+void AFC::ChemistryData::setM
+(
+    const scalar& M
+)
+{
+    M_ = M;
+}
+
 
 void AFC::ChemistryData::setBR()
 {
@@ -395,6 +437,12 @@ bool AFC::ChemistryData::ENHANCED
 }
 
 
+AFC::scalar AFC::ChemistryData::M() const
+{
+    return M_;
+}
+
+
 AFC::wordList AFC::ChemistryData::species() const
 {
     return species_;
@@ -443,6 +491,24 @@ AFC::wordList AFC::ChemistryData::speciesInReaction
 ) const
 {
     return speciesInReactions_[r];
+}
+
+
+AFC::wordList AFC::ChemistryData::prodSpecies
+(
+    const int& r 
+) const
+{
+    return speciesInReactionProd_[r];
+}
+
+
+AFC::wordList AFC::ChemistryData::educSpecies
+(
+    const int& r 
+) const
+{
+    return speciesInReactionEduc_[r];
 }
 
 
@@ -594,5 +660,22 @@ AFC::scalarList AFC::ChemistryData::nu
     return nu_[r];
 }
 
+
+AFC::map<AFC::word, AFC::scalar> AFC::ChemistryData::nuProd
+(
+    const int& r
+) const
+{
+    return nuProd_[r];
+}
+
+
+AFC::map<AFC::word, AFC::scalar> AFC::ChemistryData::nuEduc
+(
+    const int& r
+) const
+{
+    return nuEduc_[r];
+}
 
 // ************************************************************************* //

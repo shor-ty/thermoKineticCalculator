@@ -34,6 +34,8 @@ AFC::Chemistry::Chemistry
     const string& fileName 
 )
 {
+    Info<< "Constructor Chemistry\n" << endl;
+
     ChemistryReader chemReader(fileName);
     
     chemReader.read(chemData_);
@@ -46,7 +48,9 @@ AFC::Chemistry::Chemistry
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
 AFC::Chemistry::~Chemistry()
-{}
+{
+    Info<< "Destructor Chemistry\n" << endl;
+}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
@@ -59,15 +63,16 @@ bool AFC::Chemistry::thermo()
 
 // * * * * * * * * * * * * * Calculation Functions * * * * * * * * * * * * * //
 
-void AFC::Chemistry::calculateOmega
+AFC::scalar AFC::Chemistry::calculateOmega
 (
+    const word& species,
     const scalar& T,
     map<word, scalar>& con,
     const Thermo& thermo
 )
 {
     //- Calculate source term omega
-    chemCalc_.calculateOmega(T, con, thermo, chemData_);
+    return chemCalc_.calculateOmega(species, T, con, thermo, chemData_);
 }
 
 
