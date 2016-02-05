@@ -69,7 +69,7 @@ constexpr scalar jouleToCal = 1/calToJoule;
 //- Universal gas constant [J/K/mol]
 constexpr scalar R = 8.314459848;
 
-//- Converstion from cal to joule [J/cal]
+//- Universal gas constant [cal/K/mol]
 constexpr scalar Rcal = R * jouleToCal;
 
 

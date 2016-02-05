@@ -31,13 +31,17 @@ License
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 AFC::StringManipulator::StringManipulator()
-{}
+{
+    Info<< "Constructor StringManipulator\n" << endl;
+}
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
 AFC::StringManipulator::~StringManipulator()
-{}
+{
+    Info<< "Destructor StringManipulator\n" << endl;
+}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
@@ -122,7 +126,6 @@ const AFC::string AFC::StringManipulator::removeAtEnd
     const string& str2
 )
 {
-    Info<< str << endl;
     //- Find position of str2
     std::size_t pos = str.find(str2);
 

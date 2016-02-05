@@ -16,7 +16,7 @@
     molFractionOxidizer
 !    massFractionOxidizer
     {
-        N2 1
+        H2 1
     }
 
     temperatureFuel 298
@@ -24,7 +24,7 @@
     molFractionFuel
  !   massFractionFuel
     {
-        N2 1
+        H2 1
     }   
 
     enthalpyDefects
