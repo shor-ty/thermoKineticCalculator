@@ -105,6 +105,13 @@ AFC::MixtureFraction::MixtureFraction
         //- Calculate mean density rho [g/m^3]
         rhoC();
 
+        //- Calculate mol fraction X
+        YtoX();
+
+        //- Calculate mean heat capacity
+        updateCp();
+
+
         //- Calculate mean molecular weight [g/mol]
     }
 }
@@ -247,43 +254,53 @@ AFC::scalar AFC::MixtureFraction::calculateOmega
 
 // * * * * * * * * * * * * * * * Update Functions  * * * * * * * * * * * * * //
 
-void AFC::MixtureFraction::updateRho
-(
-    const wordList& species 
-)
+void AFC::MixtureFraction::updateRho()
 {
     //- Calculate rho using concentration [X]
     rhoC();
 }
 
 
+void AFC::MixtureFraction::updateCp()
+{
+    //- Species
+    const wordList species = chemistry_.species();
+
+    //- Reset cp
+    Cp_ = 0;
+
+    forAll(species, s)
+    {
+        Cp_ += calculateCp(species[s], temperature_)
+            * speciesMol_.at(species[s]); 
+    }
+}
+
+void AFC::MixtureFraction::updateC()
+{
+    YtoC();
+}
+
+
 // * * * * * * * * * * * * Conversation Functions  * * * * * * * * * * * * * //
 
-/*void AFC::MixtureFraction::YtoX()
+void AFC::MixtureFraction::YtoX()
 {
     const wordList& species = chemistry_.species();
 
-    //- update mean molecular weight
-    calculateMeanMW("mass");
+    scalar YbyMW{0};
+
+    forAll(species, s)
+    {
+        YbyMW += speciesMass_.at(species[s]) / thermo_.MW(species[s]);
+    }
 
     forAll(species, s)
     {
         speciesMol_[species[s]]
-            = speciesMass_.at(species[s]) * MW_ / thermo_.MW(species[s]);
+            = speciesMass_.at(species[s]) / (thermo_.MW(species[s]) * YbyMW);
     }
-
-    if (debug)
-    {
-        scalar sum{0};
-
-        forAll(species, s)
-        {
-            sum += speciesMol_.at(species[s]);
-        }
-
-        Info<< "    YtoX(), sum of mol = " << sum << endl;
-    }
-}*/
+}
 
 
 /*void AFC::MixtureFraction::XtoY()
@@ -326,9 +343,7 @@ void AFC::MixtureFraction::YtoC()
 {
     const wordList& species = chemistry_.species();
 
-    // update mean molecular weight
-    calculateMeanMW();
-
+    //- Y*T*MW [K*g/mol]
     scalar YTMW{0};
 
     forAll(species, s)
@@ -336,25 +351,16 @@ void AFC::MixtureFraction::YtoC()
         YTMW += speciesMass_.at(species[s]) * T() / thermo_.MW(species[s]);
     }
 
+    //- Pressure [Pa]
     const scalar& p = properties_.p();
 
+    //- Unit of concentration [mol/m^3]
+    //  Change unit to [mol/cm^3] factor 100cm * 100cm * 100cm / m^3
     forAll(species, s)
     {
         speciesCon_[species[s]]
-            = (p * speciesMass_.at(species[s]) / thermo_.MW(species[s]))
-            / (AFC::Constants::R * YTMW);
-    }
-
-    if (debug)
-    {
-        scalar sum{0};
-
-        forAll(species, s)
-        {
-            sum += speciesCon_.at(species[s]);
-        }
-
-        Info<< "    YtoCon(), sum of concentration = " << sum << endl;
+            = ((p * speciesMass_.at(species[s]) / thermo_.MW(species[s]))
+            / (AFC::Constants::R * YTMW)) / 1e6;
     }
 }
 
@@ -428,12 +434,7 @@ void AFC::MixtureFraction::rhoY()
     forAll(species, s)
     {
         rho_ += (p * speciesMass_.at(species[s])) 
-             / (AFC::Constants::R * YTByMW); 
-    }
-
-    if (debug)
-    {
-        Info<< "    Mean density (rhoY): " << rho_ << endl;
+             / (AFC::Constants::R * YTByMW) / 1e6; 
     }
 }
 
@@ -448,11 +449,6 @@ void AFC::MixtureFraction::rhoC()
     forAll(species, s)
     {
         rho_ += speciesCon_.at(species[s]) * thermo_.MW(species[s]);
-    }
-
-    if (debug)
-    {
-        Info<< "    Mean density (rhoC): " << rho_ << endl;
     }
 }
 
@@ -501,8 +497,13 @@ AFC::map<AFC::word, AFC::scalar>& AFC::MixtureFraction::con()
 }
 
 
-
 AFC::scalar& AFC::MixtureFraction::T()
+{
+    return temperature_;
+}
+
+
+AFC::scalar AFC::MixtureFraction::T() const
 {
     return temperature_;
 }
@@ -511,6 +512,12 @@ AFC::scalar& AFC::MixtureFraction::T()
 AFC::scalar AFC::MixtureFraction::cp() const
 {
     return cp_;
+}
+
+
+AFC::scalar AFC::MixtureFraction::Cp() const
+{
+    return Cp_;
 }
 
 

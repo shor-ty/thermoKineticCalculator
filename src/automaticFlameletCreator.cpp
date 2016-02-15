@@ -383,7 +383,7 @@ int main
                     calculate
                     (
                         lookUpTables,
-                        rate,
+                        sDRs[rate],
                         defectNo,
                         Zpoints,
                         properties.deltaT()

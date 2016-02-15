@@ -524,7 +524,29 @@ void AFC::ChemistryReader::analyzeReaction
     //  + reactants positiv
 
     // a) split into reactants and products
-    stringList tmp3 = splitStrAtDelimiter(tmp2, '=');
+    stringList tmp3;
+
+    //- First exception: <=> 
+    std::size_t founda = tmp2.find("<=>");
+    std::size_t foundb = tmp2.find("=>");
+    std::size_t foundc = tmp2.find("<=");
+
+    if (founda != std::string::npos)
+    {
+        tmp3 = splitStrAtDelimiter(tmp2, "<=>");
+    }
+    else if (foundb != std::string::npos)
+    {
+        tmp3 = splitStrAtDelimiter(tmp2, "=>");
+    }
+    else if (foundc != std::string::npos)
+    {
+        tmp3 = splitStrAtDelimiter(tmp2, "<=");
+    }
+    else
+    {
+        tmp3 = splitStrAtDelimiter(tmp2, '=');
+    }
 
     const string reac = tmp3[0];
     const string prod = tmp3[1];

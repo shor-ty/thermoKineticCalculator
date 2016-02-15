@@ -60,6 +60,8 @@ const map<word, scalar> AW
     { "HE", 4.00260 }
 };
 
+// WO IST DIE MAUS! MAUNZ!
+
 //- Converstion from cal to joule [J/cal]
 constexpr scalar calToJoule = 4.1858;
 

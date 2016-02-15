@@ -60,37 +60,37 @@ class Properties
             //- Varianz of mixture fraction discrete points
             int vmfPoints_{0};
 
-            //- Enthalpy defects
+            //- Enthalpy defects [J/kg]
             scalarField defects_;
 
-            //- ScalarDissipation rate
+            //- ScalarDissipation rate [1/s]
             scalarField sDRs_;
 
             //- Oxidizer species
             wordList speciesOxidizer_;
 
-            //- Composition of oxidizer mol fraction X
+            //- Composition of oxidizer mol fraction X [-]
             map<word, scalar> oxidizerX_;
 
-            //- Composition of oxidizer mass fraction Y
+            //- Composition of oxidizer mass fraction Y [-]
             map<word, scalar> oxidizerY_;
 
             //- Fuel species
             wordList speciesFuel_;
 
-            //- Composition of fuel mol fraction X
+            //- Composition of fuel mol fraction X [-]
             map<word, scalar> fuelX_;
 
-            //- Composition of fuel mass fraction Y
+            //- Composition of fuel mass fraction Y [-]
             map<word, scalar> fuelY_;
 
-            //- Temperature of oxidizer stream
+            //- Temperature of oxidizer stream [K]
             scalar TOxidizer_{0};
 
-            //- Temperature of fuel stream
+            //- Temperature of fuel stream [K]
             scalar TFuel_{0};
 
-            //- Pressure at which the calculation take place
+            //- Pressure at which the calculation take place [Pa]
             scalar p_{0};
 
 
@@ -288,10 +288,10 @@ class Properties
             //- Return fuel mass fraction
             map<word, scalar> fuelCompMass() const;
 
-            //- Return scalar dissipation rates
+            //- Return scalar dissipation rates [1/s]
             scalarField sDRs() const;
 
-            //- Return enthalpy defects
+            //- Return enthalpy defects [J/kg]
             scalarField defects() const;
 
             //- Return mixture fraction points
@@ -300,13 +300,13 @@ class Properties
             //- Return varianz of mixture fraction points
             int vmfPoints() const;
 
-            //- Return oxidizer temperature
+            //- Return oxidizer temperature [K]
             scalar oxidizerTemperature() const;
 
-            //- Return fuel temperature
+            //- Return fuel temperature [K]
             scalar fuelTemperature() const;
 
-            //- Return runTime
+            //- Return runTime [s]
             scalar runTime() const;
 
             //- Return deltaT
@@ -315,13 +315,13 @@ class Properties
             //- Return number of defects
             unsigned int nDefects() const;
 
-            //- Return defect value
+            //- Return defect value [J/kg]
             scalar defect
             (
                 const int&
             ) const;
 
-            //- Return pressure
+            //- Return pressure [Pa]
             scalar p() const;
 
             //- Return word of input (mol or mass)

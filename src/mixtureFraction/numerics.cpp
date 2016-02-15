@@ -50,7 +50,7 @@ void calculate
     //  + Point nPoints -> Fuel boundary
     for (unsigned int point=1; point <= nPoints-1; point++)
     {
-        Info<< "Z = " << point << "\n";
+        //Info<< " Z = " << point << "\n";
 
         //- Object of discrete mixture fraction
         MixtureFraction& dMF = lut[defect][sDR][point];
@@ -81,42 +81,41 @@ void calculate
             //- Mass fraction of species at point Z (old)
             const map<word, scalar>& massOld = dMF_old.mass();
 
-            forAll(species, s)
-            {
-                Info<< "Concentration of " << species[s] << ": " << con.at(species[s]) << "\n";
-            }
-
             //- Mass fraction of species at Point Z-1
             const map<word, scalar>& massl = dMFl.mass(); 
+            const scalar& Tl = dMFl.T();
+            const scalar& cpl = dMFl.cp();
 
             //- Mass fraction of species at Point Z+1
             const map<word, scalar>& massr = dMFr.mass();
+            const scalar& Tr = dMFr.T();
+            const scalar& cpr = dMFr.cp();
 
             //- dx
             const scalar& dx = dMF.Z() - dMFl.Z(); 
 
             //- Source term of species s
-            scalar omega{0};
+            map<word, scalar> omega;
 
             //- a) Calculate the source term of species s
             forAll(species, s)
             {
-                Info << "++ Update " << species[s] << "\n";
+                Info << "  ++ Update " << species[s] << " --> " << con.at(species[s]) << "\n";
+
                 //- Calculate source term [g/m^3/s]
-                omega = dMF.calculateOmega(species[s], T, con);
+                omega[species[s]] = dMF.calculateOmega(species[s], T, con);
+
 
                 //- b) Update density
                 {
-                    dMF.updateRho(species);
+                    dMF.updateC();
+                    dMF.updateRho();
                 }
 
                 //- c) Update mass fraction of species s using central difference
                 {
                     //- Omega in [g/m^3]
-                    Info<< "    " << massl.at(species[s]) << " - " << 2*mass.at(species[s])
-                        << " + " << massr.at(species[s]) << " = ";
-                    //mass[species[s]] =
-                    scalar test =
+                    mass[species[s]] =
                         (
                             sDR/2
                             *(
@@ -124,15 +123,42 @@ void calculate
                               - 2* mass.at(species[s])
                               + massr.at(species[s])
                              )/ pow(dx, 2)
-                             + omega / dMF.rho()
-                        ) * 1e-8 + massOld.at(species[s]);
-                    Info<< test << " | " << massOld.at(species[s]) << endl;
-                    Info<< "Rho: " << dMF.rho() << "\n";
-                    Info<< "omega/rho: " << omega /dMF.rho() << endl;
+                             + omega.at(species[s]) / dMF.rho()
+                        ) * dt + massOld.at(species[s]);
                 }
             }
+//                std::terminate();
+            
+            //- d) Update concentration field
+            dMF.updateC();
+
+            //- e) Update density
+            dMF.updateRho();
+
+            //- f) Update heat capacity
+            dMF.updateCp();
+
+            //- g) Calculate source term for temperature
+            scalar source{0};
+
+            forAll(species, s)
+            {
+                source += dMF.calculateH(species[s], T) * omega.at(species[s]);
+            }
         
-            std::terminate();
+            Info<< "SDR:: " << sDR << endl;
+            Info<< "cp:: " << dMF.cp() << endl;
+            Info<< "cpl:: " << cpl << endl;
+            Info<< "cpr:: " << cpr << endl;
+            //- h) Updating Temperature using central difference
+            scalar tT = sDR/2 * ( Tl - 2 * T + Tr) / pow(dx, 2) - source
+                + sDR / ( 2 * dMF.cp() ) * (( cpr - cpl ) / (2*dx)) ; 
+            
+            Info<< "Temperature = " << tT << endl;
+            
+
+
+//            std::terminate();
         }
     }
 }

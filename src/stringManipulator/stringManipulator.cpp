@@ -103,7 +103,7 @@ const AFC::stringList AFC::StringManipulator::splitStrAtWS
 const AFC::stringList AFC::StringManipulator::splitStrAtDelimiter
 (
     const string& str,
-    const char delimiter
+    const char& delimiter
 )
 {
     //- Split string at delimiter and return the stringList
@@ -115,6 +115,30 @@ const AFC::stringList AFC::StringManipulator::splitStrAtDelimiter
     {
         elements.push_back(element);
     }
+
+    return elements;
+}
+
+
+const AFC::stringList AFC::StringManipulator::splitStrAtDelimiter
+(
+    const string& str,
+    const string& delimiter
+)
+{
+    //- Position of delimiter
+    std::size_t pos = str.find(delimiter);
+
+    //- Split str into first and second
+    string first = str.substr(0, pos);
+    string second = str.substr(pos+delimiter.size(), str.size());
+
+    //- Split string at delimiter and return the stringList
+    stringList elements;
+
+    //- Crate stringList
+    elements.push_back(first);
+    elements.push_back(second);
 
     return elements;
 }

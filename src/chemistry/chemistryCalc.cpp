@@ -326,13 +326,6 @@ AFC::scalar AFC::ChemistryCalc::calculateOmega
         //- Elementarreaction no.
         const unsigned int& r = inReaction[i];
 
-        if (species == "H2")
-        {
-            Info<< "  " << species << "\n";
-
-            Info<< "  " << chemData.elementarReaction(r) << endl;
-        }
-
         //- Temporar fields
         scalar kf{0};
         scalar kb{0};
@@ -363,42 +356,26 @@ AFC::scalar AFC::ChemistryCalc::calculateOmega
         scalar prod{1};
         scalar educ{1};
 
-        //- Product side, con is in [mol/m^3]
-        //  Convert to mol/cm^3 (100cm * 100cm * 100cm / m^3)
+
+        //- Product side, con is in [mol/cm^3]
         forAll(prodSpecies, s)
         {
-            prod *= pow(con.at(prodSpecies[s])/1e6, nuProd.at(prodSpecies[s]));
+            prod *= pow(con.at(prodSpecies[s]), nuProd.at(prodSpecies[s]));
         }
 
-        //- Educt side, con is in [mol/m^3]
-        //  Convert to mol/cm^3 (100cm * 100cm * 100cm / m^3)
+        //- Educt side, con is in [mol/cm^3]
         forAll(educSpecies, s)
         {
-            educ *= pow(con.at(educSpecies[s])/1e6, nuEduc.at(educSpecies[s]));
+            educ *= pow(con.at(educSpecies[s]), nuEduc.at(educSpecies[s]));
         }
 
         const scalar nuSpecies = nuProd[species] - nuEduc[species];
 
-        //- kf is in cm^3, prod and educ in mol/m^3
-        
-        omega += chemData.M() * nuSpecies * (kf * prod + kb * educ);
-
-        if (species == "H2")
-        {
-            Info<< "   kf = " << kf << "    kb: " << kb << endl;
-            Info<< "   nu   = " << nuSpecies << "\n";
-            Info<< "   prod = " << prod << "\n";
-            Info<< "   educ = " << educ << "\n";
-            Info<< "   M    = " << chemData.M() << "\n";
-            Info<< "omega: " << chemData.M() * nuSpecies * (kf*prod + kb*educ) << "\n" ;
-            Info<< "omega: " << omega << endl;
-        }
+        //- kf is in cm^3, prod and educ in mol/cm^3
+        omega += chemData.M() * nuSpecies * (kf * educ + kb * prod);
     } 
 
-    Info<< "Final omega: " << omega << endl;
-
-    //- Omega in mol/cm^3 convert to mol/m^3
-    return omega * 1e6;
+    return omega;
 }
 
 
@@ -446,22 +423,19 @@ AFC::scalar AFC::ChemistryCalc::calculateM
                         //- Species found, use modified value and skip using value 1
                         found = true;
 
-                        //- Concentration in g/m^3 transform to g/cm^3
-                        M += speciesCon.at(species[s])/1e6
+                        M += speciesCon.at(species[s])
                             * data.enhancedFactors(r, species[s]);
                     }
                 }
 
                 if (!found)
                 {
-                    //- Concentration in g/m^3 transform to g/cm^3
-                    M += speciesCon.at(species[s])/1e6;
+                    M += speciesCon.at(species[s]);
                 }
             }
             else
             {
-                //- Concentration in g/m^3 transform to g/cm^3
-                M += speciesCon.at(species[s])/1e6;
+                M += speciesCon.at(species[s]);
             }
         }
     }

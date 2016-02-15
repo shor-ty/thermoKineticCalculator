@@ -16,7 +16,7 @@
     molFractionOxidizer
 !    massFractionOxidizer
     {
-        H2 1
+        H 1
     }
 
     temperatureFuel 298
@@ -24,7 +24,7 @@
     molFractionFuel
  !   massFractionFuel
     {
-        H2 1
+        O2 1
     }   
 
     enthalpyDefects
@@ -34,7 +34,7 @@
 
     afcControl
     {
-        runTime     0.02
+        runTime     2
         deltaT      0.01
 
         writeInterval   1

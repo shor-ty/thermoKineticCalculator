@@ -58,23 +58,26 @@ class MixtureFraction
         // Private Data
 
             //- Mole fractions X of species at discrete point Z
-            //map<word, scalar> speciesMol_;
+            map<word, scalar> speciesMol_;
 
             //- Mass fractions Y of species at discrete point Z
             map<word, scalar> speciesMass_;
 
             //- Concentration [X] of species at discrete point Z
-            //  [mol/m^3]
+            //  [mol/cm^3]
             map<word, scalar> speciesCon_;
 
             //- Temperature at discrete point Z
             scalar temperature_{0};
 
-            //- Mean density at discrete point Z [g/m^3]
+            //- Mean density at discrete point Z [g/cm^3]
             scalar rho_{0};
 
             //- Mean molecular weight at discrete point Z [g/mol]
             scalar MW_{0};
+
+            //- Mean molar heat capacity at discrete point Z [J/mol/K]
+            scalar Cp_{0};
 
             //- Mean molar heat capacity at discrete point Z [J/mol/K]
             scalar cp_{0};
@@ -203,17 +206,20 @@ class MixtureFraction
             
         // Update functions
 
-            //- Update the mean density [g/m^3]
-            void updateRho
-            (
-                const wordList& 
-            );
+            //- Update the mean density [g/cm^3]
+            void updateRho();
+
+            //- Update heat capacity Cp
+            void updateCp();
+
+            //- Update concentration fraction C [-]
+            void updateC();
 
 
         // Conversation functions
 
             //- Calculate mol fraction out of mass fraction
-            //void YtoX();
+            void YtoX();
 
             //- Calculate mass fraction out of mol fraction
             //void XtoY();
@@ -224,32 +230,23 @@ class MixtureFraction
             //- Calculate concentration out of mol fraction [g/mol]
             //void XtoC();
 
-            //- Calculate mean density out of mol fraction [g/m^3]
+            //- Calculate mean density out of mol fraction [g/cm^3]
             //void rhoX();
 
-            //- Calculate mean density out of mass fraction [g/m^3]
+            //- Calculate mean density out of mass fraction [g/cm^3]
             void rhoY();
 
-            //- Calculate mean density out of concentration fraction [g/m^3]
+            //- Calculate mean density out of concentration fraction [g/cm^3]
             void rhoC();
         
-
-        // Check functions
-
 
         // Return functions
 
             //- Return Zvalue at discrete point
             scalar Z() const;
 
-            //- Return mean density [g/m^3]
+            //- Return mean density [g/cm^3]
             scalar rho() const;
-
-            //- Return species mol fraction [-]
-            //map<word, scalar>& mol();
-
-            //- Return species mol fraction [-]
-            //map<word, scalar> mol() const;
 
             //- Return species mass fraction [-]
             map<word, scalar>& mass();
@@ -266,8 +263,14 @@ class MixtureFraction
             //- Return temperature [K]
             scalar& T();
 
+            //- Return temperature [K]
+            scalar T() const;
+
             //- Return heat capacity [J/mol/K]
             scalar cp() const;
+
+            //- Return heat capacity [J/mol/K]
+            scalar Cp() const;
 
             //- Return heat capacity of species s [J/mol/K]
             scalar calculateCp

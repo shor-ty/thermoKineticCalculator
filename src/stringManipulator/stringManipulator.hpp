@@ -81,7 +81,14 @@ class StringManipulator
             const stringList splitStrAtDelimiter
             (
                 const string&,
-                const char delimiter
+                const char&
+            );
+
+            //- Split string; delimiter as parameter
+            const stringList splitStrAtDelimiter
+            (
+                const string&,
+                const string&
             );
 
             //- Remove str2 from str and return str from 0 - pos
