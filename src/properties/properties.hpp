@@ -52,13 +52,17 @@ class Properties
 {
     private:
 
+
+        // Debug
+        const bool debug_{false};
+
         // Private Data
         
             //- Mixture fraction discrete points
-            int mfPoints_{0};
+            int nZPoints_{0};
 
             //- Varianz of mixture fraction discrete points
-            int vmfPoints_{0};
+            int nZvarPoints_{0};
 
             //- Enthalpy defects
             scalarField defects_;
@@ -131,10 +135,6 @@ class Properties
             const Chemistry& chemistry_;
 
 
-        // Debug
-        const bool debug{false};
-
-
     public:
 
         //- Constructor
@@ -151,13 +151,13 @@ class Properties
 
         // Member functions
         
-            //- Insert mfPoints_
+            //- Insert nZPoints_
             void insertMFPoints
             (
                 const int&
             );
         
-            //- Insert vmfPoints_
+            //- Insert nZvarPoints_
             void insertVMFPoints
             (
                 const int&
@@ -302,11 +302,11 @@ class Properties
             //- Return enthalpy defects
             scalarField defects() const;
 
-            //- Return mixture fraction points
-            int mfPoints() const;
+            //- Return the number of discrete points of Z
+            int nZPoints() const;
 
-            //- Return varianz of mixture fraction points
-            int vmfPoints() const;
+            //- Return the number of discrete points of Zvar
+            int nZvarPoints() const;
 
             //- Return oxidizer temperature
             scalar oxidizerTemperature() const;

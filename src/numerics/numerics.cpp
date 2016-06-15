@@ -24,16 +24,115 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "typedef.hpp"
-#include "mixtureFraction.hpp"
+#include "numerics.hpp"
+#include <math.h>
 
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+// * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-namespace AFC
+AFC::Numerics::Numerics
+(
+//    const int nZ 
+)
+
+//    nZ_(nZ)
 {
+    if (debug)
+    {
+        Info<< "Constructor Numerics \n" << endl;
+    }
 
-// * * * * * * * * * * * * * AFC Numerics functions  * * * * * * * * * * * * //
+    //- Construct matrix for central differencing 
+ /*  Info<< "Build matrix\n";
 
-void calculate
+    Info<< "nZ: " << nZ_ << endl;
+
+    M_.resize(nZ_, scalarField(nZ_));
+
+
+    for (int i=0; i<nZ_; i++)
+    {
+        for (int j=0; j<nZ_; j++)
+        {
+
+            if (i==j)
+            {
+                M_[i][j] = 2;        
+            }
+            else if (i==j-1 || i==j+1)
+            {
+                M_[i][j] = -1;
+            }
+            else
+            {
+                M_[i][j] = 0;
+            }
+        }
+    }
+
+    forAll(M_, i)
+    {
+        forAll(M_[i], j)
+        {
+            Info<< "  " << M_[i][j];
+        }
+        Info<< "\n";
+    }
+    */
+}
+
+
+// * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
+
+AFC::Numerics::~Numerics()
+{
+    if (debug)
+    {
+        Info<< "Destructor Numerics \n" << endl;
+    }
+}
+
+
+// * * * * * * * * * * * * * * * Member function * * * * * * * * * * * * * * //
+
+
+void AFC::Numerics::solve
+(
+    scalarField& phi,
+    const scalar& dt
+)
+{
+    //- Solve the guy
+    /*const int& i = M_.size();
+
+    //-Copy phi
+    scalarField phiO = phi;
+
+    for (int Z = 1; Z < i; Z++)
+    {
+        phi[Z] = phiO[Z] + (phiO[Z-1] - 2*phiO[Z] + phiO[Z+1])/pow(0.05, 2) * dt;
+    }
+
+    forAll(phi, Z)
+    {
+        Info<< Z*0.05 << "  " << phi[Z] << endl; 
+    }*/
+
+    
+}
+
+
+void AFC::Numerics::jacobian
+(
+    MixtureFraction& mf
+)
+{
+    if (debug)
+    {
+        Info<< " --> AFC::Numerics::jacobian" << endl;
+    }
+}
+
+/*void calculate
 (
     lookUpTable& lut,
     const scalar& sDR,
@@ -46,7 +145,7 @@ void calculate
 
     for (unsigned int point=0; point <= nDisPoints; point++)
     {
-        Info<< "Z = " << point << "\n";
+//        Info<< "Z = " << point << "\n";
         //- Object of discrete mixture fraction
         MixtureFraction& dMF = lut[defect][sDR][point];
 
@@ -81,14 +180,12 @@ void calculate
         //- Calculate the source term of species omega
         {
             //- Actual concentration of species at point Zi
-            const map<word, scalar>& con1 = dMF.con();
+            //const map<word, scalar>& con1 = dMF.con();
 
             //- Copy of species concentration
-            map<word, scalar> con = con1;
+            //map<word, scalar> con = con1;
 
-            Info<< "   Starting calculation of omega\n";
-
-            dMF.calculateOmega(T, con);
+            //dMF.calculateOmega(T, con);
 
             //- Update kf and kb using the new T field
 
@@ -98,14 +195,7 @@ void calculate
             //I
         }
     }
-}
-
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-} // End namespace AFC
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+}*/
 
 
 // ************************************************************************* //

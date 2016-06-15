@@ -34,17 +34,22 @@ AFC::PropertiesReader::PropertiesReader
 :
     file_(file)
 
-{}
+{
+    if (debug_)
+    {
+        Info<< "Constructor PropertiesReader\n" << endl;
+    }
+}
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
 AFC::PropertiesReader::~PropertiesReader()
 {
-//    if (debug)
-//    {
+    if (debug_)
+    {
         Info<< "Destructor PropertiesReader\n" << endl;
-//    }
+    }
 }
 
 
@@ -263,7 +268,7 @@ void AFC::PropertiesReader::enthalpyDefects
             //- If more elements in one line
             if (tmp.size() > 1)
             {
-                forAll(tmp, element)
+                forEach(tmp, element)
                 {
                     data.insertEnthalpyDefects(stod(tmp[element]));
                 }
@@ -306,7 +311,7 @@ void AFC::PropertiesReader::scalarDissipationRates
             //- If more elements in one line
             if (tmp.size() > 1)
             {
-                forAll(tmp, element)
+                forEach(tmp, element)
                 {
                     data.insertScalarDissipationRates(stod(tmp[element]));
                 }
@@ -349,7 +354,7 @@ void AFC::PropertiesReader::molFractionOxidizer
             //- If more elements in one line
             if (tmp.size() > 2)
             {
-                forAll(tmp, element)
+                forEach(tmp, element)
                 {
                     unsigned int modul = element%2;
 
@@ -455,7 +460,7 @@ void AFC::PropertiesReader::massFractionOxidizer
             //- If more elements in one line
             if (tmp.size() > 2)
             {
-                forAll(tmp, element)
+                forEach(tmp, element)
                 {
                     unsigned int modul = element%2;
 
@@ -561,7 +566,7 @@ void AFC::PropertiesReader::molFractionFuel
             //- If more elements in one line
             if (tmp.size() > 2)
             {
-                forAll(tmp, element)
+                forEach(tmp, element)
                 {
                     unsigned int modul = element%2;
 
@@ -639,7 +644,7 @@ void AFC::PropertiesReader::massFractionFuel
             //- If more elements in one line
             if (tmp.size() > 2)
             {
-                forAll(tmp, element)
+                forEach(tmp, element)
                 {
                     unsigned int modul = element%2;
 

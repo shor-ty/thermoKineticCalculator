@@ -198,6 +198,9 @@ class ThermoData
                 const word&
             ) const;
 
+            //- Return moleculare weight as map
+            map<word, scalar> MW() const;
+
             //- Return LOW temperature of polynomials of species s
             scalar LT
             (
@@ -249,6 +252,9 @@ class ThermoData
             (
                 const word&
             ) const;
+
+            //- Return the factor of atoms as map
+            map<word, scalar> atomFactors() const;
 
             //- Return the factor of atoms in species (chemical form)
             //  Not implemented

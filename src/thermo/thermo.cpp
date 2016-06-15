@@ -75,6 +75,21 @@ AFC::scalar AFC::Thermo::MW
 }
 
 
+AFC::map<AFC::word, AFC::scalar> AFC::Thermo::MW() const
+{
+    return thermoData_.MW();
+}
+
+
+AFC::scalar AFC::Thermo::MmeanX
+(
+    const map<word, scalar>& X
+) const
+{
+    return thermoCalc_.MmeanX(X, MW());    
+}
+
+
 AFC::scalar AFC::Thermo::cp
 (
     const word& species,
@@ -139,6 +154,27 @@ AFC::scalar AFC::Thermo::Hf
 ) const
 {
     return thermoCalc_.Hf(species, T, thermoData_);
+}
+
+
+AFC::scalar AFC::Thermo::C
+(
+    const scalar& T
+) const
+{
+    return thermoCalc_.C(p(), T);
+}
+
+
+// * * * * * * * * * * * * * * Summary function  * * * * * * * * * * * * * * //
+
+void AFC::Thermo::summary
+(
+    ostream& data
+) const
+{
+
+
 }
 
 

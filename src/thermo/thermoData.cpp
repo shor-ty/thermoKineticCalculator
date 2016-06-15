@@ -252,8 +252,13 @@ AFC::scalar AFC::ThermoData::MW
     const word& species
 ) const
 {
-//    return MW_.find(species)->second;
     return MW_.at(species);
+}
+
+
+AFC::map<AFC::word, AFC::scalar> AFC::ThermoData::MW() const
+{
+    return MW_;
 }
 
 

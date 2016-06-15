@@ -246,16 +246,16 @@ AFC::scalar AFC::ChemistryCalc::calculateKc
     scalar deltaS{0};
 
     //- Scalar list of stochiometric factors of reaction r
-    const scalarList& nu = chemData.nu(r);
+    const map<word, scalar>& nu = chemData.nu(r);
 
     {
-        const wordList& species = chemData.speciesInReaction(r); 
+        //const wordList& species = chemData.speciesInReaction(r); 
 
-        forAll(species, s)
+        /*forAll(nu, s)
         {
-            deltaH += thermo.H(species[s], T) * nu[s];
-            deltaS += thermo.S(species[s], T) * nu[s];
-        }
+            deltaH += thermo.H(s, T) * nu.at(s)
+            deltaS += thermo.S(s, T) * nu.at(s);
+        }*/
     }
 
     const scalar deltaG = deltaH - deltaS * T ;
@@ -266,9 +266,9 @@ AFC::scalar AFC::ChemistryCalc::calculateKc
     //- Calculate exponent
     int exponent{0}; 
 
-    forAll(nu, i)
+    forAll(nu, s)
     {
-        exponent += nu[i];
+//        exponent += nu.at(i);
     }
 
     //- Get the pressure of the calculation
@@ -316,16 +316,16 @@ void AFC::ChemistryCalc::calculateOmega
     forAll(species, s)
     {
         //- Get reaction no. where species is included
-        const intList& inReaction = chemData.reacNumbers(species[s]); 
+        //const List<int>& inReaction = chemData.reacNumbers(species[s]); 
 
-        forAll(inReaction, r)
+        //forAll(inReaction, r)
         {
             //- Temporar fields
             scalar kf{0};
             scalar kb{0};
 
             //- Calculate reaction rate kf and kb for reaction i
-            calculatekfkb(r, kf, kb, T, con, thermo, chemData);
+        //    calculatekfkb(r, kf, kb, T, con, thermo, chemData);
         }
     }
 
@@ -371,22 +371,22 @@ AFC::scalar AFC::ChemistryCalc::calculateM
                 forAll(enhancedSpecies, e)
                 {
                     //- If found, then use modified value
-                    if (enhancedSpecies[e] == species[s])
+                  //  if (enhancedSpecies[e] == species[s])
                     {
                         //- Species found, use modified value and skip using value 1
                         found = true;
-                        M += speciesCon.at(species[s]) * data.enhancedFactors(r, species[s]);
+                        //M += speciesCon.at(species[s]) * data.enhancedFactors(r, species[s]);
                     }
                 }
 
                 if (!found)
                 {
-                    M += speciesCon.at(species[s]);
+                    //M += speciesCon.at(species[s]);
                 }
             }
             else
             {
-                M += speciesCon.at(species[s]);
+                //M += speciesCon.at(species[s]);
             }
         }
     }

@@ -34,6 +34,7 @@ Description
 #include <sstream>
 #include <string.h>
 #include <iostream>
+#include <iomanip> 
 #include <memory>
 #include <map>
 
@@ -48,21 +49,23 @@ class MixtureFraction;
                           AFC Defintions and typedef
 \*---------------------------------------------------------------------------*/
 
-using scalar = double;
+using ostream = std::ostream;
+
+using fstream = std::fstream;
+
+using scalar = long double;
 
 using boolList = std::vector<bool>;
 
-using scalarField = std::vector<double>;
+using scalarField = std::vector<scalar>;
 
-using scalarList = std::vector<double>;
+using scalarList = std::vector<scalar>;
 
 using matrix = std::vector<scalarField>;
 
 using word = std::string;
 
 using wordList = std::vector<word>;
-
-using intList = std::vector<int>;
 
 using wordMatrix = std::vector<wordList>;
 
@@ -72,13 +75,15 @@ using string = std::string;
 
 using stringList = std::vector<string>;
 
-using lookUpTable = std::vector<std::vector<std::vector<MixtureFraction> > >;
+using lookUpTable = std::vector<std::vector<MixtureFraction> >;
 
 extern std::ostream& Info;
 
 extern std::ostream& Error;
 
 extern std::basic_ostream<char>& (&endl)(std::basic_ostream<char>&);
+
+template<class T> using List = std::vector<T>;
 
 template<class T> using vector = std::vector<T>;
 
@@ -88,8 +93,10 @@ template<class T, class Z> using map = typename std::map<T, Z>;
 
 template<class T, class Z> using mapList = typename std::vector<map<T, Z> >;
 
-#define forAll(scalarField, i) for \
-    (unsigned int i=0; i<(scalarField).size(); i++)
+#define forEach(Field, i) for (unsigned int i=0; i<Field.size(); i++)
+#define forAll(Field, i) for (auto& i : Field)
+
+void Print();
 
 void FatalError
 (
@@ -105,7 +112,20 @@ void Warning
     const unsigned long
 );
 
-void Header();
+string Header();
+
+
+// * * * * * * * * * * * * * * String Conversation * * * * * * * * * * * * * //
+
+template <typename T>
+string toStr
+(
+    const T& tmp
+)
+{
+    return std::to_string(tmp);
+}
+
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

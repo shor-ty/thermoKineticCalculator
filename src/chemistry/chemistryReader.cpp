@@ -34,14 +34,22 @@ AFC::ChemistryReader::ChemistryReader
 :
     file_(file)
 
-{}
+{
+    if (debug_)
+    {
+        Info<< "Constructor ChemistryReader\n" << endl;
+    }
+}
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
 AFC::ChemistryReader::~ChemistryReader()
 {
-    Info<< "Destructor ChemistryReader\n" << endl;
+    if (debug_)
+    {
+        Info<< "Destructor ChemistryReader\n" << endl;
+    }
 }
 
 
@@ -63,6 +71,11 @@ void AFC::ChemistryReader::read
     readThermoBlock(fileContent, data);
 
     readReactionBlock(fileContent, data);
+
+    if (debug_)
+    {
+        Info<< " --> Reading chemistry data done" << endl;
+    }
 }
 
 
@@ -72,6 +85,11 @@ void AFC::ChemistryReader::readElementBlock
     ChemistryData& data
 )
 {
+    if (debug_)
+    {
+        Info<< " --> AFC::ChemistryReader::readElementBlock" << endl;
+    }
+
     //- STEP 1: find line no. of wordList ELEMENTS and "END"
     int lineNoKeyword{-1};
     unsigned int lineNoEnd{0};
@@ -116,12 +134,12 @@ void AFC::ChemistryReader::readElementBlock
             {
                 forAll(tmp, element)
                 {
-                    data.insertElements(tmp[element]);
+                    data.elements(element);
                 }
             }
             else
             {
-                data.insertElements(tmp[0]);
+                data.elements(tmp[0]);
             }
         }
     }
@@ -134,6 +152,11 @@ void AFC::ChemistryReader::readSpeciesBlock
    ChemistryData& data
 )
 {
+    if (debug_)
+    {
+        Info<< " --> AFC::ChemistryReader::readSpeciesBlock" << endl;
+    }
+
     //- STEP 1: find line no. of wordList SPECIES and "END"
     int lineNoKeyword{-1};
     unsigned int lineNoEnd{0};
@@ -178,12 +201,12 @@ void AFC::ChemistryReader::readSpeciesBlock
             {
                 forAll(tmp, species)
                 {
-                    data.insertSpecies(tmp[species]);
+                    data.species(species);
                 }
             }
             else
             {
-                data.insertSpecies(tmp[0]);
+                data.species(tmp[0]);
             }
         }
     }
@@ -196,6 +219,11 @@ void AFC::ChemistryReader::readThermoBlock
     ChemistryData& data
 )
 {
+    if (debug_)
+    {
+        Info<< " --> AFC::ChemistryReader::readThermoBlock" << endl;
+    }
+
     //- STEP 1: find line no. of wordList THERMO and "END"
     int lineNoKeyword{-1};
     unsigned int lineNoEnd{0};
@@ -224,6 +252,11 @@ void AFC::ChemistryReader::readReactionBlock
     ChemistryData& data
 )
 {
+    if (debug_)
+    {
+        Info<< " --> AFC::ChemistryReader::readReactionBlock" << endl;
+    }
+
     //- STEP 1: find line no. of wordList REACTIONS and "END"
     int lineNoKeyword{-1};
     unsigned int lineNoEnd{0};
@@ -254,6 +287,11 @@ void AFC::ChemistryReader::readReactionBlock
     //- Reading REACTION block
     for (unsigned int line = lineNoKeyword+1; line < lineNoEnd; line++)
     {
+        if (debug_)
+        {
+            Info<< "Analyze " << fileContent[line] << endl;
+        }
+
         stringList tmp = splitStrAtWS(fileContent[line]);
 
         //- If line is not empty and no comment, proceed
@@ -289,7 +327,7 @@ void AFC::ChemistryReader::readReactionBlock
 
                     if (found != std::string::npos)
                     {
-                        data.setTBR();
+                        data.TBR(true);
                     }
                 }
                 else
@@ -305,24 +343,24 @@ void AFC::ChemistryReader::readReactionBlock
                     //- LOW parameters
                     if (foundLOW != std::string::npos)
                     {
-                        data.setLOW();
+                        data.LOW(true);
                         LOWCoeffs(fileContent[line], line, data);
                     }
                     //- TROE parameters
                     else if (foundTROE != std::string::npos)
                     {
-                        data.setTROE();
+                        data.TROE(true);
                         TROECoeffs(fileContent[line], line, data);
                     }
                     //- SRI parameters
                     else if (foundSRI != std::string::npos)
                     {
-                        data.setSRI();
+                        data.SRI(true);
                         SRICoeffs(fileContent[line], line, data);
                     }
                     else
                     {
-                        data.setENHANCE();
+                        data.ENHANCE(true);
                         enhanceFactors(fileContent[line], data);
                     }
                 }
@@ -345,6 +383,11 @@ void AFC::ChemistryReader::findKeyword
     const string search
 )
 {
+    if (debug_)
+    {
+        Info<< " --> AFC::ChemistryReader::findKeyword" << endl;
+    }
+
     //- Search pattern (wordList)
     wordList searchPattern;
 
@@ -371,17 +414,20 @@ void AFC::ChemistryReader::findKeyword
             searchPattern = REACTION;
         }
 
+    // Iterator due to new forAll() Range-for 
+    unsigned int lineNo{0};
+
     forAll(fileContent, line)
     {
         //- Split string; delimiter ' ' 
-        stringList tmp = splitStrAtWS(fileContent[line]);
+        stringList tmp = splitStrAtWS(line);
 
         //- Search line no.
         forAll(searchPattern, i)
         {
-            if (tmp[0] == searchPattern[i])
+            if (tmp[0] == i)
             {
-                start = line; 
+                start = lineNo; 
                 break;
             }
         }
@@ -389,7 +435,7 @@ void AFC::ChemistryReader::findKeyword
         //- Search end after keyword found
         if (tmp[0] == "END" && start != -1)
         {
-            end = line;
+            end = lineNo;
         }
 
         //- Both found exit loop
@@ -401,6 +447,8 @@ void AFC::ChemistryReader::findKeyword
         {
             break;
         }
+
+        lineNo++;
     }
 }
 
@@ -410,6 +458,11 @@ AFC::stringList AFC::ChemistryReader::extractData
     const string& str
 )
 {
+    if (debug_)
+    {
+        Info<< " --> AFC::ChemistryReader::extractData" << endl;
+    }
+
     //- STEP 1: find first '/' 
     string delimiter="/";
 
@@ -436,6 +489,11 @@ void AFC::ChemistryReader::analyzeReaction
     ChemistryData& data
 )
 {
+    if (debug_)
+    {
+        Info<< " --> AFC::ChemistryReader::analyzeReaction" << endl;
+    }
+
     //- STEP 1: manipulate string to get reaction
     stringList tmp = splitStrAtWS(reaction);
 
@@ -447,7 +505,7 @@ void AFC::ChemistryReader::analyzeReaction
         tmp2 += tmp[i];
     }
 
-    data.insertElementarReaction(tmp2);
+    data.elementarReaction(tmp2);
     
     //- STEP 2: analyze reaction
     string delimiter1 = "=";
@@ -474,7 +532,7 @@ void AFC::ChemistryReader::analyzeReaction
      && found3 == std::string::npos
     )
     {
-        data.setBR();
+        data.BR(true);
     }
     //- b)
     else if
@@ -484,18 +542,25 @@ void AFC::ChemistryReader::analyzeReaction
      && found3 != std::string::npos
     )
     {
-        data.setBR();
+        data.BR(true);
     }
     //- c)
-    //  Not implemented, default is c)
-
+    else if
+    (
+        found1 != std::string::npos
+     && found2 == std::string::npos
+     && found3 != std::string::npos
+    )
+    {
+        data.BR(false);
+    }
     //- d)
     //  Not implemented, normally not used
     else if
     (
         found1 != std::string::npos
      && found2 != std::string::npos
-     && found3 != std::string::npos
+     && found3 == std::string::npos
     )
     {
         FatalError
@@ -510,7 +575,7 @@ void AFC::ChemistryReader::analyzeReaction
     }
 
     // STEP 3: insert arrhenius coeffs
-    data.insertArrheniusCoeffs
+    data.arrheniusCoeffs
     (
         stod(tmp[tmp.size()-3]),
         stod(tmp[tmp.size()-2]),
@@ -548,8 +613,13 @@ void AFC::ChemistryReader::LOWCoeffs
     ChemistryData& data
 )
 {
+    if (debug_)
+    {
+        Info<< " --> AFC::ChemistryReader::LOWCoeffs" << endl;
+    }
+
     //- STEP 1: get data inbetween '/'
-    stringList coeffs = extractData(coeffStr);
+    List<string> coeffs = extractData(coeffStr);
 
     //- STEP 2: check if 3 values are available
     if (coeffs.size() != 3)
@@ -565,10 +635,13 @@ void AFC::ChemistryReader::LOWCoeffs
         );
     }
 
-    //- STEP 3: update matrix
+    //- STEP 3: update 
+    unsigned int c{0};
+
     forAll(coeffs, i)
     {
-        data.insertLOWCoeffs(stod(coeffs[i]), i);
+        data.LOWCoeffs(stod(i), c);
+        c++;
     }
 }
 
@@ -580,6 +653,11 @@ void AFC::ChemistryReader::TROECoeffs
     ChemistryData& data
 )
 {
+    if (debug_)
+    {
+        Info<< " --> AFC::ChemistryReader::TROECoeffs" << endl;
+    }
+
     //- STEP 1: get data inbetween '/'
     stringList coeffs = extractData(coeffStr);
 
@@ -601,10 +679,13 @@ void AFC::ChemistryReader::TROECoeffs
         );
     }
 
-    //- STEP 3: update matrix
+    //- STEP 3: update
+    unsigned int c{0};
+
     forAll(coeffs, i)
     {
-         data.insertTROECoeffs(stod(coeffs[i]), i);
+         data.TROECoeffs(stod(i), c);
+         c++;
     }
 }
 
@@ -616,6 +697,11 @@ void AFC::ChemistryReader::SRICoeffs
     ChemistryData& data
 )
 {
+    if (debug_)
+    {
+        Info<< " --> AFC::ChemistryReader::SRICoeffs" << endl;
+    }
+
     //- STEP 1: get data inbetween '/'
     stringList coeffs = extractData(coeffStr);
 
@@ -637,10 +723,12 @@ void AFC::ChemistryReader::SRICoeffs
         );
     }
 
-    //- STEP 3: update matrix
+    //- STEP 3: update
+    unsigned int c{0};
+
     forAll(coeffs, i)
     {
-         data.insertSRICoeffs(stod(coeffs[i]), i);
+         data.SRICoeffs(stod(i), c);
     }
 }
 
@@ -651,6 +739,11 @@ void AFC::ChemistryReader::enhanceFactors
     ChemistryData& data
 )
 {
+    if (debug_)
+    {
+        Info<< " --> AFC::ChemistryReader::enhanceFactors" << endl;
+    }
+
     //- STEP 1: split string at whitespace and re-arrange
     stringList tmp = splitStrAtWS(enhanceFactors);
 
@@ -658,17 +751,29 @@ void AFC::ChemistryReader::enhanceFactors
 
     forAll(tmp, i)
     {
-        enhanced += tmp[i];
+        enhanced += i;
     }
 
     //- STEP 2: split enhanced string at delimiter '/' and save
     tmp = splitStrAtDelimiter(enhanced, '/');
 
+    //- Count entries
+    unsigned int c{0};
+    word species;
+
     forAll(tmp, i)
     {
-        data.insertEnhanceFactors(tmp[i], stod(tmp[i+1]));
-
-        i++;
+        //- Species name
+        if (c == 0)
+        {
+            species = i; 
+            c++;
+        }
+        else if (c == 1)
+        {
+            data.enhanceFactors(species, stod(i));
+            c = 0;
+        }
     }
 }
 
@@ -680,6 +785,12 @@ void AFC::ChemistryReader::analyzeReacSite
     ChemistryData& data
 )
 {
+    if (debug_)
+    {
+        Info<< " --> AFC::ChemistryReader::analyzeReacSite" << endl;
+        Info<< " To be analyzed: " << site << endl;
+    }
+
     //- First: remove (+M) if it is there
     string removed1 = removeAtEnd(reactionSite, "(+M)");
 
@@ -795,9 +906,8 @@ void AFC::ChemistryReader::analyzeReacSite
             endPos = 0;
 
             //- Store data
-            data.insertNu(nu);
-
-            data.insertReacProd(species);
+            data.speciesNu(species, nu);
+            data.speciesInReaction(species);
         }
     }
 }

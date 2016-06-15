@@ -32,14 +32,22 @@ AFC::ChemistryData::ChemistryData()
     nReac_{-1},
 
     thermo_{false}
-{}
+{
+    if (debug)
+    {
+        Info<< "Constructor ChemistryData\n";
+    }
+}
 
 
 // * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * * //
 
 AFC::ChemistryData::~ChemistryData()
 {
-    Info<< "Destructor ChemistryData\n";
+    if (debug)
+    {
+        Info<< "Destructor ChemistryData\n";
+    }
 }
 
 
@@ -58,7 +66,7 @@ bool AFC::ChemistryData::thermo()
 
 // * * * * * * * * * Insert functions from ChemistryReader:: * * * * * * * * //
 
-void AFC::ChemistryData::insertElements
+void AFC::ChemistryData::elements
 (
     const word& element
 )
@@ -67,7 +75,7 @@ void AFC::ChemistryData::insertElements
 }
 
 
-void AFC::ChemistryData::insertSpecies
+void AFC::ChemistryData::species
 (
     const word& species
 )
@@ -75,71 +83,101 @@ void AFC::ChemistryData::insertSpecies
     species_.push_back(species);
     
     //- Increment matrix
-    reacNumbers_[species] = intList(0);
+    reactionI_[species] = List<int>(0);
 
     //- Increment omega field
     omega_.push_back(scalar(0));
 }
 
 
-void AFC::ChemistryData::insertElementarReaction
+void AFC::ChemistryData::elementarReaction
 (
     const string& reaction
 )
 {
+    if (debug)
+    {
+        Info<< " --> AFC::ChemistryData::elementarReaction" << endl;
+    }
+
     elementarReaction_[nReac_] = reaction;
 }
 
 
-void AFC::ChemistryData::insertArrheniusCoeffs
+void AFC::ChemistryData::arrheniusCoeffs
 (
     const scalar& coeff_1,
     const scalar& coeff_2,
     const scalar& coeff_3
 )
 {
+    if (debug)
+    {
+        Info<< " --> AFC::ChemistryData::arrheniusCoeffs" << endl;
+    }
+
     arrheniusCoeffs_[nReac_][0] = coeff_1;
     arrheniusCoeffs_[nReac_][1] = coeff_2;
     arrheniusCoeffs_[nReac_][2] = coeff_3;
 }
 
 
-void AFC::ChemistryData::insertLOWCoeffs
+void AFC::ChemistryData::LOWCoeffs
 (
     const scalar& coeff,
     const unsigned int& coeffNo
 )
 {
+    if (debug)
+    {
+        Info<< " --> AFC::ChemistryData::LOWCoeffs" << endl;
+    }
+
     LOWCoeffs_[nReac_][coeffNo] = coeff;
 }
 
 
-void AFC::ChemistryData::insertTROECoeffs
+void AFC::ChemistryData::TROECoeffs
 (
     const scalar& coeff,
     const unsigned int& coeffNo
 )
 {
+    if (debug)
+    {
+        Info<< " --> AFC::ChemistryData::TROECoeffs" << endl;
+    }
+
     TROECoeffs_[nReac_][coeffNo] = coeff;
 }
 
 
-void AFC::ChemistryData::insertSRICoeffs
+void AFC::ChemistryData::SRICoeffs
 (
     const scalar& coeff,
     const unsigned int& coeffNo
 )
 {
+    if (debug)
+    {
+        Info<< " --> AFC::ChemistryData::SRICoeffs" << endl;
+    }
+
     SRICoeffs_[nReac_][coeffNo] = coeff;
 }
 
 
-void AFC::ChemistryData::insertEnhanceFactors
+void AFC::ChemistryData::enhanceFactors
 (
     const word& species,
     const scalar& value
 )
 {
+    if (debug)
+    {
+        Info<< " --> AFC::ChemistryData::enhanceFactors" << endl;
+    }
+
     enhancedFactors_[nReac_][species] = value;
 }
 
@@ -156,31 +194,34 @@ void AFC::ChemistryData::incrementReac()
 }
 
 
-void AFC::ChemistryData::insertNu
+void AFC::ChemistryData::speciesNu
 (
+    const word& species,
     const scalar& nu
 )
 {
-    nu_[nReac_].push_back(nu);
+    nu_[nReac_][species] = nu;
 }
 
 
-void AFC::ChemistryData::insertReacProd
+void AFC::ChemistryData::speciesInReaction
 (
     const word& species
 )
 {
-    speciesInReactions_[nReac_].push_back(species);
+    speciesInReaction_[nReac_].push_back(species);
 }
 
 
 void AFC::ChemistryData::incrementMatrixesVectors()
 {
+    if (debug)
+    {
+        Info<< " --> AFC::ChemistryData::incrementMatrixesVectors" << endl;
+    }
+
     //- stringList for saving reactions
     elementarReaction_.push_back("");
-
-    //- matrixWordList for species in reaction
-    speciesInReactions_.push_back(wordList(0));
 
     //- boolList for THIRD BODY REACTION
     TBR_.push_back(false);
@@ -200,25 +241,23 @@ void AFC::ChemistryData::incrementMatrixesVectors()
     //- boolList for backward reaction
     backwardReaction_.push_back(false);
 
-    //- Matrix for stochiometric coeffs
-    nu_.push_back(scalarField(0));
-
     //- MapList of enhanced factors (species + value)
     enhancedFactors_.push_back(map<word,scalar>());
 
+    //- MapList of stochiometric factors (species + value)
+    nu_.push_back(map<word,scalar>());
+
+    //- List<List<word> >
+    speciesInReaction_.push_back(List<word>(0));
+
     //- Matrix of Arrhenius coeffs
-    arrheniusCoeffs_.push_back(scalarField(3));
+    arrheniusCoeffs_.push_back(scalarField(3, scalar(0)));
 
     //- Matrix of ARRHENIUS coeffs for LOW pressure
-    LOWCoeffs_.push_back(scalarField(3));
+    LOWCoeffs_.push_back(scalarField(3, scalar(0)));
 
     //- Matrix of TROE coeffs
-    TROECoeffs_.push_back(scalarField(4));
-
-    //- Update entrys in TROE, if Tss not used = 0
-    {
-        TROECoeffs_[nReac_][4] = 0;
-    }
+    TROECoeffs_.push_back(scalarField(4, scalar(0)));
 
     //- Matrix of SRI coeffs
     SRICoeffs_.push_back(scalarField(5));
@@ -242,39 +281,39 @@ void AFC::ChemistryData::incrementMatrixesVectors()
 
 // * * * * * * * * * * * * * Setter bool functions * * * * * * * * * * * * * //
 
-void AFC::ChemistryData::setBR()
+void AFC::ChemistryData::BR(const bool set)
 {
-    backwardReaction_[nReac_] = true;
+    backwardReaction_[nReac_] = set;
 }
 
 
-void AFC::ChemistryData::setTBR()
+void AFC::ChemistryData::TBR(const bool set)
 {
-    TBR_[nReac_] = true;
+    TBR_[nReac_] = set;
 }
 
 
-void AFC::ChemistryData::setLOW()
+void AFC::ChemistryData::LOW(const bool set)
 {
-    LOW_[nReac_] = true;
+    LOW_[nReac_] = set;
 }
 
 
-void AFC::ChemistryData::setTROE()
+void AFC::ChemistryData::TROE(const bool set)
 {
-    TROE_[nReac_] = true;
+    TROE_[nReac_] = set;
 }
 
 
-void AFC::ChemistryData::setSRI()
+void AFC::ChemistryData::SRI(const bool set)
 {
-    SRI_[nReac_] = true;
+    SRI_[nReac_] = set;
 }
 
 
-void AFC::ChemistryData::setENHANCE()
+void AFC::ChemistryData::ENHANCE(const bool set)
 {
-    ENHANCE_[nReac_] = true;
+    ENHANCE_[nReac_] = set;
 }
 
 
@@ -284,7 +323,7 @@ void AFC::ChemistryData::setReacNumbers
     const int& r
 )
 {
-    reacNumbers_.at(species).push_back(r);
+    reactionI_.at(species).push_back(r);
 }
 
 
@@ -350,6 +389,15 @@ bool AFC::ChemistryData::BR
 }
 
 
+bool AFC::ChemistryData::TBR
+(
+    const int& reacNo
+) const
+{
+    return TBR_[reacNo];
+}
+
+
 bool AFC::ChemistryData::LOW
 (
     const int& reacNo
@@ -365,15 +413,6 @@ bool AFC::ChemistryData::TROE
 ) const
 {
     return TROE_[reacNo];
-}
-
-
-bool AFC::ChemistryData::TBR
-(
-    const int& reacNo
-) const
-{
-    return TBR_[reacNo];
 }
 
 
@@ -401,19 +440,25 @@ AFC::wordList AFC::ChemistryData::species() const
 }
 
 
+AFC::wordList AFC::ChemistryData::elements() const
+{
+    return elements_;
+}
+
+
 int AFC::ChemistryData::nReac() const
 {
     return nReac_;
 }
 
 
-AFC::wordList AFC::ChemistryData::elementarReaction() const
+AFC::List<AFC::string> AFC::ChemistryData::elementarReaction() const
 {
     return elementarReaction_;
 }
 
 
-AFC::word AFC::ChemistryData::elementarReaction
+AFC::string AFC::ChemistryData::elementarReaction
 (
     const int& r
 ) const
@@ -422,18 +467,18 @@ AFC::word AFC::ChemistryData::elementarReaction
 }
 
 
-AFC::intList AFC::ChemistryData::reacNumbers
+AFC::List<int> AFC::ChemistryData::reacNumbers
 (
     const word& species
 ) const
 {
-    return reacNumbers_.at(species);
+    return reactionI_.at(species);
 }
 
 
-AFC::wordMatrix AFC::ChemistryData::speciesInReactions() const
+AFC::wordMatrix AFC::ChemistryData::speciesInReaction() const
 {
-    return speciesInReactions_;
+    return speciesInReaction_;
 }
 
 
@@ -442,7 +487,7 @@ AFC::wordList AFC::ChemistryData::speciesInReaction
     const int& r 
 ) const
 {
-    return speciesInReactions_[r];
+    return speciesInReaction_[r];
 }
 
 
@@ -586,12 +631,18 @@ AFC::scalarField AFC::ChemistryData::omega() const
 }
 
 
-AFC::scalarList AFC::ChemistryData::nu
+AFC::map<AFC::word, AFC::scalar> AFC::ChemistryData::nu
 (
-    const int& r
+    const int& r 
 ) const
 {
     return nu_[r];
+}
+
+
+AFC::mapList<AFC::word, AFC::scalar> AFC::ChemistryData::nu() const
+{
+    return nu_;
 }
 
 

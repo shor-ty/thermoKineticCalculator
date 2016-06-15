@@ -58,50 +58,65 @@ class MixtureFraction
         // Private Data
 
             //- Mole fractions X of species at discrete point Z
-            map<word, scalar> speciesMol_;
+            //  [-]
+            List<map<word, scalar> > speciesMol_;
 
             //- Mass fractions Y of species at discrete point Z
-            map<word, scalar> speciesMass_;
+            //  [-]
+            List<map<word, scalar> > speciesMass_;
 
-            //- Concentration [X] of species at discrete point Z
+            //- Concentration [X] (C) of species at discrete point Z
             //  [mol/m^3]
-            map<word, scalar> speciesCon_;
+            List<map<word, scalar> > speciesCon_;
 
-            //- Temperature at discrete point Z
-            scalar temperature_{0};
+            //- Concentration [X] of the mixture at discrete point Z
+            scalarField Cmix_;
 
-            //- Mean density at discrete point Z [g/m^3]
-            scalar rho_{0};
+            //- Mixture fraction value Z [-]
+            scalarField Z_;
 
-            //- Mean molecular weight at discrete point Z [g/mol]
-            scalar MW_{0};
+            //- Temperature field for all discrete points Z
+            //  [K] 
+            scalarField T_;
 
-            //- Mean heat capacity at discrete point Z [J/
-            scalar cp_{0};
+            //- Mean density at discrete point Z
+            //  [g/m^3]
+            scalarField rho_{0};
+
+            //- Mean molecular weight at discrete point Z
+            //  [g/mol]
+            scalarField MW_{0};
+
+            //- Mean heat capacity at discrete point Z
+            //  [J/kg/K]
+            scalarField cp_{0};
 
             //- Mean enthalpy H at discrete point Z
-            scalar H_{0};
+            scalarField H_{0};
 
             //- Mean entropy S at discrete point Z
-            scalar S_{0};
+            scalarField S_{0};
 
             //- Mean free Gibbs energy at discrete point Z
-            scalar G_{0};
+            scalarField G_{0};
         
             //- Density of species i at discrete point Z [g/m^3]
             //map<word, scalar> rhoSpecies_;
 
+            //- Thermal conductivity [W/m/K]
+            scalarField lambda_{0};
+
             //- Viscosity at discrete point Z [m^2/s^2]
-            scalar mu_{0};
+            scalarField mu_{0};
 
             //- Viscosity of species i at discrete point Z [m^2/s^2]
             //map<word, scalar> muSpecies_;
 
-            //- Defect value
+            //- Defect value [J/kg]
             scalar defect_{0};
 
-            //- Mixture fraction value Z
-            scalar Z_{0};
+            //- Scalar dissipation rate [1/s]
+            scalar sDR_{0};
 
 
         // Booleans
@@ -231,8 +246,26 @@ class MixtureFraction
 
         // Return functions
 
+            //- Return number of discrete points
+            int nZPoints() const;
+
+            //- Return the value of the mixture fraction Z
+            scalar Zvalue
+            (
+                const int&
+            );
+
+            //- Return the temperature field [K]
+            scalarField& T();
+
+            //- Return concentration of mixture [mol/m^3]
+            scalar C
+            (
+                const scalar&
+            ) const;
+
             //- Return species mol fraction (map)
-            map<word, scalar> mol() const;
+            /*map<word, scalar> mol() const;
 
             //- Return species concentration
             map<word, scalar> con();
@@ -278,7 +311,12 @@ class MixtureFraction
             (
                 const word&,
                 const scalar&
-            ) const;
+            ) const;*/
+
+
+        //- Summary for analyse (output)
+
+            void summary() const;
 };
 
 

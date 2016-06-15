@@ -94,6 +94,15 @@ class Thermo
                 const word&
             ) const;
 
+            //- Return moleculare weight as map 
+            map<word, scalar> MW() const;
+
+            //- Return the mean molecular weight based on X [g/mol]
+            scalar MmeanX
+            (
+                const map<word, scalar>&
+            ) const;
+
             //- Return heat capacity of species s [J/mol/K]
             scalar cp
             (
@@ -138,6 +147,20 @@ class Thermo
             (
                 const word&,
                 const scalar&
+            ) const;
+
+            //- Return the mixture concentration [mol/m^3]
+            scalar C
+            (
+                const scalar&
+            ) const;
+
+
+        // Summary function
+
+            void summary
+            (
+                ostream&
             ) const;
 };
 

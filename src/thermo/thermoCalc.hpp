@@ -25,7 +25,19 @@ Class
     AFC::ThermoCalc
     
 Description
-    Abstract AFC::ThermoCalc class for thermo calculation
+    AFC::ThermoCalc class for thermo calculation. This class provides all 
+    thermo calculations that are necessary in the AFC project. All calculation
+    functions are given below (ideal gas assumption):
+
+    \f[ \bar{M} = X_i M_i = \left(\frac{Y_i}{M_i}\right)^{-1} \f]
+
+    \f[ \rho = \frac{p \bar{M}}{RT} \f]
+
+    \f[ \rho = \sum_s^n\left(\frac{X_s p}{R M_s \sum_r^n X_r} \right)\f]
+
+    \f[ \rho = \frac{p}{RT \sum_{i=1}^n \frac{Y_i}{M_i}} \f]
+     
+    \f[ c = \frac{p}{RT} \f]
 
 SourceFiles
     thermo.cpp
@@ -67,6 +79,43 @@ class ThermoCalc
 
 
         // Calculation functions
+
+            //- Calculate mean molecular weight out of the mol fraction [g/mol]
+            scalar MmeanX
+            (
+                const map<word, scalar>&,
+                const map<word, scalar>&
+            ) const;
+            
+            //- Calculate mean molecular weight out of the mass fraction [g/mol]
+            scalar MmeanY
+            (
+                const map<word, scalar>&,
+                const map<word, scalar>&
+            ) const;
+            
+            //- Calculate mean molecular weight out of the concentration [g/mol]
+            scalar MmeanC
+            (
+                const map<word, scalar>&,
+                const map<word, scalar>&
+            ) const;
+
+            //- Calculate mean density based on the mean molecular weight [g/m^3]
+            scalar rhoMean
+            (
+                const scalar&,
+                const scalar&,
+                const scalar&
+            ) const;
+
+            //- Calculate complete concentration C [mol/m^3]
+            scalar C
+            (
+                const scalar&,
+                const scalar&
+            ) const;
+            
 
             //- Calculate temperature dependend heat capacity (NASA) [J/mol/K]
             //  of species s

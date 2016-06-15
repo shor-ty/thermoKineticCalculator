@@ -102,30 +102,76 @@ class Chemistry
             //- Create field that contains all reaction no. for each species
             void createSpeciesInReaction();
 
-            //- Insert reaction no. for species ::DELEGATED to CHEMISTRYDATA
+            //- Insert reaction no. for species delegated to CHEMISTRYDATA
             void insertReacNoForSpecies
             (
                 const int&,
                 const int&
             );
 
-
         // Return Functions
-        
-            //- Retrun species
+
+            //- Return bool
+
+                //- Return true if elementar reaction is handled with
+                //  forward and backward reaction character
+                bool BR
+                (
+                    const int&
+                ) const;
+
+                //- Return true if elementar reaction is a TBR reaction
+                bool TBR
+                (
+                    const int&
+                ) const;
+
+                //- Return true if elementar reaction is a LOW reaction
+                bool LOW
+                (
+                    const int&
+                ) const;
+
+                //- Return true if elementar reaction is a TROE reaction
+                bool TROE
+                (
+                    const int&
+                ) const;
+
+                //- Return true if elementar reaction is a SRI reaction
+                bool SRI
+                (
+                    const int&
+                ) const;
+
+                //- Return true if elementar reaction has enhanced factors
+                bool ENHANCED
+                (
+                    const int&
+                ) const;
+
+
+
+            //- Retrun all species that are included in the reactions
             wordList species() const;
 
-            //- Return no. of elementar reaction
-            /*/int nReac() const;
+            //- Return all elements that are included in the reactions
+            wordList elements() const;
 
-            //- Return elementar reaction (as string) DELEGATED
-            word elementarReaction
+            //- Return no. of elementar reaction
+            ///int nReac() const;
+
+            //- Return elementar reaction r (as string) 
+            string elementarReaction
             (
                 const int&
             ) const;
 
-            //- Return all reaction no of species DELEGATED
-            scalarField reacNoForSpecies
+            //- Return all elementar reaction (as wordList)
+            List<string> elementarReaction() const;
+
+            //- Return all reaction no of species 
+            /*scalarField reacNoForSpecies
             (
                 const int&
             ) const;
@@ -141,6 +187,12 @@ class Chemistry
             (
                 const int& 
             ) const;*/
+
+            //- Build the summary as ostream
+            void summary
+            (
+                ostream&   
+            ) const;
 
 };
 

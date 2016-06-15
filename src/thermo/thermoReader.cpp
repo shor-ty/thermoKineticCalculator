@@ -35,6 +35,10 @@ AFC::ThermoReader::ThermoReader
 :
     file_(file)
 {
+    if (debug_)
+    {
+        Info<< "Constructor ThermoReader\n" << endl;
+    }
 }
 
 
@@ -42,7 +46,10 @@ AFC::ThermoReader::ThermoReader
 
 AFC::ThermoReader::~ThermoReader()
 {
-    Info<< "Destructor ThermoReader\n" << endl;
+    if (debug_)
+    {
+        Info<< "Destructor ThermoReader\n" << endl;
+    }
 }
 
 
@@ -104,13 +111,13 @@ void AFC::ThermoReader::findKeyword
 {
     wordList searchPattern = THERMO;
 
-    forAll(fileContent, line)
+    forEach(fileContent, line)
     {
         //- Split string; delimiter ' ' 
         stringList tmp = splitStrAtWS(fileContent[line]);
 
         //- Search line no.
-        forAll(searchPattern, i)
+        forEach(searchPattern, i)
         {
             if (tmp[0] == searchPattern[i])
             {
@@ -184,7 +191,7 @@ AFC::word AFC::ThermoReader::constructFormula
     word formula;
 
     //- Form formula
-    forAll(tmp, i)
+    forEach(tmp, i)
     {
         formula += tmp[i];
     }
@@ -382,7 +389,7 @@ void AFC::ThermoReader::calcMolecularWeight
     //- Temp molecular weight
     scalar tmp = 0;
 
-    forAll(atoms, a)
+    forEach(atoms, a)
     {
         tmp += calcWeight(atoms[a], factors[a], species);
     }

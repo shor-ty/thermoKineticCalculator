@@ -6,12 +6,14 @@ INC_DIR=-I$(WORK_DIR)/chemistry \
 		-I$(WORK_DIR)/properties \
 		-I$(WORK_DIR)/mixtureFraction \
 		-I$(WORK_DIR)/constants \
+		-I$(WORK_DIR)/numerics \
 		-I$(WORK_DIR)/typedef \
 		-I$(WORK_DIR)/stringManipulator
 
 
 
 SOURCE_FILES=automaticFlameletCreator.cpp \
+			 numerics/numerics.cpp \
 			 chemistry/chemistry.cpp \
 			 chemistry/chemistryReader.cpp \
 			 chemistry/chemistryData.cpp \
@@ -30,9 +32,9 @@ SOURCE_FILES=automaticFlameletCreator.cpp \
 			 stringManipulator/stringManipulator.cpp
 
 
-SRC_FILES=mixtureFraction/numerics.cpp
+#SRC_FILES=mixtureFraction/numerics.cpp
 
-CPPFLAGS=-g -Wall -Wextra -pedantic-errors -std=c++11 -Wno-unused-parameter -Wno-unused-variable
+CPPFLAGS=-g -Wall -Wextra -pedantic-errors -std=c++11 -Wno-unused-parameter -Wno-unused-variable -D_GLIBCXX_DEBUG
 
 OBJ := $(addprefix obj/,$(addsuffix .o,$(basename $(SOURCE_FILES))))
 
@@ -40,7 +42,7 @@ OBJ := $(addprefix obj/,$(addsuffix .o,$(basename $(SOURCE_FILES))))
 obj/%.o: %.cpp | obj
 	    g++ $(CPPFLAGS) $(INC_DIR) -c $< -o $@
 
-automaticFlameletCreator : $(OBJ) | mixtureFraction/numerics.cpp
+automaticFlameletCreator : $(OBJ) 
 	g++ $(CPPFLAGS) $(INC_DIR) -o $@ $^
 
 

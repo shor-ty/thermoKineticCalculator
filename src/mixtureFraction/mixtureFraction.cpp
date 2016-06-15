@@ -24,6 +24,7 @@ License This file is part of Automatic Flamelet Constructor.
 
 #include "mixtureFraction.hpp"
 #include "constants.hpp"
+#include <fstream>
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
@@ -33,13 +34,13 @@ AFC::MixtureFraction::MixtureFraction
     const Thermo& therm,
     const Transport& trans,
     const Properties& prop,
-    const scalar& Zvalue,
+    const scalar& sDR,
     const scalar& defect
 )
 : 
     defect_(defect),
 
-    Z_(Zvalue),
+    sDR_(sDR),
 
     thermo_(therm),
 
@@ -49,22 +50,83 @@ AFC::MixtureFraction::MixtureFraction
 
     properties_(prop)
 {
+    //- nPoints
+    const int& nZ = prop.nZPoints();
+    const scalar delta = 1. / nZ;
+
+    //- Resize fields
+    {
+        Z_.resize(nZ+1);
+        T_.resize(nZ+1);
+        rho_.resize(nZ+1);
+        cp_.resize(nZ+1);
+        MW_.resize(nZ+1);
+        mu_.resize(nZ+1);
+        lambda_.resize(nZ+1);
+        Cmix_.resize(nZ+1);
+    }
+
+    //- Init fields with zeros
+    forEach(Z_, i)
+    {
+        Z_[i] = 0;
+        T_[i] = 0;
+        rho_[i] = 0;
+        cp_[i] = 0;
+        MW_[i] = 0;
+        mu_[i] = 0;
+        lambda_[i] = 0;
+        Cmix_[i] = 0;
+    }
+
+    //- Resize map fields
+    {
+        //- Species in chemistry 
+        const wordList& species = chem.species();
+
+        //- Generate tmp map with all species and zero value
+        map<word, scalar> tmp;
+
+        forAll(species, s)
+        {
+            tmp[s] = 0; 
+        }
+
+        //- Resize and init
+        forEach(Z_, i)
+        {
+            speciesMol_.push_back(tmp);
+            speciesMass_.push_back(tmp);
+            speciesCon_.push_back(tmp);
+        }
+    }
+        
+
+    //- Calculate values for Z
+    for (int i=0; i<=nZ; i++)
+    {
+        Z_[i] = i * delta;
+    }
+
+
     //- Calculate temperature profile (linear)
+    //  + Calculate concentration of each point
+    forEach(T_, i)
     {
         scalar oxidizerTemperature = prop.oxidizerTemperature();
         scalar fuelTemperature = prop.fuelTemperature(); 
 
-        temperature_ =
+        T_[i] =
             (fuelTemperature - oxidizerTemperature)
-          * Zvalue
-          + oxidizerTemperature;
+          * Z_[i] + oxidizerTemperature;
+        
+        Cmix_[i] = C(T_[i]);
     }
 
-    // Initialize with mole fraction
-    if (prop.input() == "mol")
-    {
-        Info<< "Z: " << Zvalue << "\n";
 
+    // Initialize with mole fraction
+    /*if (prop.input() == "mol")
+    {
         //- Calculate mole fraction (initial linear distribution)
         {
             const wordList& species = chem.species();
@@ -76,21 +138,21 @@ AFC::MixtureFraction::MixtureFraction
             map<word, scalar> fuelMolFraction = prop.fuelCompMol();
 
             //- Set all species to zero
-            forAll(species, i)
+            forAll(species, s)
             {
                 if
                 (
-                    oxidizerMolFraction[species[i]] > 1e-10
-                 || fuelMolFraction[species[i]] > 1e-10
+                    oxidizerMolFraction[s] > 1e-10
+                 || fuelMolFraction[s] > 1e-10
                 )
                 {
-                    speciesMol_[species[i]] =
-                        oxidizerMolFraction[species[i]] * (1 - Zvalue)
-                      + fuelMolFraction[species[i]] * Zvalue;
+                    speciesMol_[s] =
+                        oxidizerMolFraction[s] * (1 - Zvalue)
+                      + fuelMolFraction[s] * Zvalue;
                 }
                 else
                 {
-                    speciesMol_[species[i]] = 0;
+                    speciesMol_[s] = 0;
                 }
             }
 
@@ -98,12 +160,11 @@ AFC::MixtureFraction::MixtureFraction
             {
                 Info<< "Discrete point Z (mol): " << Z_ << endl;
 
-                forAll(species, i)
+                forAll(species, s)
                 {
-                    if (speciesMol_.at(species[i]) > 0)
+                    if (speciesMol_.at(s) > 0)
                     {
-                        Info<< species[i] << ": " 
-                            << speciesMol_.at(species[i]) << endl;
+                        Info<< s << ": " << speciesMol_.at(s) << endl;
                     }
                 }
             }
@@ -127,23 +188,23 @@ AFC::MixtureFraction::MixtureFraction
             map<word, scalar> fuelMassFraction = prop.fuelCompMass();
 
             //- Set all species to zero
-            forAll(species, i)
+            forAll(species, s)
             {
-                if (oxidizerMassFraction[species[i]] > 1e-10)
+                if (oxidizerMassFraction[s] > 1e-10)
                 {
-                    speciesMass_[species[i]] =
-                        oxidizerMassFraction[species[i]]
+                    speciesMass_[s] =
+                        oxidizerMassFraction[s]
                       * (-1 * Zvalue + 1);
                 }
-                else if (fuelMassFraction[species[i]] > 1e-10)
+                else if (fuelMassFraction[s] > 1e-10)
                 {
-                    speciesMass_[species[i]] =
-                        fuelMassFraction[species[i]]
+                    speciesMass_[s] =
+                        fuelMassFraction[s]
                       * Zvalue;
                 }
                 else
                 {
-                    speciesMass_[species[i]] = 0;
+                    speciesMass_[s] = 0;
                 }
             }
 
@@ -151,28 +212,30 @@ AFC::MixtureFraction::MixtureFraction
             {
                 Info<< "Discrete point Z (mass): " << Z_ << endl;
 
-                forAll(species, i)
+                forAll(species, s)
                 {
-                    if (speciesMass_.at(species[i]) > 0)
+                    if (speciesMass_.at(s) > 0)
                     {
-                        Info<< species[i] << ": " 
-                            << speciesMass_.at(species[i]) << endl;
+                        Info<< s << ": " << speciesMass_.at(s) << endl;
                     }
                 }
             }
             //- Calculate mol fraction X
             YtoX();
         }
-    }
+    }*/
 
     //- Initiate all other stuff
     {
         //- Calculate concentration [X]
-        XtoC();
+//        XtoC();
 
         //- Calculate mean density rho
-        rhoX();
+//        rhoX();
     }
+
+    //- Generate a log file
+    summary();
 }
 
 
@@ -189,7 +252,28 @@ AFC::MixtureFraction::~MixtureFraction()
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-void AFC::MixtureFraction::calculateMeanMW
+int AFC::MixtureFraction::nZPoints() const
+{
+    return properties_.nZPoints();
+}
+
+
+AFC::scalar AFC::MixtureFraction::Zvalue
+(
+    const int& x
+)
+{
+    return Z_[x];
+}
+
+
+AFC::scalarField& AFC::MixtureFraction::T() 
+{
+    return T_;
+}
+
+
+/*void AFC::MixtureFraction::calculateMeanMW
 (
     const word& funcSW
 )
@@ -337,7 +421,7 @@ void AFC::MixtureFraction::calculateOmega
 {
     chemistry_.calculateOmega(T, con, thermo_);
 }
-
+*/
 
 /*AFC::scalar AFC::MixtureFraction::calculateHf
 (
@@ -351,7 +435,7 @@ void AFC::MixtureFraction::calculateOmega
 
 // * * * * * * * * * * * * Conversation Functions  * * * * * * * * * * * * * //
 
-void AFC::MixtureFraction::YtoX()
+/*void AFC::MixtureFraction::YtoX()
 {
     const wordList& species = chemistry_.species();
 
@@ -545,12 +629,21 @@ void AFC::MixtureFraction::rhoC()
     {
         Info<< "    Mean density (rhoC): " << rho_ << endl;
     }
-}
+}*/
 
 
 // * * * * * * * * * * * * * * * Return Functions  * * * * * * * * * * * * * //
 
-AFC::map<AFC::word, AFC::scalar> AFC::MixtureFraction::mol() const
+AFC::scalar AFC::MixtureFraction::C
+(
+    const scalar& T 
+) const
+{
+    return thermo_.C(T);
+}
+
+
+/*AFC::map<AFC::word, AFC::scalar> AFC::MixtureFraction::mol() const
 {
     return speciesMol_;
 }
@@ -621,6 +714,36 @@ AFC::scalar AFC::MixtureFraction::G() const
 {
     return G_;
 }
+*/
 
+
+// * * * * * * * * * * * * * * Summary function  * * * * * * * * * * * * * * //
+
+void AFC::MixtureFraction::summary() const
+{
+    std::filebuf file;
+
+    //- Open file
+    file.open("analyze", std::ios::out);
+
+    std::ostream data(&file);
+
+    //- Set scientific notation
+    data.setf(std::ios::scientific, std::ios::floatfield);
+
+    //- Header
+    data<< Header() << "\n"; 
+
+    //- Build the chemistry summary
+    chemistry_.summary(data);
+
+    //- Build the thermodynamic summary
+    thermo_.summary(data);
+
+
+    //file<< dataOfChemistry;
+
+    file.close();
+}
 
 // ************************************************************************* //

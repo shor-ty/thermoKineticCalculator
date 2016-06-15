@@ -38,6 +38,11 @@ AFC::Properties::Properties
 
     chemistry_(chemistry)
 {
+    if (debug_)
+    {
+        Info<< "Properties Constructor\n" << endl;
+    }
+
     PropertiesReader mixFracReader(fileName);
 
     mixFracReader.read(*this);
@@ -51,7 +56,7 @@ AFC::Properties::Properties
 
 AFC::Properties::~Properties()
 {
-    if (debug)
+    if (debug_)
     {
         Info<< "Destruct Properties\n" << endl;
     }
@@ -62,19 +67,19 @@ AFC::Properties::~Properties()
 
 void AFC::Properties::insertMFPoints
 (
-    const int& mfPoints
+    const int& nZPoints
 )
 {
-    mfPoints_ = mfPoints;
+    nZPoints_ = nZPoints;
 }
 
 
 void AFC::Properties::insertVMFPoints
 (
-    const int& vmfPoints
+    const int& nZvarPoints
 )
 {
-    vmfPoints_ = vmfPoints;
+    nZvarPoints_ = nZvarPoints;
 }
 
 
@@ -101,7 +106,7 @@ void AFC::Properties::insertTemperatureOxidizer
     const scalar& TOxidizer
 )
 {
-    if (debug)
+    if (debug_)
     {
         Info<< "Oxidizer temperature: " << TOxidizer << endl;
     }
@@ -115,7 +120,7 @@ void AFC::Properties::insertTemperatureFuel
     const scalar& TFuel
 )
 {
-    if (debug)
+    if (debug_)
     {
         Info<< "Fuel temperature: " << TFuel << endl;
     }
@@ -131,7 +136,7 @@ void AFC::Properties::insertCompositionOxidizerMol
     const bool& lastEntry
 )
 {
-    if (debug)
+    if (debug_)
     {
         Info<< "Oxidizer species (mol): " << species << "  " << molFraction << endl;
     }
@@ -154,7 +159,7 @@ void AFC::Properties::insertCompositionOxidizerMass
     const bool& lastEntry
 )
 {
-    if (debug)
+    if (debug_)
     {
         Info<< "Oxidizer species (mass): " << species << "  " << massFraction << endl;
     }
@@ -177,7 +182,7 @@ void AFC::Properties::insertCompositionFuelMol
     const bool& lastEntry
 )
 {
-    if (debug)
+    if (debug_)
     {
         Info<< "Fuel species (mol): " << species << "  " << molFraction << endl;
     }
@@ -200,7 +205,7 @@ void AFC::Properties::insertCompositionFuelMass
     const bool& lastEntry
 )
 {
-    if (debug)
+    if (debug_)
     {
         Info<< "Fuel species (mass): " << species << "  " << massFraction << endl;
     }
@@ -221,7 +226,7 @@ void AFC::Properties::insertRunTime
     const scalar& runTime 
 )
 {
-    if (debug)
+    if (debug_)
     {
         Info<< "Run time of calculation: " << runTime << endl;
     }
@@ -235,7 +240,7 @@ void AFC::Properties::insertWriteControl
     const word& writeControl
 )
 {
-    if (debug)
+    if (debug_)
     {
         Info<< "Write control: " << writeControl << endl;
     }
@@ -249,7 +254,7 @@ void AFC::Properties::insertWriteControlInterval
     const scalar& writeControlInterval
 )
 {
-    if (debug)
+    if (debug_)
     {
         Info<< "Write control interval: " << writeControlInterval << endl;
     }
@@ -263,7 +268,7 @@ void AFC::Properties::insertDeltaT
     const scalar& deltaT 
 )
 {
-    if (debug)
+    if (debug_)
     {
         Info<< "Algorithm deltaT: " << deltaT << endl;
     }
@@ -297,7 +302,7 @@ void AFC::Properties::inputMass()
 
 void AFC::Properties::check()
 {
-    if (mfPoints_ == 0)
+    if (nZPoints_ == 0)
     {
         FatalError
         (
@@ -307,7 +312,7 @@ void AFC::Properties::check()
         );
     }
 
-    if (vmfPoints_ == 0)
+    if (nZvarPoints_ == 0)
     {
         FatalError
         (
@@ -381,15 +386,15 @@ void AFC::Properties::check()
 
     if (inputMol_)
     {
-        if (debug)
+        if (debug_)
         {
             Info<< "Input of fraction is mol.\n" << endl;
         }
 
         //- Oxidizer
-        forAll(speciesOxidizer_, i)
+        forAll(speciesOxidizer_, s)
         {
-            sum += oxidizerX_[speciesOxidizer_[i]];
+            sum += oxidizerX_.at(s);
         } 
 
         //- Double comparison; with epsilon
@@ -409,9 +414,9 @@ void AFC::Properties::check()
         //- Fuel
         sum = 0;
 
-        forAll(speciesFuel_, i)
+        forAll(speciesFuel_, s)
         {
-            sum += fuelX_[speciesFuel_[i]];
+            sum += fuelX_.at(s);
         }
 
         //- Double comparison; with epsilon
@@ -430,15 +435,15 @@ void AFC::Properties::check()
     }
     else if (inputMass_)
     {
-        if (debug)
+        if (debug_)
         {
             Info<< "Input of fraction is mass.\n" << endl;
         }
 
         //- Oxidizer
-        forAll(speciesOxidizer_, i)
+        forAll(speciesOxidizer_, s)
         {
-            sum += oxidizerY_[speciesOxidizer_[i]];
+            sum += oxidizerY_.at(s);
         } 
 
         //- Double comparison; with epsilon
@@ -458,9 +463,9 @@ void AFC::Properties::check()
         //-Fuel
         sum = 0;
 
-        forAll(speciesFuel_, i)
+        forAll(speciesFuel_, s)
         {
-            sum += fuelY_[speciesFuel_[i]];
+            sum += fuelY_.at(s);
         }
 
         //- Double comparison; with epsilon
@@ -520,17 +525,17 @@ void AFC::Properties::XtoY
     forAll(speciesChem, speciesI)
     {
         YbyM +=
-            thermo_.MW(speciesChem[speciesI])
-          * oxidizerX_[speciesChem[speciesI]];
+            thermo_.MW(speciesI)
+          * oxidizerX_[speciesI];
     } 
 
     if (tmp == "O")
     {    
         forAll(speciesOxidizer_, speciesI)
         {
-            oxidizerY_[speciesOxidizer_[speciesI]] =
-                (oxidizerX_.find(speciesOxidizer_[speciesI])->second
-              / thermo_.MW(speciesOxidizer_[speciesI]))
+            oxidizerY_[speciesI] =
+                (oxidizerX_.find(speciesI)->second
+              / thermo_.MW(speciesI))
               / YbyM;
         }
     }
@@ -539,9 +544,9 @@ void AFC::Properties::XtoY
     {
         forAll(speciesFuel_, speciesI)
         {
-            fuelY_[speciesFuel_[speciesI]] =
-                (fuelX_.find(speciesFuel_[speciesI])->second
-              / thermo_.MW(speciesFuel_[speciesI]))
+            fuelY_[speciesI] =
+                (fuelX_.find(speciesI)->second
+              / thermo_.MW(speciesI))
               / YbyM;
         }
     }
@@ -558,30 +563,24 @@ void AFC::Properties::YtoX
     //- get all species from chemistry 
     const wordList& speciesChem = chemistry_.species();
 
-    forAll(speciesChem, speciesI)
+    forAll(speciesChem, s)
     {
-        const word& speciesI_ = speciesChem[speciesI];
-
-        YbyM += thermo_.MW(speciesI_) * oxidizerX_[speciesChem[speciesI]];
+        YbyM += thermo_.MW(s) * oxidizerX_.at(s);
     } 
 
     if (tmp == "O")
     {    
-        forAll(speciesOxidizer_, speciesI)
+        forAll(speciesOxidizer_, s)
         {
-            oxidizerY_[speciesOxidizer_[speciesI]] =
-                oxidizerX_.find(speciesOxidizer_[speciesI])->second
-              / YbyM;
+            oxidizerY_[s] = oxidizerX_.at(s) / YbyM;
         }
     }
 
     if (tmp == "F")
     {
-        forAll(speciesFuel_, speciesI)
+        forAll(speciesFuel_, s)
         {
-            fuelY_[speciesFuel_[speciesI]] =
-                fuelX_.find(speciesFuel_[speciesI])->second
-              / YbyM;
+            fuelY_[s] = fuelX_.at(s) / YbyM;
         }
     }
 }
@@ -637,15 +636,15 @@ AFC::scalarField AFC::Properties::sDRs() const
 }
 
 
-int AFC::Properties::mfPoints() const
+int AFC::Properties::nZPoints() const
 {
-    return mfPoints_;
+    return nZPoints_;
 }
 
 
-int AFC::Properties::vmfPoints() const
+int AFC::Properties::nZvarPoints() const
 {
-    return vmfPoints_;
+    return nZvarPoints_;
 }
 
 

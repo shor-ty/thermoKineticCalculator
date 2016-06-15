@@ -71,6 +71,7 @@ class ChemistryReader
             //- Chemistry file
             string file_;
 
+        // Debug switch - from StringManipulator
 
     public:
 

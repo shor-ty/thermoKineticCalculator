@@ -22,21 +22,21 @@ License
     along with AFC; if not, see <http://www.gnu.org/licenses/>
 
 Class
-    AFC::StringManipulator
-
+    AFC::Numerics
+    
 Description
-    Class for string manipulations and file operations 
+    Abstract AFC::Numerics class for building and calculating matrices
 
 SourceFiles
-    stringManipulation.cpp
+    numerics.cpp
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef StringManipulator_hpp
-#define StringManipulator_hpp
+#ifndef Numerics_hpp
+#define Numerics_hpp
 
 #include "typedef.hpp"
-#include <fstream>
+#include "mixtureFraction.hpp"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -44,57 +44,46 @@ namespace AFC
 {
 
 /*---------------------------------------------------------------------------*\
-                      Class StringManipulator Declaration
+                            Class Numerics Declaration
 \*---------------------------------------------------------------------------*/
 
-class StringManipulator
+class Numerics
 {
-    protected:
-
-        // Debug switch
-        bool debug_{false};
-
-
     private:
+
+        // Debug swithc
+        bool debug{false};
+
+        // Private Data
+
 
 
     public:
 
-        //- Constructor
-        StringManipulator();
+        //- Constructor 
+        Numerics();
 
         //- Destructor
-        ~StringManipulator();
+        ~Numerics();
 
 
-        // Member function
+        // Member functions
 
-            //- Open file and return file content as stringList
-            const stringList readFile
+            //- solve Jacobian
+            void jacobian
             (
-                const string& 
+                MixtureFraction&
             );
 
-            //- Split string; delimiter ' '
-            const stringList splitStrAtWS 
+            //- Solve field with matrix M_
+            void solve
             (
-                const string&
+                scalarField&,
+                const scalar&
             );
-
-            //- Split string; delimiter as parameter
-            const stringList splitStrAtDelimiter
-            (
-                const string&,
-                const char delimiter
-            );
-
-            //- Remove str2 from str and return str from 0 - pos
-            const string removeAtEnd
-            (
-                const string&,
-                const string&
-            );
+        
 };
+
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -102,6 +91,6 @@ class StringManipulator
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-#endif // StringManipulator_hpp included
+#endif // Numerics_hpp included
 
 // ************************************************************************* //

@@ -31,13 +31,23 @@ License
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 AFC::StringManipulator::StringManipulator()
-{}
+{
+    if (debug_)
+    {
+        Info<< "Constructor StringManipulator\n" << endl;
+    }
+}
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
 AFC::StringManipulator::~StringManipulator()
-{}
+{
+    if (debug_)
+    {
+        Info<< "Destructur StringManipulator\n" << endl;
+    }
+}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
@@ -47,6 +57,12 @@ const AFC::stringList AFC::StringManipulator::readFile
     const string& filePath
 )
 {
+    if (debug_)
+    {
+        Info<< "Debug: " << debug_ << endl;
+        Info<< " --> AFC::StringManipulator::readFile" << endl;
+    }
+
     std::ifstream file;
 
     file.open(filePath.c_str(), std::ios::in);
@@ -74,6 +90,9 @@ const AFC::stringList AFC::StringManipulator::readFile
     //- Remove last entry
     fileContent.resize(fileContent.size()-1);
 
+    //- Close file
+    file.close();
+
     return fileContent;
 }
 
@@ -83,6 +102,11 @@ const AFC::stringList AFC::StringManipulator::splitStrAtWS
     const string& str
 )
 {
+    if (debug_)
+    {
+//        Info<< " --> AFC::StringManipulator::splitStrAtWS" << endl;
+    }
+
     //- Split string at whitespace
     std::istringstream tmp(str);
 
@@ -102,6 +126,13 @@ const AFC::stringList AFC::StringManipulator::splitStrAtDelimiter
     const char delimiter
 )
 {
+    if (debug_)
+    {
+        Info<< " --> AFC::StringManipulator::splitStrAtDelimiter" << endl;
+        Info<< "String to split: " << str << endl;
+        Info<< "Delimiter is: " << delimiter << endl;
+    }
+
     //- Split string at delimiter and return the stringList
     std::stringstream tmp(str);
     string element;
@@ -122,7 +153,11 @@ const AFC::string AFC::StringManipulator::removeAtEnd
     const string& str2
 )
 {
-    Info<< str << endl;
+    if (debug_)
+    {
+        Info<< " --> AFC::StringManipulator::removeAtEnd" << endl;
+    }
+
     //- Find position of str2
     std::size_t pos = str.find(str2);
 

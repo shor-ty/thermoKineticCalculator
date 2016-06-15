@@ -16,8 +16,7 @@ License
     AFC is distributed in the hope that it will be useful, but
     WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-    See the GNU General Public License for more details.
-
+    See the GNU General Public License for more details.  
     You should have received a copy of the GNU General Public License
     along with AFC; if not, see <http://www.gnu.org/licenses/>
 
@@ -33,6 +32,12 @@ std::ostream& AFC::Error = std::cerr;
 
 std::basic_ostream<char>& (& AFC::endl)(std::basic_ostream<char>&)
     = std::endl;
+
+
+void AFC::Print()
+{
+    Info<< ":::" << endl;
+}
 
 
 void AFC::FatalError
@@ -66,20 +71,25 @@ void AFC::Warning
 }
 
 
-void AFC::Header()
+AFC::string AFC::Header()
 {
-    Info<< \
+    string header = \
 "\
 /*------------------------------------------------------------------------*\\\
 \n|  c-o-o-c-o-o-o             |                                             |\
-\n|  |     |     A utomatic    | Open Source Flamelet                        |\
-\n|  c-o-o-c     F lamelet     |                                             |\
-\n|  |     |     C onstructor  | Copyright (C) 2015 Holzmann-cfd             |\
+\n|  |     |     A utomatic    | AFC: The Open Source Flamelet Toolbox       |\
+\n|  c-o-o-c     F lamelet     | Version: 1.0.0                              |\
+\n|  |     |     C onstructor  | Web: www.Holzmann-cfd.de                    |\
 \n|  c     c-o-o-o             |                                             |\
 \n\
 \\*------------------------------------------------------------------------*/\
-\n" << endl;
+\n";
+
+    return header;
 }
+
+// * * * * * * * * * * * * * * String Conversation * * * * * * * * * * * * * //
+
 
 
 // ************************************************************************* //

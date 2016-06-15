@@ -43,6 +43,80 @@ AFC::ThermoCalc::~ThermoCalc()
 
 // * * * * * * * * * * * * * Calculation Functions * * * * * * * * * * * * * //
 
+AFC::scalar AFC::ThermoCalc::MmeanX
+(
+    const map<word, scalar>& X,
+    const map<word, scalar>& MW
+) const
+{
+    scalar tmp{0};
+
+    forAll(X, s)
+    {
+        tmp += s.second * MW.at(s.first); 
+    }
+
+    return tmp;
+}
+
+
+AFC::scalar AFC::ThermoCalc::MmeanY
+(
+    const map<word, scalar>& Y,
+    const map<word, scalar>& MW
+) const
+{
+    scalar tmp{0};
+
+    forAll(Y, s)
+    {
+        tmp += s.second / MW.at(s.first); 
+    }
+
+    return pow(tmp, -1);
+}
+
+
+AFC::scalar AFC::ThermoCalc::MmeanC
+(
+    const map<word, scalar>& C,
+    const map<word, scalar>& MW
+) const
+{
+    scalar tmp{0};
+    scalar sumC{0};
+
+    forAll(C, s)
+    {
+        tmp += s.second * MW.at(s.first); 
+        sumC += s.second;
+    }
+
+    return tmp/sumC;
+}
+
+
+AFC::scalar AFC::ThermoCalc::rhoMean
+(
+    const scalar& Mmean,
+    const scalar& p,
+    const scalar& T
+) const
+{
+    return (p * Mmean/ (AFC::Constants::R * T));
+}
+
+
+AFC::scalar AFC::ThermoCalc::C
+(
+    const scalar& p,
+    const scalar& T
+) const
+{
+    return (p / (AFC::Constants::R * T));
+}
+
+
 AFC::scalar AFC::ThermoCalc::cp
 (
     const word& species,
@@ -152,10 +226,13 @@ AFC::scalar AFC::ThermoCalc::Hf
 ) const
 {
     //- Get information about species (atoms)
-    const wordList& atoms = data.speciesAtoms(species);
+/*    const wordList& atoms = data.speciesAtoms(species);
 
     //- Get information about multiplicator
     const scalarList& factors = data.atomFactors(species);
+
+    //- 
+    const map<word, scalar>& factor = data.atomFactors();
 
     //- New multiplicator based on stable species
     scalarList newFactors;
@@ -170,43 +247,43 @@ AFC::scalar AFC::ThermoCalc::Hf
         {
             if
             (
-                atoms[a] == "O"
-             || atoms[a] == "H"
-             || atoms[a] == "N"
+                a == "O"
+             || a == "H"
+             || a == "N"
             )
             {
-                newFactors.push_back(factors[a]/2);
+                newFactors.push_back(factor.at(a)/2);
             }
-            else if (atoms[a] == "AR")
+            else if (a == "AR")
             {
-                newFactors.push_back(factors[a]);
+                newFactors.push_back(factor.at(a));
             }
             else
             {
-                newFactors.push_back(factors[a]);
+                newFactors.push_back(factor.at(a));
             }
         }
         //- ATOMS:: Convert to stable atoms
         {
-            if (atoms[a] == "O")
+            if (a == "O")
             {
                 newAtoms.push_back("O2");
             }
-            else if (atoms[a] == "H")
+            else if (a == "H")
             {
                 newAtoms.push_back("H2");
             }
-            else if (atoms[a] == "N")
+            else if (a == "N")
             {
                 newAtoms.push_back("N2");
             }
-            else if (atoms[a] == "C")
+            else if (a == "C")
             {
                 newAtoms.push_back("CSOLID");
             }
             else
             {
-                newAtoms.push_back(atoms[a]);
+                newAtoms.push_back(a);
             }
         }
     }
@@ -227,7 +304,7 @@ AFC::scalar AFC::ThermoCalc::Hf
 
     forAll(newAtoms, a)
     {
-        Hatoms.push_back(H(newAtoms[a], T, data));
+        Hatoms.push_back(H(a, T, data));
     }
 
     scalar deltaHf = Hspecies;
@@ -238,7 +315,8 @@ AFC::scalar AFC::ThermoCalc::Hf
        deltaHf -= Hatoms[a] * newFactors[a]; 
     }
 
-    return deltaHf;
+    return deltaHf;*/
+        return 0;
 }
 
 

@@ -51,6 +51,10 @@ class ChemistryData
 {
     private:
 
+        // Debug switch
+        bool debug{false};
+
+
         // Private data
 
             //- List of elements
@@ -74,40 +78,41 @@ class ChemistryData
             //- Reaction rate constant Kc for each reaction
             scalarList Kc_;
 
-            //- stringList for elementar reaction
-            stringList elementarReaction_;
+            //- Elementar reaction
+            List<string> elementarReaction_;
 
-            //- Matrix that contains all species in the reaction
-            wordMatrix speciesInReactions_;
+            //- Matrix that contains all species in reaction r
+            List<wordList> speciesInReaction_;
 
-            //- Contains all reaction no. where species is included
-            map<word, intList> reacNumbers_;
+            //- Contains all reaction numbers where species i is included
+            map<word, List<int>> reactionI_;
 
             //- boolList for TBR  
             //  + true if [M] is there
             //  + false if [M] is not included
-            boolList TBR_;
+            List<bool> TBR_;
 
             //- boolList for TBR Enhanced Factors
             //  + ture if [M] is modified
             //  + false if [M] represend all species
-            boolList ENHANCE_;
+            List<bool> ENHANCE_;
 
             //- boolList for TBR LOW
             //  + true if 
-            boolList LOW_;
+            List<bool> LOW_;
 
             //- boolList for TBR TROE 
             boolList TROE_;
 
             //- boolList for TBR SRI 
-            boolList SRI_;
+            List<bool> SRI_;
 
             //- boolList for backward reaction 
-            boolList backwardReaction_;
+            List<bool> backwardReaction_;
 
-            //- Matrix of stochiometric coeffs
-            matrix nu_;
+            //- Field that include all stochiometric values for species i
+            //  in reaction r
+            mapList<word, scalar> nu_;
 
             //- Composition of enhanced factors (species + value)
             mapList<word, scalar> enhancedFactors_;
@@ -153,25 +158,25 @@ class ChemistryData
         // Insert functions, from ChemistryReader:: delegated 
 
             //- Insert elements
-            void insertElements
+            void elements
             (
                 const word&
             );
 
             //- Insert species
-            void insertSpecies
+            void species
             (
                 const word&
             );
 
             //- Insert elementar reaction
-            void insertElementarReaction
+            void elementarReaction
             (
                 const string&
             );
 
-            //- Insert arrhenius coeffs
-            void insertArrheniusCoeffs
+            //- Set arrhenius coeffs
+            void arrheniusCoeffs
             (
                 const scalar&,
                 const scalar&,
@@ -179,28 +184,28 @@ class ChemistryData
             );
 
             //- Insert LOW coeffs
-            void insertLOWCoeffs
+            void LOWCoeffs
             (
                 const scalar&,
                 const unsigned int&
             );
 
             //- Insert TROE coeffs
-            void insertTROECoeffs
+            void TROECoeffs
             (
                 const scalar&,
                 const unsigned int&
             );
 
             //- Insert SRI coeffs
-            void insertSRICoeffs
+            void SRICoeffs
             (
                 const scalar&,
                 const unsigned int&
             );
 
             //- Insert ENHANCE factors (species + value) 
-            void insertEnhanceFactors
+            void enhanceFactors
             (
                 const word&,
                 const scalar&
@@ -212,14 +217,15 @@ class ChemistryData
             //- Increment nReac_
             void incrementReac();
 
-            //- Insert stochiometric coeffs
-            void insertNu
+            //- Insert species and stochiometric coeff
+            void speciesNu
             (
+                const word&,
                 const scalar&
             );
 
-            //- Insert species (reac|prod) 
-            void insertReacProd
+            //- Build List<wordList> of species included in reaction r
+            void speciesInReaction
             (
                 const word&
             );
@@ -231,22 +237,22 @@ class ChemistryData
         // Setter functions, from ChemistryReader:: delegated
 
             //- Set the backward reaction boolean
-            void setBR();
+            void BR(const bool);
 
             //- Set the TBR boolean
-            void setTBR();
+            void TBR(const bool);
 
             //- Set the LOW boolean
-            void setLOW();
+            void LOW(const bool);
 
             //- Set the TROE boolean
-            void setTROE();
+            void TROE(const bool);
 
             //- Set the SRI boolean
-            void setSRI();
+            void SRI(const bool);
 
             //- Set the Enhance boolean
-            void setENHANCE();
+            void ENHANCE(const bool);
 
             //- Set the reaction no. where species is included
             void setReacNumbers
@@ -303,31 +309,31 @@ class ChemistryData
                     const int&
                 ) const;
 
-                //- LOW
-                bool LOW
-                (
-                    const int&
-                ) const;
-
-                //- TROE
-                bool TROE
-                (
-                    const int&
-                ) const;
-
-                //- TBR
+                //- Return true if elementar reaction is a TBR reaction
                 bool TBR
                 (
                     const int&
                 ) const;
 
-                //- SRI
+                //- Return true if elementar reaction is a LOW reaction
+                bool LOW
+                (
+                    const int&
+                ) const;
+
+                //- Return true if elementar reaction is a TROE reaction
+                bool TROE
+                (
+                    const int&
+                ) const;
+
+                //- Return true if elementar reaction is a SRI reaction
                 bool SRI
                 (
                     const int&
                 ) const;
 
-                //- ENHANCED
+                //- Return true if elementar reaction has enhanced factors
                 bool ENHANCED
                 (
                     const int&
@@ -336,6 +342,9 @@ class ChemistryData
 
             //- Return all species as wordList
             wordList species() const;
+
+            //- Return all elements as wordList
+            wordList elements() const;
 
             //- Return no. of reaction
             int nReac() const;
@@ -350,13 +359,13 @@ class ChemistryData
             ) const;
 
             //- Return List of reaction no. of species
-            intList reacNumbers
+            List<int> reacNumbers
             (
                 const word&
             ) const;
 
             //- Return species matrix for reactions
-            wordMatrix speciesInReactions() const;
+            wordMatrix speciesInReaction() const;
 
             //- Return species list for reaction r
             wordList speciesInReaction
@@ -365,6 +374,9 @@ class ChemistryData
             ) const;
 
             //- Return arrhenius coeffs for reaction no.
+            //  [0] -> pre-exponent [units depend on equation]
+            //  [1] -> temperature exponent [-]
+            //  [2] -> activation energy [cal/mol]
             scalarList arrheniusCoeffs
             (
                 const int&
@@ -443,11 +455,15 @@ class ChemistryData
             //- Return omega field
             scalarField omega() const;
 
-            //- Return stochiometric factors of reaction r
-            scalarList nu
+            //- Return map of stochiometric factors of reaction r
+            map<word, scalar> nu
             (
-                const int&
+                const int& 
             ) const;
+
+            //- Return mapList of stochiometric factors of all reactions
+            mapList<word, scalar> nu() const;
+
 
 };
 
