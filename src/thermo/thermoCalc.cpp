@@ -183,6 +183,7 @@ AFC::scalar AFC::ThermoCalc::S
           + coeffs[3] * pow(T, 3) / 3
           + coeffs[4] * pow(T, 4) / 4
           + coeffs[6]
+          + log(thermoData.p()/AFC::Constants::p0)
         ) * AFC::Constants::R
     );
 }

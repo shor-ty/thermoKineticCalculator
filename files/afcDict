@@ -1,44 +1,90 @@
 
+    //- Stuff for adiabatic flame calculation 
+    oxidizer O2
+    fuel H2
+    inertGas AR
+
+    //- Stuff for flamelet calculation
+    //  Either use molFraction or massFraction
+    molFractionOxidizer
+    {
+        O2 1
+    }
+
+    molFractionFuel
+    {
+        H2 1
+    }   
+
+    //- Pressure
     pressure 1e5
 
+    //- Discretization points in 1D  
     mixtureFractionPoints 20
 
+    //- Discretization points for varianz of mixture fraciton Z''
+    //  Used in PDF (probability distribution fucntion, beta-PDF)
     varianzOfMixtureFractionPoints 20
 
+    //- Scalar dissipation rates, for each rate the flamelet will be
+    //  calculated;
     scalarDissipationRates
     {
         1e-6
     }
          
 
-    temperatureOxidizer 298
+    //- Temperature of fuel and oxidizer at inlets
+    temperatureOxidizer 300
+    temperatureFuel 300
 
-    molFractionOxidizer
-!    massFractionOxidizer
-    {
-        N2 1
-    }
-
-    temperatureFuel 298
-
-    molFractionFuel
- !   massFractionFuel
-    {
-        N2 1
-    }   
-
+    //- Enthalpy defects in [J/kJ]; 
+    //  + negative, energy will be excluded
+    //  + positive, energy will be added
+    //  this value is a source/sink in the temperature equation
     enthalpyDefects
     {
         0
     }
 
+    //- AFC Controls 
     afcControl
     {
-        runTime     0.005
-        deltaT      0.001
+        //- Transient simulation, end time
+        runTime     2
 
+        //- Time step
+        deltaT      0.01
+
+        //- Write transient data each x seconds
         writeInterval   1
         writeControl    endTime
 
     }
 
+    //- Data should only be interpreted -> output files
+    //  If analysed is used, no flamelet calculation is done 
+    interpreter
+    {
+        //- Output type, either into file or monitor
+        type    file;
+        file    afc.interpreter
+
+        //- Which data should be analysed
+        analyse  THERMO 
+        thermo      true;
+        chemistry   true; 
+        properties  true;
+    }
+
+    summary
+    {
+        //- Output type, either into file or monitor
+        type        file;
+        file        afc.summary
+
+        //- Summary output (yes, false)
+        thermo      true;
+        chemistry   true;
+        properties  true;
+    }

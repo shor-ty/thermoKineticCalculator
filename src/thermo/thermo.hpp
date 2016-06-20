@@ -155,6 +155,11 @@ class Thermo
                 const scalar&
             ) const;
 
+            //- Return low temperature bound (from NASA)
+            scalar LT
+            (
+                const word&
+            ) const;
 
         // Summary function
 
@@ -162,6 +167,14 @@ class Thermo
             (
                 ostream&
             ) const;
+
+            //- Return factors of atoms in species s
+            scalarList elementsFactors
+            (
+                const word&
+            ) const;
+
+            
 };
 
 

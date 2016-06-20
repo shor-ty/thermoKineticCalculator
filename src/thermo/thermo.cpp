@@ -173,8 +173,25 @@ void AFC::Thermo::summary
     ostream& data
 ) const
 {
+    return thermoData_.HT(species);
+}
 
 
+AFC::wordList AFC::Thermo::elementsInSpecies
+(
+    const word& species
+) const
+{
+    return thermoData_.elementsInSpecies(species);
+}
+
+
+AFC::scalarList AFC::Thermo::elementsFactors
+(
+    const word& species
+) const
+{
+    return thermoData_.elementsFactors(species);
 }
 
 

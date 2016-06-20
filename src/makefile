@@ -25,6 +25,7 @@ SOURCE_FILES=automaticFlameletCreator.cpp \
 			 transport/transport.cpp \
 			 transport/transportReader.cpp \
 			 transport/transportData.cpp \
+			 transport/transportCalc.cpp \
 			 properties/properties.cpp \
 			 properties/propertiesReader.cpp \
 			 mixtureFraction/mixtureFraction.cpp \
@@ -42,7 +43,7 @@ OBJ := $(addprefix obj/,$(addsuffix .o,$(basename $(SOURCE_FILES))))
 obj/%.o: %.cpp | obj
 	    g++ $(CPPFLAGS) $(INC_DIR) -c $< -o $@
 
-automaticFlameletCreator : $(OBJ) 
+automaticFlameletCreator : $(OBJ)  mixtureFraction/interprete.cpp
 	g++ $(CPPFLAGS) $(INC_DIR) -o $@ $^
 
 

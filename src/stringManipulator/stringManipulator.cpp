@@ -123,7 +123,7 @@ const AFC::stringList AFC::StringManipulator::splitStrAtWS
 const AFC::stringList AFC::StringManipulator::splitStrAtDelimiter
 (
     const string& str,
-    const char delimiter
+    const char& delimiter
 )
 {
     if (debug_)

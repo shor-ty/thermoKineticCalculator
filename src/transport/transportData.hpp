@@ -55,6 +55,9 @@ class TransportData
             //- List of species
             wordList species_;
 
+            //- List of species used in the elementar reactions
+            wordList chemSpecies_;
+
             //- Hashtable for geometrical configuration
             //  Definiton:
             //      + 0 molecule is single atom
@@ -78,6 +81,15 @@ class TransportData
             //- Hashtable for rotational relaxation collision number Zrot
             //  at 298K
             map<word, scalar> rotRelCollNumb_;
+
+
+        // Transport data for fitting procedure 
+
+            //- Pure species viscosity
+            //  Species, Temp, Value
+            mapMap<word, scalar, scalar> viscosity_;
+
+            //- Pure binary diffusion coefficients
 
 
     public:
@@ -137,11 +149,46 @@ class TransportData
                 const scalar&
             );
 
+        // Insert function from afc.cpp
+
+            //- Insert chemical species
+            void chemSpecies
+            (
+                const wordList&
+            );
+
 
         // Return functions
         
-            //- Return species as wordList
+            //- Return species 
             wordList species() const;
+
+            //- Return chemical species
+            wordList chemSpecies() const;
+
+            //- Return the geometrical configuration
+            int geometricalConfig
+            (
+                const word&
+            );
+
+            //- Return Lennard-Jones collision diameter [Angstroms]
+            scalar LJCD
+            (
+                const word&
+            ) const;
+
+            //- Return Lennard-Jones potential well depth eps/kb [K]
+            scalar LJP
+            (
+                const word&
+            ) const;
+
+            //- Return the dipole moment [debey]
+            scalar muk
+            (
+                const word&
+            ) const;
 };
 
 

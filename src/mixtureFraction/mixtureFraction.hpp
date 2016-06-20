@@ -164,6 +164,12 @@ class MixtureFraction
 
 
         // Member functions
+
+            //- Calculate density of oxidizer stream
+            void calcRhoOxidizer
+            (
+                const Properties&  
+            );
         
             //- Calculate the mean molecular weight
             void calculateMeanMW

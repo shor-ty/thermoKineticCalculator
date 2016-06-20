@@ -29,6 +29,7 @@ Description
 #ifndef TYPEDEF_HPP
 #define TYPEDEF_HPP
 
+#include <time.h>
 #include <vector>
 #include <string>
 #include <sstream>
@@ -66,6 +67,8 @@ using matrix = std::vector<scalarField>;
 using word = std::string;
 
 using wordList = std::vector<word>;
+
+using intList = std::vector<int>;
 
 using wordMatrix = std::vector<wordList>;
 
@@ -114,6 +117,10 @@ void Warning
 
 string Header();
 
+void Footer
+(
+    const scalar& 
+);
 
 // * * * * * * * * * * * * * * String Conversation * * * * * * * * * * * * * //
 

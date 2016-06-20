@@ -97,6 +97,32 @@ class Chemistry
                 const Thermo&
             );
 
+            //- Calculate forward reaction rate kf ::Interpreter
+            void calculateKf
+            (
+                const int&,
+                const scalar&  
+            );
+
+            //- Calculate equilibrium reaction rate Kc ::Interpreter
+            void calculateKc
+            (
+                const int&,
+                const scalar&,
+                const Thermo&
+            );
+
+            //- Calculate backward reaction kb ::Interpreter
+            void calculateKb ();
+
+
+        // Update Functions
+
+            //- Update [M] (only inert gas) ::Interpreter
+            void updateM
+            (
+                const scalar&
+            );
 
         // Create Functions
 
@@ -195,6 +221,50 @@ class Chemistry
                 ostream&   
             ) const;
 
+            //- Return ENHANCED bool ::Interpreter
+            bool ENHANCED
+            (
+                const int&
+            ) const;
+
+            //- Return LOW bool ::Interpreter
+            bool LOW
+            (
+                const int&
+            ) const;
+
+            //- Return TROE bool ::Interpreter
+            bool TROE
+            (
+                const int&
+            ) const;
+
+            //- Return SRI bool ::Interpreter
+            bool SRI 
+            (
+                const int&
+            ) const;
+
+            //- Return enhanced factors ::Interpreter
+            map<word, scalar> enhancedFactors
+            (
+                const int&
+            ) const;
+
+            //- Return enhanced species ::Interpreter
+            wordList enhancedSpecies
+            (
+                const int&
+            ) const;
+
+            //- Return enthalpy of actual reaction
+            scalar dH() const;
+
+            //- Return entropy of actual reaction
+            scalar dS() const;
+
+            //- Return free Gibbs energy of actual reaction
+            scalar dG() const;
 };
 
 

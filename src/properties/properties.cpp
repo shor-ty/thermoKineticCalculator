@@ -24,6 +24,9 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "properties.hpp"
+#include "constants.hpp"
+#include <cmath>
+//#include <boost/math/special_functions/erf.hpp>
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
@@ -64,6 +67,33 @@ AFC::Properties::~Properties()
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
+
+void AFC::Properties::insertFuel
+(
+    const word& fuel 
+)
+{
+    fuel_ = fuel;
+}
+
+
+void AFC::Properties::insertOxidizer
+(
+    const word& oxidizer 
+)
+{
+    oxidizer_ = oxidizer;
+}
+
+
+void AFC::Properties::insertInertGas
+(
+    const word& inertGas
+)
+{
+    inertGas_ = inertGas;
+}
+
 
 void AFC::Properties::insertMFPoints
 (
@@ -274,7 +304,31 @@ void AFC::Properties::inputMass()
 }
 
 
+void AFC::Properties::insertInterpreter
+(
+    const word& keyword
+)
+{
+    interpreter_ = keyword;
+}
+
+
 // * * * * * * * * * * * * * * * Other functions * * * * * * * * * * * * * * //
+
+void AFC::Properties::initialBoundary()
+{
+    const wordList& species = chemistry_.species();
+
+    forAll(species, s)
+    {
+        oxidizerX_[species[s]] = 0.;
+        oxidizerY_[species[s]] = 0.; 
+
+        fuelX_[species[s]] = 0.;
+        fuelY_[species[s]] = 0.;
+    }
+}
+
 
 void AFC::Properties::check()
 {
@@ -481,6 +535,18 @@ void AFC::Properties::check()
         );
     }
 
+    //- Check if oxidizer is set
+    if (oxidizer().empty())
+    {
+        FatalError
+        (
+            "    No oxidizer species is set.\n"
+            "    Please check the oxidizer keyword in afcDict.",
+            __FILE__,
+            __LINE__
+        );
+    }
+}
 
     // Algorihm control check
 
@@ -561,21 +627,54 @@ void AFC::Properties::XtoY()
 
 // * * * * * * * * * * * * * * * Return Functions  * * * * * * * * * * * * * //
 
+AFC::word AFC::Properties::fuel() const
+{
+    return fuel_;
+}
+
+
+AFC::word AFC::Properties::oxidizer() const
+{
+    return oxidizer_;
+}
+
+
+AFC::word AFC::Properties::inertGas() const
+{
+    return inertGas_;
+}
+
+
 AFC::wordList AFC::Properties::speciesOxidizer() const
 {
     return speciesOxidizer_;
 }
 
 
-AFC::map<AFC::word, AFC::scalar> AFC::Properties::oxidizerCompMol() const
+AFC::map<AFC::word, AFC::scalar> AFC::Properties::oxidizerX() const
 {
     return oxidizerX_;
 }
 
 
-AFC::map<AFC::word, AFC::scalar> AFC::Properties::oxidizerCompMass() const
+AFC::map<AFC::word, AFC::scalar> AFC::Properties::oxidizerY() const
 {
     return oxidizerY_;
+}
+
+
+AFC::scalar AFC::Properties::oxidizerY
+(
+    const word& species 
+) const
+{
+    return oxidizerY_.at(species);
+}
+
+
+AFC::map<AFC::word, AFC::scalar> AFC::Properties::oxidizerZj() const
+{
+    return oxidizerZj_;
 }
 
 
@@ -585,15 +684,30 @@ AFC::wordList AFC::Properties::speciesFuel() const
 }
 
 
-AFC::map<AFC::word, AFC::scalar> AFC::Properties::fuelCompMol() const
+AFC::map<AFC::word, AFC::scalar> AFC::Properties::fuelX() const
 {
     return fuelX_;
 }
 
 
-AFC::map<AFC::word, AFC::scalar> AFC::Properties::fuelCompMass() const
+AFC::map<AFC::word, AFC::scalar> AFC::Properties::fuelY() const
 {
     return fuelY_;
+}
+
+
+AFC::scalar AFC::Properties::fuelY
+(
+    const word& species
+) const
+{
+    return fuelY_.at(species);
+}
+
+
+AFC::map<AFC::word, AFC::scalar> AFC::Properties::fuelZj() const
+{
+    return fuelZj_;
 }
 
 
@@ -694,6 +808,42 @@ AFC::word AFC::Properties::input() const
     }
 
     return ret;
+}
+
+
+AFC::word AFC::Properties::interpreter() const
+{
+    return interpreter_;
+}
+
+
+AFC::scalar AFC::Properties::Zst() const
+{
+    return Zst_;
+}
+
+
+AFC::scalar AFC::Properties::YatZstu
+(
+    const word& species
+) const
+{
+    return YatZstu_.at(species);
+}
+
+
+AFC::scalar AFC::Properties::YatZstb
+(
+    const word& species
+) const
+{
+    return YatZstb_.at(species);
+}
+
+
+AFC::scalar AFC::Properties::Tadiabatic() const
+{
+    return Tadiabatic_;
 }
 
 

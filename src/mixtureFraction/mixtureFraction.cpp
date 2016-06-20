@@ -500,13 +500,13 @@ void AFC::MixtureFraction::XtoY()
     // update mean molecular weight
     calculateMeanMW("mol");
 
+    XtoC();
+
     forAll(species, s)
     {
         speciesMass_[species[s]]
             = speciesMol_.at(species[s]) * thermo_.MW(species[s]) / MW_;
     }
-
-
 
     if (debug)
     {
@@ -802,5 +802,6 @@ void AFC::MixtureFraction::summary() const
 
     file.close();
 }
+
 
 // ************************************************************************* //

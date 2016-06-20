@@ -236,6 +236,12 @@ class ChemistryData
 
         // Setter functions, from ChemistryReader:: delegated
 
+            //- Set [M]
+            void setM
+            (
+                const scalar& 
+            );
+
             //- Set the backward reaction boolean
             void BR(const bool);
 
@@ -339,12 +345,23 @@ class ChemistryData
                     const int&
                 ) const;
 
+            //- Return M_ [g/cm^3]
+            scalar M() const;
 
-            //- Return all species as wordList
-            wordList species() const;
+            //- Return dH
+            scalar dH() const;
 
-            //- Return all elements as wordList
+            //- Return dH
+            scalar dS() const;
+
+            //- Return dG
+            scalar dG() const;
+
+            //- Return all elements
             wordList elements() const;
+
+            //- Return all species
+            wordList species() const;
 
             //- Return no. of reaction
             int nReac() const;
@@ -371,6 +388,18 @@ class ChemistryData
             wordList speciesInReaction
             (
                 const int& 
+            ) const;
+
+            //- Return species list that act as product in reaction r
+            wordList prodSpecies
+            (
+                const int&
+            ) const;
+            
+            //- Return species list that act as educt in reaction r
+            wordList educSpecies
+            (
+                const int&
             ) const;
 
             //- Return arrhenius coeffs for reaction no.

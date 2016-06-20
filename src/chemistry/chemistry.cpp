@@ -76,6 +76,44 @@ AFC::scalar AFC::Chemistry::calculateOmega
 }
 
 
+void AFC::Chemistry::calculateKf
+(
+    const int& r,
+    const scalar& T
+)
+{
+    chemCalc_.calculateKf(r, T, chemData_);
+}
+
+
+void AFC::Chemistry::calculateKc
+(
+    const int& r,
+    const scalar& T,
+    const Thermo& thermo
+)
+{
+    chemCalc_.calculateKc(r, T, thermo, chemData_);
+}
+
+
+void AFC::Chemistry::calculateKb()
+{
+    chemCalc_.calculateKb(chemData_);
+}
+
+
+// * * * * * * * * * * * * * * * Update Functions  * * * * * * * * * * * * * //
+
+void AFC::Chemistry::updateM
+(
+    const scalar& M
+)
+{
+    chemData_.updateM(M);
+}
+
+
 // * * * * * * * * * * * * * * * Create Functions  * * * * * * * * * * * * * //
 
 void AFC::Chemistry::createSpeciesInReaction()

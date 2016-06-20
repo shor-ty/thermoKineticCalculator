@@ -440,9 +440,33 @@ AFC::wordList AFC::ChemistryData::species() const
 }
 
 
+AFC::scalar AFC::ChemistryData::dH() const
+{
+    return dH_;
+}
+
+
+AFC::scalar AFC::ChemistryData::dS() const
+{
+    return dS_;
+}
+
+
+AFC::scalar AFC::ChemistryData::dG() const
+{
+    return dG_;
+}
+
+
 AFC::wordList AFC::ChemistryData::elements() const
 {
     return elements_;
+}
+
+
+AFC::wordList AFC::ChemistryData::species() const
+{
+    return species_;
 }
 
 
