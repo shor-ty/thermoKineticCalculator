@@ -35,7 +35,6 @@ AFC::TransportReader::TransportReader
     file_(file)
 
 {
-
 }
 
 
@@ -43,7 +42,6 @@ AFC::TransportReader::TransportReader
 
 AFC::TransportReader::~TransportReader()
 {
-    Info<< "Destructor TransportReader\n" << endl;
 }
 
 

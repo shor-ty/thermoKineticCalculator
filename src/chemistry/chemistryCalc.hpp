@@ -74,8 +74,6 @@ class ChemistryCalc
             void calculatekfkb 
             (
                 const int&,
-                scalar&,
-                scalar&,
                 const scalar&,
                 const map<word, scalar>&,
                 const Thermo&,
@@ -83,28 +81,26 @@ class ChemistryCalc
             );
 
             //- Calculate kf
-            scalar calculateKf 
+            void calculateKf 
             (
                 const int&,
                 const scalar&,
-                const scalar&,
-                const ChemistryData&
+                ChemistryData&
             );
 
             //- Calculate kb
-            scalar calculateKb 
+            void calculateKb 
             (
-                const scalar&,
-                const scalar&
+                ChemistryData&
             );
 
             //- Calculate Kc
-            scalar calculateKc 
+            void calculateKc 
             (
                 const int&,
                 const scalar&,
                 const Thermo&,
-                const ChemistryData&
+                ChemistryData&
             );
 
             //- Calculate k with standard arrhenius [units depend]
@@ -127,7 +123,7 @@ class ChemistryCalc
             );
             
             //- Calculate [M] partner [mol/m^3]
-            scalar calculateM
+            void calculateM
             (
                 const int&,
                 const map<word, scalar>&,
@@ -139,7 +135,6 @@ class ChemistryCalc
             bool thirdBodyReaction
             (
                 const int&,
-                bool&,
                 const ChemistryData&
             );
 };

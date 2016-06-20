@@ -109,6 +109,7 @@ AFC::scalar AFC::ThermoCalc::S
           + coeffs[3] * pow(T, 3) / 3
           + coeffs[4] * pow(T, 4) / 4
           + coeffs[6]
+          + log(thermoData.p()/AFC::Constants::p0)
         ) * AFC::Constants::R
     );
 }
@@ -152,10 +153,10 @@ AFC::scalar AFC::ThermoCalc::Hf
 ) const
 {
     //- Get information about species (atoms)
-    const wordList& atoms = data.speciesAtoms(species);
+    const wordList& atoms = data.elementsInSpecies(species);
 
     //- Get information about multiplicator
-    const scalarList& factors = data.atomFactors(species);
+    const scalarList& factors = data.elementsFactors(species);
 
     //- New multiplicator based on stable species
     scalarList newFactors;

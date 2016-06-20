@@ -65,17 +65,26 @@ class ChemistryData
             //- Number of elementar reactions
             int nReac_;
 
-            //- Reaction rate kf (forward) for each reaction
-            scalarField kf_;
+            //- Reaction rate kf (forward)
+            scalar kf_{0};
 
-            //- Reaction rate kb (backward) for each reaction
-            scalarList kb_;
+            //- Reaction rate kb (backward)
+            scalar kb_{0};
 
-            //- Reaction rate constant Kc for each reaction
-            scalarList Kc_;
+            //- Reaction rate constant Kc 
+            scalar Kc_{0};
 
             //- Thirdbody [M] concentration [g/cm^3]
-            scalar M_;
+            scalar M_{0};
+
+            //- Enthalpy of reaction
+            scalar dH_{0};
+
+            //- Entropy of reaction
+            scalar dS_{0};
+
+            //- Free Gibbs energy
+            scalar dG_{0};
 
             //- stringList for elementar reaction
             stringList elementarReaction_;
@@ -122,7 +131,7 @@ class ChemistryData
         vector<map<word, scalar> > nuProd_;
         
         //- Stochiometric coeffs of species of educts
-        vector<map<word, scalar> > nuEduc_;
+        mapList<word, scalar> nuEduc_;
 
             //- Composition of enhanced factors (species + value)
             mapList<word, scalar> enhancedFactors_;
@@ -259,12 +268,6 @@ class ChemistryData
 
         // Setter functions, from ChemistryReader:: delegated
 
-            //- Set [M]
-            void setM
-            (
-                const scalar& 
-            );
-
             //- Set the backward reaction boolean
             void setBR();
 
@@ -296,21 +299,42 @@ class ChemistryData
             //- Update reaction rates kf
             void updateKf
             (
-                const int&,
                 const scalar&
             );
             
             //- Update reaction rates kb
             void updateKb
             (
-                const int&,
                 const scalar&
             );
             
             //- Update reaction rates constant Kc
             void updateKc
             (
-                const int&,
+                const scalar&
+            );
+
+            //- Update dH
+            void updateDH
+            (
+                const scalar&
+            );
+
+            //- Update dS
+            void updateDS
+            (
+                const scalar&
+            );
+
+            //- Update dG
+            void updateDG
+            (
+                const scalar&
+            );
+            
+            //- Update M
+            void updateM
+            (
                 const scalar&
             );
             
@@ -371,7 +395,19 @@ class ChemistryData
             //- Return M_ [g/cm^3]
             scalar M() const;
 
-            //- Return all species as wordList
+            //- Return dH
+            scalar dH() const;
+
+            //- Return dH
+            scalar dS() const;
+
+            //- Return dG
+            scalar dG() const;
+
+            //- Return all elements
+            wordList elements() const;
+
+            //- Return all species
             wordList species() const;
 
             //- Return no. of reaction
@@ -456,32 +492,14 @@ class ChemistryData
                 const word&
             ) const;
 
-            //- Return reaction rate kf for reaction no.
-            scalar kf
-            (
-                const int&
-            ) const;
+            //- Return reaction rate kf 
+            scalar kf() const;
 
-            //- Return reaction rates kf
-            scalarList kf() const;
+            //- Return reaction rate kb 
+            scalar kb() const;
 
-            //- Return reaction rate kb for reaction no.
-            scalar kb
-            (
-                const int&
-            ) const;
-
-            //- Return reaction rates kb
-            scalarList kb() const;
-            
-            //- Return reaction rate constant Kc for reaction no.
-            scalar Kc
-            (
-                const int&
-            ) const;
-
-            //- Return reaction rate constant Kc
-            scalarList Kc() const;
+            //- Return reaction rate constant Kc 
+            scalar Kc() const;
             
             //- Return omega of species s
             scalar omega

@@ -163,6 +163,14 @@ class PropertiesReader
                 const word&,
                 Properties&
             );
+
+            //- Read interpreter dictionary
+            void interpreter
+            (
+                const stringList&,
+                unsigned int&,
+                Properties&
+            );
 };
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

@@ -35,7 +35,6 @@ AFC::ChemistryReader::ChemistryReader
     file_(file)
 
 {
-    Info<< "Constructor ChemistryReader\n" << endl;
 }
 
 
@@ -43,7 +42,6 @@ AFC::ChemistryReader::ChemistryReader
 
 AFC::ChemistryReader::~ChemistryReader()
 {
-    Info<< "Destructor ChemistryReader\n" << endl;
 }
 
 

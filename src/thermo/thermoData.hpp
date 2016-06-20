@@ -63,12 +63,15 @@ class ThermoData
             wordList formula_;
 
             //- map of List of atoms of each species
-            // wordMatrix speciesAtoms_;
-            map<word, wordList> speciesAtoms_;
+            // wordMatrix elementsInSpecies_;
+            map<word, wordList> elementsInSpecies_;
 
             //- map of List of coeffs of atoms
-            // matrix atomFactors_;
-            map<word, scalarList> atomFactors_;
+            // matrix elementsFactors_;
+            map<word, scalarList> elementsFactors_;
+
+            //- Atoms and amount in species
+            map<word, map<word, scalar> > atoms_;
 
             //- Hashtable of molecular weight of species [g/mol]
             map<word, scalar> MW_;
@@ -232,29 +235,41 @@ class ThermoData
             scalar p() const;
 
             //- Return the atoms of species
-            wordList speciesAtoms
+            wordList elementsInSpecies
             (
                 const word&
             ) const;
             
             //- Return the atoms of species (chemical form)
             //  Not implemented
-            wordList speciesAtomsChem
+            wordList elementsInSpeciesChem
             (
                 const word&
             ) const;
 
             //- Return the factor of atoms in species
-            scalarList atomFactors
+            scalarList elementsFactors
             (
                 const word&
             ) const;
 
             //- Return the factor of atoms in species (chemical form)
             //  Not implemented
-            scalarList atomFactorsChem
+            scalarList elementsFactorsChem
             (
                 const word&
+            ) const;
+
+            //- Return atoms and factors as map
+            map<word, scalar> atomsAndFactors
+            (
+                const word&
+            ) const;
+
+            //- Return the phase of species s
+            word phase
+            (
+                const word& 
             ) const;
 };
 

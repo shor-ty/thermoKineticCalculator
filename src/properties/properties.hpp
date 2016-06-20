@@ -52,7 +52,22 @@ class Properties
 {
     private:
 
+        // Private class data
+            
+            //- Reference to thermo object
+            const Thermo& thermo_;
+
+            //- Reference to chemistry object 
+            const Chemistry& chemistry_;
+
+
         // Private Data
+
+            //- Fuel species (for adiabatic flame calculation)
+            word fuel_;
+
+            //- Oxidizer species (for adiabatic flame calculation)
+            word oxidizer_;
         
             //- Mixture fraction discrete points
             int mfPoints_{0};
@@ -63,9 +78,6 @@ class Properties
             //- Enthalpy defects [J/kg]
             scalarField defects_;
 
-            //- ScalarDissipation rate [1/s]
-            scalarField sDRs_;
-
             //- Oxidizer species
             wordList speciesOxidizer_;
 
@@ -74,6 +86,12 @@ class Properties
 
             //- Composition of oxidizer mass fraction Y [-]
             map<word, scalar> oxidizerY_;
+
+            //- Composition of oxidizer element mass fraction Zj [-]
+            map<word, scalar> oxidizerZj_;
+
+            //- Atoms and amount in oxidizer
+            map<word, scalar> oxidizerA_;
 
             //- Fuel species
             wordList speciesFuel_;
@@ -84,6 +102,12 @@ class Properties
             //- Composition of fuel mass fraction Y [-]
             map<word, scalar> fuelY_;
 
+            //- Composition of fuel element mass fraction Zj [-]
+            map<word, scalar> fuelZj_;
+
+            //- Atoms and amount in fuel
+            map<word, scalar> fuelA_;
+
             //- Temperature of oxidizer stream [K]
             scalar TOxidizer_{0};
 
@@ -92,6 +116,70 @@ class Properties
 
             //- Pressure at which the calculation take place [Pa]
             scalar p_{0};
+
+            //- For interpreter
+            word interpreter_{"FALSE"};
+
+            //- Inert gas
+            word inertGas_{"N2"};
+
+
+        // Data at stochiometric condition 
+
+            //- Composition of mass fraction Y at Zst (unburned) [-]
+            map<word, scalar> YatZstu_;
+
+            //- Composition of mol fraction X at Zst (unburned) [-]
+            map<word, scalar> XatZstu_;
+
+            //- Composition of mass fraction Y at Zst (burned) [-]
+            map<word, scalar> YatZstb_;
+
+            //- Composition of mol fraction X at Zst (burned) [-]
+            map<word, scalar> XatZstb_;
+
+            //- Composition of element mass fraction Zj at Zst [-]
+            //  unburned == burned
+            map<word, scalar> ZjatZst_;
+
+            //- Adiabatic flame temperature [K] (simplified)
+            scalar Tadiabatic_{0};
+
+            //- Stochiometric mixture fraction Zst [-]
+            scalar Zst_{0};
+
+            //- Strain rates [1/s] 
+            scalarField as_;
+
+            //- ScalarDissipation rates [1/s] (stochiometric)
+            scalarField sDRs_;
+
+            //- Stochiometric coeff for CO2
+            scalar nuCO2_{0};
+
+            //- Stochiometric coeffs for H2O
+            scalar nuH2O_{0};
+
+            //- Stochiometric coeffs for O2
+            scalar nuO2_{0};
+
+            //- Min O2 for combustion
+            scalar omin_{0};
+
+
+        // Constant data
+           
+            //- Adiabatic enthalpy of pure fuel [J/kg]
+            scalar fuelH_{0};
+           
+            //- Adiabatic enthalpy of pure oxidizer [J/kg]
+            scalar oxidizerH_{0};
+
+            //- Density of pure fuel 
+            scalar fuelRho_{0};
+
+            //- Density of pure oxidizer
+            scalar oxidizerRho_{0};
 
 
         // Boolean
@@ -123,12 +211,6 @@ class Properties
 
 
         // Class object
-            
-            //- Reference to thermo object (XtoY and YtoX)
-            const Thermo& thermo_;
-
-            //- Reference to chemistry object (XtoY and YtoX)
-            const Chemistry& chemistry_;
 
 
         // Debug
@@ -149,7 +231,25 @@ class Properties
         ~Properties();
 
 
-        // Member functions
+        // Insert functions
+
+            //- Insert inertGas_
+            void insertInertGas
+            (
+                const word&
+            ); 
+
+            //- Insert fuel_ 
+            void insertFuel 
+            (
+                const word&
+            ); 
+
+            //- Insert oxidizer_ 
+            void insertOxidizer
+            (
+                const word&
+            ); 
         
             //- Insert mfPoints_
             void insertMFPoints
@@ -170,6 +270,7 @@ class Properties
             );
 
             //- Insert scalar dissipation rates
+            //  TODO sort after everything is read
             void insertScalarDissipationRates
             (
                 const scalar&
@@ -251,45 +352,134 @@ class Properties
             //- Insert bool for inputMass
             void inputMass();
 
+            //- Insert interpreter keyword 
+            void insertInterpreter
+            (
+                const word& 
+            );
+
 
         // Other functions
 
+            //- Initial boundarys with all species = 0
+            void initialBoundary();
+
             //- Check if all data are set
             void check();
+
+            //- Convert mol or mass fraction of pure streams
+            void convertFractions();
 
             //- Mol fraction to mass fraction
             void XtoY();
 
             //- Mass fraction to mol fraction
-            //  + word -> oxidizer (O) or fuel (F)
-            /*void YtoX
+            void YtoX();
+
+            //- Calculate enthalpy of pure fuel [J/mol]
+            void HFuelAdiabatic();
+
+            //- Calculate enthalpy of pure oxidizer [J/mol]
+            void HOxidizerAdiabatic();
+
+            //- Calculate density of pure fuel [g/m^3]
+            void rhoFuel();
+            
+            //- Calculate density of pure oxidizer [g/m^3]
+            void rhoOxidizer();
+
+            //- Calculate defined values of pure streams
+            void calcProperties();
+
+            //- Calculate element mass fraction Zj
+            map<word, scalar> calcZj
             (
-                const word 
-            );*/
+                const word&  
+            );
+
+            //- Calculate Zst
+            void calcZst();
+
+            //- Calculate strain rate of stochiometric values
+            void calcStrainRate();
+
+            //- Calculate mass/mol fraction of unburned fuel and oxidizer
+            //  at Zst
+            void calcYXatZst();
+
+            //- Calculate species mass fraction of burned fuel and oxidizer
+            //  at Zst
+            void calcYatZstBurned();
+
+            //- Calculate adiabatic temperature at Zst [K]
+            void calcAdiabaticTemperature();
+
+            //- Calculate amount of atoms in fuel and oxidizer stream
+            void calcAtomComposition();
+
+            //- Calculate stochiometric coeffs
+            void calcStochiometricCoeffs();
+
+            //- Calculate mass and mol fraction of H2O and CO2 at Zst (burned)
+            void calcBurnedSpeciesAtZst();
+
 
 
         // Return functions
+
+            //- Return fuel species (for adiabatic flame calculation)
+            word fuel() const;
+
+            //- Return oxidizer species (for adiabatic flame calculation)
+            word oxidizer() const;
+
+            //- Return inert gas
+            word inertGas() const;
 
             //- Return oxidizer species
             wordList speciesOxidizer() const;
 
             //- Return oxidizer mol fraction
-            map<word, scalar> oxidizerCompMol() const;
-            //
+            map<word, scalar> oxidizerX() const;
+            
             //- Return oxidizer mass fraction
-            map<word, scalar> oxidizerCompMass() const;
+            map<word, scalar> oxidizerY() const;
+            
+            //- Return oxidizer mass fraction
+            scalar oxidizerY
+            (
+                const word&  
+            ) const;
+
+            //- Return oxidizer element mass fraction
+            map<word, scalar> oxidizerZj() const;
 
             //- Return fuel species
             wordList speciesFuel() const;
 
             //- Return fuel mol fraction
-            map<word, scalar> fuelCompMol() const;
+            map<word, scalar> fuelX() const;
 
             //- Return fuel mass fraction
-            map<word, scalar> fuelCompMass() const;
+            map<word, scalar> fuelY() const;
+
+            //- Return fuel mass fraction
+            scalar fuelY
+            (
+                const word&       
+            ) const;
+
+            //- Return fuel element mass fraction
+            map<word, scalar> fuelZj() const;
 
             //- Return scalar dissipation rates [1/s]
             scalarField sDRs() const;
+
+            //- Return scalar dissipation rates i [1/s]
+            scalar sDRs
+            (
+                const int&  
+            ) const;
 
             //- Return enthalpy defects [J/kg]
             scalarField defects() const;
@@ -326,6 +516,29 @@ class Properties
 
             //- Return word of input (mol or mass)
             word input() const;
+
+            //- Return if thermo data or chemistry data are analysed
+            word interpreter() const;
+
+            //- Return Zst
+            scalar Zst() const;
+
+            //- Return mass fraction at stochiometric mixture fraction Zst [-]
+            //  unburned state
+            scalar YatZstu
+            (
+                const word&
+            ) const;
+
+            //- Return mass fraction at stochiometric mixture fraction Zst [-]
+            //  burned state
+            scalar YatZstb
+            (
+                const word&
+            ) const;
+
+            //- Return adiabatic flame temperature [K]
+            scalar Tadiabatic() const;
 };
 
 

@@ -49,33 +49,41 @@ AFC::MixtureFraction::MixtureFraction
 
     properties_(prop)
 {
-    //- Calculate temperature profile (linear)
-    {
-        scalar oxidizerTemperature = prop.oxidizerTemperature();
-        scalar fuelTemperature = prop.fuelTemperature(); 
-
-        temperature_ =
-            (fuelTemperature - oxidizerTemperature)
-          * Zvalue
-          + oxidizerTemperature;
-    }
-
     // Mol fraction used in afcDict
     if (prop.input() == "mol")
     {
-        //- Convert mol fraction of fuel and oxidizer stream to ass fraction
+        //- Convert mol fraction of fuel and oxidizer stream to mass fraction
         prop.XtoY();
+    }
+
+    //- Calculate unburned temperature profile (linear)
+    {
+        const scalar& oxidizerTemperature = prop.oxidizerTemperature();
+        const scalar& fuelTemperature = prop.fuelTemperature(); 
+        const scalar& Tadiabatic = prop.Tadiabatic();
+        const scalar& Zst = prop.Zst();
+
+        if (Zvalue <= Zst)
+        {
+            temperature_ =
+                (Tadiabatic - fuelTemperature)/Zst * Zvalue + fuelTemperature;
+        }
+        else if (Zvalue > Zst)
+        {
+            temperature_ = (Tadiabatic - oxidizerTemperature)/(Zst - 1)
+                * (Zvalue - 1) + fuelTemperature;
+        }
     }
 
     //- Calculate mass fraction (initial linear distribution)
     {
         const wordList& species = chem.species();
 
-        //- Set the oxidizer mass fraction
-        map<word, scalar> oxidizerMassFraction = prop.oxidizerCompMass();
-        //
-        //- Set the fuel mass fraction
-        map<word, scalar> fuelMassFraction = prop.fuelCompMass();
+        //- Oxidizer mass fraction
+        map<word, scalar> oxidizerMassFraction = prop.oxidizerY();
+        
+        //- Fuel mass fraction
+        map<word, scalar> fuelMassFraction = prop.fuelY();
 
         //- Set all species 
         forAll(species, i)
@@ -111,8 +119,8 @@ AFC::MixtureFraction::MixtureFraction
         //- Calculate mean heat capacity
         updateCp();
 
-
-        //- Calculate mean molecular weight [g/mol]
+        //- Calculate density of oxidizer stream (Z=0)
+        calcRhoOxidizer(prop);
     }
 }
 
@@ -121,14 +129,29 @@ AFC::MixtureFraction::MixtureFraction
 
 AFC::MixtureFraction::~MixtureFraction()
 {
-    if (debug)
-    {
-//        Info<< "Destruct MixtureFraction\n" << endl;
-    }
 }
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
+
+void AFC::MixtureFraction::calcRhoOxidizer
+(
+    const Properties& prop 
+)
+{
+    //- Oxidizer information
+    const map<word, scalar>& oxidizerMassFraction = prop.oxidizerY();
+    const map<word, scalar>& oxidizerMoleFraction = prop.oxidizerX();
+    const wordList& speciesOxidizer = prop.speciesOxidizer();
+
+    scalar t{0};
+    scalar u{0};
+    forAll(speciesOxidizer, s)
+    {
+        t += oxidizerMassFraction.at(speciesOxidizer[s]);
+        u += oxidizerMoleFraction.at(speciesOxidizer[s]);
+    }
+}
 
 void AFC::MixtureFraction::calculateMeanMW()
 {
@@ -437,6 +460,36 @@ void AFC::MixtureFraction::rhoY()
              / (AFC::Constants::R * YTByMW) / 1e6; 
     }
 }
+
+
+AFC::scalar AFC::MixtureFraction::rhoY
+(
+    const map<word, scalar>& speciesMass,
+    const scalar& T
+)
+{
+    Info<< "Calc - rhoOx\n";
+    scalar YTByMW{0};
+
+    /*forAll(species, s)
+    {
+        YTByMW += speciesMass.at(species[s]) * T / thermo_.MW(species[s]);
+    }*/
+
+    //- Pressure [Pa]
+    const scalar& p = properties_.p();
+    const scalar rho{0};
+
+    /*forAll(species, s)
+    {
+        rho += (p * speciesMass_.at(species[s])) 
+             / (AFC::Constants::R * YTByMW) / 1e6; 
+    }*/
+
+    return rho;
+}
+
+
 
 
 void AFC::MixtureFraction::rhoC()

@@ -35,7 +35,7 @@ namespace AFC
 
 void calculate
 (
-    lookUpTable& lut,
+    LookUpTable& lut,
     const scalar& sDR,
     const scalar& defect,
     const unsigned int& nPoints,
@@ -43,7 +43,7 @@ void calculate
 )
 {
     //- Copy of lut
-    const lookUpTable lut_old = lut;
+    const LookUpTable lut_old = lut;
 
     //- Solve the Flamelet-Equation
     //  + Point 0 -> Oxidizer boundary
@@ -161,6 +161,66 @@ void calculate
 //            std::terminate();
         }
     }
+}
+
+
+//- Discretized first derivative with non-uniform spacing and CD
+AFC::scalar dphidZ
+(
+    const scalar& phi_n,
+    const scalar& phi_nm1,
+    const scalar& phi_np1,
+    const scalar& Z_n,
+    const scalar& Z_nm1,
+    const scalar& Z_np1
+)
+{
+    //- Derivation in documentation
+    return 
+    (
+        phi_nm1 * (Z_np1 - Z_n) / ((Z_n - Z_nm1)*(Z_np1 - Z_nm1))
+      + phi_n   * (Z_nm1 - 2*Z_n + Z_np1) / ((Z_np1 - Z_n)*(Z_n - Z_nm1))
+      + phi_np1 * (Z_n - Z_nm1) / ((Z_np1 - Z_n) / (Z_np1 - Z_nm1))
+    );
+}
+
+
+//- Discretized second derivative with non-uniform spacing and CD
+AFC::scalar ddphidZZ
+(
+    const scalar& phi_n,
+    const scalar& phi_nm1,
+    const scalar& phi_np1,
+    const scalar& Z_n,
+    const scalar& Z_nm1,
+    const scalar& Z_np1
+)
+{
+    //- Derivation in documentation
+    return 
+    (
+        (
+            (phi_np1 - phi_n) / (Z_np1 - Z_n)
+          - (phi_n - phi_nm1) / (Z_n - Z_nm1)
+        ) / ( 0.5 * ( Z_np1 - Z_nm1))
+    );
+}
+
+
+//- Scalar dissipation modeling accross the flamelet
+AFC::scalar chiOverFlamelet 
+(
+    const scalar& Z,
+    const scalar& rho,
+    const scalar& rhoOxid
+)
+{
+    scalar as = 1;
+    return
+    (
+        3. * as * pow(sqrt(rhoOxid / rho) + 1, 2) / ( 4 * M_PI )
+       *exp(-2.* pow(1/erfc(2*Z), 2))
+    );
 }
 
 

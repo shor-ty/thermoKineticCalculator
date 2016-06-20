@@ -97,6 +97,32 @@ class Chemistry
                 const Thermo&
             );
 
+            //- Calculate forward reaction rate kf ::Interpreter
+            void calculateKf
+            (
+                const int&,
+                const scalar&  
+            );
+
+            //- Calculate equilibrium reaction rate Kc ::Interpreter
+            void calculateKc
+            (
+                const int&,
+                const scalar&,
+                const Thermo&
+            );
+
+            //- Calculate backward reaction kb ::Interpreter
+            void calculateKb ();
+
+
+        // Update Functions
+
+            //- Update [M] (only inert gas) ::Interpreter
+            void updateM
+            (
+                const scalar&
+            );
 
         // Create Functions
 
@@ -112,12 +138,24 @@ class Chemistry
 
 
         // Return Functions
+
+            //- Return elements
+            wordList elements() const;
         
             //- Retrun species
             wordList species() const;
 
+            //- Return kf
+            scalar kf() const;
+
+            //- Return Kc
+            scalar Kc() const;
+
+            //- Return kb
+            scalar kb() const;
+
             //- Return no. of elementar reaction
-            /*/int nReac() const;
+            //int nReac() const;
 
             //- Return elementar reaction (as string) DELEGATED
             word elementarReaction
@@ -125,24 +163,83 @@ class Chemistry
                 const int&
             ) const;
 
-            //- Return all reaction no of species DELEGATED
-            scalarField reacNoForSpecies
+            //- Return all elementar reactions
+            stringList elementarReaction() const;
+
+            //- Return arrhenius coeffs ::Interpreter
+            scalarList arrheniusCoeffs
             (
                 const int&
             ) const;
 
-            //- Return reaction rates k
-            scalarField k() const;
-
-            //- Return wordMatrix for species in reactions
-            wordMatrix speciesInReactions() const;
-
-            //- Return reaction rate k of reaction no.
-            scalar k
+            //- Return LOW arrhenius coeffs ::Interpreter
+            scalarList LOWCoeffs
             (
-                const int& 
-            ) const;*/
+                const int&
+            ) const;
 
+            //- Return TROE coeffs ::Interpreter
+            scalarList TROECoeffs
+            (
+                const int&
+            ) const;
+
+            //- Return SRI coeffs ::Interpreter
+            scalarList SRICoeffs
+            (
+                const int&
+            ) const;
+
+            //- Return TBR bool ::Interpreter
+            bool TBR
+            (
+                const int&
+            ) const;
+
+            //- Return ENHANCED bool ::Interpreter
+            bool ENHANCED
+            (
+                const int&
+            ) const;
+
+            //- Return LOW bool ::Interpreter
+            bool LOW
+            (
+                const int&
+            ) const;
+
+            //- Return TROE bool ::Interpreter
+            bool TROE
+            (
+                const int&
+            ) const;
+
+            //- Return SRI bool ::Interpreter
+            bool SRI 
+            (
+                const int&
+            ) const;
+
+            //- Return enhanced factors ::Interpreter
+            map<word, scalar> enhancedFactors
+            (
+                const int&
+            ) const;
+
+            //- Return enhanced species ::Interpreter
+            wordList enhancedSpecies
+            (
+                const int&
+            ) const;
+
+            //- Return enthalpy of actual reaction
+            scalar dH() const;
+
+            //- Return entropy of actual reaction
+            scalar dS() const;
+
+            //- Return free Gibbs energy of actual reaction
+            scalar dG() const;
 };
 
 

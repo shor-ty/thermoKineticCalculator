@@ -34,17 +34,14 @@ AFC::PropertiesReader::PropertiesReader
 :
     file_(file)
 
-{}
+{
+}
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
 AFC::PropertiesReader::~PropertiesReader()
 {
-//    if (debug)
-//    {
-        Info<< "Destructor PropertiesReader\n" << endl;
-//    }
 }
 
 
@@ -68,7 +65,8 @@ void AFC::PropertiesReader::read
         if
         (
             !tmp.empty()
-         && tmp[0][0] != '!'
+         && std::to_string(tmp[0][0]) != "//"
+         && std::to_string(tmp[0][0]) != "//-"
         )
         {
             if (tmp[0] == "pressure")
@@ -84,6 +82,48 @@ void AFC::PropertiesReader::read
                 }
 
                 data.insertPressure(stod(tmp[1]));
+            }
+            else if (tmp[0] == "inertGas")
+            {
+                if (tmp[1].empty())
+                {
+                    FatalError
+                    (
+                        "    No inert gas specified (" + file_ +")",
+                        __FILE__,
+                        __LINE__
+                    );
+                }
+
+                data.insertInertGas(word(tmp[1]));
+            }
+            else if (tmp[0] == "fuel")
+            {
+                if (tmp[1].empty())
+                {
+                    FatalError
+                    (
+                        "    No fuel specified (" + file_ +")",
+                        __FILE__,
+                        __LINE__
+                    );
+                }
+
+                data.insertFuel(word(tmp[1]));
+            }
+            else if (tmp[0] == "oxidizer")
+            {
+                if (tmp[1].empty())
+                {
+                    FatalError
+                    (
+                        "    No oxidizer specified (" + file_ +")",
+                        __FILE__,
+                        __LINE__
+                    );
+                }
+
+                data.insertOxidizer(word(tmp[1]));
             }
             else if (tmp[0] == "mixtureFractionPoints")
             {
@@ -178,10 +218,12 @@ void AFC::PropertiesReader::read
             {
                 control(fileContent, line, data);
             }
+            else if (tmp[0] == "interpreter")
+            {
+                interpreter(fileContent, line, data);
+            }
         }
     }
-
-    data.check();
 }
 
 
@@ -763,6 +805,64 @@ void AFC::PropertiesReader::input
             __FILE__,
             __LINE__
         );
+    }
+}
+
+
+void AFC::PropertiesReader::interpreter
+(
+    const stringList& fileContent,
+    unsigned int& line,
+    Properties& data
+)
+{
+    int dictBegin{-1};
+    unsigned int dictEnd{0};
+    
+    findKeyword(dictBegin, dictEnd, fileContent, line);
+
+    line = dictBegin+1;
+
+    for(; line < dictEnd; line++)
+    {
+        //- Split string; delimiter ' ' 
+        stringList tmp = splitStrAtWS(fileContent[line]);
+        
+        //- If line is not empty and no comment, proceed
+        if
+        (
+            !tmp.empty()
+         && tmp[0][0] != '!'
+        )
+        {
+            if (tmp[0] == "analyse")
+            {
+                if (tmp[1].empty())
+                {
+                    FatalError
+                    (
+                        "    No analyse keyword specified in afcDict ("
+                        + file_ + ")",
+                        __FILE__,
+                        __LINE__
+                    );
+                }
+
+                //- Check input
+                if (tmp[1] != "THERMO" && tmp[1] != "CHEMISTRY")
+                {
+                    FatalError
+                    (
+                        "    You can only use the keyword 'THERMO' \n"
+                        "    'CHEMSITRY' for analyse type",
+                        __FILE__,
+                        __LINE__
+                    );
+                }
+
+                data.insertInterpreter(string(tmp[1]));
+            }
+        }
     }
 }
 

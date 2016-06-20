@@ -36,6 +36,7 @@ SourceFiles
 #define Constants_hpp
 
 #include "typedef.hpp"
+#include <math.h>
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -55,12 +56,11 @@ const map<word, scalar> AW
     { "H", 1.00790 },
     { "O", 15.9994 },
     { "C", 12.0110 },
+    { "CL", 35.453 },
     { "N", 14.0067 },
     { "AR", 39.9480 },
     { "HE", 4.00260 }
 };
-
-// WO IST DIE MAUS! MAUNZ!
 
 //- Converstion from cal to joule [J/cal]
 constexpr scalar calToJoule = 4.1858;
@@ -73,6 +73,15 @@ constexpr scalar R = 8.314459848;
 
 //- Universal gas constant [cal/K/mol]
 constexpr scalar Rcal = R * jouleToCal;
+
+//- Stefan Bolzmann Constant [J/K]
+constexpr scalar kB = 1.3806485279e-23;
+
+//- Avogadro Constant [1/mol] => R / kB
+constexpr scalar N_A = R /kB;
+
+//- Reference pressure (normally 1atm, we use Pa)
+constexpr scalar p0 = 1e5;
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

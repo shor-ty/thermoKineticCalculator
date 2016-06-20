@@ -42,7 +42,6 @@ AFC::ThermoReader::ThermoReader
 
 AFC::ThermoReader::~ThermoReader()
 {
-    Info<< "Destructor ThermoReader\n" << endl;
 }
 
 
@@ -374,10 +373,10 @@ void AFC::ThermoReader::calcMolecularWeight
 )
 {
     //- Atoms of species
-    const wordList& atoms = data.speciesAtoms(species);
+    const wordList& atoms = data.elementsInSpecies(species);
 
     //- Factors of atoms
-    const scalarList& factors = data.atomFactors(species);
+    const scalarList& factors = data.elementsFactors(species);
 
     //- Temp molecular weight
     scalar tmp = 0;

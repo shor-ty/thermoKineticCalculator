@@ -29,6 +29,7 @@ Description
 #ifndef TYPEDEF_HPP
 #define TYPEDEF_HPP
 
+#include <time.h>
 #include <vector>
 #include <string>
 #include <sstream>
@@ -72,7 +73,9 @@ using string = std::string;
 
 using stringList = std::vector<string>;
 
-using lookUpTable = std::vector<std::vector<std::vector<MixtureFraction> > >;
+using AdiabaticFlamelet = std::vector<MixtureFraction>;
+
+using LookUpTable = std::vector<std::vector<std::vector<MixtureFraction> > >;
 
 extern std::ostream& Info;
 
@@ -87,6 +90,8 @@ template<class T> using smartPtr = std::unique_ptr<T>;
 template<class T, class Z> using map = typename std::map<T, Z>;
 
 template<class T, class Z> using mapList = typename std::vector<map<T, Z> >;
+
+template<class T, class Z, class X> using mapMap = typename std::map<T, std::map<Z, X> >;
 
 #define forAll(scalarField, i) for \
     (unsigned int i=0; i<(scalarField).size(); i++)
@@ -106,6 +111,11 @@ void Warning
 );
 
 void Header();
+
+void Footer
+(
+    const scalar& 
+);
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

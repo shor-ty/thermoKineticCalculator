@@ -142,4 +142,49 @@ AFC::scalar AFC::Thermo::Hf
 }
 
 
+AFC::word AFC::Thermo::phase
+(
+    const word& species
+) const
+{
+    return thermoData_.phase(species);
+}
+
+
+AFC::scalar AFC::Thermo::LT
+(
+    const word& species
+) const
+{
+    return thermoData_.LT(species);
+}
+
+
+AFC::scalar AFC::Thermo::HT
+(
+    const word& species
+) const
+{
+    return thermoData_.HT(species);
+}
+
+
+AFC::wordList AFC::Thermo::elementsInSpecies
+(
+    const word& species
+) const
+{
+    return thermoData_.elementsInSpecies(species);
+}
+
+
+AFC::scalarList AFC::Thermo::elementsFactors
+(
+    const word& species
+) const
+{
+    return thermoData_.elementsFactors(species);
+}
+
+
 // ************************************************************************* //

@@ -32,7 +32,6 @@ License
 
 AFC::StringManipulator::StringManipulator()
 {
-    Info<< "Constructor StringManipulator\n" << endl;
 }
 
 
@@ -40,7 +39,6 @@ AFC::StringManipulator::StringManipulator()
 
 AFC::StringManipulator::~StringManipulator()
 {
-    Info<< "Destructor StringManipulator\n" << endl;
 }
 
 

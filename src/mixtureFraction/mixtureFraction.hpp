@@ -67,6 +67,9 @@ class MixtureFraction
             //  [mol/cm^3]
             map<word, scalar> speciesCon_;
 
+            //- Oxidizer density
+            scalar rhoOxidizer_;
+
             //- Temperature at discrete point Z
             scalar temperature_{0};
 
@@ -152,6 +155,12 @@ class MixtureFraction
 
 
         // Member functions
+
+            //- Calculate density of oxidizer stream
+            void calcRhoOxidizer
+            (
+                const Properties&  
+            );
         
             //- Calculate the mean molecular weight
             void calculateMeanMW();
@@ -235,6 +244,13 @@ class MixtureFraction
 
             //- Calculate mean density out of mass fraction [g/cm^3]
             void rhoY();
+
+            //- Calculate mean density out of mass fraction [g/cm^3]
+            scalar rhoY
+            (
+                const map<word, scalar>&,
+                const scalar&
+            );
 
             //- Calculate mean density out of concentration fraction [g/cm^3]
             void rhoC();

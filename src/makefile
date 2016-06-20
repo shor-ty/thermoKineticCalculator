@@ -7,7 +7,8 @@ INC_DIR=-I$(WORK_DIR)/chemistry \
 		-I$(WORK_DIR)/mixtureFraction \
 		-I$(WORK_DIR)/constants \
 		-I$(WORK_DIR)/typedef \
-		-I$(WORK_DIR)/stringManipulator
+		-I$(WORK_DIR)/stringManipulator \
+		-I$(WORK_DIR)/thirdParty
 
 
 
@@ -23,6 +24,7 @@ SOURCE_FILES=automaticFlameletCreator.cpp \
 			 transport/transport.cpp \
 			 transport/transportReader.cpp \
 			 transport/transportData.cpp \
+			 transport/transportCalc.cpp \
 			 properties/properties.cpp \
 			 properties/propertiesReader.cpp \
 			 mixtureFraction/mixtureFraction.cpp \
@@ -30,7 +32,8 @@ SOURCE_FILES=automaticFlameletCreator.cpp \
 			 stringManipulator/stringManipulator.cpp
 
 
-SRC_FILES=mixtureFraction/numerics.cpp
+SRC_FILES=mixtureFraction/numerics.cpp \
+		  mixtureFraction/interprete
 
 CPPFLAGS=-g -Wall -Wextra -pedantic-errors -std=c++11 -Wno-unused-parameter -Wno-unused-variable
 
@@ -40,7 +43,7 @@ OBJ := $(addprefix obj/,$(addsuffix .o,$(basename $(SOURCE_FILES))))
 obj/%.o: %.cpp | obj
 	    g++ $(CPPFLAGS) $(INC_DIR) -c $< -o $@
 
-automaticFlameletCreator : $(OBJ) | mixtureFraction/numerics.cpp
+automaticFlameletCreator : $(OBJ) | mixtureFraction/numerics.cpp mixtureFraction/interprete.cpp
 	g++ $(CPPFLAGS) $(INC_DIR) -o $@ $^
 
 

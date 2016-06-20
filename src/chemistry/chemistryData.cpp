@@ -33,7 +33,6 @@ AFC::ChemistryData::ChemistryData()
 
     thermo_{false}
 {
-    Info<< "Constructor ChemistryData\n";
 }
 
 
@@ -41,7 +40,6 @@ AFC::ChemistryData::ChemistryData()
 
 AFC::ChemistryData::~ChemistryData()
 {
-    Info<< "Destructor ChemistryData\n";
 }
 
 
@@ -261,28 +259,10 @@ void AFC::ChemistryData::incrementMatrixesVectors()
         SRICoeffs_[nReac_][3] = 1;
         SRICoeffs_[nReac_][4] = 0;
     }
-
-    //- Reaction rates kf
-    kf_.push_back(scalar(0));
-
-    //- Reaction rates kb
-    kb_.push_back(scalar(0));
-
-    //- Equilibrium constant Kc
-    Kc_.push_back(scalar(0));
 }
 
 
 // * * * * * * * * * * * * * Setter bool functions * * * * * * * * * * * * * //
-
-void AFC::ChemistryData::setM
-(
-    const scalar& M
-)
-{
-    M_ = M;
-}
-
 
 void AFC::ChemistryData::setBR()
 {
@@ -334,31 +314,64 @@ void AFC::ChemistryData::setReacNumbers
 
 void AFC::ChemistryData::updateKf
 (
-    const int& r,
     const scalar& kf
 )
 {
-    kf_[r] = kf;
+    kf_ = kf;
 }
 
 
 void AFC::ChemistryData::updateKb
 (
-    const int& r,
     const scalar& kb
 )
 {
-    kb_[r] = kb;
+    kb_ = kb;
 }
 
 
 void AFC::ChemistryData::updateKc
 (
-    const int& r,
     const scalar& Kc
 )
 {
-    Kc_[r] = Kc;
+    Kc_ = Kc;
+}
+
+
+void AFC::ChemistryData::updateDH
+(
+    const scalar& dH
+)
+{
+    dH_ = dH;
+}
+
+
+void AFC::ChemistryData::updateDS
+(
+    const scalar& dS
+)
+{
+    dS_ = dS;
+}
+
+
+void AFC::ChemistryData::updateDG
+(
+    const scalar& dG
+)
+{
+    dG_ = dG;
+}
+
+
+void AFC::ChemistryData::updateM
+(
+    const scalar& M
+)
+{
+    M_ = M;
 }
 
 
@@ -443,6 +456,30 @@ AFC::scalar AFC::ChemistryData::M() const
 }
 
 
+AFC::scalar AFC::ChemistryData::dH() const
+{
+    return dH_;
+}
+
+
+AFC::scalar AFC::ChemistryData::dS() const
+{
+    return dS_;
+}
+
+
+AFC::scalar AFC::ChemistryData::dG() const
+{
+    return dG_;
+}
+
+
+AFC::wordList AFC::ChemistryData::elements() const
+{
+    return elements_;
+}
+
+
 AFC::wordList AFC::ChemistryData::species() const
 {
     return species_;
@@ -455,7 +492,7 @@ int AFC::ChemistryData::nReac() const
 }
 
 
-AFC::wordList AFC::ChemistryData::elementarReaction() const
+AFC::stringList AFC::ChemistryData::elementarReaction() const
 {
     return elementarReaction_;
 }
@@ -592,46 +629,19 @@ AFC::scalar AFC::ChemistryData::enhancedFactors
 }
 
 
-AFC::scalar AFC::ChemistryData::kf
-(
-    const int& reacNo 
-) const
-{
-    return kf_[reacNo];
-}
-
-
-AFC::scalarList AFC::ChemistryData::kf() const
+AFC::scalar AFC::ChemistryData::kf() const
 {
     return kf_;
 }
 
 
-AFC::scalar AFC::ChemistryData::kb
-(
-    const int& reacNo 
-) const
-{
-    return kb_[reacNo];
-}
-
-
-AFC::scalarList AFC::ChemistryData::kb() const
+AFC::scalar AFC::ChemistryData::kb() const
 {
     return kb_;
 }
 
 
-AFC::scalar AFC::ChemistryData::Kc
-(
-    const int& reacNo
-) const
-{
-    return Kc_[reacNo];
-}
-
-
-AFC::scalarList AFC::ChemistryData::Kc() const
+AFC::scalar AFC::ChemistryData::Kc() const
 {
     return Kc_;
 }

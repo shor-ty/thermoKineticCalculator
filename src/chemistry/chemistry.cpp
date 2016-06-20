@@ -34,8 +34,6 @@ AFC::Chemistry::Chemistry
     const string& fileName 
 )
 {
-    Info<< "Constructor Chemistry\n" << endl;
-
     ChemistryReader chemReader(fileName);
     
     chemReader.read(chemData_);
@@ -49,7 +47,6 @@ AFC::Chemistry::Chemistry
 
 AFC::Chemistry::~Chemistry()
 {
-    Info<< "Destructor Chemistry\n" << endl;
 }
 
 
@@ -73,6 +70,44 @@ AFC::scalar AFC::Chemistry::calculateOmega
 {
     //- Calculate source term omega
     return chemCalc_.calculateOmega(species, T, con, thermo, chemData_);
+}
+
+
+void AFC::Chemistry::calculateKf
+(
+    const int& r,
+    const scalar& T
+)
+{
+    chemCalc_.calculateKf(r, T, chemData_);
+}
+
+
+void AFC::Chemistry::calculateKc
+(
+    const int& r,
+    const scalar& T,
+    const Thermo& thermo
+)
+{
+    chemCalc_.calculateKc(r, T, thermo, chemData_);
+}
+
+
+void AFC::Chemistry::calculateKb()
+{
+    chemCalc_.calculateKb(chemData_);
+}
+
+
+// * * * * * * * * * * * * * * * Update Functions  * * * * * * * * * * * * * //
+
+void AFC::Chemistry::updateM
+(
+    const scalar& M
+)
+{
+    chemData_.updateM(M);
 }
 
 
@@ -122,15 +157,33 @@ void AFC::Chemistry::createSpeciesInReaction()
 
 // * * * * * * * * * * * * * * * Return Functions  * * * * * * * * * * * * * //
 
+AFC::wordList AFC::Chemistry::elements() const
+{
+    return chemData_.elements();
+}
+
+
 AFC::wordList AFC::Chemistry::species() const
 {
     return chemData_.species();
 }
-/*
 
-int AFC::Chemistry::nReac() const
+
+AFC::scalar AFC::Chemistry::kf() const
 {
-    return chemData_.nReac();
+    return chemData_.kf();
+}
+
+
+AFC::scalar AFC::Chemistry::kb() const
+{
+    return chemData_.kb();
+}
+
+
+AFC::scalar AFC::Chemistry::Kc() const
+{
+    return chemData_.Kc();
 }
 
 
@@ -143,34 +196,127 @@ AFC::word AFC::Chemistry::elementarReaction
 }
 
 
-AFC::scalarField AFC::Chemistry::reacNoForSpecies
-(
-    const int& s
-) const
+AFC::stringList AFC::Chemistry::elementarReaction() const
 {
-    return chemData_.reacNoForSpecies(s);
+    return chemData_.elementarReaction();
 }
 
 
-AFC::scalarField AFC::Chemistry::k() const
-{
-    return chemData_.k();
-}*/
-
-
-/*AFC::wordMatrix AFC::Chemistry::speciesInReactions() const
-{
-    return chemData_.speciesInReactions();
-}*/
-
-
-/*AFC::scalar AFC::Chemistry::k
+AFC::scalarList AFC::Chemistry::arrheniusCoeffs
 (
-    const int& reacNo 
+    const int& reacNo
 ) const
 {
-    return chemData_.k(reacNo);
-}*/
+    return chemData_.arrheniusCoeffs(reacNo);
+}
+
+
+AFC::scalarList AFC::Chemistry::LOWCoeffs
+(
+    const int& reacNo
+) const
+{
+    return chemData_.LOWCoeffs(reacNo);
+}
+
+
+AFC::scalarList AFC::Chemistry::TROECoeffs
+(
+    const int& reacNo
+) const
+{
+    return chemData_.TROECoeffs(reacNo);
+}
+
+
+AFC::scalarList AFC::Chemistry::SRICoeffs
+(
+    const int& reacNo
+) const
+{
+    return chemData_.SRICoeffs(reacNo);
+}
+
+
+bool AFC::Chemistry::TBR
+(
+    const int& reacNo
+) const
+{
+    return chemData_.TBR(reacNo);
+}
+
+
+bool AFC::Chemistry::ENHANCED
+(
+    const int& reacNo
+) const
+{
+    return chemData_.ENHANCED(reacNo);
+}
+
+
+bool AFC::Chemistry::LOW
+(
+    const int& reacNo
+) const
+{
+    return chemData_.LOW(reacNo);
+}
+
+
+bool AFC::Chemistry::TROE
+(
+    const int& reacNo
+) const
+{
+    return chemData_.TROE(reacNo);
+}
+
+
+bool AFC::Chemistry::SRI
+(
+    const int& reacNo
+) const
+{
+    return chemData_.SRI(reacNo);
+}
+
+
+AFC::map<AFC::word, AFC::scalar> AFC::Chemistry::enhancedFactors
+(
+    const int& reacNo
+) const
+{
+    return chemData_.enhancedFactors(reacNo);
+}
+
+
+AFC::wordList AFC::Chemistry::enhancedSpecies
+(
+    const int& reacNo
+) const
+{
+    return chemData_.enhancedSpecies(reacNo);
+}
+
+
+AFC::scalar AFC::Chemistry::dH() const
+{
+    return chemData_.dH();
+}
+
+
+AFC::scalar AFC::Chemistry::dS() const
+{
+    return chemData_.dS();
+}
+
+
+AFC::scalar AFC::Chemistry::dG() const
+{
+    return chemData_.dG();
+}
 
 
 // ************************************************************************* //

@@ -34,14 +34,14 @@ AFC::ThermoData::ThermoData
 :
     thermo_{thermo}
 
-{}
+{
+}
 
 
 // * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * * //
 
 AFC::ThermoData::~ThermoData()
 {
-    Info<< "Destructor ThermoData\n";
 }
 
 
@@ -79,10 +79,15 @@ void AFC::ThermoData::insertAtomAndFactor
     const word& actualSpecies = species_[species_.size()-1];
 
     //- Insert atom to correct position
-    speciesAtoms_[actualSpecies].push_back(atom);
+    elementsInSpecies_[actualSpecies].push_back(atom);
 
     //- Insert multiplication factor
-    atomFactors_[actualSpecies].push_back(factor);
+    elementsFactors_[actualSpecies].push_back(factor);
+
+    //- Insert Atoms and factor in map (test TODO)
+    map<word, scalar> tmp;
+    tmp[atom] = factor;
+    atoms_[actualSpecies] = tmp;
 }
 
 
@@ -252,7 +257,6 @@ AFC::scalar AFC::ThermoData::MW
     const word& species
 ) const
 {
-//    return MW_.find(species)->second;
     return MW_.at(species);
 }
 
@@ -308,21 +312,39 @@ AFC::scalar AFC::ThermoData::p() const
 }
 
 
-AFC::wordList AFC::ThermoData::speciesAtoms
+AFC::wordList AFC::ThermoData::elementsInSpecies
 (
     const word& species
 ) const
 {
-    return speciesAtoms_.at(species);
+    return elementsInSpecies_.at(species);
 }
 
 
-AFC::scalarList AFC::ThermoData::atomFactors
+AFC::scalarList AFC::ThermoData::elementsFactors
 (
     const word& species
 ) const
 {
-    return atomFactors_.at(species);
+    return elementsFactors_.at(species);
+}
+
+
+AFC::map<AFC::word, AFC::scalar> AFC::ThermoData::atomsAndFactors
+(
+    const word& species
+) const
+{
+    return atoms_.at(species);
+}
+
+
+AFC::word AFC::ThermoData::phase
+(
+    const word& species
+) const
+{
+    return phase_.at(species);
 }
 
 

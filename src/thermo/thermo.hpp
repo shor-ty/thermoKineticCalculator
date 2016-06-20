@@ -139,6 +139,38 @@ class Thermo
                 const word&,
                 const scalar&
             ) const;
+
+            //- Return phase of species
+            word phase
+            (
+                const word&
+            ) const;
+
+            //- Return low temperature bound (from NASA)
+            scalar LT
+            (
+                const word&
+            ) const;
+
+            //- Return high temperature bound (from NASA)
+            scalar HT
+            (
+                const word&
+            ) const;
+
+            //- Return atoms in species s
+            wordList elementsInSpecies
+            (
+                const word&
+            ) const;
+
+            //- Return factors of atoms in species s
+            scalarList elementsFactors
+            (
+                const word&
+            ) const;
+
+            
 };
 
 

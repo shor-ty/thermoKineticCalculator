@@ -28,19 +28,18 @@ License
 // * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * * //
 
 AFC::TransportData::TransportData()
-{}
+{
+}
 
 
 // * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * * //
 
 AFC::TransportData::~TransportData()
 {
-    Info<< "Destructor TransportData\n";
 }
 
 
 // * * * * * * * * * * * * * * * Member functions  * * * * * * * * * * * * * //
-
 
 
 // * * * * * * * * * Insert functions from TransportReader:: * * * * * * * * //
@@ -192,7 +191,15 @@ void AFC::TransportData::insertRotRelCollNumb
 }
 
 
-// * * * * * * * * * * * * * Setter bool functions * * * * * * * * * * * * * //
+// * * * * * * * * * * * * Insert functions from afc.cpp * * * * * * * * * * //
+
+void AFC::TransportData::chemSpecies
+(
+    const wordList& chemSpecies
+)
+{
+    chemSpecies_ = chemSpecies;
+}
 
 
 // * * * * * * * * * * * * * * Return functions  * * * * * * * * * * * * * * //
@@ -200,6 +207,48 @@ void AFC::TransportData::insertRotRelCollNumb
 AFC::wordList AFC::TransportData::species() const
 {
     return species_;
+}
+
+
+AFC::wordList AFC::TransportData::chemSpecies() const
+{
+    return chemSpecies_;
+}
+
+
+int AFC::TransportData::geometricalConfig
+(
+    const word& species
+)
+{
+    return geoConfig_.at(species);
+}
+
+
+AFC::scalar AFC::TransportData::LJCD
+(
+    const word& species
+) const
+{
+    return lenJonCollDia_.at(species);
+}
+
+
+AFC::scalar AFC::TransportData::LJP
+(
+    const word& species
+) const
+{
+    return lenJonPot_.at(species);
+}
+
+
+AFC::scalar AFC::TransportData::muk
+(
+    const word& species
+) const
+{
+    return dipMom_.at(species);
 }
 
 

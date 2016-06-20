@@ -46,6 +46,32 @@ AFC::Transport::~Transport()
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
+void AFC::Transport::chemSpecies
+(
+    const wordList& chemSpecies
+)
+{
+    transData_.chemSpecies(chemSpecies);
+}
+
+
+void AFC::Transport::prepareFitting
+(
+    const Thermo& thermo 
+)
+{
+    Info<< " c-o Prepare values for fitting procedure\n" << endl;
+
+    //- Calculate viscosity using gas kinetics
+    transCalc_.viscosity(thermo, transData_);
+
+    //- Calculate binary diffusivity using gas kinetics
+    transCalc_.binaryDiffusivity(thermo, transData_);
+
+    //- Calculate thermal conductivity using gas kinetics
+    transCalc_.thermalConductivity(thermo, transData_);
+}
+
 
 // * * * * * * * * * * * * * * * Return Functions  * * * * * * * * * * * * * //
 

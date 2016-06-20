@@ -16,6 +16,7 @@ html/
 
 #prog
 automaticFlameletCreator
+src/thirdParty
 
 #gedit
 *~

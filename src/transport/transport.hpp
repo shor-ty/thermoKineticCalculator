@@ -37,6 +37,8 @@ SourceFiles
 
 #include "transportReader.hpp"
 #include "transportData.hpp"
+#include "transportCalc.hpp"
+#include "thermo.hpp"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -56,6 +58,9 @@ class Transport
             //- TransportData
             TransportData transData_;
 
+            //- TransportCalc
+            TransportCalc transCalc_;
+
 
     public:
 
@@ -70,7 +75,18 @@ class Transport
 
 
         // Member functions
+
+            //- Insert chemistry species to transportData
+            void chemSpecies
+            (
+                const wordList&  
+            );
         
+            //- Prepare values for fitting procedure
+            void prepareFitting
+            (
+                const Thermo& 
+            );
 
         // Return functions
 
