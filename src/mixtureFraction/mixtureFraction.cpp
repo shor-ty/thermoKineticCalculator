@@ -415,6 +415,7 @@ void AFC::MixtureFraction::calculateMeanG
 
 void AFC::MixtureFraction::calculateOmega
 (
+    const word& species,
     const scalar& T,
     map<word, scalar>& con
 )
@@ -431,6 +432,36 @@ void AFC::MixtureFraction::calculateOmega
 {
     return thermo_.Hf(species, T);
 }*/
+
+
+// * * * * * * * * * * * * * * * Update Functions  * * * * * * * * * * * * * //
+
+void AFC::MixtureFraction::updateRho()
+{
+    //- Calculate rho using concentration [X]
+    rhoC();
+}
+
+
+void AFC::MixtureFraction::updateCp()
+{
+    //- Species
+    const wordList species = chemistry_.species();
+
+    //- Reset cp
+    Cp_ = 0;
+
+    forAll(species, s)
+    {
+        Cp_ += calculateCp(species[s], temperature_)
+            * speciesMol_.at(species[s]); 
+    }
+}
+
+void AFC::MixtureFraction::updateC()
+{
+    YtoC();
+}
 
 
 // * * * * * * * * * * * * Conversation Functions  * * * * * * * * * * * * * //
@@ -511,8 +542,11 @@ void AFC::MixtureFraction::YtoC()
         YTMW += speciesMass_.at(species[s]) * T() / thermo_.MW(species[s]);
     }
 
+    //- Pressure [Pa]
     const scalar& p = properties_.p();
 
+    //- Unit of concentration [mol/m^3]
+    //  Change unit to [mol/cm^3] factor 100cm * 100cm * 100cm / m^3
     forAll(species, s)
     {
         speciesCon_[species[s]]
@@ -649,11 +683,28 @@ AFC::scalar AFC::MixtureFraction::C
 }
 
 
+AFC::map<AFC::word, AFC::scalar> AFC::MixtureFraction::mol() const
+{
+    return speciesMol_;
+}*/
+
+
+AFC::map<AFC::word, AFC::scalar>& AFC::MixtureFraction::mass()
+{
+    return speciesMass_;
+}
+
+
 AFC::map<AFC::word, AFC::scalar> AFC::MixtureFraction::con()
 {
     return speciesCon_;
 }
 
+
+AFC::scalar& AFC::MixtureFraction::T()
+{
+    return temperature_;
+}
 
 
 AFC::scalar AFC::MixtureFraction::T() const
@@ -665,6 +716,12 @@ AFC::scalar AFC::MixtureFraction::T() const
 AFC::scalar AFC::MixtureFraction::cp() const
 {
     return cp_;
+}
+
+
+AFC::scalar AFC::MixtureFraction::Cp() const
+{
+    return Cp_;
 }
 
 

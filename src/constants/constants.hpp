@@ -60,6 +60,8 @@ const map<word, scalar> AW
     { "HE", 4.00260 }
 };
 
+// WO IST DIE MAUS! MAUNZ!
+
 //- Converstion from cal to joule [J/cal]
 constexpr scalar calToJoule = 4.1858;
 
@@ -69,7 +71,7 @@ constexpr scalar jouleToCal = 1/calToJoule;
 //- Universal gas constant [J/K/mol]
 constexpr scalar R = 8.314459848;
 
-//- Converstion from cal to joule [J/cal]
+//- Universal gas constant [cal/K/mol]
 constexpr scalar Rcal = R * jouleToCal;
 
 

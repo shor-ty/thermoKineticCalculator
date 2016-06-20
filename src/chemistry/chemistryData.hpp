@@ -464,6 +464,11 @@ class ChemistryData
             //- Return mapList of stochiometric factors of all reactions
             mapList<word, scalar> nu() const;
 
+            //- Return stochiometric factors of products of reaction r
+            map<word, scalar> nuEduc
+            (
+                const int&
+            ) const;
 
 };
 

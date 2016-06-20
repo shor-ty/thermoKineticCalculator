@@ -89,8 +89,9 @@ class Chemistry
         // Calculation Functions
 
             //- Calculate the source term of each species (omega)
-            void calculateOmega
+            scalar calculateOmega
             (
+	            const word&,
                 const scalar&,
                 map<word, scalar>&,
                 const Thermo&

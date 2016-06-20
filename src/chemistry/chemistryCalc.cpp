@@ -53,7 +53,7 @@ void AFC::ChemistryCalc::calculatekfkb
     const scalar& T,
     const map<word, scalar>& speciesCon,
     const Thermo& thermo,
-    const ChemistryData& chemData
+    ChemistryData& chemData
 )
 {
     //- a) Check if third body reaction and if yes, which one
@@ -63,13 +63,16 @@ void AFC::ChemistryCalc::calculatekfkb
 
     const bool TBR = thirdBodyReaction(r, enhanced, chemData);
 
-    scalar M = 0;
+    scalar M{0};
 
-    //- Calculate [M] if needed
+    //- Calculate [M] if needed and store
     if (TBR)
     {
         M = calculateM(r, speciesCon, chemData);
     }
+
+    //- Set third body reaction concentration [M] [g/cm^3]
+    chemData.setM(M);
 
     //- Take backward reaction into account?
     const bool& BW = chemData.BR(r);
@@ -300,12 +303,13 @@ AFC::scalar AFC::ChemistryCalc::arrhenius
 }
 
 
-void AFC::ChemistryCalc::calculateOmega
+AFC::scalar AFC::ChemistryCalc::calculateOmega
 (
+    const word& species,
     const scalar& T,
     map<word, scalar>& con,
     const Thermo& thermo,
-    const ChemistryData& chemData
+    ChemistryData& chemData
 )
 {
     //- Species list
@@ -318,17 +322,59 @@ void AFC::ChemistryCalc::calculateOmega
         //- Get reaction no. where species is included
         //const List<int>& inReaction = chemData.reacNumbers(species[s]); 
 
-        //forAll(inReaction, r)
+        //- Elementarreaction no.
+        const unsigned int& r = inReaction[i];
+
+        //- Temporar fields
+        scalar kf{0};
+        scalar kb{0};
+
+        //- Calculate reaction rate kf and kb for reaction r
+        calculatekfkb(r, kf, kb, T, con, thermo, chemData);
+
+        //- Get all species that are used in reaction r
+        const wordList& speciesInReaction = chemData.speciesInReaction(r);
+
+
+        //- Get all species that are acting as products in reaction r
+        const wordList& prodSpecies = chemData.prodSpecies(r);
+
+        //- Get all species that act as educts in reaction r
+        const wordList& educSpecies = chemData.educSpecies(r);
+
+        //- Scalar list of stochiometric factors of reaction r
+        const scalarList& nu = chemData.nu(r);
+
+        //- Stochiometric factors of products
+        map<word, scalar> nuProd = chemData.nuProd(r);
+
+        //- Stochiometric factors of educts
+        map<word, scalar> nuEduc = chemData.nuEduc(r);
+
+        //- TMP fields
+        scalar prod{1};
+        scalar educ{1};
+
+
+        //- Product side, con is in [mol/cm^3]
+        forAll(prodSpecies, s)
         {
-            //- Temporar fields
-            scalar kf{0};
-            scalar kb{0};
-
-            //- Calculate reaction rate kf and kb for reaction i
-        //    calculatekfkb(r, kf, kb, T, con, thermo, chemData);
+            prod *= pow(con.at(prodSpecies[s]), nuProd.at(prodSpecies[s]));
         }
-    }
 
+        //- Educt side, con is in [mol/cm^3]
+        forAll(educSpecies, s)
+        {
+            educ *= pow(con.at(educSpecies[s]), nuEduc.at(educSpecies[s]));
+        }
+
+        const scalar nuSpecies = nuProd[species] - nuEduc[species];
+
+        //- kf is in cm^3, prod and educ in mol/cm^3
+        omega += chemData.M() * nuSpecies * (kf * educ + kb * prod);
+    } 
+
+    return omega;
 }
 
 
@@ -336,7 +382,7 @@ AFC::scalar AFC::ChemistryCalc::calculateM
 (
     const int& r,
     const map<word, scalar>& speciesCon,
-    const ChemistryData& data 
+    ChemistryData& data 
 )
 {
     //- Tmp M

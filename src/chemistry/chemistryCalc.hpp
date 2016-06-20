@@ -79,7 +79,7 @@ class ChemistryCalc
                 const scalar&,
                 const map<word, scalar>&,
                 const Thermo&,
-                const ChemistryData&
+                ChemistryData&
             );
 
             //- Calculate kf
@@ -117,12 +117,13 @@ class ChemistryCalc
             ) const;
 
             //- Calculate the source term of each species (omega)
-            void calculateOmega
+            scalar calculateOmega
             (
+	            const word&,
                 const scalar&,
                 map<word, scalar>&,
                 const Thermo&,
-                const ChemistryData&
+                ChemistryData&
             );
             
             //- Calculate [M] partner [mol/m^3]
@@ -130,7 +131,7 @@ class ChemistryCalc
             (
                 const int&,
                 const map<word, scalar>&,
-                const ChemistryData&
+                ChemistryData&
             );
 
             //- Get information about TBR (if [M] is included or not) and

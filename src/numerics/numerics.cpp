@@ -33,6 +33,9 @@ AFC::Numerics::Numerics
 (
 //    const int nZ 
 )
+{
+    //- Copy of lut
+    const lookUpTable lut_old = lut;
 
 //    nZ_(nZ)
 {
@@ -48,6 +51,8 @@ AFC::Numerics::Numerics
 
     M_.resize(nZ_, scalarField(nZ_));
 
+        //- Object of discrete mixture fraction at Z+1 (r: right)
+        const MixtureFraction& dMFr = lut[defect][sDR][point+1];
 
     for (int i=0; i<nZ_; i++)
     {
@@ -80,6 +85,8 @@ AFC::Numerics::Numerics
     */
 }
 
+            //- Concentration of species at point Z [g/mol]
+            map<word, scalar>& con = dMF.con();
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
@@ -91,9 +98,15 @@ AFC::Numerics::~Numerics()
     }
 }
 
+            //- Mass fraction of species at Point Z-1
+            const map<word, scalar>& massl = dMFl.mass(); 
+            const scalar& Tl = dMFl.T();
+            const scalar& cpl = dMFl.cp();
 
 // * * * * * * * * * * * * * * * Member function * * * * * * * * * * * * * * //
 
+            //- dx
+            const scalar& dx = dMF.Z() - dMFl.Z(); 
 
 void AFC::Numerics::solve
 (
@@ -120,6 +133,25 @@ void AFC::Numerics::solve
     
 }
 
+                //- c) Update mass fraction of species s using central difference
+                {
+                    //- Omega in [g/m^3]
+                    mass[species[s]] =
+                        (
+                            sDR/2
+                            *(
+                                massl.at(species[s])
+                              - 2* mass.at(species[s])
+                              + massr.at(species[s])
+                             )/ pow(dx, 2)
+                             + omega.at(species[s]) / dMF.rho()
+                        ) * dt + massOld.at(species[s]);
+                }
+            }
+//                std::terminate();
+            
+            //- d) Update concentration field
+            dMF.updateC();
 
 void AFC::Numerics::jacobian
 (
@@ -176,6 +208,8 @@ void AFC::Numerics::jacobian
              //   dMF.calculateMeanG(H, S, T);
             }
         }
+    }
+}
 
         //- Calculate the source term of species omega
         {

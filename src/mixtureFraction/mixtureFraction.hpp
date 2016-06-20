@@ -217,6 +217,27 @@ class MixtureFraction
                 const scalar&
             ) const;
 
+            //- Calculate the source term omega of species s
+            scalar calculateOmega
+            (
+                const word&,
+                const scalar&,
+                map<word, scalar>&
+            );
+
+            
+        // Update functions
+
+            //- Update the mean density [g/cm^3]
+            void updateRho();
+
+            //- Update heat capacity Cp
+            void updateCp();
+
+            //- Update concentration fraction C [-]
+            void updateC();
+
+
         // Conversation functions
 
             //- Calculate mol fraction out of mass fraction
@@ -243,6 +264,8 @@ class MixtureFraction
 
         // Check functions
 
+            //- Return Zvalue at discrete point
+            scalar Z() const;
 
         // Return functions
 
@@ -275,6 +298,9 @@ class MixtureFraction
 
             //- Return heat capacity [J/mol/K]
             scalar cp() const;
+
+            //- Return heat capacity [J/mol/K]
+            scalar Cp() const;
 
             //- Return heat capacity of species s [J/mol/K]
             scalar calculateCp

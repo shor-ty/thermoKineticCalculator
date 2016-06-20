@@ -46,7 +46,7 @@ int main
     char** argv
 )
 {
-    clock_t exceTime = clock();
+    Header();
 
     Info<< Header() << endl;
 
