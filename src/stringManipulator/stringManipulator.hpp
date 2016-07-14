@@ -55,9 +55,6 @@ class StringManipulator
         bool debug_{false};
 
 
-    private:
-
-
     public:
 
         //- Constructor

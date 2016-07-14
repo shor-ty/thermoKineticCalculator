@@ -34,7 +34,7 @@ AFC::Chemistry::Chemistry
     const string& fileName 
 )
 {
-    if (debug)
+    if (debug_)
     {
         Info<< "Constructor Chemistry\n" << endl;
     }
@@ -52,7 +52,7 @@ AFC::Chemistry::Chemistry
 
 AFC::Chemistry::~Chemistry()
 {
-    if (debug)
+    if (debug_)
     {
         Info<< "Destructor Chemistry\n" << endl;
     }
@@ -125,7 +125,7 @@ void AFC::Chemistry::calculateKb()
 
 void AFC::Chemistry::createSpeciesInReaction()
 {
-    if (debug)
+    if (debug_)
     {
         Info<< " --> AFC::Chemistry::createSpeciesInReaction" << endl;
     }

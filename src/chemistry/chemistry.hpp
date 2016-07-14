@@ -51,7 +51,7 @@ namespace AFC
 
 class Chemistry
 {
-    public:
+    private:
 
         // Private reference data
 
@@ -63,7 +63,7 @@ class Chemistry
 
 
         // Debug 
-        bool debug{false};
+        bool debug_{false};
 
     public:
 
