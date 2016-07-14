@@ -34,7 +34,10 @@ AFC::Chemistry::Chemistry
     const string& fileName 
 )
 {
-    Info<< "Constructor Chemistry\n" << endl;
+    if (debug)
+    {
+        Info<< "Constructor Chemistry\n" << endl;
+    }
 
     ChemistryReader chemReader(fileName);
     
@@ -49,7 +52,10 @@ AFC::Chemistry::Chemistry
 
 AFC::Chemistry::~Chemistry()
 {
-    Info<< "Destructor Chemistry\n" << endl;
+    if (debug)
+    {
+        Info<< "Destructor Chemistry\n" << endl;
+    }
 }
 
 
@@ -72,7 +78,8 @@ AFC::scalar AFC::Chemistry::calculateOmega
 )
 {
     //- Calculate source term omega
-    return chemCalc_.calculateOmega(species, T, con, thermo, chemData_);
+    //return chemCalc_.calculateOmega(species, T, con, thermo, chemData_);
+    return 0;
 }
 
 
@@ -82,7 +89,7 @@ void AFC::Chemistry::calculateKf
     const scalar& T
 )
 {
-    chemCalc_.calculateKf(r, T, chemData_);
+    //chemCalc_.calculateKf(r, T, chemData_);
 }
 
 
@@ -93,25 +100,25 @@ void AFC::Chemistry::calculateKc
     const Thermo& thermo
 )
 {
-    chemCalc_.calculateKc(r, T, thermo, chemData_);
+    //chemCalc_.calculateKc(r, T, thermo, chemData_);
 }
 
 
 void AFC::Chemistry::calculateKb()
 {
-    chemCalc_.calculateKb(chemData_);
+    //chemCalc_.calculateKb(chemData_);
 }
 
 
 // * * * * * * * * * * * * * * * Update Functions  * * * * * * * * * * * * * //
 
-void AFC::Chemistry::updateM
+/*void AFC::Chemistry::updateM
 (
     const scalar& M
 )
 {
     chemData_.updateM(M);
-}
+}*/
 
 
 // * * * * * * * * * * * * * * * Create Functions  * * * * * * * * * * * * * //
@@ -286,6 +293,8 @@ AFC::scalarField AFC::Chemistry::k() const
 }*/
 
 
+// * * * * * * * * * * * * * * * Summary Functions * * * * * * * * * * * * * //
+
 void AFC::Chemistry::summary
 (
     ostream& data 
@@ -364,7 +373,7 @@ void AFC::Chemistry::summary
 
     forEach(reactions, r)
     {
-        data<< "   |-->  " << reactions[r] << "\n";
+        data<< "   |-->  (" << r+1 << ")  " << reactions[r] << "\n";
     }
 
     data<< "\n\n More detailed kinetics for reactions\n\n";

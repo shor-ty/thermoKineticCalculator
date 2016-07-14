@@ -221,29 +221,6 @@ class Chemistry
                 ostream&   
             ) const;
 
-            //- Return ENHANCED bool ::Interpreter
-            bool ENHANCED
-            (
-                const int&
-            ) const;
-
-            //- Return LOW bool ::Interpreter
-            bool LOW
-            (
-                const int&
-            ) const;
-
-            //- Return TROE bool ::Interpreter
-            bool TROE
-            (
-                const int&
-            ) const;
-
-            //- Return SRI bool ::Interpreter
-            bool SRI 
-            (
-                const int&
-            ) const;
 
             //- Return enhanced factors ::Interpreter
             map<word, scalar> enhancedFactors

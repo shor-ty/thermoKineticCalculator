@@ -251,17 +251,17 @@ class ThermoData
             ) const;
 
             //- Return the factor of atoms in species
-            scalarList elementsFactors
+            scalarList elementFactors
             (
                 const word&
             ) const;
 
-            //- Return the factor of atoms as map
-            map<word, scalar> atomFactors() const;
+            //- Return the factor of elements as map
+            map<word, scalar> elementFactors() const;
 
             //- Return the factor of atoms in species (chemical form)
             //  Not implemented
-            scalarList elementsFactorsChem
+            scalarList elementFactorsChem
             (
                 const word&
             ) const;

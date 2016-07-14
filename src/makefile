@@ -8,6 +8,7 @@ INC_DIR=-I$(WORK_DIR)/chemistry \
 		-I$(WORK_DIR)/constants \
 		-I$(WORK_DIR)/numerics \
 		-I$(WORK_DIR)/typedef \
+		-I$(WORK_DIR)/interpreter \
 		-I$(WORK_DIR)/stringManipulator
 
 
@@ -29,7 +30,8 @@ SOURCE_FILES=automaticFlameletCreator.cpp \
 			 properties/properties.cpp \
 			 properties/propertiesReader.cpp \
 			 mixtureFraction/mixtureFraction.cpp \
-			 typedef/typedef.cpp\
+			 typedef/typedef.cpp \
+			 interpreter/interpreter.cpp \
 			 stringManipulator/stringManipulator.cpp
 
 
@@ -43,7 +45,7 @@ OBJ := $(addprefix obj/,$(addsuffix .o,$(basename $(SOURCE_FILES))))
 obj/%.o: %.cpp | obj
 	    g++ $(CPPFLAGS) $(INC_DIR) -c $< -o $@
 
-automaticFlameletCreator : $(OBJ)  mixtureFraction/interprete.cpp
+automaticFlameletCreator : $(OBJ)
 	g++ $(CPPFLAGS) $(INC_DIR) -o $@ $^
 
 

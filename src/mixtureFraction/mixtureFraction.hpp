@@ -345,10 +345,6 @@ class MixtureFraction
                 const scalar&
             ) const;*/
 
-
-        //- Summary for analyse (output)
-
-            void summary() const;
 };
 
 

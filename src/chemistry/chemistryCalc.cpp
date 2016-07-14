@@ -31,7 +31,10 @@ License
 
 AFC::ChemistryCalc::ChemistryCalc()
 {
-    Info<< "Constructor ChemistryCalc\n" << endl;
+    if (debug)
+    {
+        Info<< "Constructor ChemistryCalc\n" << endl;
+    }
 }
 
 
@@ -39,7 +42,10 @@ AFC::ChemistryCalc::ChemistryCalc()
 
 AFC::ChemistryCalc::~ChemistryCalc()
 {
-    Info<< "Destructor ChemistryCalc\n" << endl;
+    if (debug)
+    {
+        Info<< "Destructor ChemistryCalc\n" << endl;
+    }
 }
 
 
@@ -48,7 +54,7 @@ AFC::ChemistryCalc::~ChemistryCalc()
 
 // * * * * * * * * * * * * * Calculation Functions * * * * * * * * * * * * * //
 
-void AFC::ChemistryCalc::calculatekfkb
+/*void AFC::ChemistryCalc::calculatekfkb
 (
     const int& r,
     const scalar& T,
@@ -66,10 +72,10 @@ void AFC::ChemistryCalc::calculatekfkb
     }
 
     //- Set third body reaction concentration [M] [g/cm^3]
-    chemData.setM(M);
+    //chemData.setM(M);
 
     //- Take backward reaction into account?
-    const bool& BW = chemData.BR(r);
+    //const bool& BW = chemData.BR(r);
 
     //- a) calculate kf
     calculateKf(r, T, chemData);
@@ -77,7 +83,7 @@ void AFC::ChemistryCalc::calculatekfkb
     //- b) if reversible reaction, backward reaction is needed
     //  therefore we need free gibbs energy
     
-    if (BW)
+    //if (BW)
     {
         //- 1) calculate Kc
         const scalar Kc = calculateKc(r, T, thermo, chemData);
@@ -232,7 +238,7 @@ AFC::scalar AFC::ChemistryCalc::calculateKf
     //  + uni-moleculare reaction: [1/s]
     //  + bi--moleculare reaction: [cm^3/mol/s]
     //  + tri-moleculare reaction: [cm^6/mol^2/s]
-}
+//}
 
 
 void AFC::ChemistryCalc::calculateKb
@@ -241,7 +247,7 @@ void AFC::ChemistryCalc::calculateKb
 )
 {
     //- Update kb
-    chemData.updateKb(chemData.kf() / chemData.Kc());
+   // chemData.updateKb(chemData.kf() / chemData.Kc());
 }
 
 
@@ -258,16 +264,16 @@ void AFC::ChemistryCalc::calculateKc
     scalar deltaS{0};
 
     //- Scalar list of stochiometric factors of reaction r
-    const map<word, scalar>& nu = chemData.nu(r);
+    //const map<word, scalar>& nu = chemData.nu(r);
 
     {
         //const wordList& species = chemData.speciesInReaction(r); 
 
-        /*forAll(nu, s)
-        {
-            deltaH += thermo.H(s, T) * nu.at(s)
-            deltaS += thermo.S(s, T) * nu.at(s);
-        }*/
+//        forAll(nu, s)
+//        {
+//            deltaH += thermo.H(s, T) * nu.at(s)
+//            deltaS += thermo.S(s, T) * nu.at(s);
+//        }
     }
 
     const scalar deltaG = deltaH - deltaS * T ;
@@ -298,6 +304,7 @@ void AFC::ChemistryCalc::calculateKc
     scalar Kc = (Kp * pow((p*10/AFC::Constants::R/1e7/T), exponent));
 
     return Kc;
+    return 1;
 }
     
 
@@ -473,6 +480,6 @@ bool AFC::ChemistryCalc::thirdBodyReaction
 
     return TBR;
 }
-
+*/
 
 // ************************************************************************* //

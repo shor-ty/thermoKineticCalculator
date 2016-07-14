@@ -87,7 +87,7 @@ class TransportData
 
             //- Pure species viscosity
             //  Species, Temp, Value
-            mapMap<word, scalar, scalar> viscosity_;
+            //mapMap<word, scalar, scalar> viscosity_;
 
             //- Pure binary diffusion coefficients
 

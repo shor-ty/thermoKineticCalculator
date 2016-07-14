@@ -327,7 +327,7 @@ AFC::wordList AFC::ThermoData::elementsInSpecies
 }
 
 
-AFC::scalarList AFC::ThermoData::elementsFactors
+AFC::scalarList AFC::ThermoData::elementFactors
 (
     const word& species
 ) const

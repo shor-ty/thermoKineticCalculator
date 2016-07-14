@@ -24,7 +24,6 @@ License This file is part of Automatic Flamelet Constructor.
 
 #include "mixtureFraction.hpp"
 #include "constants.hpp"
-#include <fstream>
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
@@ -234,8 +233,6 @@ AFC::MixtureFraction::MixtureFraction
 //        rhoX();
     }
 
-    //- Generate a log file
-    summary();
 }
 
 
@@ -436,7 +433,7 @@ void AFC::MixtureFraction::calculateOmega
 
 // * * * * * * * * * * * * * * * Update Functions  * * * * * * * * * * * * * //
 
-void AFC::MixtureFraction::updateRho()
+/*void AFC::MixtureFraction::updateRho()
 {
     //- Calculate rho using concentration [X]
     rhoC();
@@ -461,7 +458,7 @@ void AFC::MixtureFraction::updateCp()
 void AFC::MixtureFraction::updateC()
 {
     YtoC();
-}
+}*/
 
 
 // * * * * * * * * * * * * Conversation Functions  * * * * * * * * * * * * * //
@@ -686,7 +683,7 @@ AFC::scalar AFC::MixtureFraction::C
 AFC::map<AFC::word, AFC::scalar> AFC::MixtureFraction::mol() const
 {
     return speciesMol_;
-}*/
+}
 
 
 AFC::map<AFC::word, AFC::scalar>& AFC::MixtureFraction::mass()
@@ -775,33 +772,6 @@ AFC::scalar AFC::MixtureFraction::G() const
 
 
 // * * * * * * * * * * * * * * Summary function  * * * * * * * * * * * * * * //
-
-void AFC::MixtureFraction::summary() const
-{
-    std::filebuf file;
-
-    //- Open file
-    file.open("analyze", std::ios::out);
-
-    std::ostream data(&file);
-
-    //- Set scientific notation
-    data.setf(std::ios::scientific, std::ios::floatfield);
-
-    //- Header
-    data<< Header() << "\n"; 
-
-    //- Build the chemistry summary
-    chemistry_.summary(data);
-
-    //- Build the thermodynamic summary
-    thermo_.summary(data);
-
-
-    //file<< dataOfChemistry;
-
-    file.close();
-}
 
 
 // ************************************************************************* //

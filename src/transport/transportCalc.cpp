@@ -106,10 +106,8 @@ void AFC::TransportCalc::viscosity
     const wordList& chemSpecies = transData.chemSpecies();
 
     //- Calculate viscosity values of chemical species
-    forAll(chemSpecies, s)
+    forAll(chemSpecies, species)
     {
-        const word& species = chemSpecies[s];
-
         //- Methode of Chung et. al. 1984, 1988
 
         //- Methode of Neufeld et. al. 1972 [Pa s]
@@ -224,10 +222,8 @@ void AFC::TransportCalc::thermalConductivity
     const wordList& chemSpecies = transData.chemSpecies();
 
     //- Calculate viscosity values of chemical species
-    forAll(chemSpecies, s)
+    forAll(chemSpecies, species)
     {
-        const word& species = chemSpecies[s];
-
         //- Methode mentioned by Warnatz
         scalar T = 1000;
         const scalar& thermalConductivity = 
@@ -362,7 +358,7 @@ void AFC::TransportCalc::binaryDiffusivity
     //- Generate species combinations
     map<word, wordList> combinations;
 
-    forAll(chemSpecies, s)
+    forEach(chemSpecies, s)
     {
         for(unsigned i = s+1; i < chemSpecies.size(); i++)
         {
@@ -379,7 +375,7 @@ void AFC::TransportCalc::binaryDiffusivity
     const scalar T = 300;
 
     //- Loop through the combinations
-    forAll(chemSpecies, s)
+    forEach(chemSpecies, s)
     {
         //- Last species break
         if (s == chemSpecies.size()-1)
@@ -392,7 +388,7 @@ void AFC::TransportCalc::binaryDiffusivity
 
         const wordList& pairs = combinations.at(species1);
 
-        forAll(pairs, i)
+        forEach(pairs, i)
         {
             //- Second species
             const word& species2 = pairs[i];

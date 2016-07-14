@@ -132,6 +132,10 @@ class ChemistryData
             //- Omega
             scalarField omega_;
 
+            scalar dH_;
+            scalar dS_;
+            scalar dG_;
+
 
         //- Thermodynamic available in chemistry file
         bool thermo_;

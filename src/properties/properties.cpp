@@ -68,30 +68,30 @@ AFC::Properties::~Properties()
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-void AFC::Properties::insertFuel
+void AFC::Properties::fuelSpecies
 (
     const word& fuel 
 )
 {
-    fuel_ = fuel;
+    fuelSpecies_ = fuel;
 }
 
 
-void AFC::Properties::insertOxidizer
+void AFC::Properties::oxidizerSpecies
 (
-    const word& oxidizer 
+    const word& oxidizer
 )
 {
-    oxidizer_ = oxidizer;
+    oxidizerSpecies_ = oxidizer;
 }
 
 
-void AFC::Properties::insertInertGas
+void AFC::Properties::inertSpecies
 (
-    const word& inertGas
+    const word& inert
 )
 {
-    inertGas_ = inertGas;
+    inertSpecies_ = inert;
 }
 
 
@@ -321,11 +321,11 @@ void AFC::Properties::initialBoundary()
 
     forAll(species, s)
     {
-        oxidizerX_[species[s]] = 0.;
-        oxidizerY_[species[s]] = 0.; 
+        oxidizerX_[s] = 0.;
+        oxidizerY_[s] = 0.; 
 
-        fuelX_[species[s]] = 0.;
-        fuelY_[species[s]] = 0.;
+        fuelX_[s] = 0.;
+        fuelY_[s] = 0.;
     }
 }
 
@@ -536,7 +536,7 @@ void AFC::Properties::check()
     }
 
     //- Check if oxidizer is set
-    if (oxidizer().empty())
+    /*if (oxidizer().empty())
     {
         FatalError
         (
@@ -545,12 +545,7 @@ void AFC::Properties::check()
             __FILE__,
             __LINE__
         );
-    }
-}
-
-    // Algorihm control check
-
-    // Output summary
+    }*/
 }
 
 
@@ -565,7 +560,7 @@ void AFC::Properties::XtoY()
     {
         YbyM +=
             thermo_.MW(speciesI)
-          * oxidizerX_[speciesI];
+          * oxidizerX_.at(speciesI);
     } 
 
     //- Oxidizer
@@ -639,9 +634,9 @@ AFC::word AFC::Properties::oxidizer() const
 }
 
 
-AFC::word AFC::Properties::inertGas() const
+AFC::word AFC::Properties::inert() const
 {
-    return inertGas_;
+    return inertSpecies_;
 }
 
 
@@ -663,18 +658,27 @@ AFC::map<AFC::word, AFC::scalar> AFC::Properties::oxidizerY() const
 }
 
 
+AFC::map<AFC::word, AFC::scalar> AFC::Properties::oxidizerZj() const
+{
+    return fuelZj_;
+}
+
+
+AFC::scalar AFC::Properties::oxidizerX
+(
+    const word& species 
+) const
+{
+    return oxidizerX_.at(species);
+}
+
+
 AFC::scalar AFC::Properties::oxidizerY
 (
     const word& species 
 ) const
 {
     return oxidizerY_.at(species);
-}
-
-
-AFC::map<AFC::word, AFC::scalar> AFC::Properties::oxidizerZj() const
-{
-    return oxidizerZj_;
 }
 
 
@@ -696,6 +700,21 @@ AFC::map<AFC::word, AFC::scalar> AFC::Properties::fuelY() const
 }
 
 
+AFC::map<AFC::word, AFC::scalar> AFC::Properties::fuelZj() const
+{
+    return fuelZj_;
+}
+
+
+AFC::scalar AFC::Properties::fuelX
+(
+    const word& species
+) const
+{
+    return fuelX_.at(species);
+}
+
+
 AFC::scalar AFC::Properties::fuelY
 (
     const word& species
@@ -705,15 +724,18 @@ AFC::scalar AFC::Properties::fuelY
 }
 
 
-AFC::map<AFC::word, AFC::scalar> AFC::Properties::fuelZj() const
-{
-    return fuelZj_;
-}
-
-
 AFC::scalarField AFC::Properties::defects() const
 {
     return defects_;
+}
+
+
+AFC::scalar AFC::Properties::sDRs
+(
+    const int& i 
+) const
+{
+    return sDRs_[i];
 }
 
 

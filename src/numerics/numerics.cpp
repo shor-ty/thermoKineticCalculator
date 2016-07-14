@@ -34,11 +34,6 @@ AFC::Numerics::Numerics
 //    const int nZ 
 )
 {
-    //- Copy of lut
-    const lookUpTable lut_old = lut;
-
-//    nZ_(nZ)
-{
     if (debug)
     {
         Info<< "Constructor Numerics \n" << endl;
@@ -85,8 +80,6 @@ AFC::Numerics::Numerics
     */
 }
 
-            //- Concentration of species at point Z [g/mol]
-            map<word, scalar>& con = dMF.con();
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
@@ -98,15 +91,9 @@ AFC::Numerics::~Numerics()
     }
 }
 
-            //- Mass fraction of species at Point Z-1
-            const map<word, scalar>& massl = dMFl.mass(); 
-            const scalar& Tl = dMFl.T();
-            const scalar& cpl = dMFl.cp();
 
 // * * * * * * * * * * * * * * * Member function * * * * * * * * * * * * * * //
 
-            //- dx
-            const scalar& dx = dMF.Z() - dMFl.Z(); 
 
 void AFC::Numerics::solve
 (
@@ -128,10 +115,7 @@ void AFC::Numerics::solve
     forAll(phi, Z)
     {
         Info<< Z*0.05 << "  " << phi[Z] << endl; 
-    }*/
 
-    
-}
 
                 //- c) Update mass fraction of species s using central difference
                 {
@@ -151,8 +135,10 @@ void AFC::Numerics::solve
 //                std::terminate();
             
             //- d) Update concentration field
-            dMF.updateC();
+            dMF.updateC();*/
+}
 
+/*
 void AFC::Numerics::jacobian
 (
     MixtureFraction& mf
@@ -163,6 +149,7 @@ void AFC::Numerics::jacobian
         Info<< " --> AFC::Numerics::jacobian" << endl;
     }
 }
+*/
 
 /*void calculate
 (

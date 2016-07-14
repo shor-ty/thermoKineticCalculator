@@ -34,6 +34,7 @@ Description
 #include "properties.hpp"
 #include "mixtureFraction.hpp"
 #include "numerics.hpp"
+#include "interpreter.hpp"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -56,8 +57,8 @@ int main
     string file_Transport;
     string file_Chemistry;
 
-    //- Arguments
-    bool interprete{false};
+    //- Interpreter object
+    Interpreter interpreter;
 
     if (argc != 9 && argc != 10)
     {
@@ -80,7 +81,7 @@ int main
     {
         if (argc == 10)
         {
-            interprete = true;
+            interpreter.analyse(true);
         }
 
         for (int i=0; i<argc; i++)
@@ -253,14 +254,27 @@ int main
 
         Info<< " c-o Data O.K.\n" << endl;
     }
+    
+    //- Interprete data 
+    if (interpreter.analyse())
+    {
+        Info<< " c-o Interprete data ...\n" << endl;
+
+        interpreter.summary(chemistry, thermo, transport);
+
+        Footer(startTime);
+
+        return 0;
+    }
+
 
     //- Now we can proceed doing some other stuff after the check
     {
         //- Calculate adiabatic enthalpy of fuel and oxidizer
-        properties.calcProperties();
+        //properties.calcProperties();
 
         //- Calculate adiabatic flame temperature (simple estimate)
-        properties.calcAdiabaticTemperature();
+        //properties.calcAdiabaticTemperature();
 
         //transport.calcAtomComposition();
     }
@@ -270,22 +284,9 @@ int main
     {
 //        transport.prepareFitting(thermo);
     }
-    //- Interprete data
-    if (interprete)
-    {
-        Info<< " c-o Interprete data ...\n" << endl;
-
-        AFC::interprete(thermo, chemistry, properties);
-
-        Info<< "\n c-o Interperted all data\n" << endl;
-
-        Footer(startTime);
-
-        return 0;
-    }
 
     //- Calculate first flamelet (initial - equilibrium)
-    AdiabaticFlamelet adiabaticFlamelet;
+    //AdiabaticFlamelet adiabaticFlamelet;
 
     //- First lookUpTable for first scalar dissipation rate
     //  and adiabatic enthalpy (no defect)
@@ -296,7 +297,7 @@ int main
         const scalar& sDR1 = properties.sDRs(0);
 
         // - Discretisation of mixture fraction Z
-        const unsigned int& Zpoints = properties.mfPoints();
+        const unsigned int& Zpoints = properties.nZPoints();
 
         const scalar delta = 1./Zpoints;
 
@@ -304,7 +305,7 @@ int main
             << " Hz\n" << endl;
 
         //- All points in adiabatic flamelet
-        for(unsigned int i=0; i <= Zpoints; i++)
+        /*for(unsigned int i=0; i <= Zpoints; i++)
         {
             scalar zPointValue = i*delta;
 
@@ -320,7 +321,7 @@ int main
                     scalar(0)
                 )
             );
-        }
+        }*/
 
         Footer(startTime);
 

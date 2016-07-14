@@ -380,11 +380,11 @@ void AFC::ThermoReader::calcMolecularWeight
     ThermoData& data
 )
 {
-    //- Atoms of species
-    const wordList& atoms = data.speciesAtoms(species);
+    //- Elements of species
+    const wordList& atoms = data.elementsInSpecies(species);
 
-    //- Factors of atoms
-    const scalarList& factors = data.atomFactors(species);
+    //- Factors of elements 
+    const scalarList& factors = data.elementFactors(species);
 
     //- Temp molecular weight
     scalar tmp = 0;

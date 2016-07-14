@@ -102,7 +102,7 @@ void AFC::PropertiesReader::read
                     );
                 }
 
-                data.insertInertGas(word(tmp[1]));
+                data.inertSpecies(word(tmp[1]));
             }
             else if (tmp[0] == "fuel")
             {
@@ -116,7 +116,7 @@ void AFC::PropertiesReader::read
                     );
                 }
 
-                data.insertFuel(word(tmp[1]));
+                data.fuelSpecies(word(tmp[1]));
             }
             else if (tmp[0] == "oxidizer")
             {
@@ -130,7 +130,7 @@ void AFC::PropertiesReader::read
                     );
                 }
 
-                data.insertOxidizer(word(tmp[1]));
+                data.oxidizerSpecies(word(tmp[1]));
             }
             else if (tmp[0] == "mixtureFractionPoints")
             {

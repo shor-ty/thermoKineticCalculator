@@ -53,9 +53,6 @@ class Properties
     private:
 
         // Private class data
-            
-            //- Reference to thermo object
-            const Thermo& thermo_;
 
         // Debug
         const bool debug_{false};
@@ -123,7 +120,13 @@ class Properties
             word interpreter_{"FALSE"};
 
             //- Inert gas
-            word inertGas_{"N2"};
+            word fuelSpecies_;
+
+            //- Inert gas
+            word oxidizerSpecies_;
+
+            //- Inert gas
+            word inertSpecies_{"N2"};
 
 
         // Data at stochiometric condition 
@@ -152,9 +155,6 @@ class Properties
 
             //- Strain rates [1/s] 
             scalarField as_;
-
-            //- ScalarDissipation rates [1/s] (stochiometric)
-            scalarField sDRs_;
 
             //- Stochiometric coeff for CO2
             scalar nuCO2_{0};
@@ -348,6 +348,24 @@ class Properties
                 const word& 
             );
 
+            //- Insert fuel species
+            void fuelSpecies
+            (
+                const word&
+            );
+
+            //- Set oxidizer species
+            void oxidizerSpecies
+            (
+                const word&
+            );
+
+            //- Set inert species
+            void inertSpecies
+            (
+                const word&
+            );
+
 
         // Other functions
 
@@ -379,31 +397,61 @@ class Properties
             //- Return oxidizer species (for adiabatic flame calculation)
             word oxidizer() const;
 
-            //- Return inert gas
-            word inertGas() const;
+            //- Return inert species
+            word inert() const;
 
             //- Return oxidizer species
             wordList speciesOxidizer() const;
 
-            //- Return oxidizer mol fraction
-            map<word, scalar> oxidizerCompMol() const;
-            //
-            //- Return oxidizer mass fraction
-            map<word, scalar> oxidizerCompMass() const;
+            //- Return oxidizer mol fraction as map
+            map<word, scalar> oxidizerX() const;
+
+            //- Return oxidizer mass fraction as map
+            map<word, scalar> oxidizerY() const;
+
+            //- Return element mass fraction of oxidizer as map
+            map<word, scalar> oxidizerZj() const;
+
+            //- Return mof fraction of species s in oxidizer
+            scalar oxidizerX
+            (
+                const word&
+            ) const;
+
+            //- Return mass fraction of species s in oxidizer
+            scalar oxidizerY
+            (
+                const word&
+            ) const;
 
             //- Return fuel species
             wordList speciesFuel() const;
 
-            //- Return fuel mol fraction
-            map<word, scalar> fuelCompMol() const;
+            //- Return fuel mol fraction as map
+            map<word, scalar> fuelX() const;
 
-            //- Return fuel mass fraction
-            map<word, scalar> fuelCompMass() const;
+            //- Return fuel mass fraction as map
+            map<word, scalar> fuelY() const;
+
+            //- Return element mass fraction of fuel as map
+            map<word, scalar> fuelZj() const;
+
+            //- Return mol fraction of species s in fuel
+            scalar fuelX
+            (
+                const word&
+            ) const;
+
+            //- Return mass fraction of species s in fuel
+            scalar fuelY
+            (
+                const word&
+            ) const;
 
             //- Return scalar dissipation rates [1/s]
             scalarField sDRs() const;
 
-            //- Return scalar dissipation rates i [1/s]
+            //- Return scalar dissipation rate i [1/s]
             scalar sDRs
             (
                 const int&  

@@ -434,12 +434,6 @@ bool AFC::ChemistryData::ENHANCED
 }
 
 
-AFC::wordList AFC::ChemistryData::species() const
-{
-    return species_;
-}
-
-
 AFC::scalar AFC::ChemistryData::dH() const
 {
     return dH_;

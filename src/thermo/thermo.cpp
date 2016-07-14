@@ -166,17 +166,18 @@ AFC::scalar AFC::Thermo::C
 }
 
 
-// * * * * * * * * * * * * * * Summary function  * * * * * * * * * * * * * * //
+// * * * * * * * * * * * * * * Summary Function  * * * * * * * * * * * * * * //
+
 
 void AFC::Thermo::summary
 (
     ostream& data
 ) const
 {
-    return thermoData_.HT(species);
+    //return thermoData_.HT(species);
 }
 
-
+/*
 AFC::wordList AFC::Thermo::elementsInSpecies
 (
     const word& species
@@ -192,7 +193,7 @@ AFC::scalarList AFC::Thermo::elementsFactors
 ) const
 {
     return thermoData_.elementsFactors(species);
-}
+}*/
 
 
 // ************************************************************************* //
