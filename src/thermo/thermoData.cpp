@@ -83,11 +83,6 @@ void AFC::ThermoData::insertAtomAndFactor
 
     //- Insert multiplication factor
     elementsFactors_[actualSpecies].push_back(factor);
-
-    //- Insert Atoms and factor in map (test TODO)
-    map<word, scalar> tmp;
-    tmp[atom] = factor;
-    atoms_[actualSpecies] = tmp;
 }
 
 
@@ -230,6 +225,26 @@ void AFC::ThermoData::insertNASACoeffsLT
 }
 
 
+void AFC::ThermoData::updateAtomsAndFactorsMap()
+{
+    //- Temporar map that contains all atoms and factors of the actual species
+    map<word, scalar> tmp;
+
+    //- Actual species
+    const word& species = species_[species_.size()-1];
+
+    const wordList& atoms = elementsInSpecies(species);
+    const scalarList& factors = elementFactors(species);
+
+    forEach(atoms, a)
+    {
+        tmp[atoms[a]] = factors[a];
+    }
+
+    atoms_[species] = tmp;
+}
+
+
 // * * * * * * * * * * * Insert functions from Thermo::  * * * * * * * * * * //
 
 void AFC::ThermoData::p
@@ -249,6 +264,12 @@ void AFC::ThermoData::p
 AFC::wordList AFC::ThermoData::species() const
 {
     return species_;
+}
+
+
+AFC::wordList AFC::ThermoData::formula() const
+{
+    return formula_;
 }
 
 

@@ -178,6 +178,9 @@ class ThermoData
                 const scalar&
             );
 
+            //- Update the atoms map (stores atoms and factors)
+            void updateAtomsAndFactorsMap();
+
 
         // Insert functions, from Thermo:: delegated
 
@@ -194,6 +197,9 @@ class ThermoData
 
             //- Return species as wordList
             wordList species() const;
+
+            //- Return the formula of species as wordList
+            wordList formula() const;
 
             //- Return moleculare weight of species s
             scalar MW
@@ -277,6 +283,9 @@ class ThermoData
             (
                 const word& 
             ) const;
+            
+            //- Return the phase of species as map
+            map<word, word> phase() const;
 };
 
 
