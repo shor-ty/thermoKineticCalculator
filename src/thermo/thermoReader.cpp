@@ -63,8 +63,13 @@ void AFC::ThermoReader::read
     Info<< " c-o Reading thermodynamic data\n" << endl;
 
     //- TODO if thermo true --> use chemistry file
-    
     const auto fileContent = readFile(file_);
+
+    if (debug_)
+    {
+        Info<< " --> The thermodynamic file contains " << fileContent.size()
+            << " lines\n" << endl;
+    }
 
     int lineNoKeyword{-1};
     unsigned int lineNoEnd{0};
@@ -76,10 +81,18 @@ void AFC::ThermoReader::read
         fileContent
     );
 
+
+
     //- Reading THERMO block
     for (unsigned int line = lineNoKeyword+2; line < lineNoEnd; line++)
     {
         stringList tmp = splitStrAtWS(fileContent[line]);
+
+        if (debug_)
+        {
+            Info<< " --> Line to analyse: \n (" << line << ")" 
+                << fileContent[line] << endl;
+        }
 
         //- If line is not empty and no comment, proceed
         if
@@ -476,6 +489,9 @@ void AFC::ThermoReader::atomsAndFactors
             break;
         }
     }
+
+    //- All atoms and factors stored, now we can update the map
+    data.updateAtomsAndFactorsMap();
 }
 
 

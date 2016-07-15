@@ -342,7 +342,7 @@ void AFC::Chemistry::summary
     }
 
     //- General stuff
-    data<<  " c-o Reaction summary:\n";
+    data<< " c-o Reaction summary:\n";
     data<< " =====================\n\n";
     data<< " Number of elements             " << elements.size()  << "\n";
     data<< " Number of species              " << species.size()   << "\n";

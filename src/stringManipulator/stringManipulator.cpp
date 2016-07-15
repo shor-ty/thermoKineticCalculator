@@ -59,7 +59,6 @@ const AFC::stringList AFC::StringManipulator::readFile
 {
     if (debug_)
     {
-        Info<< "Debug: " << debug_ << endl;
         Info<< " --> AFC::StringManipulator::readFile" << endl;
     }
 

@@ -1,9 +1,11 @@
 #.gitignore
 #
-# codeBlocks
+# codeBlocks (old)
 *.cbp
 *.layout
 *.depend
+*.swp
+
 
 #gcc 
 obj/
@@ -18,6 +20,8 @@ html/
 automaticFlameletCreator
 src/thirdParty
 summary
+files/
+log
 
 #gedit
 *~

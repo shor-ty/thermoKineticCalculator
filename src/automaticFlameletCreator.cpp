@@ -137,8 +137,8 @@ int main
 
     //- Proof if all species used in chemistryData have transportData
     {
-        wordList speciesCH = chemistry.species();
-        wordList speciesTD = transport.species();
+        const wordList& speciesCH = chemistry.species();
+        const wordList& speciesTD = transport.species();
 
         forAll(speciesCH, i)
         {
@@ -176,8 +176,8 @@ int main
 
     //- Proof if all species used in chemistryData have thermodynamicData
     {
-        wordList speciesCH = chemistry.species();
-        wordList speciesTHD = thermo.species();
+        const wordList& speciesCH = chemistry.species();
+        const wordList& speciesTHD = thermo.species();
 
         forAll(speciesCH, i)
         {

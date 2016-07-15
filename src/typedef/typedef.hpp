@@ -98,6 +98,7 @@ template<class T, class Z> using mapList = typename std::vector<map<T, Z> >;
 
 #define forEach(Field, i) for (unsigned int i=0; i<Field.size(); i++)
 #define forAll(Field, i) for (auto& i : Field)
+#define forMap(Field, i) for (auto i = Field.begin(); i != Field.end(); i++)
 
 void Print();
 

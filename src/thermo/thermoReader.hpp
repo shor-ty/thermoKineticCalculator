@@ -93,7 +93,7 @@ class ThermoReader
 
         // Helper functions
         
-            //- Find line number of keyword
+            //- Find line number of keywords
             void findKeyword
             (
                 int&,
