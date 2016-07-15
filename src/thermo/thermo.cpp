@@ -24,6 +24,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "thermo.hpp"
+#include "constants.hpp"
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
@@ -149,11 +150,39 @@ AFC::scalar AFC::Thermo::p() const
 
 AFC::scalar AFC::Thermo::Hf
 (
+    const word& species
+) const
+{
+    return thermoCalc_.Hf(species, thermoData_);
+}
+
+
+AFC::scalar AFC::Thermo::Gf
+(
+    const word& species
+) const
+{
+    return thermoCalc_.Gf(species, thermoData_);
+}
+
+
+AFC::scalar AFC::Thermo::dH
+(
     const word& species,
     const scalar& T
 ) const
 {
-    return thermoCalc_.Hf(species, T, thermoData_);
+    return thermoCalc_.dH(species, T, thermoData_);
+}
+
+
+AFC::scalar AFC::Thermo::dG
+(
+    const word& species,
+    const scalar& T
+) const
+{
+    return thermoCalc_.dG(species, T, thermoData_);
 }
 
 
@@ -166,6 +195,14 @@ AFC::scalar AFC::Thermo::C
 }
 
 
+AFC::word AFC::Thermo::phase
+(
+    const word& species
+) const
+{
+    return thermoData_.phase(species);
+}
+
 // * * * * * * * * * * * * * * Summary Function  * * * * * * * * * * * * * * //
 
 
@@ -174,26 +211,88 @@ void AFC::Thermo::summary
     ostream& data
 ) const
 {
-    //return thermoData_.HT(species);
+    const wordList& species = thermoData_.species();
+    const wordList& formula = thermoData_.formula();
+
+    const scalar& M = AFC::Constants::jouleToCal;
+
+    data<< " c-o Thermodynamic summary:\n"
+        << " ==========================\n\n"
+        << " Species in thermo: " << species.size() << "\n";
+
+    data<< " \n\n Species used:\n";
+    data<< std::left;
+
+    forEach(species, s)
+    {
+        data<< "    |--> " << std::setw(20) <<  species[s]
+            << "(" << formula[s] << ")\n";
+    }
+
+    forEach(species, s)
+    {
+        const word& phase = thermoData_.phase(species[s]);
+        data<< " =========================================================="
+            << "=========================================================\n"
+            << " Thermo analyses for " << species[s] << "\n"
+            << " =========================================================="
+            << "=========================================================\n"
+            << " Phase: " << phase << "\n"
+            << " Formula: " << formula[s] << "\n"
+            << " Composition: \n   |\n";
+
+        const map<word, scalar>& atoms =
+            thermoData_.atomsAndFactors(species[s]);
+
+        map<word, scalar> t = atoms;
+
+        forMap(t, a)
+        {
+            data<< "   |--> " << std::setw(4) << a->first
+                << " " << a->second << "\n";
+        }
+
+        data<< "\n" << std::setw(40) << std::left
+            <<" Molecular weight:   "
+            << std::setw(10) << std::right
+            << MW(species[s]) << " [g/mol]\n"
+            << std::setw(40) << std::left
+            << " Formation enthalpy (298K):   "
+            << std::setw(10) << std::right
+            << Hf(species[s]) * M << " [J/mol]\n"
+            << std::setw(40) << std::left
+            <<" Frormation free Gibbs energy (298K):   "
+            << std::setw(10) << std::right
+            << Gf(species[s]) * M << " [J/mol]\n";
+
+        data<< std::right << "\n";
+
+        data<< "\n\n ----------------------------------------------------------"
+            << "---------------------------------------------------------\n"
+            << "      T    |         cp              H               S       "
+            << "        G              dH             dG           | \n"
+            << "     [K]   |      [J/molK]        [J/mol]         [J/molK]   "
+            << "     [J/mol]         [J/molK]       [J/mol]        | \n"
+            << " ----------------------------------------------------------"
+            << "---------------------------------------------------------\n";
+
+        for(int i=300; i<=3000; i+=100)
+        {
+            data<< "  " << std::setw(6) << i << "   |" 
+                << "  " << std::setw(13) << cp(species[s], i) * M
+                << "  " << std::setw(14) << H(species[s], i)  * M
+                << "  " << std::setw(14) << S(species[s], i)  * M
+                << "  " << std::setw(14) << G(species[s], i)  * M
+                << "  " << std::setw(14) << dH(species[s], i) * M
+                << "  " << std::setw(14) << dG(species[s], i) * M
+                << "     |\n";
+        }
+
+        data<< " ----------------------------------------------------------"
+            << "---------------------------------------------------------\n\n"
+            << "\n\n";
+    }
 }
-
-/*
-AFC::wordList AFC::Thermo::elementsInSpecies
-(
-    const word& species
-) const
-{
-    return thermoData_.elementsInSpecies(species);
-}
-
-
-AFC::scalarList AFC::Thermo::elementsFactors
-(
-    const word& species
-) const
-{
-    return thermoData_.elementsFactors(species);
-}*/
 
 
 // ************************************************************************* //

@@ -135,6 +135,14 @@ class ThermoCalc
                 const ThermoData&
             ) const;
 
+            //- Calculate the enthalpy difference from H and Hf (NASA) [J/mol]
+            scalar dH
+            (
+                const word&,
+                const scalar&,
+                const ThermoData&
+            ) const;
+
             //- Calculate temperature dependend entropy (NASA) [J/mol/K] 
             //  of species s
             scalar S
@@ -153,8 +161,18 @@ class ThermoCalc
                 const ThermoData&
             ) const;
 
+            //- Calculate the free GIBBS energy difference from G and G(298)
+            //  [J/mol]
+            scalar dG
+            (
+                const word&,
+                const scalar&,
+                const ThermoData&
+            ) const;
+
+
             //- Calculate temperature dependend free GIBBS energy (NASA)
-            //  of mixture (mean) [J/mol/K] 
+            //  of mixture (mean) [J/mol] 
             scalar G
             (
                 const scalar&,
@@ -162,11 +180,17 @@ class ThermoCalc
                 const scalar&
             ) const;
 
-            //- Calculate temperature dependend formation enthalpy hf [J/mol]
+            //- Calculate formation enthalpy Hf == H(298) [J/mol]
             scalar Hf
             (
                 const word&,
-                const scalar&,
+                const ThermoData&
+            ) const;
+
+            //- Calculate formation free GIBBS energy Gf == G(298) [J/mol]
+            scalar Gf
+            (
+                const word&,
                 const ThermoData&
             ) const;
 

@@ -121,10 +121,10 @@ AFC::scalar AFC::ThermoCalc::cp
 (
     const word& species,
     const scalar& T,
-    const ThermoData& thermoData
+    const ThermoData& data
 ) const
 {
-    scalarField coeffs = getCoeffs(species, T, thermoData);
+    scalarField coeffs = getCoeffs(species, T, data);
 
     //- calculate and return [J/mol/K]
     return
@@ -161,6 +161,17 @@ AFC::scalar AFC::ThermoCalc::H
           + coeffs[5] / T
         ) * AFC::Constants::R * T
     );
+}
+
+
+AFC::scalar AFC::ThermoCalc::dH
+(
+    const word& species,
+    const scalar& T,
+    const ThermoData& data 
+) const
+{
+    return (H(species, T, data) - Hf(species, data));
 }
 
 
@@ -207,6 +218,17 @@ AFC::scalar AFC::ThermoCalc::G
 }
 
 
+AFC::scalar AFC::ThermoCalc::dG
+(
+    const word& species,
+    const scalar& T,
+    const ThermoData& data
+) const
+{
+    return (G(species, T, data) - Gf(species, data));
+}
+
+
 AFC::scalar AFC::ThermoCalc::G
 (
     const scalar& h,
@@ -222,7 +244,6 @@ AFC::scalar AFC::ThermoCalc::G
 AFC::scalar AFC::ThermoCalc::Hf
 (
     const word& species,
-    const scalar& T,
     const ThermoData& data
 ) const
 {
@@ -317,7 +338,17 @@ AFC::scalar AFC::ThermoCalc::Hf
     }
 
     return deltaHf;*/
-        return 0;
+    return H(species, 298, data);
+}
+
+
+AFC::scalar AFC::ThermoCalc::Gf
+(
+    const word& species,
+    const ThermoData& data
+) const
+{
+    return G(species, 298, data);
 }
 
 

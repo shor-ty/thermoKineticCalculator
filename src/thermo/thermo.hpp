@@ -142,8 +142,27 @@ class Thermo
             //- Return the pressure [Pa]
             scalar p() const;
 
-            //- Return formation enthalpy hf [J/mol]
+            //- Return formation enthalpy Hf == H(293) [J/mol]
             scalar Hf
+            (
+                const word&
+            ) const;
+
+            //- Return formation free GIBBS energy Gf = G(293) [J/mol]
+            scalar Gf
+            (
+                const word&
+            ) const;
+
+            //- Return dH [J/mol]
+            scalar dH
+            (
+                const word&,
+                const scalar&
+            ) const;
+
+            //- Return dG [J/mol]
+            scalar dG
             (
                 const word&,
                 const scalar&
@@ -157,6 +176,12 @@ class Thermo
 
             //- Return low temperature bound (from NASA)
             scalar LT
+            (
+                const word&
+            ) const;
+
+            //- Return the phase of molecule (GAS, LIQUID, SOLID)
+            word phase
             (
                 const word&
             ) const;
