@@ -164,7 +164,7 @@ AFC::scalar AFC::ThermoCalc::H
 }
 
 
-AFC::scalar AFC::ThermoCalc::dH
+AFC::scalar AFC::ThermoCalc::dHf
 (
     const word& species,
     const scalar& T,
@@ -218,7 +218,7 @@ AFC::scalar AFC::ThermoCalc::G
 }
 
 
-AFC::scalar AFC::ThermoCalc::dG
+AFC::scalar AFC::ThermoCalc::dGf
 (
     const word& species,
     const scalar& T,

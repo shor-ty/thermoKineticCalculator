@@ -31,7 +31,7 @@ License
 AFC::Thermo::Thermo
 (
     const string& fileName,
-    const bool& thermo
+    const bool thermo
 )
 :
     thermoData_(thermo)
@@ -166,23 +166,23 @@ AFC::scalar AFC::Thermo::Gf
 }
 
 
-AFC::scalar AFC::Thermo::dH
+AFC::scalar AFC::Thermo::dHf
 (
     const word& species,
     const scalar& T
 ) const
 {
-    return thermoCalc_.dH(species, T, thermoData_);
+    return thermoCalc_.dHf(species, T, thermoData_);
 }
 
 
-AFC::scalar AFC::Thermo::dG
+AFC::scalar AFC::Thermo::dGf
 (
     const word& species,
     const scalar& T
 ) const
 {
-    return thermoCalc_.dG(species, T, thermoData_);
+    return thermoCalc_.dGf(species, T, thermoData_);
 }
 
 
@@ -211,10 +211,12 @@ void AFC::Thermo::summary
     ostream& data
 ) const
 {
+
+    //- Header
+    data<< Header() << "\n"; 
+
     const wordList& species = thermoData_.species();
     const wordList& formula = thermoData_.formula();
-
-    const scalar& M = AFC::Constants::jouleToCal;
 
     data<< " c-o Thermodynamic summary:\n"
         << " ==========================\n\n"
@@ -225,17 +227,114 @@ void AFC::Thermo::summary
 
     forEach(species, s)
     {
-        data<< "    |--> " << std::setw(20) <<  species[s]
+        data<< "    |--> "
+            << std::setw(20) <<  species[s]
             << "(" << formula[s] << ")\n";
     }
 
+    //- Build table with all NASA coeffs for all species
+    NASAPolynomials(data, "LOW");
+    NASAPolynomials(data, "HIGH");
+
+    //- Build thermoanalyse table
+    thermoTable(data);
+
+}
+
+
+void AFC::Thermo::NASAPolynomials
+(
+    ostream& data,
+    const word coeff
+) const
+{
+    word range;
+
+    if (coeff == "LOW")
+    {
+        range = "LOW";
+    }
+    else if (coeff == "HIGH")
+    {
+        range = "HIGH";
+    }
+
+    //- Header
+    data<< "\n\n"
+        << "=================================================================="
+        << "=================================================================="
+        << "================\n"
+        << " c-o NASA POLYNOMIALS (" << range << " TEMPERATURE)\n"
+        << "=================================================================="
+        << "=================================================================="
+        << "================\n\n"
+        << " Species                |"
+        << "         c1               c2               c3      "
+        << "         c4               c5               c6      "
+        << "         c7        |\n"
+        << "------------------------------------------------------------------"
+        << "------------------------------------------------------------------"
+        << "----------------\n";
+
+    //- Species of Thermodynamic Data
+    const wordList& species = thermoData_.species();
+
+    //- Build Table
+    forEach(species, s)
+    {
+
+        List<scalar> NASA(7, 0);
+        
+        if (coeff == "LOW")
+        {
+            NASA = thermoData_.NASACoeffsLT(species[s]);
+        }
+        else if (coeff == "HIGH")
+        {
+            NASA = thermoData_.NASACoeffsHT(species[s]);
+        }
+
+        //- For species number + name
+        std::ostringstream oss;
+
+        oss << " (" << toStr(s+1) << ") " << species[s];
+        
+        data<< std::left << std::setw(22) << oss.str()
+            << "  |" << std::right
+            << std::setw(17) << NASA[0]
+            << std::setw(17) << NASA[1]
+            << std::setw(17) << NASA[2]
+            << std::setw(17) << NASA[3]
+            << std::setw(17) << NASA[4]
+            << std::setw(17) << NASA[5] 
+            << std::setw(17) << NASA[6]
+            << "  |\n";
+    }
+
+    data<< "=================================================================="
+        << "=================================================================="
+        << "================\n\n";
+}
+
+
+void AFC::Thermo::thermoTable
+(
+    ostream& data
+) const
+{
+    //- Species of Thermodynamic Data
+    const wordList& species = thermoData_.species();
+    const wordList& formula = thermoData_.formula();
+
+    //_ Build the thermoanalyse table
     forEach(species, s)
     {
         const word& phase = thermoData_.phase(species[s]);
-        data<< " =========================================================="
+
+        data<< "==========================================================="
             << "=========================================================\n"
-            << " Thermo analyses for " << species[s] << "\n"
-            << " =========================================================="
+            << " c-o Thermo analyses for " << species[s] << "\n"
+            << "==========================================================="
             << "=========================================================\n"
             << " Phase: " << phase << "\n"
             << " Formula: " << formula[s] << "\n"
@@ -244,47 +343,46 @@ void AFC::Thermo::summary
         const map<word, scalar>& atoms =
             thermoData_.atomsAndFactors(species[s]);
 
-        map<word, scalar> t = atoms;
-
-        forMap(t, a)
+        forAll(atoms, a)
         {
-            data<< "   |--> " << std::setw(4) << a->first
-                << " " << a->second << "\n";
+            data<< "   |--> " << std::setw(4) << a.first
+                << " " << a.second << "\n";
         }
 
         data<< "\n" << std::setw(40) << std::left
             <<" Molecular weight:   "
-            << std::setw(10) << std::right
+            << std::setw(14) << std::right
             << MW(species[s]) << " [g/mol]\n"
             << std::setw(40) << std::left
             << " Formation enthalpy (298K):   "
-            << std::setw(10) << std::right
-            << Hf(species[s]) * M << " [J/mol]\n"
+            << std::setw(14) << std::right
+            << Hf(species[s]) << " [J/mol]\n"
             << std::setw(40) << std::left
             <<" Frormation free Gibbs energy (298K):   "
-            << std::setw(10) << std::right
-            << Gf(species[s]) * M << " [J/mol]\n";
+            << std::setw(14) << std::right
+            << Gf(species[s]) << " [J/mol]\n";
+
 
         data<< std::right << "\n";
 
-        data<< "\n\n ----------------------------------------------------------"
+        data<< "\n\n-----------------------------------------------------------"
             << "---------------------------------------------------------\n"
             << "      T    |         cp              H               S       "
-            << "        G              dH             dG           | \n"
+            << "        G              dHf            dGf          | \n"
             << "     [K]   |      [J/molK]        [J/mol]         [J/molK]   "
             << "     [J/mol]         [J/molK]       [J/mol]        | \n"
-            << " ----------------------------------------------------------"
+            << "-----------------------------------------------------------"
             << "---------------------------------------------------------\n";
 
         for(int i=300; i<=3000; i+=100)
         {
             data<< "  " << std::setw(6) << i << "   |" 
-                << "  " << std::setw(13) << cp(species[s], i) * M
-                << "  " << std::setw(14) << H(species[s], i)  * M
-                << "  " << std::setw(14) << S(species[s], i)  * M
-                << "  " << std::setw(14) << G(species[s], i)  * M
-                << "  " << std::setw(14) << dH(species[s], i) * M
-                << "  " << std::setw(14) << dG(species[s], i) * M
+                << "  " << std::setw(13) << cp(species[s], i) 
+                << "  " << std::setw(14) << H(species[s], i) 
+                << "  " << std::setw(14) << S(species[s], i)
+                << "  " << std::setw(14) << G(species[s], i)
+                << "  " << std::setw(14) << dHf(species[s], i) 
+                << "  " << std::setw(14) << dGf(species[s], i) 
                 << "     |\n";
         }
 

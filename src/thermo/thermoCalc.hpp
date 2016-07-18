@@ -136,7 +136,7 @@ class ThermoCalc
             ) const;
 
             //- Calculate the enthalpy difference from H and Hf (NASA) [J/mol]
-            scalar dH
+            scalar dHf
             (
                 const word&,
                 const scalar&,
@@ -163,7 +163,7 @@ class ThermoCalc
 
             //- Calculate the free GIBBS energy difference from G and G(298)
             //  [J/mol]
-            scalar dG
+            scalar dGf
             (
                 const word&,
                 const scalar&,

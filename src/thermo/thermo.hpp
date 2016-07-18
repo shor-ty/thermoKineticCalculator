@@ -67,7 +67,7 @@ class Thermo
         Thermo
         (
             const string&,
-            const bool&
+            const bool thermo = false
         );
 
         //- Destructor
@@ -154,15 +154,15 @@ class Thermo
                 const word&
             ) const;
 
-            //- Return dH [J/mol]
-            scalar dH
+            //- Return dHf [J/mol]
+            scalar dHf
             (
                 const word&,
                 const scalar&
             ) const;
 
-            //- Return dG [J/mol]
-            scalar dG
+            //- Return dGf [J/mol]
+            scalar dGf
             (
                 const word&,
                 const scalar&
@@ -185,18 +185,33 @@ class Thermo
             (
                 const word&
             ) const;
+            
+            //- Return factors of atoms in species s
+            scalarList elementsFactors
+            (
+                const word&
+            ) const;
+
 
         // Summary function
 
+            //- Build the output file that contains all data
             void summary
             (
                 ostream&
             ) const;
 
-            //- Return factors of atoms in species s
-            scalarList elementsFactors
+            //- Build NASA Coefficient table 
+            void NASAPolynomials
             (
-                const word&
+                ostream&,
+                const word
+            ) const;
+
+            //- Build thermoanalyse table (calcualte thermo properties)
+            void thermoTable
+            (
+                ostream&
             ) const;
 
             
