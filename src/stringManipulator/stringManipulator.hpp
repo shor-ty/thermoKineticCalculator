@@ -52,7 +52,7 @@ class StringManipulator
     protected:
 
         // Debug switch
-        bool debug_{false};
+        const bool debug_{false};
 
 
     public:
@@ -97,6 +97,12 @@ class StringManipulator
             (
                 const string&,
                 const string&
+            );
+
+            //- Remove first character from string
+            void removeFirstChar
+            (
+                string&
             );
 };
 

@@ -165,4 +165,13 @@ const AFC::string AFC::StringManipulator::removeAtEnd
 }
 
 
+void AFC::StringManipulator::removeFirstChar
+(
+    string& str
+)
+{
+    str.replace(0,1,"");
+}
+
+
 // ************************************************************************* //
