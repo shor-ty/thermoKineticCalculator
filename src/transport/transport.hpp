@@ -53,13 +53,16 @@ class Transport
 {
     private:
 
-        // Private pointer data
+        // Private reference data
 
-            //- TransportData
+            //- Transport Data
             TransportData transData_;
 
-            //- TransportCalc
+            //- Transport Calc
             TransportCalc transCalc_;
+        
+            //- Thermodynamic Object 
+            const Thermo& thermo_;
 
 
     public:
@@ -67,17 +70,18 @@ class Transport
         //- Constructor
         Transport
         (
-            const string& 
+            const string&,
+            const Thermo&
         );
 
         //- Destructor
         ~Transport();
 
 
-        // Member functions
+        // Calculation Functions
 
             //- Insert chemistry species to transportData
-            void chemSpecies
+            void insertChemistrySpecies
             (
                 const wordList&  
             );
@@ -88,10 +92,92 @@ class Transport
                 const Thermo& 
             );
 
+            //- Calculate viscosity of species s [Pa s]
+            scalar viscosity 
+            (
+                const word&,
+                const scalar&,
+                const word& method = "Neufeld"
+            ) const;
+
+            //- Calculate thermal conductivity of species s [W/m/K]
+            scalar thermalConductivity 
+            (
+                const word&,
+                const scalar&,
+                const word& method = "Warnatz"
+            ) const;
+
+            //- Calculate the binary diffusivity coefficient Dij of species ij
+            scalar binaryDiffusivity
+            (
+                const word&,
+                const word&,
+                const scalar&,
+                const word& method = "ChapmanAndEnskog"
+            ) const;
+
         // Return functions
 
             //- Return species as wordList
             wordList species() const;
+
+            //- Return the species used in elementar reactions
+            wordList chemistrySpecies() const;
+
+            //- Return chemical formula for species as wordList
+            wordList chemicalFormula() const;
+
+            //- Return chemical formula for species s
+            word chemicalFormula 
+            (
+                const word&
+            ) const;
+
+            //- Return geometrical configuration of species s
+            int geometricalConfig
+            (
+                const word&
+            ) const;
+
+            //- Return Lennard-Jones collision diameter [Angstroms]
+            scalar LJCD
+            (
+                const word&
+            ) const;
+
+            //- Return Lennard-Jones potential well depth eps/kb [K]
+            scalar LJP
+            (
+                const word&
+            ) const;
+
+            //- Return the dipole moment [debey]
+            scalar muk
+            (
+                const word&
+            ) const;
+
+            //- Return polarizability alpha [cubic Angstroms]
+            scalar alpha
+            (
+                const word&
+            ) const;
+
+            //- Return rotational relaxation collision number Zrot at 298 K
+            scalar ZRot298
+            (
+                const word&
+            ) const;
+
+
+        // Summary functions
+
+            //- Build the summary
+            void summary
+            (
+                ostream&
+            ) const;
 };
 
 

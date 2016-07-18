@@ -53,6 +53,15 @@ void AFC::TransportData::insertSpecies
 }
 
 
+void AFC::TransportData::insertChemistrySpecies
+(
+    const wordList& chemistrySpecies
+)
+{
+    chemistrySpecies_ = chemistrySpecies;
+}
+
+
 void AFC::TransportData::insertGeoConfig
 (
     const int& geoConfig
@@ -145,21 +154,21 @@ void AFC::TransportData::insertDipMom
 }
 
 
-void AFC::TransportData::insertPol
+void AFC::TransportData::insertAlpha
 (
-    const scalar& pol
+    const scalar& alpha
 )
 {
     //- Species_ list must have one element more in this list 
-    if (species_.size()-1 == pol_.size())
+    if (species_.size()-1 == alpha_.size())
     {
-        pol_[species_[species_.size()-1]] = pol;
+        alpha_[species_[species_.size()-1]] = alpha;
     }
     else
     {
         FatalError
         (
-            "    pol_.size() is not equal to species_.size()-1.\n"
+            "    alpha_.size() is not equal to species_.size()-1.\n"
             "    Some error occur.",
             __FILE__,
             __LINE__
@@ -168,37 +177,75 @@ void AFC::TransportData::insertPol
 }
 
 
-void AFC::TransportData::insertRotRelCollNumb
+void AFC::TransportData::insertZRot298
 (
-    const scalar& rotRelCollNumb
+    const scalar& ZRot298
 )
 {
     //- Species_ list must have one element more in this list 
-    if (species_.size()-1 == rotRelCollNumb_.size())
+    if (species_.size()-1 == ZRot298_.size())
     {
-        rotRelCollNumb_[species_[species_.size()-1]] = rotRelCollNumb;
+        ZRot298_[species_[species_.size()-1]] = ZRot298;
     }
     else
     {
         FatalError
         (
-            "    rotRelCollNumb_.size() is not equal to species_.size()-1.\n"
+            "    ZRot298_.size() is not equal to species_.size()-1.\n"
             "    Some error occur.",
             __FILE__,
             __LINE__
         );
     }
+}
+
+
+void AFC::TransportData::insertBinarySpeciesCombinations
+(
+    const word& parentSpecies,
+    const word& childSpecies 
+)
+{
+    binarySpeciesCombinations_[parentSpecies].push_back(childSpecies);
 }
 
 
 // * * * * * * * * * * * * Insert functions from afc.cpp * * * * * * * * * * //
 
-void AFC::TransportData::chemSpecies
+void AFC::TransportData::chemicalFormula
 (
-    const wordList& chemSpecies
+    const wordList& chemicalFormula
 )
 {
-    chemSpecies_ = chemSpecies;
+    chemicalFormula_ = chemicalFormula;
+}
+
+
+// * * * * * * * * * * * Update and Manipulation Functions * * * * * * * * * //
+
+void AFC::TransportData::binarySpeciesCombinations()
+{
+    const wordList& species_ = species();
+
+    bool found{false};
+
+    forAll(species_, firstSpecies)
+    {
+        forAll(species_, secondSpecies)
+        {
+            if (found)
+            {
+                insertBinarySpeciesCombinations(firstSpecies, secondSpecies);
+            }
+
+            if (firstSpecies == secondSpecies)
+            {
+                found = true;
+            }
+        }
+
+        found = false;
+    }
 }
 
 
@@ -210,16 +257,45 @@ AFC::wordList AFC::TransportData::species() const
 }
 
 
-AFC::wordList AFC::TransportData::chemSpecies() const
+AFC::wordList AFC::TransportData::chemicalFormula() const
 {
-    return chemSpecies_;
+    return chemicalFormula_;
+}
+
+
+AFC::word AFC::TransportData::chemicalFormula
+(
+    const word& species
+) const
+{
+    //- TODO use map to speed up 
+    int ID{0};
+    
+    //- Search id
+    forAll(species_, s)
+    {
+        if (s == species)
+        {
+            break;
+        }
+
+        ++ID;
+    }
+
+    return chemicalFormula_[ID];
+}
+
+
+AFC::wordList AFC::TransportData::chemistrySpecies() const
+{
+    return chemistrySpecies_;
 }
 
 
 int AFC::TransportData::geometricalConfig
 (
     const word& species
-)
+) const
 {
     return geoConfig_.at(species);
 }
@@ -249,6 +325,24 @@ AFC::scalar AFC::TransportData::muk
 ) const
 {
     return dipMom_.at(species);
+}
+
+
+AFC::scalar AFC::TransportData::alpha
+(
+    const word& species
+) const
+{
+    return alpha_.at(species);
+}
+
+
+AFC::scalar AFC::TransportData::ZRot298
+(
+    const word& species
+) const
+{
+    return ZRot298_.at(species);
 }
 
 

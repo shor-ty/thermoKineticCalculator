@@ -85,11 +85,14 @@ void AFC::TransportReader::read
 
             data.insertDipMom(stod(tmp[4]));
 
-            data.insertPol(stod(tmp[5]));
+            data.insertAlpha(stod(tmp[5]));
 
-            data.insertRotRelCollNumb(stod(tmp[6]));
+            data.insertZRot298(stod(tmp[6]));
         }
     }
+
+    //- Build the binary species combinations
+    data.binarySpeciesCombinations();
 }
 
 

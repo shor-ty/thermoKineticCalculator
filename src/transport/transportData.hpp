@@ -52,11 +52,15 @@ class TransportData
 
         // Private data
 
-            //- List of species
+            //- List of species of transport file
             wordList species_;
 
+            //- TODO map, reduces operations
             //- List of species used in the elementar reactions
-            wordList chemSpecies_;
+            wordList chemicalFormula_;
+
+            //- List of species used for elementar reactions
+            wordList chemistrySpecies_;
 
             //- Hashtable for geometrical configuration
             //  Definiton:
@@ -69,6 +73,7 @@ class TransportData
             map<word, scalar> lenJonPot_;
 
             //- Hashtable for Lennard-Jones collision dimater C in Angstroms
+            //  Also denoted by sigma 
             map<word, scalar> lenJonCollDia_;
 
             //- Hashtable for dipole moment mu in debey
@@ -76,11 +81,14 @@ class TransportData
             map<word, scalar> dipMom_;
 
             //- Hashtable for polarizability alpha in cubic Angstroms
-            map<word, scalar> pol_;
+            map<word, scalar> alpha_;
 
             //- Hashtable for rotational relaxation collision number Zrot
             //  at 298K
-            map<word, scalar> rotRelCollNumb_;
+            map<word, scalar> ZRot298_;
+
+            //- Map of species binary combinations
+            map<word, List<word> > binarySpeciesCombinations_;
 
 
         // Transport data for fitting procedure 
@@ -103,14 +111,18 @@ class TransportData
 
         // Member functions
 
-
-
         // Insert functions, from TransportReader:: delegated 
 
             //- Insert species
             void insertSpecies
             (
                 const word&
+            );
+
+            //- Insert species used in elementar reactions
+            void insertChemistrySpecies
+            (
+                const wordList&
             );
 
             //- Insert geometrical configuration
@@ -137,25 +149,39 @@ class TransportData
                 const scalar&
             );
 
-            //- Insert polarizability
-            void insertPol
+            //- Insert polarizability alpha
+            void insertAlpha
             (
                 const scalar&
             );
 
             //- Insert rotational relaxation collision number
-            void insertRotRelCollNumb
+            void insertZRot298
             (
                 const scalar&
             );
 
+            //- Insert binary species combination
+            void insertBinarySpeciesCombinations
+            (
+                const word&,
+                const word&
+            );
+
+
         // Insert function from afc.cpp
 
             //- Insert chemical species
-            void chemSpecies
+            void chemicalFormula
             (
                 const wordList&
             );
+
+
+        // Update and Manipulation Functions
+
+            //- Build the binary species combinations
+            void binarySpeciesCombinations();
 
 
         // Return functions
@@ -163,14 +189,24 @@ class TransportData
             //- Return species 
             wordList species() const;
 
-            //- Return chemical species
-            wordList chemSpecies() const;
+            //- Return chemical formula 
+            wordList chemicalFormula() const;
+
+            //- Return chemical formula of species s
+            word chemicalFormula
+            (
+                const word&
+            ) const;
+
+            //- Return species used in elementar reactions
+            wordList chemistrySpecies() const;
+
 
             //- Return the geometrical configuration
             int geometricalConfig
             (
                 const word&
-            );
+            ) const;
 
             //- Return Lennard-Jones collision diameter [Angstroms]
             scalar LJCD
@@ -186,6 +222,18 @@ class TransportData
 
             //- Return the dipole moment [debey]
             scalar muk
+            (
+                const word&
+            ) const;
+
+            //- Return polarizability alpha [cubic Angstroms]
+            scalar alpha
+            (
+                const word&
+            ) const;
+
+            //- Return rotational relaxation collision number Zrot
+            scalar ZRot298
             (
                 const word&
             ) const;
