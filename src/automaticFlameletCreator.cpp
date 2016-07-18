@@ -6,7 +6,7 @@
   c     c-o-o-o             |
 -------------------------------------------------------------------------------
 License
-    This file is part of Automatic Flamelet Constructor.
+    This file is part of Automatic Flamelet Creator.
 
     AFC is free software; you can redistribute it and/or modify it under
     the terms of the GNU General Public License as published by the
@@ -51,7 +51,7 @@ int main
     const std::clock_t startTime = clock();
 
     Info<< Header() << endl;
-
+    
     string file_AFC;
     string file_Thermo;
     string file_Transport;
@@ -123,11 +123,11 @@ int main
         }
     }
 
-    Chemistry chemistry(file_Chemistry);
+    Thermo thermo(file_Thermo);
 
-    Thermo thermo(file_Thermo, chemistry.thermo());
+    Transport transport(file_Transport, thermo);
 
-    Transport transport(file_Transport);
+    Chemistry chemistry(file_Chemistry, thermo);
 
     Properties properties(file_AFC, thermo, chemistry);
 
@@ -169,7 +169,7 @@ int main
         }
 
         //- Insert chemical species to transportData
-        transport.chemSpecies(speciesCH);
+        transport.insertChemistrySpecies(speciesCH);
     }
 
     Info<< " c-o Check thermodynamicData (all species available)\n" << endl;

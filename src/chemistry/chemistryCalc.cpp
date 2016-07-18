@@ -54,6 +54,379 @@ AFC::ChemistryCalc::~ChemistryCalc()
 
 // * * * * * * * * * * * * * Calculation Functions * * * * * * * * * * * * * //
 
+AFC::scalar AFC::ChemistryCalc::kf
+(
+    const int& r,
+    const scalar& T,
+    const ChemistryData& chemData,
+    const bool LOW
+) const
+{
+    //- Pre-exponential factor, Unit depend on reaction
+    //  + unimolecular reaction [1/s]
+    //  + bimolecular reaction [cm^3/mol/s]
+    //  + trimolecular reaction [cm^6/mol^2/s]
+
+    //- TODO make faster with pointer or reference
+    scalarField arrheniusCoeffs;
+   
+    if (LOW)
+    {
+        arrheniusCoeffs = chemData.LOWCoeffs(r);
+    } 
+    else
+    {
+        arrheniusCoeffs = chemData.arrheniusCoeffs(r);
+    }
+
+    return arrhenius
+        (
+            arrheniusCoeffs[0],
+            arrheniusCoeffs[1],
+            arrheniusCoeffs[2],
+            T
+        );
+}
+
+
+AFC::scalar AFC::ChemistryCalc::kb
+(
+    const int& r,
+    const scalar& T,
+    const ChemistryData& chemData,
+    const Thermo& thermo,
+    const bool LOW
+) const
+{
+    //- Calculate backward reaction rate kb
+    return (kf(r, T, chemData, LOW) / keq(r, T, chemData, thermo));
+}
+
+
+AFC::scalar AFC::ChemistryCalc::keq
+(
+    const int& r,
+    const scalar& T,
+    const ChemistryData& chemData,
+    const Thermo& thermo
+) const
+{
+    //- Calculate sum of free GIBBS energy of reaction r
+    const scalar deltaG = dG(r, T, chemData, thermo);
+
+    //- Calculate reaction rate constant kp
+    const scalar Kp = exp(-1 * deltaG / (AFC::Constants::R * T ));
+
+    //- Global reaction order == exponent
+    scalar exponent = chemData.globalReactionOrder(r);
+
+    //- Save some calculation because if exponent == 0 hence keq == kp
+    if (exponent == 0)
+    {
+        return Kp;
+    }
+    else
+    {
+        //- Get the pressure of the calculation
+        const scalar& p = thermo.p();
+
+
+        //- Calculate the equilibrium constant Keq and return it
+        //  In the formulation p is normally in [dyn/cm^2] and R in
+        //  [ergs/K/mol]. We use [Pa] and [J/K/mol] therefore the
+        //  have to multiply R by 1000 | p/R for 1 bar ~ 12.1802
+        //  TODO change R to Rcal
+        return (Kp / pow(AFC::Constants::Rcal * 1e3 / p * T, exponent));
+    }
+}
+    
+
+AFC::scalar AFC::ChemistryCalc::arrhenius
+(
+    const scalar& A,
+    const scalar& beta,
+    const scalar& Ea,
+    const scalar& T
+) const
+{
+    //-TODO change R to RCalc again R -> must be [cal]
+    return
+    (
+        A * pow(T, beta) * exp(-1*Ea / (AFC::Constants::R * T))
+    );
+}
+
+
+AFC::scalar AFC::ChemistryCalc::Fcent
+(
+    const int& r,
+    const scalar& T,
+    const ChemistryData& chemData
+) const
+{
+    //- TODO speedup
+    //- TROE coefficients
+    const scalarField& troeCoeffs = chemData.TROECoeffs(r);
+
+    //- Alpha
+    const scalar& alpha = troeCoeffs[0];
+
+    //- T***
+    const scalar& Tsss = troeCoeffs[1];
+
+    //- T*
+    const scalar& Ts = troeCoeffs[2];
+
+    //- T**
+    const scalar& Tss = troeCoeffs[3];
+    
+    //- Return Fcent 
+    return ((1 - alpha) * exp(-1 * T / Tsss) +
+        alpha * exp(-1 * T / Ts) + exp(-1 * Tss / T));
+}
+
+
+AFC::scalar AFC::ChemistryCalc::Flog
+(
+    const int& r,
+    const scalar& T,
+    const scalar& M,
+    const ChemistryData& chemData
+) const
+{
+    //- a) Calculate Fcent
+    const scalar& F_cent = Fcent(r, T, chemData);
+
+    //- b) Calculate constants
+    const scalar N = 0.75 - 1.27 * log(F_cent);
+    const scalar C = -0.4 - 0.67 * log(F_cent);
+
+    //- c) Calculate reduced pressure Pr
+    //  + Here we need k for LOW and normal pressure
+    const scalar& kinf = kf(r, T, chemData);
+    const scalar& klow = kf(r, T, chemData, true);
+
+    const scalar Pr = klow * M / kinf;
+
+    //- d) Calculate enumerator
+    const scalar& enumerator = log10(F_cent);
+
+    //- e) Calculate denominator
+    const scalar& denominator = 1 +
+        pow((log10(Pr) + C)/(N - 0.14 * (log10(Pr) + C)),2);
+
+    //- f) Return Flog
+    return (enumerator/denominator);
+}
+
+
+AFC::scalar AFC::ChemistryCalc::dH
+(
+    const int& r,
+    const scalar& T,
+    const ChemistryData& data,
+    const Thermo& thermo
+) const
+{
+    //- Stochiometric factors of reaction r
+    const map<word, scalar>& educts = data.nuEducts(r);
+    const map<word, scalar>& products = data.nuProducts(r);
+
+    scalar dH{0};
+
+    forAll(educts, e)
+    {
+        dH += thermo.H(e.first, T) * e.second;
+    }
+
+    forAll(products, p)
+    {
+        dH += thermo.H(p.first, T) * p.second;
+    }
+
+    return dH;
+}
+
+
+AFC::scalar AFC::ChemistryCalc::dG
+(
+    const int& r,
+    const scalar& T,
+    const ChemistryData& data,
+    const Thermo& thermo
+) const
+{
+    //- Stochiometric factors of reaction r
+    const map<word, scalar>& educts = data.nuEducts(r);
+    const map<word, scalar>& products = data.nuProducts(r);
+
+    scalar dG{0};
+
+    forAll(educts, e)
+    {
+        dG += thermo.G(e.first, T) * e.second;
+    }
+
+    forAll(products, p)
+    {
+        dG += thermo.G(p.first, T) * p.second;
+    }
+
+    return dG;
+}
+
+
+AFC::scalar AFC::ChemistryCalc::dS
+(
+    const int& r,
+    const scalar& T,
+    const ChemistryData& data,
+    const Thermo& thermo
+) const
+{
+    //- Stochiometric factors of reaction r
+    const map<word, scalar>& educts = data.nuEducts(r);
+    const map<word, scalar>& products = data.nuProducts(r);
+
+    scalar dS{0};
+
+    forAll(educts, e)
+    {
+        dS += thermo.S(e.first, T) * e.second;
+    }
+
+    forAll(products, p)
+    {
+        dS += thermo.S(p.first, T) * p.second;
+    }
+
+    return dS;
+}
+
+
+// ************************************************************************* //
+
+    /*if (chemData.LOW(r))
+    {
+        //- a) calculate kinf with normal (high) arrhenius coeffs 
+        const scalar& kinf = arrhenius(A, beta, Ea, T);
+
+        //- b) get arrhenius coeffs for low pressure
+        const scalarField& arrCoeffsLow = chemData.LOWCoeffs(r);
+
+        //- c) calculate k0 with low coeffs 
+        const scalar k0 =
+            arrhenius
+            (
+                arrCoeffsLow[0],
+                arrCoeffsLow[1],
+                arrCoeffsLow[2],
+                T
+            );
+
+        //- d) calculate reduced pressure pReduced
+        const scalar pReduced = k0 * chemData.M() / kinf; 
+
+        //- e) Calculate F
+        //  + Complex functions if TROE or SRI
+        //  + For Lindemann = 1
+        scalar F = 1;
+
+        //- TROE formula for F
+        if (chemData.TROE(r))
+        {
+            //- i) Get TROE coeffs
+            const scalarField& troeCoeffs = chemData.TROECoeffs(r);
+
+            //- Alpha
+            const scalar& alpha = troeCoeffs[0];
+
+            //- T***
+            const scalar& Tsss = troeCoeffs[1];
+
+            //- T*
+            const scalar& Ts = troeCoeffs[2];
+
+            //- T**
+            const scalar& Tss = troeCoeffs[3];
+            
+            //- ii) calculate Fcent
+            const scalar Fcent = (1 - alpha) * exp(-1 * T / Tsss) +
+                alpha * exp(-1 * T / Ts) + exp(-1 * Tss / T);
+            
+            //- iii) calculate constants
+            const scalar c = -0.4 - 0.67 * log(Fcent);
+            const scalar n = 0.75 - 1.27 * log(Fcent);
+            const scalar d = 0.14;
+
+            //- iv) calculate logF
+            const scalar logF = 
+                pow((1 + pow((log(pred) + c)/(n - 0.14*(log10(pred)+c)),2)), -1) * log10(Fcent);
+
+            //- v) get F
+            F = pow(10, logF);
+
+            if (r == 12)
+            {
+                Info<< "Fcent = (1 - " << alpha << ") * e^(-" << T << "/"
+                 << Tsss << ") + " << alpha << " * e^(-" << T << "/" << Ts
+              << ") + e^(-" << Tss << "/" << T << ")\n";   
+                Info<< "Fcent: " << Fcent << endl;
+                Info<< "N: " << n << "\n";
+                Info<< "C: " << c << "\n";
+                Info<< "k0: " << k0 << "\n";
+                Info<< "kinf: " << kinf << "\n";
+                Info<< "[M]: "<< chemData.M() << "\n";
+                Info<< "Pred: " << pred << "\n";
+                Info<< "logF: " << logF << "\n";
+                Info<< "F: " << F << "\n";
+            }
+        }
+        //- SRI formula for F
+        if (chemData.SRI(r))
+        {
+            //- i) Get SRI coeffs
+            const scalarField& sriCoeffs = chemData.SRICoeffs(r);
+
+            //- a
+            const scalar a = sriCoeffs[0];
+
+            //- b
+            const scalar b = sriCoeffs[1];
+
+            //- c
+            const scalar c = sriCoeffs[2];
+
+            //- d
+            const scalar d = sriCoeffs[3];
+
+            //- e
+            const scalar e = sriCoeffs[4];
+
+            //- ii) calculate X
+            const scalar X = 1 / (1 + pow(log(pred), 2));
+
+            //- iii) calculate F
+            F = d * pow(a * exp(-1 * b / T) + exp (-1 * T / c), X) * pow(T, e);
+        } 
+
+        //- f) calculate kf
+        chemData.updateKf(kinf * (pred / (1 + pred)) * F);
+    }
+    
+    //- Normal reaction
+    //else
+    {
+        return (arrhenius(A, beta, Ea, T));
+    }
+
+    //- Return
+    //  UNITS:
+    //  + uni-moleculare reaction: [1/s]
+    //  + bi--moleculare reaction: [cm^3/mol/s]
+    //  + tri-moleculare reaction: [cm^6/mol^2/s]
+
+}*/
 /*void AFC::ChemistryCalc::calculatekfkb
 (
     const int& r,
@@ -94,7 +467,7 @@ AFC::ChemistryCalc::~ChemistryCalc()
 }
 
 
-AFC::scalar AFC::ChemistryCalc::calculateKf
+AFC::scalar AFC::ChemistryCalc::kf
 (
     const int& r,
     const scalar& T,
@@ -239,90 +612,9 @@ AFC::scalar AFC::ChemistryCalc::calculateKf
     //  + bi--moleculare reaction: [cm^3/mol/s]
     //  + tri-moleculare reaction: [cm^6/mol^2/s]
 //}
+*/
 
-
-void AFC::ChemistryCalc::calculateKb
-(
-    ChemistryData& chemData
-)
-{
-    //- Update kb
-   // chemData.updateKb(chemData.kf() / chemData.Kc());
-}
-
-
-void AFC::ChemistryCalc::calculateKc
-(
-    const int& r,
-    const scalar& T,
-    const Thermo& thermo,
-    const ChemistryData& chemData
-)
-{
-    //- Calculate sum of entropy of species in reaction r
-    scalar deltaH{0};
-    scalar deltaS{0};
-
-    //- Scalar list of stochiometric factors of reaction r
-    //const map<word, scalar>& nu = chemData.nu(r);
-
-    {
-        //const wordList& species = chemData.speciesInReaction(r); 
-
-//        forAll(nu, s)
-//        {
-//            deltaH += thermo.H(s, T) * nu.at(s)
-//            deltaS += thermo.S(s, T) * nu.at(s);
-//        }
-    }
-
-    const scalar deltaG = deltaH - deltaS * T ;
-
-    //- Store the data
-    chemData.updateDH(deltaH);
-    chemData.updateDS(deltaS);
-    chemData.updateDG(deltaG);
-
-    //- Calculate reaction rate constant Kp
-    const scalar Kp = exp(-1 * deltaG / (AFC::Constants::R * T ));
-
-    //- Calculate exponent
-    int exponent{0}; 
-
-    forAll(nu, s)
-    {
-//        exponent += nu.at(i);
-    }
-
-    //- Get the pressure of the calculation
-    const scalar& p = thermo.p();
-
-    //- Calculate the equilibrium constant Kc and return it
-    //  In the formulation p is normally in [dyn/cm^2] and R in [ergs/K/mol]
-    //  We use [Pa] and [J/K/mol] therefore the have to multiply p * 10 and
-    //  R by 10e7
-    scalar Kc = (Kp * pow((p*10/AFC::Constants::R/1e7/T), exponent));
-
-    return Kc;
-    return 1;
-}
-    
-
-AFC::scalar AFC::ChemistryCalc::arrhenius
-(
-    const scalar& A,
-    const scalar& beta,
-    const scalar& Ea,
-    const scalar& T
-) const
-{
-    return
-    (
-        A * pow(T, beta) * exp(-1*Ea / (AFC::Constants::Rcal * T))
-    );
-}
-
-
+/*
 AFC::scalar AFC::ChemistryCalc::calculateOmega
 (
     const word& species,
@@ -482,4 +774,3 @@ bool AFC::ChemistryCalc::thirdBodyReaction
 }
 */
 
-// ************************************************************************* //

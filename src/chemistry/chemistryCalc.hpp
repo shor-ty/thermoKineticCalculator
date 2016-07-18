@@ -80,28 +80,33 @@ class ChemistryCalc
                 ChemistryData&
             );
 
-            //- Calculate kf
-            void calculateKf 
+            //- Calculate reaction rate kf
+            scalar kf 
             (
                 const int&,
                 const scalar&,
-                ChemistryData&
-            );
+                const ChemistryData&,
+                const bool LOW = false
+            ) const;
 
-            //- Calculate kb
-            void calculateKb 
-            (
-                ChemistryData&
-            );
-
-            //- Calculate Kc
-            void calculateKc 
+            //- Calculate reaction rate kb
+            scalar kb 
             (
                 const int&,
                 const scalar&,
+                const ChemistryData&,
                 const Thermo&,
-                ChemistryData&
-            );
+                const bool LOW = false
+            ) const;
+
+            //- Calculate equilibrium reaction rate keq
+            scalar keq 
+            (
+                const int&,
+                const scalar&,
+                const ChemistryData&,
+                const Thermo&
+            ) const;
 
             //- Calculate k with standard arrhenius [units depend]
             scalar arrhenius
@@ -110,6 +115,23 @@ class ChemistryCalc
                 const scalar&,
                 const scalar&,
                 const scalar&
+            ) const;
+
+            //- Calculate Fcent for TROE formulation
+            scalar Fcent
+            (
+                const int&,
+                const scalar&,
+                const ChemistryData&
+            ) const;
+
+            //- Calculate Flog for TROE formulation
+            scalar Flog
+            (
+                const int&,
+                const scalar&,
+                const scalar&,
+                const ChemistryData&
             ) const;
 
             //- Calculate the source term of each species (omega)
@@ -137,6 +159,33 @@ class ChemistryCalc
                 const int&,
                 const ChemistryData&
             );
+
+            //- Calculate dH for reaction r and given temperature
+            scalar dH
+            (
+                const int&,
+                const scalar&,
+                const ChemistryData&,
+                const Thermo&
+            ) const;
+
+            //- Calculate dG for reaction r and given temperature
+            scalar dG
+            (
+                const int&,
+                const scalar&,
+                const ChemistryData&,
+                const Thermo&
+            ) const;
+
+            //- Calculate dS for reaction r and given temperature
+            scalar dS
+            (
+                const int&,
+                const scalar&,
+                const ChemistryData&,
+                const Thermo&
+            ) const;
 };
 
 

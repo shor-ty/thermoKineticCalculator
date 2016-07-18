@@ -102,6 +102,12 @@ void AFC::ChemistryReader::readElementBlock
         "E"
     );
 
+    if (debug_)
+    {
+        Info<< " --> ELEMENT block starts at line " << lineNoKeyword 
+            << " and ends at line " << lineNoEnd << endl;
+    }
+
     //- STEP 2: check if wordList ELEMENT found
     if
     (
@@ -168,6 +174,12 @@ void AFC::ChemistryReader::readSpeciesBlock
         fileContent,
         "S"
     );
+
+    if (debug_)
+    {
+        Info<< " --> SPECIES block starts at line " << lineNoKeyword 
+            << " and ends at line " << lineNoEnd << endl;
+    }
 
     //- STEP 2: check if wordList SPECIES found
     if
@@ -236,6 +248,12 @@ void AFC::ChemistryReader::readThermoBlock
         "T"
     );
 
+    if (debug_)
+    {
+        Info<< " --> THERMO block starts at line " << lineNoKeyword 
+            << " and ends at line " << lineNoEnd << endl;
+    }
+
     //- STEP 2: check if wordList THERMO found
     if
     (
@@ -268,6 +286,12 @@ void AFC::ChemistryReader::readReactionBlock
         fileContent,
         "R"
     );
+
+    if (debug_)
+    {
+        Info<< " --> REACTIION block starts at line " << lineNoKeyword 
+            << " and ends at line " << lineNoEnd << endl;
+    }
  
     //- STEP 2: check if wordList REACTION found
     if
@@ -441,7 +465,7 @@ void AFC::ChemistryReader::findKeyword
         //- Both found exit loop
         if
         (
-            start != 0
+            start != -1
          && end != 0
         )
         {
@@ -556,6 +580,7 @@ void AFC::ChemistryReader::analyzeReaction
     }
     //- d)
     //  Not implemented, normally not used
+    //  NOTE: 14.07.16, change product and educt and fine
     else if
     (
         found1 != std::string::npos
@@ -586,7 +611,7 @@ void AFC::ChemistryReader::analyzeReaction
     //  + product negativ
     //  + reactants positiv
 
-    // a) split into reactants and products
+    // a) split into educts and products
     stringList tmp3 = splitStrAtDelimiter(tmp2, '=');
 
     const string reac = tmp3[0];
@@ -597,11 +622,16 @@ void AFC::ChemistryReader::analyzeReaction
     //    if its a number, check next letter for number
     {
         //- Reactant site
-        analyzeReacSite(reac, "r", data);
+        analyzeReacSite(reac, "e", data);
 
         //- Product site
         analyzeReacSite(prod, "p", data);
     }
+
+    //- All stochiometric coefficients for species stored. Hence we
+    //  are able to calculate the global reaction order and exponent
+    //  for calculation Kc
+    data.updateGlobalReactionOrder();
     
 }
 
@@ -771,7 +801,7 @@ void AFC::ChemistryReader::enhanceFactors
         }
         else if (c == 1)
         {
-            data.enhanceFactors(species, stod(i));
+            data.ENHANCEDCoeffs(species, stod(i));
             c = 0;
         }
     }
@@ -796,6 +826,13 @@ void AFC::ChemistryReader::analyzeReacSite
 
     //- Second: remove +M if it is there
     string tmp = removeAtEnd(removed1, "+M");
+
+    //- Third: remove '>' if we have forward reaction
+    //  and have product site
+    if (site == "p" && !data.BR(data.nReac()))
+    {
+        removeFirstChar(tmp); 
+    }
 
     word stochiometricFactor;
 
@@ -887,7 +924,7 @@ void AFC::ChemistryReader::analyzeReacSite
             {
                 nu = stod(stochiometricFactor);
             }
-            else if (site == "r")
+            else if (site == "e")
             {
                 nu = stod(stochiometricFactor) * -1;
             }
@@ -895,7 +932,7 @@ void AFC::ChemistryReader::analyzeReacSite
             {
                 FatalError
                 (
-                    "    You only can call this function with 'r' or"
+                    "    You only can call this function with 'e' or"
                     " 'p' arguments.",
                     __FILE__,
                     __LINE__
@@ -906,8 +943,20 @@ void AFC::ChemistryReader::analyzeReacSite
             endPos = 0;
 
             //- Store data
-            data.speciesNu(species, nu);
             data.speciesInReaction(species);
+
+            if (site == "e")
+            {
+                data.nuEducts(species, nu);
+                data.educt(species);
+                data.forwardReactionOrder();
+            }
+            else if (site == "p")
+            {
+                data.nuProducts(species, nu);
+                data.product(species);
+                data.backwardReactionOrder();
+            }
         }
     }
 }

@@ -59,7 +59,10 @@ class Chemistry
             ChemistryData chemData_;
 
             //- ChemistryCalc obj
-            ChemistryCalc chemCalc_;
+            const ChemistryCalc chemCalc_;
+
+            //- Thermo obj
+            const Thermo& thermo_;
 
 
         // Debug 
@@ -70,7 +73,8 @@ class Chemistry
         //- Constructor
         Chemistry
         (
-            const string&
+            const string&,
+            const Thermo&
         );
 
         //- Destructor
@@ -97,20 +101,44 @@ class Chemistry
                 const Thermo&
             );
 
-            //- Calculate forward reaction rate kf ::Interpreter
-            void calculateKf
-            (
-                const int&,
-                const scalar&  
-            );
-
-            //- Calculate equilibrium reaction rate Kc ::Interpreter
-            void calculateKc
+            //- Calculate forward reaction rate kf
+            scalar kf
             (
                 const int&,
                 const scalar&,
-                const Thermo&
-            );
+                const bool LOW = false
+            ) const;
+
+            //- Calculate backward reaction rate kf
+            scalar kb
+            (
+                const int&,
+                const scalar&,  
+                const bool LOW = false
+            ) const;
+
+            //- Calculate equilibrium reaction rate keq
+            scalar keq 
+            (
+                const int&,
+                const scalar&
+            ) const;
+
+            //- Calculate Fcent for TROE formula
+            scalar Fcent
+            (
+                const int&,
+                const scalar&
+            ) const;
+
+            //- Calculate logF for TROE formula
+            scalar Flog
+            (
+                const int&,
+                const scalar&,
+                const scalar&
+            ) const;
+
 
             //- Calculate backward reaction kb ::Interpreter
             void calculateKb ();
@@ -185,8 +213,10 @@ class Chemistry
             //- Return all elements that are included in the reactions
             wordList elements() const;
 
+            unsigned int nDublicated() const;
+
             //- Return no. of elementar reaction
-            ///int nReac() const;
+            int nReac() const;
 
             //- Return elementar reaction r (as string) 
             string elementarReaction
@@ -215,12 +245,6 @@ class Chemistry
                 const int& 
             ) const;*/
 
-            //- Build the summary as ostream
-            void summary
-            (
-                ostream&   
-            ) const;
-
 
             //- Return enhanced factors ::Interpreter
             map<word, scalar> enhancedFactors
@@ -234,14 +258,57 @@ class Chemistry
                 const int&
             ) const;
 
-            //- Return enthalpy of actual reaction
-            scalar dH() const;
+            //- Return enthalpy of reaction r and temperature T
+            scalar dH
+            (
+                const int&,
+                const scalar&
+            ) const;
+            
+            //- Return free GIBBS energy of reaction r and temperature T
+            scalar dG
+            (
+                const int&,
+                const scalar&
+            ) const;
 
-            //- Return entropy of actual reaction
-            scalar dS() const;
+            //- Return entropy of reaction r and temperature T
+            scalar dS
+            (
+                const int&,
+                const scalar&
+            ) const;
 
-            //- Return free Gibbs energy of actual reaction
-            scalar dG() const;
+
+        //- Summary Functions
+
+            //- Build the summary as ostream
+            void summary
+            (
+                ostream&   
+            ) const;
+
+            //- Build chemical table for reaction r (for summary)
+            void chemicalTable
+            (
+                ostream&
+            ) const;
+
+            //- Build table for kf and kb based on general coefficients
+            //  or if we specify "LOW" then based on low coefficients
+            void buildTablekf
+            (
+                const int&,
+                ostream&,
+                const bool LOW = false 
+            ) const;
+
+            //- Build TROE table (calculate F_cent and logF)
+            void buildTROETable
+            (
+                const int&,
+                ostream&
+            ) const;
 };
 
 

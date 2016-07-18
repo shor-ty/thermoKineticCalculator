@@ -52,22 +52,43 @@ class ChemistryData
     private:
 
         // Debug switch
-        bool debug{false};
+        const bool debug_{false};
 
 
         // Private data
 
-            //- List of elements
-            wordList elements_;
-
-            //- List of species
-            wordList species_;
-
-            //- Number of dublicated reactions
-            int nDuplicated_;
-
             //- Number of elementar reactions
             int nReac_;
+
+            //- List of elements
+            List<word> elements_;
+
+            //- List of species
+            List<word> species_;
+
+            //- Contains all educts species of reaction r
+            List<wordList> educts_;
+
+            //- Contains all product species of reaction r
+            List<wordList> products_;
+
+            //- Stochiometric factors for educts of reaction r
+            mapList<word, scalar> nuEducts_;
+
+            //- Stochiometric factors for products of reaction r
+            mapList<word, scalar> nuProducts_;
+
+            //- Number of dublicated reactions
+            int nDuplicated_{0};
+
+            //- Forward reaction order for all reactions
+            List<scalar> forwardReactionOrder_;
+
+            //- Backward reaction order for all reactions
+            List<scalar> backwardReactionOrder_;
+
+            //- Global reaction order (forward + backward)
+            List<scalar> globalReactionOrder_;
 
             //- Reaction rate kf (forward) for each reaction
             scalarField kf_;
@@ -102,20 +123,14 @@ class ChemistryData
             List<bool> LOW_;
 
             //- boolList for TBR TROE 
-            boolList TROE_;
+            List<bool> TROE_;
 
             //- boolList for TBR SRI 
             List<bool> SRI_;
 
-            //- boolList for backward reaction 
+            //- boolList for backward reaction (equilibrium)
+            //  This list even contain the information of irreversible reac.
             List<bool> backwardReaction_;
-
-            //- Field that include all stochiometric values for species i
-            //  in reaction r
-            mapList<word, scalar> nu_;
-
-            //- Composition of enhanced factors (species + value)
-            mapList<word, scalar> enhancedFactors_;
 
             //- Matrix of Arrhenius coeffs
             matrix arrheniusCoeffs_;
@@ -128,6 +143,9 @@ class ChemistryData
 
             //- Matrix of SRI coeffs
             matrix SRICoeffs_;
+
+            //- Enhanced coeffs for adjustment  
+            mapList<word, scalar> ENHANCEDCoeffs_;
 
             //- Omega
             scalarField omega_;
@@ -173,6 +191,32 @@ class ChemistryData
                 const word&
             );
 
+            //- Insert species as educt
+            void educt
+            (
+                const word&
+            );
+            
+            //- Insert species as product
+            void product
+            (
+                const word&
+            );
+
+            //- Insert stochiometric coeff for educts of actual reaction
+            void nuEducts 
+            (
+                const word&,
+                const scalar&
+            );
+
+            //- Insert stochiometric coeff for products of actual reaction
+            void nuProducts
+            (
+                const word&,
+                const scalar&
+            );
+
             //- Insert elementar reaction
             void elementarReaction
             (
@@ -209,7 +253,7 @@ class ChemistryData
             );
 
             //- Insert ENHANCE factors (species + value) 
-            void enhanceFactors
+            void ENHANCEDCoeffs 
             (
                 const word&,
                 const scalar&
@@ -220,13 +264,6 @@ class ChemistryData
 
             //- Increment nReac_
             void incrementReac();
-
-            //- Insert species and stochiometric coeff
-            void speciesNu
-            (
-                const word&,
-                const scalar&
-            );
 
             //- Build List<wordList> of species included in reaction r
             void speciesInReaction
@@ -271,6 +308,12 @@ class ChemistryData
                 const int&
             );
 
+            //- Set forward reaction order
+            void forwardReactionOrder();
+
+            //- Set backward reaction order
+            void backwardReactionOrder();
+
 
         // Update functions
 
@@ -308,16 +351,24 @@ class ChemistryData
                 const scalarField&
             );
 
+            //- Update the global reaction order list 
+            void updateGlobalReactionOrder();
 
         // Return functions
 
             //- Return bool
 
-                //- Backward reaction
+                //- Backward reaction for const
                 bool BR
                 (
                     const int&
                 ) const;
+
+                //- Backward reaction
+                bool BR
+                (
+                    const int&
+                );
 
                 //- Return true if elementar reaction is a TBR reaction
                 bool TBR
@@ -353,9 +404,6 @@ class ChemistryData
             scalar M() const;
 
             //- Return dH
-            scalar dH() const;
-
-            //- Return dH
             scalar dS() const;
 
             //- Return dG
@@ -366,6 +414,21 @@ class ChemistryData
 
             //- Return all species
             wordList species() const;
+
+            //- Return the educt species of reaction r
+            wordList educts
+            (
+                const int&
+            ) const;
+
+            //- Return the product species of reaction r
+            wordList products
+            (
+                const int&
+            ) const;
+
+            //- Return amount of dublicated entries
+            unsigned int nDublicated() const;
 
             //- Return no. of reaction
             int nReac() const;
@@ -395,13 +458,31 @@ class ChemistryData
             ) const;
 
             //- Return species list that act as product in reaction r
-            wordList prodSpecies
+            List<word> prodSpecies
             (
                 const int&
             ) const;
             
             //- Return species list that act as educt in reaction r
-            wordList educSpecies
+            List<word> educSpecies
+            (
+                const int&
+            ) const;
+
+            //- Return stochiometric factors of educts of reaction r
+            map<word, scalar> nuEducts
+            (
+                const int& 
+            ) const;
+
+            //- Return stochiometric factors of educts of reaction r
+            map<word, scalar> nuProducts
+            (
+                const int& 
+            ) const;
+
+            //- Return the exponent factor for Keq calculation
+            scalar exponent
             (
                 const int&
             ) const;
@@ -433,23 +514,10 @@ class ChemistryData
                 const int&
             ) const;
 
-            //- Return ENHANCED species of reac no.
-            wordList enhancedSpecies
-            (
-                const int&
-            ) const;
-
             //- Return ENHANCED factors (species + value) of reac no.
-            map<word, scalar> enhancedFactors
+            map<word, scalar> ENHANCEDCoeffs 
             (
                 const int&
-            ) const;
-
-            //- Return ENHANCED factors (value) of reac no.
-            scalar enhancedFactors
-            (
-                const int&,
-                const word&
             ) const;
 
             //- Return reaction rate kf for reaction no.
@@ -488,21 +556,29 @@ class ChemistryData
             //- Return omega field
             scalarField omega() const;
 
-            //- Return map of stochiometric factors of reaction r
-            map<word, scalar> nu
-            (
-                const int& 
-            ) const;
-
-            //- Return mapList of stochiometric factors of all reactions
-            mapList<word, scalar> nu() const;
-
             //- Return stochiometric factors of products of reaction r
             map<word, scalar> nuEduc
             (
                 const int&
             ) const;
 
+            //- Return forward reaction order of reaction r
+            scalar forwardReactionOrder
+            (
+                const int&
+            ) const;
+
+            //- Return backward reaction order of reaction r
+            scalar backwardReactionOrder
+            (
+                const int&
+            ) const;
+
+            //- Return global reaction order of reaction r
+            scalar globalReactionOrder
+            (
+                const int&
+            ) const;
 };
 
 

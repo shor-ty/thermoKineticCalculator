@@ -31,8 +31,10 @@ License
 
 AFC::Chemistry::Chemistry
 (
-    const string& fileName 
+    const string& fileName,
+    const Thermo& thermo
 )
+    : thermo_(thermo)
 {
     if (debug_)
     {
@@ -83,24 +85,56 @@ AFC::scalar AFC::Chemistry::calculateOmega
 }
 
 
-void AFC::Chemistry::calculateKf
-(
-    const int& r,
-    const scalar& T
-)
-{
-    //chemCalc_.calculateKf(r, T, chemData_);
-}
-
-
-void AFC::Chemistry::calculateKc
+AFC::scalar AFC::Chemistry::kf
 (
     const int& r,
     const scalar& T,
-    const Thermo& thermo
-)
+    const bool LOW
+) const
 {
-    //chemCalc_.calculateKc(r, T, thermo, chemData_);
+    return chemCalc_.kf(r, T, chemData_, LOW);
+}
+
+
+AFC::scalar AFC::Chemistry::kb
+(
+    const int& r,
+    const scalar& T,
+    const bool LOW
+) const
+{
+    return chemCalc_.kb(r, T, chemData_, thermo_, LOW);
+}
+
+
+AFC::scalar AFC::Chemistry::keq
+(
+    const int& r,
+    const scalar& T
+) const
+{
+    return chemCalc_.keq(r, T, chemData_, thermo_);
+}
+
+
+AFC::scalar AFC::Chemistry::Fcent
+(
+    const int& r,
+    const scalar& T
+) const
+{
+    return chemCalc_.Fcent(r, T, chemData_);
+}
+
+
+AFC::scalar AFC::Chemistry::Flog
+(
+    const int& r,
+    const scalar& T,
+    const scalar& M
+) const
+{
+    return chemCalc_.Flog(r, T, M, chemData_);
 }
 
 
@@ -238,14 +272,16 @@ AFC::wordList AFC::Chemistry::elements() const
 }
 
 
+unsigned int AFC::Chemistry::nDublicated() const
+{
+    return chemData_.nDublicated();
+}
 
-/*
 
 int AFC::Chemistry::nReac() const
 {
     return chemData_.nReac();
 }
-*/
 
 
 AFC::string AFC::Chemistry::elementarReaction
@@ -293,6 +329,36 @@ AFC::scalarField AFC::Chemistry::k() const
 }*/
 
 
+AFC::scalar AFC::Chemistry::dH
+(
+    const int& r,
+    const scalar& T
+) const
+{
+    return chemCalc_.dH(r, T, chemData_, thermo_);
+}
+
+
+AFC::scalar AFC::Chemistry::dG
+(
+    const int& r,
+    const scalar& T
+) const
+{
+    return chemCalc_.dG(r, T, chemData_, thermo_);
+}
+
+
+AFC::scalar AFC::Chemistry::dS
+(
+    const int& r,
+    const scalar& T
+) const
+{
+    return chemCalc_.dS(r, T, chemData_, thermo_);
+}
+
+
 // * * * * * * * * * * * * * * * Summary Functions * * * * * * * * * * * * * //
 
 void AFC::Chemistry::summary
@@ -301,20 +367,34 @@ void AFC::Chemistry::summary
 ) const
 {
 
+    //- Header
+    data<< Header() << "\n"; 
+
     const wordList& elements = chemData_.elements();
     const wordList& species = chemData_.species();
     const wordList& reactions = chemData_.elementarReaction();
 
-    //- Get amount of LOW TROE SRI ENHANCED BR reactions
+    //- Get amount of LOW TROE SRI ENHANCED BR IR DUB reactions
+    unsigned int BR{0};
+    unsigned int IR{0};
     unsigned int LOW{0};
     unsigned int TROE{0};
     unsigned int SRI{0};
     unsigned int ENH{0};
-    unsigned int BR{0};
     unsigned int TBR{0};
+
+    unsigned int DUB = chemData_.nDublicated();
 
     forEach(reactions, r)
     {
+        if (chemData_.BR(r))
+        {
+            BR++;
+        }
+        else
+        {
+            IR++;
+        }
         if (chemData_.LOW(r))
         {
             LOW++;
@@ -331,10 +411,6 @@ void AFC::Chemistry::summary
         {
             ENH++;
         }
-        if (chemData_.BR(r))
-        {
-            BR++;
-        }
         if (chemData_.TBR(r))
         {
             TBR++;
@@ -342,31 +418,33 @@ void AFC::Chemistry::summary
     }
 
     //- General stuff
-    data<< " c-o Reaction summary:\n";
-    data<< " =====================\n\n";
-    data<< " Number of elements             " << elements.size()  << "\n";
-    data<< " Number of species              " << species.size()   << "\n";
-    data<< " Number of elementar reactions  " << reactions.size() << "\n";
-    data<< "   |\n";
-    data<< "   |--> Number of backward reactions   " << BR   << "\n";
-    data<< "   |--> Number of ThirdBody reactions  " << TBR  << "\n";
-    data<< "   |--> Number of ENHANCED reactions   " << ENH  << "\n";
-    data<< "   |--> Number of LOW reactions        " << LOW  << "\n";
-    data<< "   |--> Number of TROE reactions       " << TROE << "\n";
-    data<< "   |--> Number of SRI reactions        " << SRI  << "\n";
+    data<< " c-o Reaction summary:\n"
+        << "======================\n\n"
+        << " Number of elements             " << elements.size()  << "\n"
+        << " Number of species              " << species.size()   << "\n"
+        << " Number of dublicated reaction  " << DUB  << "\n"
+        << " Number of elementar reactions  " << reactions.size() << "\n"
+        << "   |\n"
+        << "   |--> Number of equilibrium reactions   " << BR   << "\n"
+        << "   |--> Number of irreversible reactions  " << IR   << "\n"
+        << "   |--> Number of ThirdBody reactions     " << TBR  << "\n"
+        << "   |--> Number of ENHANCED reactions      " << ENH  << "\n"
+        << "   |--> Number of LOW reactions           " << LOW  << "\n"
+        << "   |--> Number of TROE reactions          " << TROE << "\n"
+        << "   |--> Number of SRI reactions           " << SRI  << "\n";
 
     data<< "\n\n Elements used: \n   | \n";
 
     forEach(elements, e)
     {
-        data<< "   |-->  " << elements[e] << "\n";
+        data<< "   |-->  (" << e+1 << ")  " << elements[e] << "\n";
     }
 
     data<< "\n\n Species used:\n   | \n";
 
     forEach(species, s)
     {
-        data<< "   |-->  " << species[s] << "\n";
+        data<< "   |-->  (" << s+1 << ")  " << species[s] << "\n";
     }
     
     data<< "\n\n Reactions used: \n   | \n";
@@ -378,49 +456,219 @@ void AFC::Chemistry::summary
 
     data<< "\n\n More detailed kinetics for reactions\n\n";
 
+    chemicalTable(data);
+
+}
+
+
+void AFC::Chemistry::chemicalTable
+(
+    ostream& data
+) const
+{
+    //- Build the chemical table 
+    const wordList& reactions = chemData_.elementarReaction();
+
+    List<word> UNITS{ "[1/s]" , "[cm^3/mol/s]", "[cm^6/mol^2/s]" };
+    
     forEach(reactions, r)
     {
-        data<< "   Reaction " << r+1 << ":  " << reactions[r] << "\n";
-        data<< "   =============================================\n\n";
-        data<< "      A:  " << chemData_.arrheniusCoeffs(r)[0] << " ";
-        data<< "\n";
-        data<< "      n:  " << chemData_.arrheniusCoeffs(r)[1] << " ";
-        data<< "\n";
-        data<< "      Ea: " << chemData_.arrheniusCoeffs(r)[2] << " ";
-        data<< "cal/mol\n\n";
+        //- Get information of reaction order (forward and backward)
+        const scalar& fRO = chemData_.forwardReactionOrder(r);
+        const scalar& bRO = chemData_.backwardReactionOrder(r);
+        const scalar& globalRO = chemData_.globalReactionOrder(r);
+
+        //- Units of rate constant k (depend on reaction order)
+        word unitskf{""};
+        word unitskb{""};
+
+        //- TODO maybe a new field in chemData
+        if (fRO == scalar(-1))
+        {
+            unitskf = UNITS[0];
+        }
+        else if (fRO == scalar(-2))
+        {
+            unitskf = UNITS[1];
+        }
+        else if (fRO == scalar(-3))
+        {
+            unitskf = UNITS[2];
+        }
+
+        if (bRO == scalar(1))
+        {
+            unitskb = UNITS[0];
+        }
+        else if (bRO == scalar(2))
+        {
+            unitskb = UNITS[1];
+        }
+        else if (bRO == scalar(3))
+        {
+            unitskb = UNITS[2];
+        }
+    
+        const List<scalar>& arrheniusCoeffs = chemData_.arrheniusCoeffs(r);
+
+        data<< "========================================================"
+            << "=====================================================\n"
+            << " c-o  Reaction " << r+1 << ":  " << reactions[r] << " at "
+            << thermo_.p() << " Pa\n"
+            << "========================================================"
+            << "=====================================================\n"
+            << std::left  << std::setw(30) << "   Reaction order forward:"
+            << std::right << std::setw(15) << fRO << "\n" 
+            << std::left  << std::setw(30) << "   Reaction order backward:" 
+            << std::right << std::setw(15) << bRO << "\n"
+            << std::left  << std::setw(30) << "   Change in moles:" 
+            << std::right << std::setw(15) << globalRO << "\n"
+            << std::left  << std::setw(30) << "   Units of k (forward): " 
+            << std::right << std::setw(15) << unitskf << "\n"
+            << std::left  << std::setw(30) << "   Units of k (backward): " 
+            << std::right << std::setw(15) << unitskb << "\n"
+            << "\n\n" 
+            << "   Arrhenius coefficients\n"
+            << "--------------------------------------------------\n   |\n"
+            << "   |-->  A:  " << std::setw(14) << arrheniusCoeffs[0] << " "
+            << "\n"
+            << "   |-->  n:  " << std::setw(14) << arrheniusCoeffs[1] << " "
+            << "\n"
+            << "   |-->  Ea: " << std::setw(14) << arrheniusCoeffs[2] << " "
+            << "cal/mol\n\n";
 
         if(chemData_.TBR(r))
         {
 
             if(chemData_.LOW(r))
             {
-                data<< "     LOW Coeffs (for high pressure)\n\n";
+                data<< "   LOW Coeffs (for high pressure)\n"
+                    << "--------------------------------------------------\n"
+                    << "   |\n";
 
                 const List<scalar>& LOWCoeffs = chemData_.LOWCoeffs(r);
 
-                data<< "         A:  " << LOWCoeffs[0] << " ";
+                data<< "   |-->  A:  " << std::setw(14) << LOWCoeffs[0] << " ";
                 data<< "\n";
-                data<< "         n:  " << LOWCoeffs[1] << " ";
+                data<< "   |-->  n:  " << std::setw(14) << LOWCoeffs[1] << " ";
                 data<< "\n";
-                data<< "         Ea: " << LOWCoeffs[2] << " ";
+                data<< "   |-->  Ea: " << std::setw(14) << LOWCoeffs[2] << " ";
                 data<< "cal/mol\n\n";
             }
 
             if(chemData_.TROE(r))
             {
-                data<< "     TROE Coeffs\n\n"; 
+                data<< "   TROE Coeffs\n" 
+                    << "--------------------------------------------------\n"
+                    << "   |\n";
 
                 const List<scalar>& TROECoeffs = chemData_.TROECoeffs(r);
 
-                data<< "        a:  " << TROECoeffs[0] << "\n"; 
-                data<< "        b:  " << TROECoeffs[1] << "\n"; 
-                data<< "        c:  " << TROECoeffs[2] << "\n"; 
-                data<< "        d:  " << TROECoeffs[3] << "\n"; 
+                data<< "   |-->  a:  " << TROECoeffs[0] << "\n"; 
+                data<< "   |-->  b:  " << TROECoeffs[1] << "\n"; 
+                data<< "   |-->  c:  " << TROECoeffs[2] << "\n"; 
+                data<< "   |-->  d:  " << TROECoeffs[3] << "\n\n"; 
+            }
+
+            if(chemData_.ENHANCED(r))
+            {
+                data<< "   Third-Body Coeffs adjustment\n" 
+                    << "--------------------------------------------------\n"
+                    << "   |\n";
+
+                const map<word, scalar>& enhanced = chemData_.ENHANCEDCoeffs(r);
+
+                forAll(enhanced, species)
+                {
+                    data<< "   |-->  " << std::left << std::setw(12)
+                        << species.first
+                        << "   " << species.second << "\n"; 
+                }
+                data<< "\n";
             }
         }
 
-        data<< "\n";
+        data<< std::right ;
+
+        buildTablekf(r, data);
+
+        if (chemData_.LOW(r))
+        {
+            buildTablekf(r, data, true);
+        }
+
+        if (chemData_.TROE(r))
+        {
+            buildTROETable(r, data);
+        }
     }
+}
+
+
+void AFC::Chemistry::buildTablekf
+(
+    const int& r,
+    ostream& data,
+    const bool LOW 
+) const
+{
+    if (LOW)
+    {
+        data<< "  Table for LOW pressure coefficients\n"; 
+    }
+
+    data<< "--------------------------------------------------------"
+        << "-----------------------------------------------------\n"
+        << "      T    |"         
+        << "        kf             kb             Keq   "
+        << "         dH            dG              dS        |\n"
+        << "     [K]   |"
+        << "       [s.a]          [s.a]           [-]   "
+        << "      [J/molK]       [J/mol]        [J/molK]     |\n"
+        << "--------------------------------------------------------"
+        << "-----------------------------------------------------\n"
+        << "";
+
+    for (int i=300; i<=3000; i+=100)
+    {
+        data<< "  " << std::setw(6) << i << "   |"
+            << "  " << std::setw(13) << kf(r, i, LOW) << ""
+            << "  " << std::setw(13) << kb(r, i, LOW)
+            << "  " << std::setw(13) << keq(r, i)
+            << "  " << std::setw(13) << dH(r, i)
+            << "  " << std::setw(13) << dG(r, i)
+            << "  " << std::setw(13) << dS(r, i) << "   |\n";
+    }
+
+    data<< "--------------------------------------------------------"
+        << "-----------------------------------------------------\n"
+        << "\n\n";
+}
+
+
+void AFC::Chemistry::buildTROETable
+(
+    const int& r,
+    ostream& data
+) const
+{
+    data<< "  Table for TROE, [M] assumed to be 1 \n"
+        << "--------------------------------------------------\n"
+        << "      T    |       Fcent           logF       |\n"
+        << "     [K]   |        [-]            [-]        |\n"
+        << "--------------------------------------------------\n";
+
+    for (int i=300; i<=3000; i+=100)
+    {
+        data<< "  " << std::setw(6) << i << "   |"
+            << "  " << std::setw(13) << Fcent(r, i) 
+            << "  " << std::setw(13) << Flog(r, i, scalar(1))
+            << "    |\n";
+    }
+
+    data<< "--------------------------------------------------\n\n";
+
+
 }
 
 
