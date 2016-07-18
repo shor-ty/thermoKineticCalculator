@@ -45,7 +45,7 @@ AFC::TransportCalc::~TransportCalc()
 AFC::scalar AFC::TransportCalc::reducedCollisionIntegralOmega22
 (
     const scalar& Ts
-)
+) const
 {
     //- Constants
     const scalar A = 1.16145;
@@ -63,7 +63,7 @@ AFC::scalar AFC::TransportCalc::reducedCollisionIntegralOmega22
 AFC::scalar AFC::TransportCalc::reducedCollisionIntegralOmega11
 (
     const scalar& Ts
-)
+) const
 {
     //- Constants
     const scalar A = 1.06036;
@@ -94,27 +94,38 @@ AFC::scalar AFC::TransportCalc::rho
 
 // * * * * * * * * Calculation Functions For Viscosity  * * * * * * * * * * *//
 
-void AFC::TransportCalc::viscosity
+AFC::scalar AFC::TransportCalc::viscosity
 (
+    const word& species,
+    const scalar& T,
     const Thermo& thermo,
-    TransportData& transData
-)
+    const TransportData& transData,
+    const word& method
+) const
 {
-    Info<< "    c-o Pure Species viscosity calculation ... ";
-
-    //- Get species used in kinetic calculations
-    const wordList& chemSpecies = transData.chemSpecies();
-
-    //- Calculate viscosity values of chemical species
-    forAll(chemSpecies, species)
+    //- Methode of Chung et. al. 1984, 1988
+    if (method == "Chung")
     {
-        //- Methode of Chung et. al. 1984, 1988
+        return 0; 
+    }
+        
+    //- Methode of Neufeld et. al. 1972 [Pa s]
+    else if (method == "Neufeld")
+    {
+        return viscosityNeufeld(species, T, thermo, transData);
+    }
+    else
+    {
+        FatalError
+        (
+            "   Method " + method + " is not available for calculation of\n"
+            "   viscosity. You have to implement it yourself or ask for help",
+            __FILE__,
+            __LINE__
+        );
 
-        //- Methode of Neufeld et. al. 1972 [Pa s]
-        scalar T = 1000;
-        const scalar& visco = viscosityNeufeld(species, T, thermo, transData);
-
-        Info<< species << ": " << visco << " [Pa s] \n";
+        //- For compiler
+        return -1;
     }
 }
 
@@ -125,7 +136,7 @@ AFC::scalar AFC::TransportCalc::viscosityNeufeld
     const scalar& T,
     const Thermo& thermo,
     const TransportData& transData
-)
+) const
 {
     //- Viscosity calculation suggested by Neufeld et. al. (1972)
 
@@ -148,9 +159,9 @@ AFC::scalar AFC::TransportCalc::viscosityNeufeld
     }
 
     //- Calculate collision integral omega 22
-    const scalar omegaColl = reducedCollisionIntegralOmega22(Ts);
+    const scalar& omegaColl = reducedCollisionIntegralOmega22(Ts);
 
-    //- Calculate viscosity in micro Poise (P) 
+    //- Calculate viscosity in micro Poise 10^-6 [P] 
     //  [P] = 0.1 [Pa s]
     const scalar mu = 26.693 * sqrt(MW * T) / (pow(sigma, 2) * omegaColl);
 
@@ -159,15 +170,18 @@ AFC::scalar AFC::TransportCalc::viscosityNeufeld
 }
 
 
-void AFC::TransportCalc::viscosityChung
+AFC::scalar AFC::TransportCalc::viscosityChung
 (
-    const word& species
-)
+    const word& species,
+    const scalar& T,
+    const Thermo& thermo,
+    const TransportData& transData
+) const
 {
     // Constants
 
-    //- Stefan Bolzmann constant [J/m^2/K^4]
-    /*const scalar& kB = AFC::Constants::stefanBolzmann;
+    //- Stefan Boltzmann constant [J/m^2/K^4]
+    const scalar& kB = AFC::Constants::kB;
 
     //- Lennard-Jones collision diameter [Angstroms]
     const scalar& LJCD = transData.LJCD(species);
@@ -187,11 +201,10 @@ void AFC::TransportCalc::viscosityChung
     //- a) Reduced dipole moment
     const scalar delta = 0.5 * muk * muk / (LJP * pow(LJCD, 3));
 
-    //- Start temperature [K]
-    scalar T{300};
-
+    return T;
     //- c) 
-    for(; T < 4000.;)
+    // TODO final it
+    /*for(; T < 4000.;)
     {
 
         //- Dimensionless temperature T*
@@ -210,26 +223,33 @@ void AFC::TransportCalc::viscosityChung
 
 // * * * * * * * * Calculation Functions For Conducitvity  * * * * * * * * * //
 
-void AFC::TransportCalc::thermalConductivity
+AFC::scalar AFC::TransportCalc::thermalConductivity
 (
+    const word& species,
+    const scalar& T,
     const Thermo& thermo,
-    TransportData& transData
-)
+    const TransportData& transData,
+    const word& method
+) const
 {
-    Info<< "    c-o Pure Species thermal conductivity calculation ... ";
-
-    //- Get species used in kinetic calculations
-    const wordList& chemSpecies = transData.chemSpecies();
-
-    //- Calculate viscosity values of chemical species
-    forAll(chemSpecies, species)
+    //- Methode mentioned by Warnatz
+    if (method == "Warnatz")
     {
-        //- Methode mentioned by Warnatz
-        scalar T = 1000;
-        const scalar& thermalConductivity = 
-            thermalConductivityWarnatz(species, T, thermo, transData);
+        return (thermalConductivityWarnatz(species, T, thermo, transData));
+    }
+    else
+    {
+        FatalError
+        (
+            "   Method " + method + " is not available for calculation of\n"
+            "   thermal conductivity. You have to implement it yourself\n"
+            "   or ask for help",
+            __FILE__,
+            __LINE__
+        );
 
-        Info<< species << ": " << thermalConductivity << " [W/m/K]\n";
+        //- For compiler
+        return -1;
     }
 }
 
@@ -240,7 +260,7 @@ AFC::scalar AFC::TransportCalc::thermalConductivityWarnatz3
     const scalar& T,
     const Thermo& thermo,
     const TransportData& transData
-)
+) const
 {
     //- Calculation of thermal conductivity by Warnatz
 
@@ -307,7 +327,7 @@ AFC::scalar AFC::TransportCalc::thermalConductivityWarnatz
     const scalar& T,
     const Thermo& thermo,
     const TransportData& transData
-)
+) const
 {
     //- Calculation of thermal conductivity by Warnatz
 
@@ -318,7 +338,9 @@ AFC::scalar AFC::TransportCalc::thermalConductivityWarnatz
     const scalar& LJP = transData.LJP(species);
 
     //- Lennard-Jones collision diameter [Angstroms]
-    const scalar& sigma = transData.LJCD(species);
+    //  We need nano (1e-9) [m] in the formula
+    //  1 [Anstroms] = 1e-10 [m]
+    const scalar& sigma = transData.LJCD(species) / 10;
 
     //- Dimensionless temperature T*
     const scalar Ts =   T * pow(LJP, -1);
@@ -327,6 +349,7 @@ AFC::scalar AFC::TransportCalc::thermalConductivityWarnatz
     if (Ts < 0.3 || Ts > 100)
     {
         //- Output warning to file
+        // TODO
     }
 
     //- Calculate collision integral omega 22
@@ -335,102 +358,98 @@ AFC::scalar AFC::TransportCalc::thermalConductivityWarnatz
     //- Calculate thermal conductivity in [J/cm/K/s]
     //const scalar lambda = 
     //    8.323e-6 * sqrt(T/MW) / (pow(sigma, 2) * omegaColl);
-    const scalar lambda = 8.323e-6 * sqrt(T / MW) / (pow(sigma * 0.1, 2) * omegaColl);
+
+    //- Calculate thermal conductivity in [J/cm/K/s]
+    const scalar lambda =
+        8.323e-6 * sqrt(T / MW) / (pow(sigma * 0.1, 2) * omegaColl);
 
     //- Return thermal conductivity in [W/m/K]
-    return lambda;
+    return lambda / scalar(100);
 }
     
 
 // * * * * * * * Calculation Functions For Binary Diffusivity * * * * * * * *//
 
-void AFC::TransportCalc::binaryDiffusivity
+AFC::scalar AFC::TransportCalc::binaryDiffusivity
 (
+    const word& species1,
+    const word& species2,
+    const scalar& T,
     const Thermo& thermo,
-    TransportData& transData
-)
+    const TransportData& transData,
+    const word& method
+) const
 {
-    Info<< "    c-o Pure Species binary diffusivity calculation ... ";
-
-    //- Get species used in kinetic calculations
-    const wordList& chemSpecies = transData.chemSpecies();
-
-    //- Generate species combinations
-    map<word, wordList> combinations;
-
-    forEach(chemSpecies, s)
+    if (method == "ChapmanAndEnskog")
     {
-        for(unsigned i = s+1; i < chemSpecies.size(); i++)
-        {
-            Info<< "Species: " << chemSpecies[s] << " ... " << chemSpecies[i] << "\n";
-            combinations[chemSpecies[s]].push_back(chemSpecies[i]); 
-        }
+        return binaryDiffusivityChapmanAndEnskog
+        (
+            species1,
+            species2,
+            T,
+            thermo,
+            transData
+        );
     }
-
-    //- Pressure [Bar]
-    const scalar& p = thermo.p()/1e5;
-
-    Info<< "Pressure: " << p << endl;
-
-    const scalar T = 300;
-
-    //- Loop through the combinations
-    forEach(chemSpecies, s)
+    else
     {
-        //- Last species break
-        if (s == chemSpecies.size()-1)
-        {
-            break;
-        }
+        FatalError
+        (
+            "   Method " + method + " is not available for calculation of\n"
+            "   binary diffusifity. You have to implement it yourself\n"
+            "   or ask for help",
+            __FILE__,
+            __LINE__
+        );
 
-        //- First species
-        const word& species1 = chemSpecies[s];
-
-        const wordList& pairs = combinations.at(species1);
-
-        forEach(pairs, i)
-        {
-            //- Second species
-            const word& species2 = pairs[i];
-
-            //- Molecular weight
-            const scalar& MW1 = thermo.MW(species1);
-            const scalar& MW2 = thermo.MW(species2);
-
-            //- Lennard-Jones potential well depth eps/kb [K]
-            const scalar& LJP1 = transData.LJP(species1);
-            const scalar& LJP2 = transData.LJP(species2);
-
-            //- Lennard-Jones collision diameter [Angstroms]
-            const scalar& sigma1 = transData.LJCD(species1);
-            const scalar& sigma2 = transData.LJCD(species2);
-
-            //- Combined parameters 
-            const scalar& MW12 = 2 * pow((1/MW1 + 1/MW2), -1);
-            const scalar& LJP12 = sqrt(LJP1 * LJP2);
-            const scalar& sigma12 = (sigma1 + sigma2) / 2;
-
-            //- Reduced temperature Ts12
-            const scalar& Ts12 = T * pow(LJP12, -1);
-
-            //- Calculate collision integral omega 22
-            const scalar omegaColl = reducedCollisionIntegralOmega11(Ts12);
-
-            //- Calculate binary diffusivity [cm^2/s]
-            const scalar& Dkk =
-                0.002662 * sqrt(pow(T, 3))
-              / (p * sqrt(MW12) * pow(sigma12, 2) * omegaColl);
-
-            //Info << sqrt(pow(T, 3)) << "/" << "(1 * " << sqrt(MW12) << " * " << pow(sigma12,2)
-             //   << " * "<< omegaColl << ")\n";
-
-            //Info<< (p * sqrt(MW12) * pow(sigma12, 2) * omegaColl) << "\n";
-
-            Info << s+1 << "   " << i+1 << "    " 
-                << species1 << "   " << species2 << "    " << Dkk/10000 << endl;
-        }
+        //- For compiler
+        return -1;
     }
 }
 
+
+AFC::scalar AFC::TransportCalc::binaryDiffusivityChapmanAndEnskog
+(
+    const word& species1,
+    const word& species2,
+    const scalar& T,
+    const Thermo& thermo,
+    const TransportData& transData
+) const
+{
+    //- Pressure [bar]
+    const scalar& p = thermo.p()/1e5;
+
+    //- Molecular weight [g/mol]
+    const scalar& MW1 = thermo.MW(species1);
+    const scalar& MW2 = thermo.MW(species2);
+
+    //- Lennard-Jones potential well depth eps/kb [K]
+    const scalar& LJP1 = transData.LJP(species1);
+    const scalar& LJP2 = transData.LJP(species2);
+
+    //- Lennard-Jones collision diameter [Angstroms]
+    const scalar& sigma1 = transData.LJCD(species1);
+    const scalar& sigma2 = transData.LJCD(species2);
+
+    //- Combined parameters 
+    const scalar& MW12 = 2 * pow((1/MW1 + 1/MW2), -1);
+    const scalar& LJP12 = sqrt(LJP1 * LJP2);
+    const scalar& sigma12 = (sigma1 + sigma2) / 2;
+
+    //- Reduced temperature Ts12
+    const scalar& Ts12 = T * pow(LJP12, -1);
+
+    //- Calculate collision integral omega 22
+    const scalar& omegaColl = reducedCollisionIntegralOmega11(Ts12);
+
+    //- Calculate binary diffusivity [cm^2/s]
+    const scalar& Dij =
+        0.00266 * pow(T, scalar(1.5))
+      / (p * sqrt(MW12) * pow(sigma12, 2) * omegaColl);
+
+    //- Return the binary diffusivity Dij [cm^2/s]
+    return Dij;
+}
 
 // ************************************************************************* //

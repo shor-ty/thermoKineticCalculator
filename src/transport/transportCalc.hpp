@@ -68,14 +68,14 @@ class TransportCalc
             scalar reducedCollisionIntegralOmega22
             (
                 const scalar&
-            );
+            ) const;
 
             //- Lenard 12-6 assumption, collision integral omega 1.1
             //  Neufeld et. al. (1972)
             scalar reducedCollisionIntegralOmega11
             (
                 const scalar&
-            );
+            ) const;
 
             //- Calculate density out of ideal gas law [kg/m^3]
             scalar rho
@@ -89,11 +89,14 @@ class TransportCalc
         // Calculation functions for viscosity
         
             //- Kinetic calculation, pure species viscosity
-            void viscosity
+            scalar viscosity
             (
+                const word&,
+                const scalar&,
                 const Thermo&,
-                TransportData&
-            );
+                const TransportData&,
+                const word&
+            ) const;
 
             //- Viscosity suggested by Neufeld et. al. (1972) [kg/m/s]
             scalar viscosityNeufeld
@@ -102,23 +105,29 @@ class TransportCalc
                 const scalar&,
                 const Thermo&,
                 const TransportData&
-            );
+            ) const;
 
             //- Viscosity suggested by Chung
-            void viscosityChung
+            scalar viscosityChung
             (
-                const word&
-            );
+                const word&,
+                const scalar&,
+                const Thermo&,
+                const TransportData&
+            ) const;
 
 
         // Calculation functions for thermal conductivity
 
             //- Kinetic calculation, pure species thermal conductivity
-            void thermalConductivity
+            scalar thermalConductivity
             (
+                const word&,
+                const scalar&,
                 const Thermo&,
-                TransportData&
-            );
+                const TransportData&,
+                const word& 
+            ) const;
 
             //- Thermal conductivity suggested by Warnatz [W/m/K]
             scalar thermalConductivityWarnatz3
@@ -127,7 +136,7 @@ class TransportCalc
                 const scalar&,
                 const Thermo&,
                 const TransportData&
-            );
+            ) const;
 
             //- Thermal conductivity suggested by Warnatz [W/m/K]
             scalar thermalConductivityWarnatz
@@ -136,25 +145,31 @@ class TransportCalc
                 const scalar&,
                 const Thermo&,
                 const TransportData&
-            );
+            ) const;
 
 
         // Calculation functions for binary diffusivity
 
             //- Kinetic calculation, pure species binary diffusivity
-            void binaryDiffusivity
+            scalar binaryDiffusivity
             (
+                const word&,
+                const word&,
+                const scalar&,
                 const Thermo&,
-                TransportData&
-            );
+                const TransportData&,
+                const word&
+            ) const;
 
-
-
-        // Return functions
-
-            //- Return species as wordList
-            wordList species() const;
-
+            //- Binary diffusivity suggested by Chapman and Enskog
+            scalar binaryDiffusivityChapmanAndEnskog
+            (
+                const word&,
+                const word&,
+                const scalar&,
+                const Thermo&,
+                const TransportData&
+            ) const;
 };
 
 
