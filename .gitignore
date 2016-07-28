@@ -5,6 +5,9 @@
 *.layout
 *.depend
 *.swp
+*.pdf
+*.eps
+*.png
 
 
 #gcc 

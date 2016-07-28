@@ -9,12 +9,16 @@ INC_DIR=-I$(WORK_DIR)/chemistry \
 		-I$(WORK_DIR)/numerics \
 		-I$(WORK_DIR)/typedef \
 		-I$(WORK_DIR)/interpreter \
+		-I$(WORK_DIR)/tensors/tensor \
+		-I$(WORK_DIR)/tensors/matrix \
 		-I$(WORK_DIR)/stringManipulator
 
 
 
 SOURCE_FILES=automaticFlameletCreator.cpp \
 			 numerics/numerics.cpp \
+			 tensors/tensor/tensor.cpp \
+			 tensors/matrix/matrix.cpp \
 			 chemistry/chemistry.cpp \
 			 chemistry/chemistryReader.cpp \
 			 chemistry/chemistryData.cpp \
