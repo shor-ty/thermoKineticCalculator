@@ -84,14 +84,17 @@ AFC::Matrix::~Matrix()
 
 // * * * * * * * * * * * * * * Operator Functions  * * * * * * * * * * * * * //
 
-/*
-AFC::scalarField AFC::Matrix::operator*
+
+AFC::Matrix AFC::Matrix::operator*
 (
     const Matrix& B
 ) const
 {
+    //- Calculation of the inner product of two matrices 
+    //  The result is a matrix again C_ij = A_ik * B_kj
+    
     //- Check if A cols == B rows
-    if (nCols_ != B.rows())
+    if (cols() != B.rows())
     {
         FatalError
         (
@@ -101,22 +104,31 @@ AFC::scalarField AFC::Matrix::operator*
         );
     }
 
-    //- The matrix before the * sign (A * B)
+    //- We are writing A * B it is non - cummutative
+    //  The Matrix A is the object
+    //  The Matrix B is the operators argument
     const Matrix& A = *this;
 
-    //- The matrix multiplication returns a vector b (scalarField)
-    scalarField b(nRows_, 0);
+    //- The matrix multiplication returns a matrix C with A.rows & B.cols
+    //  Index notation from above [Holzmann]
+    Matrix C(rows(), B.cols());
 
-    for (size_t r = 0; r < nRows_; r++)
+    for (size_t i = 0; i < rows(); ++i)
     {
-        for (size_t c = 0; c < nCols_; c++)
+        for (size_t j = 0; j < B.cols(); ++j)
         {
-            b[c] += A(r,c) * B(c,r);
+            scalar sum{0};
+            
+            for (size_t k = 0; k < cols(); ++k)
+            {
+                sum += A(i,k) * B(k,j);
+            }
+            C(i,j,sum);
         }
     }
 
-    return b;
-}*/
+    return C;
+}
 
 
 // * * * * * * * * * * * * * * * Member function * * * * * * * * * * * * * * //
@@ -148,16 +160,21 @@ AFC::Matrix AFC::Matrix::T() const
     return AT;
 
 }
-/*AFC::Matrix AFC::Matrix::inverse() const
+
+
+AFC::Matrix AFC::Matrix::inverse() const
 {
+    //- rows and cols of actual matrix
+    const size_t row = rows();
+    const size_t col = cols();
+
     //- Inverse only for squared matrix
-    if (nRows_ != nCols_)
+    if (row != col)
     {
         FatalError
         (
+            "    You try to use A.inverse() for a non-squared matrix.\n"
             "    The inverse function is only available for squared matrices",
-            "\n    You try to use A.inverse() for a non-squared matrix. For\n"
-            "    non-squared matrices you can use inverse"
             __FILE__,
             __LINE__
         );
@@ -170,13 +187,13 @@ AFC::Matrix AFC::Matrix::T() const
     Matrix inverse = I();
 
     //- Make the Lower to zero
-    for (unsigned int r = 0; r < nRows_; r++)
+    for (unsigned int r = 0; r < row; r++)
     {
         //- Get first element
         const scalar element = A(r,r);        
 
         //- Divide the whole row by this element to get ONE at the element pos
-        for (unsigned int c = 0; c < nCols_; c++)
+        for (unsigned int c = 0; c < col; c++)
         {
             const scalar oldElem = A(r, c);
             const scalar oldElemI = inverse(r, c);
@@ -186,11 +203,11 @@ AFC::Matrix AFC::Matrix::T() const
         }
 
         //- Now substract from the others to generate ZERO below the element
-        for (unsigned int rr = r+1; rr < nRows_; rr++)
+        for (unsigned int rr = r+1; rr < row; rr++)
         {
             const scalar multiplicator = A(rr, r) / A(r, r);
 
-            for (unsigned int cc = 0; cc < nCols_; cc++)
+            for (unsigned int cc = 0; cc < col; cc++)
             {
                 const scalar actualElement = A(rr, cc);
                 const scalar modifiedElement = A(r, cc);
@@ -205,14 +222,14 @@ AFC::Matrix AFC::Matrix::T() const
     }
 
     //- Make the Upper to zero. Diagonals are 1 now
-    for (int r = nRows_-1; r >= 0; r--)
+    for (int r = row-1; r >= 0; r--)
     {
         //- Now substract from the others to generate ZERO above the element
         for (int rr = r-1; rr >= 0; rr--)
         {
             const scalar multiplicator = A(rr, r);
 
-            for (int cc = nCols_-1; cc >= 0; cc--)
+            for (int cc = col-1; cc >= 0; cc--)
             {
                 const scalar actualElement = A(rr, cc);
                 const scalar modifiedElement = A(r,cc);
@@ -230,17 +247,18 @@ AFC::Matrix AFC::Matrix::T() const
 }
 
 
+
 AFC::Matrix AFC::Matrix::I() const
 {
     size_t n{0};
 
-    if (nRows_ > nCols_)
+    if (rows() > cols())
     {
-        n = nRows_;
+        n = rows();
     }
     else
     {
-        n = nCols_;
+        n = cols();
     }
 
     //- Build n x n matrix with zero
@@ -269,7 +287,7 @@ AFC::Matrix AFC::Matrix::I
     }
 
     return tmp;
-}*/
+}
 
 
 // * * * * * * * * * * * * Special Matrix Functions  * * * * * * * * * * * * //

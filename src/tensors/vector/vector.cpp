@@ -37,35 +37,48 @@ AFC::Vector::Vector()
     {
         Info<< "Constructor Vector() \n" << endl;
     }
-
 }
 
 
 AFC::Vector::Vector
 (
-    const size_t rows = 1,
-    const size_t cols = 1,
+    const Vector& vec
+)
+:
+    Tensor(vec.rows(), vec.cols(), vec.values())
+{
+    if (debug_)
+    {
+        Info<< "Constructor Vector(const Vector&) Copy Const\n" << endl;
+    }
+}
+
+
+AFC::Vector::Vector
+(
+    const size_t row,
     const scalar value
 )
 :
-    Tensor(rows, cols, value)
+    Tensor(row, 1, value)
 {
     if (debug_)
     {
         Info<< "Constructor Vector (row, value)\n" << endl;
     }
+}
 
-    //- Just avoid to make a matrix
-    if (rows == cols)
+
+AFC::Vector::Vector
+(
+    const scalarField& sF
+)
+:
+    Tensor(sF.size(), 1, sF)
+{
+    if (debug_)
     {
-        FatalError
-        (
-            "    The rows and cols of the vector are identical. It is\n"
-            "    better to use a scalar or a matrix object. This depend\n"
-            "    on what you need.",
-            __FILE__,
-            __LINE__
-        );
+        Info<< "Constructor Vector (row, scalarField)\n" << endl;
     }
 }
 
@@ -83,11 +96,44 @@ AFC::Vector::~Vector()
 
 // * * * * * * * * * * * * * * Operator Functions  * * * * * * * * * * * * * //
 
+/*AFC::scalar AFC::Vector::operator()
+(
+    const size_t i
+)
+{
+    //- Row or col vector
+    if (rows() > cols())
+    {
+        return this->AFC::Tensor::operator()(i,0);
+    }
+    else
+    {
+        return this->AFC::Tensor::operator()(0,i);
+    }
+}
+
+
+void AFC::Vector::operator()
+(
+    const size_t i,
+    const scalar& value
+)
+{
+    //- Row or col vector
+    if (rows() > cols())
+    {
+        *this->operator()(i, 0, value);
+    }
+    else
+    {
+        *this->AFC::Tensor::operator()(0, i, value);
+    }
+}*/
 
 
 // * * * * * * * * * * * * * * * Member function * * * * * * * * * * * * * * //
 
-AFC::Vector AFC::Vector::T() const
+/*AFC::Vector AFC::Vector::T() const
 {
     //- Rows and cols of the vector
     const size_t& row = this.rows();
@@ -126,7 +172,7 @@ AFC::Vector AFC::Vector::T() const
     }
 
     return tmp;
-}
+}*/
 
 
 // * * * * * * * * * * * * * * Calculation Functions * * * * * * * * * * * * //

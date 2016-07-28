@@ -41,6 +41,7 @@ SourceFiles
 
 #include "typedef.hpp"
 #include "tensor.hpp"
+#include "vector.hpp"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -94,8 +95,9 @@ class Matrix
 
         // Arithmetric 
 
-            //- Matrix multiplication (n x m) * (m x n) matrices
-            scalarField operator*(const Matrix&) const;
+            //- Matrix multiplication (n x m) * (m x n) 
+            //  The inner product A bullet B
+            Matrix operator*(const Matrix&) const;
 
 
         // Member Functions

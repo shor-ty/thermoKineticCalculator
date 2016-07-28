@@ -55,7 +55,7 @@ class Tensor
     private:
 
         // Debug swithc
-        bool debug_{false};
+        bool debug_{true};
 
         // Private Data
 
@@ -74,12 +74,20 @@ class Tensor
         //- Constructor 
         Tensor();
 
-        //- Constructor that create tensor (x) x (y) and init with zero
+        //- Constructor that create tensor n x m and init with zero
         Tensor
         (
             const size_t,
             const size_t,
             const scalar value = 0
+        );
+
+        //- Constructor that creates a tensor n x m using a scalarField
+        Tensor
+        (
+            const size_t,
+            const size_t,
+            const scalarField&
         );
 
         //- Destructor
@@ -104,6 +112,9 @@ class Tensor
 
             //- Return rows of the tensor
             size_t rows() const;
+
+            //- Return the values of the tensor
+            scalarField values() const;
 };
 
 

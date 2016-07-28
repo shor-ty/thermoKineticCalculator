@@ -60,6 +60,24 @@ AFC::Tensor::Tensor
 }
 
 
+AFC::Tensor::Tensor
+(
+    const size_t rows,
+    const size_t cols,
+    const scalarField& sF
+)
+:
+    nRows_(rows),
+    nCols_(cols),
+    values_(sF)
+{
+    if (debug_)
+    {
+        Info<< "Constructor Tensor (rows, cols, scalarField)\n" << endl;
+    }
+}
+
+
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
 AFC::Tensor::~Tensor()
@@ -96,6 +114,7 @@ void AFC::Tensor::operator()
 
 void AFC::Tensor::operator()() const
 {
+    Info<< "size: " << nRows_ << endl;
     Info<< "\n";
     for (size_t i = 0; i < nRows_; i++)
     {
@@ -126,6 +145,10 @@ size_t AFC::Tensor::rows() const
 }
 
 
+AFC::scalarField AFC::Tensor::values() const
+{
+    return values_;
+}
 
 
 // * * * * * * * * * * * * * * Calculation Functions * * * * * * * * * * * * //

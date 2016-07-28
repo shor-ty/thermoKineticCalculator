@@ -37,6 +37,7 @@ SourceFiles
 #define Vector_hpp
 
 #include "typedef.hpp"
+#include "tensor.hpp"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -48,6 +49,8 @@ namespace AFC
 \*---------------------------------------------------------------------------*/
 
 class Vector
+:
+    public Tensor
 {
     private:
 
@@ -62,20 +65,49 @@ class Vector
         //- Constructor 
         Vector();
 
+        //- Copy constructor
+        Vector
+        (
+            const Vector&
+        );
+
         //- Constructor that creates a row vector n x 1 and init with the 
-        //  given value. Cols vectors are also possible with initialisation
-        //  like Vector b(1,4) this will make a column vector 1 x 4
+        //  given value.
         Vector
         (
             const size_t,
-            const size_t cols = 1,
             const scalar value = 0
+        );
+
+        //- Constructor that creates a row vector n x 1 with an scalarField
+        Vector
+        (
+            const scalarField&
         );
 
         //- Destructor
         ~Vector();
 
         // Operator Functions
+        
+            //- Return the value at position
+            /*scalar operator()
+            (
+                const size_t
+            );
+
+            //- Insert the value at position
+            void operator()
+            (
+                const size_t,
+                const scalar&
+            );*/
+
+            //- Arithmetic += (const Matrix&)
+            /*Vector operator()= 
+            (
+                const Matrix&
+            );*/
 
 
         // Member Functions
