@@ -71,7 +71,7 @@ void AFC::Interpreter::summary
 (
     const Chemistry& chemistry,   
     const Thermo& thermo,
-    const Transport& Transport
+    const Transport& transport
 )
 {
     //- Create folder  
@@ -81,15 +81,14 @@ void AFC::Interpreter::summary
 
     //- Chemistry summary
     {
+        Info<< " c-o Interprete chemistry data\n" << endl;
+
         file.open("summary/chemistry.afc", std::ios::out);
 
         std::ostream data(&file);
 
         //- Set scientific notation
         data.setf(std::ios::scientific, std::ios::floatfield);
-
-        //- Header
-        data<< Header() << "\n"; 
 
         //- Build the chemistry summary
         chemistry.summary(data);
@@ -99,15 +98,14 @@ void AFC::Interpreter::summary
 
     //- Thermodynamic summary 
     {
+        Info<< " c-o Interprete thermodynamic data\n" << endl;
+
         file.open("summary/thermodynamic.afc", std::ios::out);
 
         std::ostream data(&file);
 
         //- Set scientific notation
         data.setf(std::ios::scientific, std::ios::floatfield);
-
-        //- Header
-        data<< Header() << "\n"; 
 
         //- Build the thermodynamic summary
         thermo.summary(data);
@@ -117,6 +115,8 @@ void AFC::Interpreter::summary
 
     //- Transport summary 
     {
+        Info<< " c-o Interprete transport data\n" << endl;
+
         file.open("summary/transport.afc", std::ios::out);
 
         std::ostream data(&file);
@@ -124,8 +124,8 @@ void AFC::Interpreter::summary
         //- Set scientific notation
         data.setf(std::ios::scientific, std::ios::floatfield);
 
-        //- Header
-        data<< Header() << "\n"; 
+        //- Build transport summary
+        transport.summary(data);
 
         file.close();
     }
