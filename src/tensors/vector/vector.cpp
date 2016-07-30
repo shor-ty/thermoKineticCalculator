@@ -96,19 +96,53 @@ AFC::Vector::~Vector()
 
 // * * * * * * * * * * * * * * Operator Functions  * * * * * * * * * * * * * //
 
-/*AFC::scalar AFC::Vector::operator()
+AFC::Vector AFC::Vector::operator*
 (
-    const size_t i
-)
+    const Matrix& T
+) const
+{
+    //- Vector dot Matrix produces a new vector [Holzmann] (inner product)
+    //  This operation is non-commutative
+    //  The call is a * T where a -> *this
+
+    const Vector& a = *this;
+
+    //- Cols and rows
+    size_t col = a.size();
+    size_t row = T.rows();
+
+    //- Result vector 
+    Vector b(a.size());
+
+    for (size_t i = 0; i < row; ++i)
+    {
+        scalar tmp{0};
+
+        for (size_t j = 0; j < col; ++j)
+        {
+            tmp += a(j) * T(j,i);
+        }
+
+        b(i,tmp);
+    }
+
+    return b;
+}
+
+
+AFC::scalar AFC::Vector::operator()
+(
+    const size_t& i
+) const
 {
     //- Row or col vector
     if (rows() > cols())
     {
-        return this->AFC::Tensor::operator()(i,0);
+        return AFC::Tensor::operator()(i, 0);
     }
     else
     {
-        return this->AFC::Tensor::operator()(0,i);
+        return AFC::Tensor::operator()(0, i);
     }
 }
 
@@ -116,22 +150,42 @@ AFC::Vector::~Vector()
 void AFC::Vector::operator()
 (
     const size_t i,
-    const scalar& value
+    const scalar value
 )
 {
     //- Row or col vector
     if (rows() > cols())
     {
-        *this->operator()(i, 0, value);
+        AFC::Tensor::operator()(i, 0, value);
     }
     else
     {
-        *this->AFC::Tensor::operator()(0, i, value);
+        AFC::Tensor::operator()(0, i, value);
     }
-}*/
+}
+
+
+void AFC::Vector::operator()() const
+{
+    AFC::Tensor::operator()();
+}
 
 
 // * * * * * * * * * * * * * * * Member function * * * * * * * * * * * * * * //
+
+size_t AFC::Vector::size() const
+{
+    //- Distinguish between row and col vector
+    if (rows() > 1)
+    {
+        return rows();
+    }
+    else
+    {
+        return cols();
+    }
+}
+
 
 /*AFC::Vector AFC::Vector::T() const
 {

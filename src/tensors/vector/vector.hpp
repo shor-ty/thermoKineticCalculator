@@ -37,12 +37,18 @@ SourceFiles
 #define Vector_hpp
 
 #include "typedef.hpp"
+#include "matrix.hpp"
 #include "tensor.hpp"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace AFC
 {
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+class Matrix;
+
 
 /*---------------------------------------------------------------------------*\
                             Class Vector Declaration
@@ -89,19 +95,27 @@ class Vector
         ~Vector();
 
         // Operator Functions
+
+            Vector operator*
+            (
+                const Matrix&
+            ) const;
         
             //- Return the value at position
-            /*scalar operator()
+            scalar operator()
             (
-                const size_t
-            );
+                const size_t&
+            ) const;
 
             //- Insert the value at position
             void operator()
             (
                 const size_t,
-                const scalar&
-            );*/
+                const scalar
+            );
+
+            //- Show the vector
+            void operator()() const;
 
             //- Arithmetic += (const Matrix&)
             /*Vector operator()= 
@@ -111,6 +125,10 @@ class Vector
 
 
         // Member Functions
+
+            //- Return the size of the vector
+            size_t size() const;
+
 
         // Calculation Functions
 
