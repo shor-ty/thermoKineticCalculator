@@ -36,6 +36,7 @@ SourceFiles
 #define TransportData_hpp
 
 #include "typedef.hpp"
+#include "vector.hpp"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -94,10 +95,16 @@ class TransportData
         // Transport data for fitting procedure 
 
             //- Pure species viscosity
-            //  Species, Temp, Value
-            //mapMap<word, scalar, scalar> viscosity_;
+            //  Species, Coeffs A-D, Value
+            map<word, scalarField> viscosity_;
+
+            //- Pure species thermal conductivity 
+            //  Species, Coeffs A-D, Value
+            map<word, scalarField> thermalConductivity_;
 
             //- Pure binary diffusion coefficients
+            //  Species1 <- ID from species_, Species2, Coeffs A-D, Value
+            List<map<word, scalarField> > binaryDiffusivity_;
 
 
     public:
@@ -110,6 +117,48 @@ class TransportData
 
 
         // Member functions
+
+            //- Fitting polynomials coefficients for the viscosity
+            void viscosityPolyCoeffs
+            (
+                const word&,
+                const Vector&
+            );
+
+            //- Return the polynomial coefficients for the viscosity
+            scalarField viscosityPolyCoeffs
+            (
+                const word&
+            ) const;
+
+            //- Fitting polynomials coefficients for the thermal conductivity 
+            void thermalConductivityPolyCoeffs
+            (
+                const word&,
+                const Vector&
+            );
+
+            //- Return the polynomial coefficients for the thermal conductivity 
+            scalarField thermalConductivityPolyCoeffs
+            (
+                const word&
+            ) const;
+
+            //- Fitting polynomials coefficients for the binary diffusivity 
+            void binaryDiffusivityPolyCoeffs
+            (
+                const word&,
+                const word&,
+                const Vector&
+            );
+
+            //- Return the polynomial coefficients for the binary diffusivity 
+            scalarField binaryDiffusivityPolyCoeffs
+            (
+                const word&,
+                const word&
+            ) const;
+
 
         // Insert functions, from TransportReader:: delegated 
 

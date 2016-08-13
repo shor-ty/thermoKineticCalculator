@@ -42,6 +42,123 @@ AFC::TransportData::~TransportData()
 // * * * * * * * * * * * * * * * Member functions  * * * * * * * * * * * * * //
 
 
+// * * * * * * * * * * * Fitting polynomials coefficients  * * * * * * * * * //
+
+void AFC::TransportData::viscosityPolyCoeffs
+(
+    const word& species,
+    const Vector& x
+)
+{
+    //- Solution vector x containts polynomial coefficients D, C, B and A
+    viscosity_[species] = x.values();
+}
+
+
+AFC::scalarField AFC::TransportData::viscosityPolyCoeffs
+(
+    const word& species
+) const
+{
+    return viscosity_.at(species);
+}
+
+
+void AFC::TransportData::thermalConductivityPolyCoeffs
+(
+    const word& species,
+    const Vector& x
+)
+{
+    //- Solution vector x containts polynomial coefficients D, C, B and A
+    thermalConductivity_[species] = x.values();
+}
+
+
+AFC::scalarField AFC::TransportData::thermalConductivityPolyCoeffs
+(
+    const word& species
+) const
+{
+    return thermalConductivity_.at(species);
+}
+
+
+void AFC::TransportData::binaryDiffusivityPolyCoeffs
+(
+    const word& species1,
+    const word& species2,
+    const Vector& x
+)
+{
+    //- Check which species we have (ID)
+    const wordList& chemistrySpecies_ = chemistrySpecies();
+
+    size_t ID{0};
+
+    forAll(chemistrySpecies_, s)
+    {
+        if (s == species1)
+        {
+            break;
+        }
+
+        ++ID;
+    }
+
+    //- If size equal to ID -> is available and we just add the
+    //  species2 and polynomial coefficents to the map
+    if (binaryDiffusivity_.size() - 1 == ID)
+    {
+        binaryDiffusivity_[ID][species2] = x.values();
+    }
+    //- If ID == size()+1; not available and hence we first have to
+    //  extend the List by one
+    else if (binaryDiffusivity_.size() == ID)
+    {
+        binaryDiffusivity_.push_back(map<word, scalarField>());
+
+        binaryDiffusivity_[ID][species2] = x.values();
+    }
+    else
+    {
+        FatalError
+        (
+            "    Building the binaryDiffusivity_ field went wrong\n"
+            "    Please check the code or ask for help",
+            __FILE__,
+            __LINE__
+        );
+    }
+}
+
+
+AFC::scalarField AFC::TransportData::binaryDiffusivityPolyCoeffs
+(
+    const word& species1,
+    const word& species2
+) const
+{
+    //- First find the ID of first species
+    const wordList& chemistrySpecies_ = chemistrySpecies();
+
+    size_t ID{0};
+
+    forAll(chemistrySpecies_, s)
+    {
+        if (s == species1)
+        {
+            break;
+        }
+
+        ++ID;
+    }
+    
+    //- Return the coefficients
+    return binaryDiffusivity_[ID].at(species2);
+}
+
+
 // * * * * * * * * * Insert functions from TransportReader:: * * * * * * * * //
 
 void AFC::TransportData::insertSpecies

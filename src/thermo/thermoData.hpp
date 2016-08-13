@@ -229,13 +229,13 @@ class ThermoData
             ) const;
 
             //- Return polyCoeffs for HIGH temperature
-            scalarField NASACoeffsHT 
+            List<scalar> NASACoeffsHT 
             (
                 const word&
             ) const;
 
             //- Return polyCoeffs for LOW temperature
-            scalarField NASACoeffsLT 
+            List<scalar> NASACoeffsLT 
             (
                 const word&
             ) const;

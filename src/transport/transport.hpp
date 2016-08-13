@@ -86,18 +86,15 @@ class Transport
                 const wordList&  
             );
         
-            //- Prepare values for fitting procedure
-            void prepareFitting
-            (
-                const Thermo& 
-            );
+            //- Calculate fitting coefficients for polynomials
+            void fitCurves();
 
             //- Calculate viscosity of species s [Pa s]
             scalar viscosity 
             (
                 const word&,
                 const scalar&,
-                const word& method = "Neufeld"
+                const word& method = "Hirschfelder"
             ) const;
 
             //- Calculate thermal conductivity of species s [W/m/K]
@@ -170,11 +167,36 @@ class Transport
                 const word&
             ) const;
 
+            //- Return the viscosity polynomial coefficients
+            scalarField viscosityPolyCoeffs
+            (
+                const word&
+            ) const;
+
+            //- Return the thermal conductivity polynomial coefficients
+            scalarField thermalConductivityPolyCoeffs 
+            (
+                const word&
+            ) const;
+
+            //- Return the binary diffusivity polynomial coefficients
+            scalarField binaryDiffusivityPolyCoeffs 
+            (
+                const word&,
+                const word&
+            ) const;
+
 
         // Summary functions
 
             //- Build the summary
             void summary
+            (
+                ostream&
+            ) const;
+
+            //- Build the fitting procedure summary
+            void summaryFittingProcedure
             (
                 ostream&
             ) const;
