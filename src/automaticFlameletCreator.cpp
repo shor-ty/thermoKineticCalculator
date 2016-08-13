@@ -35,6 +35,8 @@ Description
 #include "mixtureFraction.hpp"
 #include "numerics.hpp"
 #include "interpreter.hpp"
+#include "matrix.hpp"
+#include "vector.hpp"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -51,7 +53,7 @@ int main
     const std::clock_t startTime = clock();
 
     Info<< Header() << endl;
-    
+
     string file_AFC;
     string file_Thermo;
     string file_Transport;
@@ -260,12 +262,17 @@ int main
     {
         Info<< " c-o Interprete data ...\n" << endl;
 
+        transport.fitCurves();
+
         interpreter.summary(chemistry, thermo, transport);
 
         Footer(startTime);
 
         return 0;
     }
+
+    //- Fit data to polynomials
+    transport.fitCurves();
 
 
     //- Now we can proceed doing some other stuff after the check
@@ -290,7 +297,7 @@ int main
 
     //- First lookUpTable for first scalar dissipation rate
     //  and adiabatic enthalpy (no defect)
-    {
+    /*{
         Info<< "    ... pre-calculation (get it burn)\n" << endl;
 
         //- First scalar dissipation rate TODO have to be sorted before
@@ -305,7 +312,7 @@ int main
             << " Hz\n" << endl;
 
         //- All points in adiabatic flamelet
-        /*for(unsigned int i=0; i <= Zpoints; i++)
+        for(unsigned int i=0; i <= Zpoints; i++)
         {
             scalar zPointValue = i*delta;
 
@@ -321,12 +328,12 @@ int main
                     scalar(0)
                 )
             );
-        }*/
+        }
 
         Footer(startTime);
 
         return 0;
-    }
+    }*/
 
     Info<< " c-o Overview of Look-Up-Tables ...\n" << endl;
 
@@ -438,17 +445,41 @@ int main
                     << "      --------------------------------------------\n";
 
                 MixtureFraction& flamelet = lookUpTables[defect][rate];
+
+                scalar saveTime{0};
                 
                 //- Time loop
                 for
                 (
-                    scalar time = 0;
-                    time < properties.runTime();
-                    time += properties.deltaT()
+                    scalar runTime = 0;
+                    runTime < properties.runTime();
                 )
                 {
-                    Info<< "        Time: " << time << " s\n";
-                    num.jacobian(flamelet);
+                    //- Write first 
+                    if (runTime == 0)
+                    {
+                        flamelet.write();
+                    }
+                    //- Runtime
+                    runTime += properties.deltat();
+
+                    //- Update time
+                    properties.updateCurrentTime(runTime);
+
+                    //- (SaveTime) increase
+                    saveTime += properties.deltat();;
+
+                    Info<< "        Time: " << runTime << " s\n";
+
+                    num.solveFlamelet(flamelet, rate, properties.deltat());
+
+                    //- Simple save algorithm
+                    if (saveTime > properties.write())
+                    {
+                        flamelet.write();
+
+                        saveTime = 0;
+                    }
                 }
             }
         }

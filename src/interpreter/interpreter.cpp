@@ -102,7 +102,7 @@ void AFC::Interpreter::summary
 
         file.open("summary/thermodynamic.afc", std::ios::out);
 
-        std::ostream data(&file);
+        ostream data(&file);
 
         //- Set scientific notation
         data.setf(std::ios::scientific, std::ios::floatfield);
@@ -119,13 +119,30 @@ void AFC::Interpreter::summary
 
         file.open("summary/transport.afc", std::ios::out);
 
-        std::ostream data(&file);
+        ostream data(&file);
 
         //- Set scientific notation
         data.setf(std::ios::scientific, std::ios::floatfield);
 
         //- Build transport summary
         transport.summary(data);
+
+        file.close();
+    }
+
+    //- Fiting procedure
+    {
+        Info<< " c-o Interprete polynomial fit\n" << endl;
+
+        file.open("summary/fittingProcedure.afc", std::ios::out);
+
+        ostream data(&file);
+
+        //- Set scientific notation
+        data.setf(std::ios::scientific, std::ios::floatfield);
+        
+        //- Build transport summary
+        transport.summaryFittingProcedure(data);
 
         file.close();
     }

@@ -55,6 +55,13 @@ class MixtureFraction
 {
     private:
 
+
+        // Debug
+        const bool debug_{false};
+
+        const bool debugMW{false};
+
+
         // Private Data
 
             //- Mole fractions X of species at discrete point Z
@@ -138,12 +145,6 @@ class MixtureFraction
 
             // Properties class
             const Properties& properties_;
-
-
-        // Debug
-        const bool debug{false};
-
-        const bool debugMW{false};
 
 
     public:
@@ -234,6 +235,19 @@ class MixtureFraction
             
         // Update functions
 
+            //- Update the mass fraction [-]
+            void updateY
+            (
+                const word&,
+                const scalarField&
+            );
+
+            //- Update the temperature field [K]
+            void updateT
+            (
+                const scalarField&
+            );
+
             //- Update the mean density [g/cm^3]
             void updateRho();
 
@@ -267,84 +281,65 @@ class MixtureFraction
             //- Calculate mean density out of concentration fraction
             void rhoC();
         
-
-        // Check functions
-
-            //- Return Zvalue at discrete point
-            scalar Z() const;
-
+          
         // Return functions
+
+            //- Return the species included in the combustion
+            wordList species() const;
 
             //- Return number of discrete points
             int nZPoints() const;
 
-            //- Return the value of the mixture fraction Z
-            scalar Zvalue
+            //- Return the value of the mixture fraction Z at position i
+            scalar Z
             (
-                const int&
-            );
-
-            //- Return the temperature field [K]
-            scalarField& T();
-
-            //- Return concentration of mixture [mol/m^3]
-            scalar C
-            (
-                const scalar&
+                const int
             ) const;
 
-            //- Return species mol fraction (map)
-            /*map<word, scalar> mol() const;
-
-            //- Return species concentration
-            map<word, scalar> con();
-
-            //- Return temperature [K]
-            scalar T() const;
-
-            //- Return heat capacity [J/mol/K]
-            scalar cp() const;
-
-            //- Return heat capacity [J/mol/K]
-            scalar Cp() const;
-
-            //- Return heat capacity of species s [J/mol/K]
-            scalar calculateCp
+            //- Return the temperature field at discrete point i [K] (const)
+            scalar T
             (
-                const word&,
-                const scalar&
+                const int  
             ) const;
 
-            //- Return mean enthalpy [J/mol]
-            scalar H() const;
-
-            //- Return enthalpy of species s [J/mol]
-            scalar calculateH
+            //- Return species mol fraction X at discrete point Z (const)
+            map<word, scalar> X
             (
-                const word&,
-                const scalar&
+                const int 
             ) const;
 
-            //- Return mean entropy [J/mol/K]
-            scalar S() const;
-
-            //- Return entropy of species s [J/mol/K]
-            scalar calculateS
+            //- Return species mass fraction Y at discrete point Z (const)
+            map<word, scalar> Y
             (
-                const word&,
-                const scalar&
+                const int 
             ) const;
 
-            //- Return mean free Gibbs energy
-            scalar G() const;
-
-            //- Return free Gibbs energy of species s [J/mol]
-            scalar calculateG
+            //- Return species concentration C at discrete point Z (const)
+            map<word, scalar> C
             (
-                const word&,
-                const scalar&
-            ) const;*/
+                const int 
+            ) const;
 
+            //- Return the values of the mixture fraction Z 
+            scalarField Z() const;
+
+            //- Return the temperature field [K] (const)
+            scalarField T() const;
+
+            //- Return species mol fraction X for all discrete points Z 
+            List<map<word, scalar> > X() const;
+
+            //- Return species mass fraction Y for all discrete points Z 
+            List<map<word, scalar> > Y() const;
+
+            //- Return species concentration C for all discrete points Z 
+            List<map<word, scalar> > C() const;
+
+
+        // Write output 
+
+            //- Save flamelet tables if required
+            void write() const;
 };
 
 
