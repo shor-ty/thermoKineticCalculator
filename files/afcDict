@@ -1,3 +1,30 @@
+/*---------------------------------------------------------------------------*\
+  c-o-o-c-o-o-o             |
+  |     |     A utomatic    | Open Source Flamelet
+  c-o-o-c     F lamelet     | 
+  |     |     C onstructor  | Copyright (C) 2015 Holzmann-cfd
+  c     c-o-o-o             |
+-------------------------------------------------------------------------------
+License This file is part of Automatic Flamelet Constructor.
+
+    AFC is free software; you can redistribute it and/or modify it under
+    the terms of the GNU General Public License as published by the
+    Free Software Foundation; either version 3 of the License, or 
+    (at your option) any later version.
+
+    AFC is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with AFC; if not, see <http://www.gnu.org/licenses/>
+
+\*---------------------------------------------------------------------------*/
+
+
+// * * * * * * * * * * * * * AFC Control And Settings  * * * * * * * * * * * //
+
 
     //- Stuff for adiabatic flame calculation 
     oxidizer O2
@@ -6,21 +33,21 @@
 
     //- Stuff for flamelet calculation
     //  Either use molFraction or massFraction
-    molFractionOxidizer
+    massFractionOxidizer
     {
         O2 1
     }
 
-    molFractionFuel
+    massFractionFuel
     {
         H2 1
     }   
 
     //- Pressure
-    pressure 1e5
+    pressure 101325
 
     //- Discretization points in 1D  
-    mixtureFractionPoints 20
+    mixtureFractionPoints 21
 
     //- Discretization points for varianz of mixture fraciton Z''
     //  Used in PDF (probability distribution fucntion, beta-PDF)
@@ -30,7 +57,7 @@
     //  calculated;
     scalarDissipationRates
     {
-        1e-6
+        1e-5
     }
          
 
@@ -51,15 +78,15 @@
     afcControl
     {
         //- Transient simulation, end time
-        runTime     2
+        runTime     20000
 
         //- Time step
-        deltaT      0.01
+        deltat      1
 
         //- Write transient data each x seconds
         writeInterval   1
         writeControl    endTime
-
+        writeTime       100 
     }
 
     //- Data should only be interpreted -> output files
