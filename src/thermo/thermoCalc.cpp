@@ -96,6 +96,18 @@ AFC::scalar AFC::ThermoCalc::MmeanC
 }
 
 
+AFC::scalar AFC::ThermoCalc::rho
+(
+    const scalar& T,
+    const scalar& p,
+    const scalar& MW
+) const
+{
+    //- Density in [g/m^3] 
+    return (p * MW / AFC::Constants::R / T);
+}
+
+
 AFC::scalar AFC::ThermoCalc::rhoMean
 (
     const scalar& Mmean,
@@ -124,7 +136,7 @@ AFC::scalar AFC::ThermoCalc::cp
     const ThermoData& data
 ) const
 {
-    scalarField coeffs = getCoeffs(species, T, data);
+    const scalarField& coeffs = getCoeffs(species, T, data);
 
     //- calculate and return [J/mol/K]
     return
@@ -136,6 +148,30 @@ AFC::scalar AFC::ThermoCalc::cp
           + coeffs[3] * pow(T, 3)
           + coeffs[4] * pow(T, 4)
         ) * AFC::Constants::R
+    );
+}
+
+
+AFC::scalar AFC::ThermoCalc::cv
+(
+    const word& species,
+    const scalar& T,
+    const ThermoData& data
+) const
+{
+    const scalarField& coeffs = getCoeffs(species, T, data);
+
+    //- calculate and return [J/mol/K]
+    return
+    (
+        (
+            coeffs[0]
+          + coeffs[1] * T
+          + coeffs[2] * pow(T, 2)
+          + coeffs[3] * pow(T, 3)
+          + coeffs[4] * pow(T, 4)
+        ) * AFC::Constants::R
+        - AFC::Constants::R
     );
 }
 

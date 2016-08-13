@@ -101,6 +101,14 @@ class ThermoCalc
                 const map<word, scalar>&
             ) const;
 
+            //- Calculate rho for species based on the ideal gas law [g/m^3]
+            scalar rho
+            (
+                const scalar&,
+                const scalar&,
+                const scalar&
+            ) const;
+
             //- Calculate mean density based on the mean molecular weight [g/m^3]
             scalar rhoMean
             (
@@ -117,9 +125,18 @@ class ThermoCalc
             ) const;
             
 
-            //- Calculate temperature dependend heat capacity (NASA) [J/mol/K]
-            //  of species s
+            //- Calculate temperature depended specific heat capacity (NASA)
+            //  [J/mol/K] of species s for constant pressure
             scalar cp
+            (
+                const word&,
+                const scalar&,
+                const ThermoData&
+            ) const;
+
+            //- Calculate temperature depended specific heat capcity (NASA)
+            //  [J/mol/K] of species s for constant volume
+            scalar cv
             (
                 const word&,
                 const scalar&,

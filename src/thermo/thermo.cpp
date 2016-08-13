@@ -101,6 +101,16 @@ AFC::scalar AFC::Thermo::cp
 }
 
 
+AFC::scalar AFC::Thermo::cv
+(
+    const word& species,
+    const scalar& T
+) const
+{
+    return thermoCalc_.cv(species, T, thermoData_);
+}
+
+
 AFC::scalar AFC::Thermo::H
 (
     const word& species,
@@ -192,6 +202,22 @@ AFC::scalar AFC::Thermo::C
 ) const
 {
     return thermoCalc_.C(p(), T);
+}
+
+
+AFC::scalar AFC::Thermo::rho
+(
+    const word& species,
+    const scalar& T
+) const
+{
+    //- Molecular weight of species
+    const scalar& MWspecies = MW(species);
+
+    //- Pressure
+    const scalar& pressure = p();
+
+    return thermoCalc_.rho(T, pressure, MWspecies);
 }
 
 

@@ -103,8 +103,17 @@ class Thermo
                 const map<word, scalar>&
             ) const;
 
-            //- Return heat capacity of species s [J/mol/K]
+            //- Return molar heat capacity of species s [J/mol/K]
+            //  for constant pressure
             scalar cp
+            (
+                const word&,
+                const scalar&
+            ) const;
+
+            //- Return heat capacity of species s [J/mol/K] 
+            //  for constant volume
+            scalar cv
             (
                 const word&,
                 const scalar&
@@ -171,6 +180,13 @@ class Thermo
             //- Return the mixture concentration [mol/m^3]
             scalar C
             (
+                const scalar&
+            ) const;
+
+            //- Return the density of the species [kg/m^3]
+            scalar rho
+            (
+                const word&,
                 const scalar&
             ) const;
 
