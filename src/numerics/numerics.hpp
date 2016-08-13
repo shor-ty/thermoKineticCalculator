@@ -51,11 +51,8 @@ class Numerics
 {
     private:
 
-        // Debug swithc
-        bool debug{false};
-
-        // Private Data
-
+        // Debug switch
+        bool debug_{false};
 
 
     public:
@@ -69,19 +66,40 @@ class Numerics
 
         // Member functions
 
+            //- Solve laplace term by the Finite Difference Method
+            //  using a 2nd order discretization scheme for for non-equal
+            //  spaced 1D problems [Holzmann] 
+            scalar FDMLapacian2ndOrder
+            (
+                const scalar&,
+                const scalar&,
+                const scalar&,
+                const scalar&,
+                const scalar&,
+                const scalar&
+            ) const;
+
+            //- Solve the Flamelet equations
+            void solveFlamelet
+            (
+                MixtureFraction&,
+                const scalar&,
+                const scalar&
+            );
+
             //- solve Jacobian
             void jacobian
             (
                 MixtureFraction&
             );
 
-            //- Solve field with matrix M_
-            void solve
+            //- Solve the problem Ax = b
+            void solveMatrix
             (
+                matrix&,
                 scalarField&,
-                const scalar&
+                scalarField&
             );
-        
 };
 
 

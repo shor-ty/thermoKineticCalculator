@@ -203,13 +203,20 @@ class Properties
             //  
             //      + endTime
             //      + iteration
-            word writeControl_{"endTime"};
+            //      + time
+            word writeControl_{"time"};
 
             //- Write control interval
             scalar writeControlInterval_{0};
 
-            //- DeltaT
-            scalar deltaT_{0};
+            //- Write control time
+            scalar writeControlTime_{0};
+
+            //- Deltat
+            scalar deltat_{0};
+
+            //- Current time 
+            scalar currentTime_{0};
 
 
         // Class object
@@ -323,9 +330,15 @@ class Properties
             (
                 const scalar&
             );
+            
+            //- Insert write control time (save each x seconds)
+            void insertWriteControlTime
+            (
+                const scalar&
+            );
 
-            //- Insert deltaT
-            void insertDeltaT
+            //- Insert deltat
+            void insertDeltat
             (
                 const scalar&
             );
@@ -388,8 +401,28 @@ class Properties
                 const word 
             );*/
 
+        // Time RelateD Functions 
 
-        // Return functions
+            //- Update the current time stamp [s]
+            void updateCurrentTime
+            (
+                const scalar&
+            );
+
+            //- Return runTime [s]
+            scalar runTime() const;
+
+            //- Return deltat
+            scalar deltat() const;
+
+            //- Return the current time [s]
+            scalar currentTime() const;
+
+            //- Return write control for time
+            scalar write() const;
+
+
+        // Return Functions
 
             //- Return fuel species (for adiabatic flame calculation)
             word fuel() const;
@@ -400,49 +433,49 @@ class Properties
             //- Return inert species
             word inert() const;
 
-            //- Return oxidizer species
+            //- Return species of oxidizer (Z = 0)
             wordList speciesOxidizer() const;
 
-            //- Return oxidizer mol fraction as map
+            //- Return mol fraction of oxidizer (Z = 0)
             map<word, scalar> oxidizerX() const;
 
-            //- Return oxidizer mass fraction as map
+            //- Return mass fraction of oxidizer (Z = 0)
             map<word, scalar> oxidizerY() const;
 
-            //- Return element mass fraction of oxidizer as map
+            //- Return element mass fraction of oxidizer (Z=0) 
             map<word, scalar> oxidizerZj() const;
 
-            //- Return mof fraction of species s in oxidizer
+            //- Return mof fraction of species s in oxidizer (Z = 0)
             scalar oxidizerX
             (
                 const word&
             ) const;
 
-            //- Return mass fraction of species s in oxidizer
+            //- Return mass fraction of species s in oxidizer (Z = 0)
             scalar oxidizerY
             (
                 const word&
             ) const;
 
-            //- Return fuel species
+            //- Return species of fuel (Z = 1)
             wordList speciesFuel() const;
 
-            //- Return fuel mol fraction as map
+            //- Return mol fraction of fuel (Z = 1)
             map<word, scalar> fuelX() const;
 
-            //- Return fuel mass fraction as map
+            //- Return mass fraction of fuel (Z = 1)
             map<word, scalar> fuelY() const;
 
-            //- Return element mass fraction of fuel as map
+            //- Return element mass fraction of fuel (Z = 1)
             map<word, scalar> fuelZj() const;
 
-            //- Return mol fraction of species s in fuel
+            //- Return mol fraction of species s of fuel (Z = 1)
             scalar fuelX
             (
                 const word&
             ) const;
 
-            //- Return mass fraction of species s in fuel
+            //- Return mass fraction of species s of fuel (Z = 1)
             scalar fuelY
             (
                 const word&
@@ -471,12 +504,6 @@ class Properties
 
             //- Return fuel temperature [K]
             scalar fuelTemperature() const;
-
-            //- Return runTime [s]
-            scalar runTime() const;
-
-            //- Return deltaT
-            scalar deltaT() const;
 
             //- Return number of defects
             unsigned int nDefects() const;

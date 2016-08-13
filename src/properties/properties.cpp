@@ -269,17 +269,31 @@ void AFC::Properties::insertWriteControlInterval
 }
 
 
-void AFC::Properties::insertDeltaT
+void AFC::Properties::insertWriteControlTime
 (
-    const scalar& deltaT 
+    const scalar& writeControlTime
 )
 {
     if (debug_)
     {
-        Info<< "Algorithm deltaT: " << deltaT << endl;
+        Info<< "Write control time: " << writeControlTime << endl;
     }
 
-    deltaT_ = deltaT;
+    writeControlTime_ = writeControlTime;
+}
+
+
+void AFC::Properties::insertDeltat
+(
+    const scalar& deltat 
+)
+{
+    if (debug_)
+    {
+        Info<< "Algorithm deltat: " << deltat << endl;
+    }
+
+    deltat_ = deltat;
 }
 
 
@@ -310,6 +324,41 @@ void AFC::Properties::insertInterpreter
 )
 {
     interpreter_ = keyword;
+}
+
+
+// * * * * * * * * * * * * * Time Related Functions  * * * * * * * * * * * * //
+
+void AFC::Properties::updateCurrentTime
+(
+    const scalar& time
+)
+{
+    currentTime_ = time;
+}
+
+
+AFC::scalar AFC::Properties::runTime() const
+{
+    return runTime_;
+}
+
+
+AFC::scalar AFC::Properties::deltat() const
+{
+    return deltat_;
+}
+
+
+AFC::scalar AFC::Properties::currentTime() const
+{
+    return currentTime_;
+}
+
+
+AFC::scalar AFC::Properties::write() const
+{
+    return writeControlTime_;
 }
 
 
@@ -766,18 +815,6 @@ AFC::scalar AFC::Properties::oxidizerTemperature() const
 AFC::scalar AFC::Properties::fuelTemperature() const
 {
     return TFuel_;
-}
-
-
-AFC::scalar AFC::Properties::runTime() const
-{
-    return runTime_;
-}
-
-
-AFC::scalar AFC::Properties::deltaT() const
-{
-    return deltaT_;
 }
 
 

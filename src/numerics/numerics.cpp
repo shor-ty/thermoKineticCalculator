@@ -29,55 +29,12 @@ License
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-AFC::Numerics::Numerics
-(
-//    const int nZ 
-)
+AFC::Numerics::Numerics()
 {
-    if (debug)
+    if (debug_)
     {
         Info<< "Constructor Numerics \n" << endl;
     }
-
-    //- Construct matrix for central differencing 
- /*  Info<< "Build matrix\n";
-
-    Info<< "nZ: " << nZ_ << endl;
-
-    M_.resize(nZ_, scalarField(nZ_));
-
-        //- Object of discrete mixture fraction at Z+1 (r: right)
-        const MixtureFraction& dMFr = lut[defect][sDR][point+1];
-
-    for (int i=0; i<nZ_; i++)
-    {
-        for (int j=0; j<nZ_; j++)
-        {
-
-            if (i==j)
-            {
-                M_[i][j] = 2;        
-            }
-            else if (i==j-1 || i==j+1)
-            {
-                M_[i][j] = -1;
-            }
-            else
-            {
-                M_[i][j] = 0;
-            }
-        }
-    }
-
-    forAll(M_, i)
-    {
-        forAll(M_[i], j)
-        {
-            Info<< "  " << M_[i][j];
-        }
-        Info<< "\n";
-    }
-    */
 }
 
 
@@ -85,7 +42,7 @@ AFC::Numerics::Numerics
 
 AFC::Numerics::~Numerics()
 {
-    if (debug)
+    if (debug_)
     {
         Info<< "Destructor Numerics \n" << endl;
     }
@@ -94,49 +51,134 @@ AFC::Numerics::~Numerics()
 
 // * * * * * * * * * * * * * * * Member function * * * * * * * * * * * * * * //
 
-
-void AFC::Numerics::solve
+AFC::scalar AFC::Numerics::FDMLapacian2ndOrder
 (
-    scalarField& phi,
+    const scalar& phi_l,
+    const scalar& phi,
+    const scalar& phi_r,
+    const scalar& Z_l,
+    const scalar& Z,
+    const scalar& Z_r
+) const
+{
+    //- Return the solution of the laplacian term
+    //  l == left position
+    //  r == right position
+    //  no subscript is the value in the center
+    //  Derivation given in [Holzmann]
+    return
+    (
+        //- Enumerator
+        (
+            (phi_r - phi) / (Z_r - Z)
+          - (phi - phi_l) / (Z - Z_l)
+        )
+        //- Denominator
+      / (scalar(0.5) * (Z_r - Z_l))
+    );
+}
+
+void AFC::Numerics::solveFlamelet
+(
+    MixtureFraction& flamelet,
+    const scalar& chi,
     const scalar& dt
 )
 {
-    //- Solve the guy
-    /*const int& i = M_.size();
+    //- Save old fields
+    const List<map<word, scalar> >& Yold = flamelet.Y();
+    const List<map<word, scalar> >& Xold = flamelet.X();
+    const List<map<word, scalar> >& Cold = flamelet.C();
+    const scalarField& Told = flamelet.T();
 
-    //-Copy phi
-    scalarField phiO = phi;
+    //- Space discretization
+    const scalarField& Zvalues = flamelet.Z();
+    const int nZ = flamelet.nZPoints();
 
-    for (int Z = 1; Z < i; Z++)
+    //- Species that need to be solved
+    const wordList species_ = flamelet.species();
+
+    //- Solve species equation for mass fraction
+    //  Time derivation => 1nd Order Euler
+    //  Laplace derivation => 2nd Order Linear for non-equal spaced distances
+    //  Source term omega handled explicit (for the first implementation)
+    //  Equation is solved explicit (implicit should be implemented)
+
+    //- Diffusion coefficient (chi / 2)
+    const scalar D = chi/scalar(2);
+
+    //- Source term omega
+    const scalar omega = 0;
+    
+    //- Solve the flamelet equation for each species
+    //  Derivation is given in [Holzmann]
+    forAll(species_, s)
     {
-        phi[Z] = phiO[Z] + (phiO[Z-1] - 2*phiO[Z] + phiO[Z+1])/pow(0.05, 2) * dt;
+        //- Temporar field that stores the new values
+        scalarField Ynew(nZ, 0);
+
+        //- Copy boundary conditions
+        Ynew[0] = Yold[0].at(s);
+        Ynew[nZ-1] = Yold[nZ-1].at(s);
+
+        //- Solve for each discrete point (first and last points are BC)
+        for (int i = 1; i < nZ-1; ++i)
+        {
+            Ynew[i] =
+                (
+                    D
+                  * FDMLapacian2ndOrder
+                    (
+                        Yold[i-1].at(s),
+                        Yold[i].at(s),
+                        Yold[i+1].at(s),
+                        Zvalues[i-1],
+                        Zvalues[i],
+                        Zvalues[i+1]
+                    )
+                  + omega
+                ) * dt + Yold[i].at(s);
+        }
+
+        //- Update the fields (could be done with references faster)
+        flamelet.updateY(s, Ynew);
     }
 
-    forAll(phi, Z)
+    //- Solve the flamelet equation for the temperature
     {
-        Info<< Z*0.05 << "  " << phi[Z] << endl; 
+        //- Temporar field that stores the new temperatures 
+        scalarField Tnew(nZ, 0);
 
+        //- Copy boundary conditions
+        Tnew[0] = Told[0];
+        Tnew[nZ-1] = Told[nZ-1];
 
-                //- c) Update mass fraction of species s using central difference
-                {
-                    //- Omega in [g/m^3]
-                    mass[species[s]] =
-                        (
-                            sDR/2
-                            *(
-                                massl.at(species[s])
-                              - 2* mass.at(species[s])
-                              + massr.at(species[s])
-                             )/ pow(dx, 2)
-                             + omega.at(species[s]) / dMF.rho()
-                        ) * dt + massOld.at(species[s]);
-                }
-            }
-//                std::terminate();
-            
-            //- d) Update concentration field
-            dMF.updateC();*/
+        //- Further source terms
+
+        //- Solve the temperature equation
+        for (int i = 1; i < nZ-1; ++i)
+        {
+            Tnew[i] =
+                (
+                    D
+                  * FDMLapacian2ndOrder
+                    (
+                        Told[i-1],
+                        Told[i],
+                        Told[i+1],
+                        Zvalues[i-1],
+                        Zvalues[i],
+                        Zvalues[i+1]
+                    )
+                  + omega
+                ) * dt + Told[i];
+        }
+
+        //- Update the field
+        flamelet.updateT(Tnew);
+    }
 }
+
 
 /*
 void AFC::Numerics::jacobian
@@ -217,6 +259,9 @@ void AFC::Numerics::jacobian
         }
     }
 }*/
+
+
+
 
 
 // ************************************************************************* //

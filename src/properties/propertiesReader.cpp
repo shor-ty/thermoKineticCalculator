@@ -724,20 +724,20 @@ void AFC::PropertiesReader::control
 
                 data.insertRunTime(stod(tmp[1]));
             }
-            else if (tmp[0] == "deltaT")
+            else if (tmp[0] == "deltat")
             {
                 if (tmp[1].empty())
                 {
                     FatalError
                     (
-                        "   No deltaT specified in afcDict after keyword deltaT ("
+                        "   No deltat specified in afcDict after keyword deltat ("
                         + file_ + ")",
                         __FILE__,
                         __LINE__
                     );
                 }
 
-                data.insertDeltaT(stod(tmp[1]));
+                data.insertDeltat(stod(tmp[1]));
             }
             else if (tmp[0] == "writeInterval")
             {
@@ -746,14 +746,29 @@ void AFC::PropertiesReader::control
                     FatalError
                     (
                         "   No writeInterval specified in afcDict after keyword "
-                        "writeInterval ("
-                        + file_ + ")",
+                        "writeInterval (" + file_ + ")",
                         __FILE__,
                         __LINE__
                     );
                 }
 
                 data.insertWriteControlInterval(stod(tmp[1]));
+            }
+            else if (tmp[0] == "writeTime")
+            {
+                if (tmp[1].empty())
+                {
+                    FatalError
+                    (
+                        "   No writeTime specified in afcDict after keyword "
+                        "writeTime (" + file_ + ")",
+                        __FILE__,
+                        __LINE__
+                    );
+                }
+
+                data.insertWriteControlTime(stod(tmp[1]));
+
             }
             else if (tmp[0] == "writeControl")
             {
@@ -762,8 +777,7 @@ void AFC::PropertiesReader::control
                     FatalError
                     (
                         "   No writeControl specified in afcDict after keyword "
-                        "writeControl ("
-                        + file_ + ")",
+                        "writeControl (" + file_ + ")",
                         __FILE__,
                         __LINE__
                     );
