@@ -187,6 +187,12 @@ size_t AFC::Vector::size() const
 }
 
 
+AFC::scalarField AFC::Vector::values() const
+{
+    return AFC::Tensor::values();
+}
+
+
 /*AFC::Vector AFC::Vector::T() const
 {
     //- Rows and cols of the vector

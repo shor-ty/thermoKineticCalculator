@@ -60,10 +60,8 @@ class Vector
 {
     private:
 
-        // Debug swithc
-        bool debug_{true};
-
-        // Private Data
+        // Debug switch
+        bool debug_{false};
 
 
     public:
@@ -128,6 +126,9 @@ class Vector
 
             //- Return the size of the vector
             size_t size() const;
+
+            //- Return the values of the vector
+            scalarField values() const;
 
 
         // Calculation Functions

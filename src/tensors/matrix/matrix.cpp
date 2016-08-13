@@ -43,21 +43,6 @@ AFC::Matrix::Matrix()
 AFC::Matrix::Matrix
 (
     const size_t rows,
-    const scalar value
-)
-:
-    Tensor(rows, rows, value)
-{
-    if (debug_)
-    {
-        Info<< "Constructor Matrix (rows, rows, value)\n" << endl;
-    }
-}
-
-
-AFC::Matrix::Matrix
-(
-    const size_t rows,
     const size_t cols,
     const scalar value
 )
@@ -182,6 +167,8 @@ AFC::Matrix AFC::Matrix::inverse() const
 
     //- Copy of the actual matrix
     Matrix A = *this;
+
+    //- GAUSS ELIMINATION
 
     //- First we need the identiy to build the inverse
     Matrix inverse = I();

@@ -94,7 +94,7 @@ AFC::Tensor::~Tensor()
 AFC::scalar AFC::Tensor::operator()
 (
     size_t rows,
-    size_t cols
+    size_t cols 
 ) const
 {
     return values_[rows * nCols_ + cols];
@@ -114,15 +114,14 @@ void AFC::Tensor::operator()
 
 void AFC::Tensor::operator()() const
 {
-    Info<< "size: " << nRows_ << endl;
     Info<< "\n";
     for (size_t i = 0; i < nRows_; i++)
     {
         Info<< "| ";
         for (size_t j = 0; j < nCols_; j++)
         {
-            Info.precision(2);
-            Info<< std::fixed << std::setw(10)
+            Info.precision(4);
+            Info<< std::scientific << std::setw(13)
                 << this->operator()(i, j);
         }
         Info << " |\n";

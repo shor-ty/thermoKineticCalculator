@@ -54,8 +54,8 @@ class Tensor
 {
     private:
 
-        // Debug swithc
-        bool debug_{true};
+        // Debug switch
+        bool debug_{false};
 
         // Private Data
 

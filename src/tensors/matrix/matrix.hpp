@@ -58,26 +58,14 @@ class Matrix
 {
     private:
 
-        // Debug swithc
-        bool debug_{true};
-
-        // Private Data
-
-            //- Rows
+        // Debug switch
+        bool debug_{false};
 
 
     public:
 
         //- Constructor 
         Matrix();
-
-        //- Constructor that creates a squared matrix n x n and init with
-        //  the given value (default value = 0)
-        Matrix
-        (
-            const size_t,
-            const scalar value = 0
-        );
 
         //- Constructor that creates a matrix n x m and init with the given
         //  value (default value = 0)
