@@ -9,6 +9,10 @@
 *.eps
 *.png
 
+#documentation
+doc/doxygen
+doc/*pdf
+doc/UserGuide
 
 #gcc 
 obj/
@@ -24,6 +28,7 @@ automaticFlameletCreator
 src/thirdParty
 summary
 files/
+src/flamelet/
 log
 
 #gedit
