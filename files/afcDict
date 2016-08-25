@@ -47,7 +47,7 @@ License This file is part of Automatic Flamelet Constructor.
     pressure 101325
 
     //- Discretization points in 1D  
-    mixtureFractionPoints 21
+    mixtureFractionPoints 31
 
     //- Discretization points for varianz of mixture fraciton Z''
     //  Used in PDF (probability distribution fucntion, beta-PDF)
@@ -57,7 +57,7 @@ License This file is part of Automatic Flamelet Constructor.
     //  calculated;
     scalarDissipationRates
     {
-        1e-5
+        1e-3
     }
          
 
@@ -78,15 +78,15 @@ License This file is part of Automatic Flamelet Constructor.
     afcControl
     {
         //- Transient simulation, end time
-        runTime     20000
+        runTime     400
 
         //- Time step
-        deltat      1
+        deltat      0.5
 
         //- Write transient data each x seconds
         writeInterval   1
         writeControl    endTime
-        writeTime       100 
+        writeTime       20 
     }
 
     //- Data should only be interpreted -> output files
