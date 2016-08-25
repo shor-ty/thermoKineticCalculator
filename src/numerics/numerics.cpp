@@ -51,6 +51,99 @@ AFC::Numerics::~Numerics()
 
 // * * * * * * * * * * * * * * * Member function * * * * * * * * * * * * * * //
 
+void AFC::Numerics::solveForInitialSolution
+(
+    MixtureFraction& flamelet
+)
+{
+    Info<< "     c-o Solve Laplace Equation to get initial solution\n";
+
+    //- Solve the Laplace Equation to get initial (linear) profile
+    //  We only need the boundary species
+    
+    //- Oxidizer species 
+    const wordList& speciesO = flamelet.speciesOxidizer();
+
+    //- Fuel species
+    const wordList& speciesF = flamelet.speciesFuel();
+
+    //- Species word list
+    wordList species_ = speciesO;
+
+    //- Extend with fuel species
+    forAll(speciesF, s)
+    {
+        species_.push_back(s);
+    }
+
+    //- Calculate laplace equation with diffusion coefficient D = 1
+    //  Note: Fourier No. < 0.5 -> Fo = dt * D / dZ^2
+    //  We have uniform spaced dZ till now
+    const scalar dZ = scalar(1) / (flamelet.nZPoints() -1);
+
+    const scalar dt = scalar(0.49) * pow(dZ, 2);
+
+    const int nZ = flamelet.nZPoints();
+
+    const scalarField& Zvalues = flamelet.Z();
+
+    //- Old field
+    scalarField Yold(nZ, 0);
+
+    //- New Y field
+    scalarField Ynew(nZ, 0);
+
+    forAll(species_, s)
+    {
+        size_t nIter{0};
+
+        //- FinalResidual
+        scalar finalResidual{0};
+
+        do
+        {
+            //- Iteration
+            ++nIter;
+
+            //- Store old iteration Y field
+            Yold = flamelet.Y(s);
+
+            //- Copy boundary conditions
+            Ynew[0] = Yold[0];
+            Ynew[nZ-1] = Yold[nZ-1];
+
+            //- Solve laplace equation for each discrete point
+            for (int i = 1; i < nZ-1; ++i)
+            {
+                Ynew[i] =
+                    (
+                        FDMLapacian2ndOrder
+                        (
+                            Yold[i-1],
+                            Yold[i],
+                            Yold[i+1],
+                            Zvalues[i-1],
+                            Zvalues[i],
+                            Zvalues[i+1]
+                        )
+                    ) * dt + Yold[i];
+            }
+
+            //- Update the fields (could be done with references faster)
+            flamelet.updateY(s, Ynew);
+            flamelet.updateX();
+            flamelet.updateC(); 
+
+            finalResidual = residual(Yold, Ynew);
+        }
+        while (finalResidual > 1e-6);
+
+        Info<< "Solved for species " << s << ", Converged after " << nIter
+            << ", Residual = " << finalResidual << "\n";
+    }
+}
+
+
 AFC::scalar AFC::Numerics::FDMLapacian2ndOrder
 (
     const scalar& phi_l,
@@ -109,9 +202,23 @@ void AFC::Numerics::solveFlamelet
 
     //- Source term omega
     const scalar omega = 0;
+
+    //- Unset updated
+    flamelet.updatedFields(false);
     
     //- Solve the flamelet equation for each species
     //  Derivation is given in [Holzmann]
+
+    //- a) Calculate and update the fields
+    for (int i = 1; i < nZ-1; ++i)
+    {
+        //- 1) Mean molecular weight
+        flamelet.updateMeanMW();
+
+        //- 2) Density
+        flamelet.updateRho();
+    }
+
     forAll(species_, s)
     {
         //- Temporar field that stores the new values
@@ -142,6 +249,8 @@ void AFC::Numerics::solveFlamelet
 
         //- Update the fields (could be done with references faster)
         flamelet.updateY(s, Ynew);
+        flamelet.updateX();
+        flamelet.updateC(); 
     }
 
     //- Solve the flamelet equation for the temperature
@@ -261,7 +370,39 @@ void AFC::Numerics::jacobian
 }*/
 
 
+AFC::scalar AFC::Numerics::residual
+(
+    const scalarField& oldField,
+    const scalarField& newField
+) const
+{
+    scalarField residualField(newField.size(), 0);
+
+    for (unsigned int i = 0; i < newField.size(); ++i)
+    {
+        residualField[i] = fabs(newField[i] - oldField[i]);
+    }
+
+    return max(residualField);
+}
 
 
+AFC::scalar AFC::Numerics::max
+(
+    const scalarField& sF
+) const
+{
+    scalar maxValue{0};
+
+    forAll(sF, value)
+    {
+        if (value >= maxValue)
+        {
+            maxValue = value;
+        }
+    }
+
+    return maxValue;
+}
 
 // ************************************************************************* //

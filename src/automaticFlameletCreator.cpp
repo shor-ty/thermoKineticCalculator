@@ -348,7 +348,18 @@ int main
 
     lookUpTable lookUpTables;
 
-    {
+    //- The first flamelet is always complete in equilibrium (sDR -> very low)
+    //  and has no enthalpy defect (adiabatic flamelet)
+    MixtureFraction adiabaticFlamelet
+    (
+        chemistry,
+        thermo,
+        transport,
+        properties,
+        scalar(1e-6),
+        scalar(0)
+    );
+    /*{
         const scalarField defects = properties.defects();
         const scalarField sDRs = properties.sDRs();
 
@@ -423,10 +434,18 @@ int main
         //- defect 
         }
         Info<< "\n";
+    }*/
+
+    //- Calculate initial solution
+    Info<< " c-o Calculate initial solution for adiabatic flamelet\n\n";
+    {
+        Numerics num;
+
+        num.solveForInitialSolution(adiabaticFlamelet);
     }
 
     //- Calculation start
-    Info<< " c-o Start flamelet calculation\n" << endl;
+    /*Info<< " c-o Start flamelet calculation\n" << endl;
     {
         const scalarField sDRs = properties.sDRs();
         const scalarField defects = properties.defects();
@@ -474,7 +493,7 @@ int main
                     num.solveFlamelet(flamelet, rate, properties.deltat());
 
                     //- Simple save algorithm
-                    if (saveTime > properties.write())
+                    if (saveTime >= properties.write())
                     {
                         flamelet.write();
 
@@ -483,7 +502,7 @@ int main
                 }
             }
         }
-    }
+    }*/
 
     Footer(startTime);
 

@@ -499,16 +499,16 @@ class Properties
             //- Return the number of discrete points of Zvar
             int nZvarPoints() const;
 
-            //- Return oxidizer temperature [K]
+            //- Return the oxidizer temperature [K] (Z = 0)
             scalar oxidizerTemperature() const;
 
-            //- Return fuel temperature [K]
+            //- Return the fuel temperature [K] (Z = 1)
             scalar fuelTemperature() const;
 
-            //- Return number of defects
+            //- Return the number of defects 
             unsigned int nDefects() const;
 
-            //- Return defect value [J/kg]
+            //- Return the enthalpy defect value [J/kg]
             scalar defect
             (
                 const int&

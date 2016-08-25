@@ -65,14 +65,14 @@ const map<word, scalar> AW
 //- Converstion from cal to joule [J/cal]
 constexpr scalar calToJoule = 4.1858;
 
-//- Converstion from cal to joule [J/cal]
+//- Converstion from cal to joule [cal/J]
 constexpr scalar jouleToCal = 1/calToJoule;
 
 //- Universal gas constant [J/K/mol]
-constexpr scalar Rcal = 8.314459848;
+constexpr scalar R = 8.314459848;
 
 //- Universal gas constant [cal/K/mol]
-constexpr scalar R = Rcal * jouleToCal;
+constexpr scalar Rcal = R * jouleToCal;
 
 //- Universal gas constant [erg/K/mol]
 constexpr scalar Rerg = 8.314459848e7;

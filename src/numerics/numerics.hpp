@@ -66,6 +66,16 @@ class Numerics
 
         // Member functions
 
+            //- Initialize species and temperature; here we just solve the
+            //  laplace equation to get the linear profile (this could also
+            //  be done in the initialization (would be much faster)
+            //  The scalar dissipatrion rate is set automatically to get
+            //  a very fast solution
+            void solveForInitialSolution
+            (
+                MixtureFraction&
+            );
+
             //- Solve laplace term by the Finite Difference Method
             //  using a 2nd order discretization scheme for for non-equal
             //  spaced 1D problems [Holzmann] 
@@ -100,6 +110,22 @@ class Numerics
                 scalarField&,
                 scalarField&
             );
+
+            //- Calculate and return the residual
+            scalar residual
+            (
+                const scalarField&,
+                const scalarField&
+            ) const;
+
+
+        // Compare functions
+
+            //- Return maximum of the field
+            scalar max
+            (
+                const scalarField&
+            ) const;
 };
 
 

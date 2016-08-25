@@ -87,12 +87,12 @@ class MixtureFraction
             scalarField T_;
 
             //- Mean density at discrete point Z
-            //  [g/m^3]
+            //  [kg/m^3]
             scalarField rho_{0};
 
             //- Mean molecular weight at discrete point Z
             //  [g/mol]
-            scalarField MW_{0};
+            scalarField MMW_{0};
 
             //- Mean heat capacity at discrete point Z
             //  [J/kg/K]
@@ -129,7 +129,10 @@ class MixtureFraction
         // Booleans
         
             //- Mean molecular weight updated?
-            bool updatedMW_;
+            bool updatedMeanMW_{false};
+
+            //- Mean density updated?
+            bool updatedMeanRho_{false};
 
 
         // Class data
@@ -172,10 +175,16 @@ class MixtureFraction
                 const Properties&  
             );
         
+            //- Update the mean molecular weight
+            void updateMeanMW 
+            (
+                const word& method = "mass"
+            );
+
             //- Calculate the mean molecular weight
             void calculateMeanMW
             (
-                const word& 
+
             );
 
             //- Calculate the mean heat capacity
@@ -235,12 +244,18 @@ class MixtureFraction
             
         // Update functions
 
-            //- Update the mass fraction [-]
+            //- Update the mass fraction Y [-]
             void updateY
             (
                 const word&,
                 const scalarField&
             );
+
+            //- Update the mol fraction X [-]
+            void updateX();
+
+            //- Update the concentration [X] [mol/m^3]
+            void updateC();
 
             //- Update the temperature field [K]
             void updateT
@@ -248,14 +263,41 @@ class MixtureFraction
                 const scalarField&
             );
 
-            //- Update the mean density [g/cm^3]
-            void updateRho();
+            //- Update the mean density [kg/m^3]
+            void updateRho
+            (
+                const word& method = "mass"  
+            );
 
             //- Update heat capacity Cp
             void updateCp();
 
-            //- Update concentration fraction C [-]
-            void updateC();
+        
+        // Bool switch
+
+            //- Updated mean molecular weight?
+            bool updatedMeanMW() const;
+
+            //- Set mean molecular weight switch to false
+            void updatedMeanMW
+            (
+                const bool
+            );
+
+            //- Updated mean density
+            bool updatedMeanRho() const;
+
+            //- Set mean density switch to false
+            void updatedMeanRho
+            (
+                const bool
+            );
+
+            //- Set all bools to false
+            void updatedFields
+            (
+                const bool
+            );
 
 
         // Conversation functions
@@ -287,16 +329,22 @@ class MixtureFraction
             //- Return the species included in the combustion
             wordList species() const;
 
+            //- Return the species of the oxidizer stream (Z = 0)
+            wordList speciesOxidizer() const;
+
+            //- Return the species of the fuel stream (Z = 1)
+            wordList speciesFuel() const;
+
             //- Return number of discrete points
             int nZPoints() const;
 
-            //- Return the value of the mixture fraction Z at position i
+            //- Return the value of the mixture fraction Z at position Z
             scalar Z
             (
                 const int
             ) const;
 
-            //- Return the temperature field at discrete point i [K] (const)
+            //- Return the temperature field at discrete point Z [K] (const)
             scalar T
             (
                 const int  
@@ -314,7 +362,7 @@ class MixtureFraction
                 const int 
             ) const;
 
-            //- Return species concentration C at discrete point Z (const)
+            //- Return species concentration [X] at discrete point Z (const)
             map<word, scalar> C
             (
                 const int 
@@ -332,8 +380,26 @@ class MixtureFraction
             //- Return species mass fraction Y for all discrete points Z 
             List<map<word, scalar> > Y() const;
 
-            //- Return species concentration C for all discrete points Z 
+            //- Return species concentration [X] for all discrete points Z 
             List<map<word, scalar> > C() const;
+
+            //- Return the mol fraction X for species s for all discr. points 
+            scalarField X
+            (
+                const word&
+            ) const;
+
+            //- Return the mass fraction X for species s for all discr. points 
+            scalarField Y
+            (
+                const word&
+            ) const;
+
+            //- Return the concentration [X] for species s for all discr. points 
+            scalarField C
+            (
+                const word&
+            ) const;
 
 
         // Write output 

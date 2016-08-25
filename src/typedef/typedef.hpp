@@ -137,6 +137,16 @@ string toStr
 }
 
 
+template <typename T>
+T min
+(
+    const T& tmp1,
+    const T& tmp2
+)
+{
+    return std::min(tmp1, tmp2);
+}
+
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 } // End namespace AFC
