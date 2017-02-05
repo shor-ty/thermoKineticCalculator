@@ -116,7 +116,7 @@ void AFC::ChemistryReader::readElementBlock
     {
         FatalError
         (
-            "    Keyword in wordList 'ELEMENT' not found in chemistry"
+            "    Keyword in list 'ELEMENT' not found in chemistry"
             " file " + file_,
             __FILE__,
             __LINE__
@@ -189,7 +189,7 @@ void AFC::ChemistryReader::readSpeciesBlock
     {
         FatalError
         (
-            "    Keyword in wordList 'SPECIES' not found in chemistry"
+            "    Keyword in list 'SPECIES' not found in chemistry"
             " file " + file_,
             __FILE__,
             __LINE__
@@ -301,7 +301,7 @@ void AFC::ChemistryReader::readReactionBlock
     {
         FatalError
         (
-            "    Keyword in wordList 'REACTIONS' not found in chemistry"
+            "    Keyword in list 'REACTIONS' not found in chemistry"
             " file " + file_,
             __FILE__,
             __LINE__
@@ -639,7 +639,7 @@ void AFC::ChemistryReader::analyzeReaction
 void AFC::ChemistryReader::LOWCoeffs
 (
     const string& coeffStr,
-    const unsigned int& lineNo,
+    const unsigned int lineNo,
     ChemistryData& data
 )
 {
@@ -679,7 +679,7 @@ void AFC::ChemistryReader::LOWCoeffs
 void AFC::ChemistryReader::TROECoeffs
 (
     const string& coeffStr,
-    const unsigned int& lineNo,
+    const unsigned int lineNo,
     ChemistryData& data
 )
 {
@@ -723,7 +723,7 @@ void AFC::ChemistryReader::TROECoeffs
 void AFC::ChemistryReader::SRICoeffs
 (
     const string& coeffStr,
-    const unsigned int& lineNo,
+    const unsigned int lineNo,
     ChemistryData& data
 )
 {
@@ -918,15 +918,17 @@ void AFC::ChemistryReader::analyzeReacSite
 
             extractSpecies = false;
 
-            scalar nu = 0;
+            int nu{0};
+            scalar tmp{0};
 
             if (site == "p")
             {
-                nu = stod(stochiometricFactor);
+                tmp = stod(stochiometricFactor);
+
             }
             else if (site == "e")
             {
-                nu = stod(stochiometricFactor) * -1;
+                tmp = stod(stochiometricFactor) * -1;
             }
             else
             {
@@ -937,6 +939,32 @@ void AFC::ChemistryReader::analyzeReacSite
                     __FILE__,
                     __LINE__
                 );
+            }
+
+            //- Check if value is integer, therefore we multiply the value
+            //  by 10 (0.1 -> 1 | 1 -> 10) and make % operation
+            const int modTmp = static_cast<int>(tmp * scalar(100));
+
+            //- The modulo has to be zero if the input is an integer
+            //  Input integer  -> 1   -> 10 % 10 = 0 
+            //  Input integer  -> 2   -> 20 % 10 = 0
+            //  Input !integer -> 1.2 -> 12 % 10 = 2
+            //  Input !integer -> 0.4 -> 4  % 10 = 4
+            if ((modTmp % 10) != 0)
+            {
+                FatalError
+                (
+                    "    The stochiometric factor is not an integer."
+                    " Error occured in analyzing\n    reaction site "
+                    + reactionSite + " (" + site,
+                    __FILE__,
+                    __LINE__
+                );
+            }
+            else
+            {
+                //- Cast the scalar into an integer
+                nu = static_cast<int>(tmp);
             }
 
             startPos = 0;

@@ -56,7 +56,7 @@ AFC::ChemistryCalc::~ChemistryCalc()
 
 AFC::scalar AFC::ChemistryCalc::kf
 (
-    const int& r,
+    const int r,
     const scalar& T,
     const ChemistryData& chemData,
     const bool LOW
@@ -91,7 +91,7 @@ AFC::scalar AFC::ChemistryCalc::kf
 
 AFC::scalar AFC::ChemistryCalc::kb
 (
-    const int& r,
+    const int r,
     const scalar& T,
     const ChemistryData& chemData,
     const Thermo& thermo,
@@ -105,7 +105,7 @@ AFC::scalar AFC::ChemistryCalc::kb
 
 AFC::scalar AFC::ChemistryCalc::keq
 (
-    const int& r,
+    const int r,
     const scalar& T,
     const ChemistryData& chemData,
     const Thermo& thermo
@@ -159,7 +159,7 @@ AFC::scalar AFC::ChemistryCalc::arrhenius
 
 AFC::scalar AFC::ChemistryCalc::Fcent
 (
-    const int& r,
+    const int r,
     const scalar& T,
     const ChemistryData& chemData
 ) const
@@ -188,7 +188,7 @@ AFC::scalar AFC::ChemistryCalc::Fcent
 
 AFC::scalar AFC::ChemistryCalc::Flog
 (
-    const int& r,
+    const int r,
     const scalar& T,
     const scalar& M,
     const ChemistryData& chemData
@@ -222,15 +222,15 @@ AFC::scalar AFC::ChemistryCalc::Flog
 
 AFC::scalar AFC::ChemistryCalc::dH
 (
-    const int& r,
+    const int r,
     const scalar& T,
     const ChemistryData& data,
     const Thermo& thermo
 ) const
 {
     //- Stochiometric factors of reaction r
-    const map<word, scalar>& educts = data.nuEducts(r);
-    const map<word, scalar>& products = data.nuProducts(r);
+    const map<word, int>& educts = data.nuEducts(r);
+    const map<word, int>& products = data.nuProducts(r);
 
     scalar dH{0};
 
@@ -250,15 +250,15 @@ AFC::scalar AFC::ChemistryCalc::dH
 
 AFC::scalar AFC::ChemistryCalc::dG
 (
-    const int& r,
+    const int r,
     const scalar& T,
     const ChemistryData& data,
     const Thermo& thermo
 ) const
 {
     //- Stochiometric factors of reaction r
-    const map<word, scalar>& educts = data.nuEducts(r);
-    const map<word, scalar>& products = data.nuProducts(r);
+    const map<word, int>& educts = data.nuEducts(r);
+    const map<word, int>& products = data.nuProducts(r);
 
     scalar dG{0};
 
@@ -278,15 +278,15 @@ AFC::scalar AFC::ChemistryCalc::dG
 
 AFC::scalar AFC::ChemistryCalc::dS
 (
-    const int& r,
+    const int r,
     const scalar& T,
     const ChemistryData& data,
     const Thermo& thermo
 ) const
 {
     //- Stochiometric factors of reaction r
-    const map<word, scalar>& educts = data.nuEducts(r);
-    const map<word, scalar>& products = data.nuProducts(r);
+    const map<word, int>& educts = data.nuEducts(r);
+    const map<word, int>& products = data.nuProducts(r);
 
     scalar dS{0};
 
@@ -429,7 +429,7 @@ AFC::scalar AFC::ChemistryCalc::dS
 }*/
 /*void AFC::ChemistryCalc::calculatekfkb
 (
-    const int& r,
+    const int r,
     const scalar& T,
     const map<word, scalar>& speciesCon,
     const Thermo& thermo,
@@ -469,7 +469,7 @@ AFC::scalar AFC::ChemistryCalc::dS
 
 AFC::scalar AFC::ChemistryCalc::kf
 (
-    const int& r,
+    const int r,
     const scalar& T,
     const scalar& M,
     const ChemistryData& chemData
@@ -614,88 +614,113 @@ AFC::scalar AFC::ChemistryCalc::kf
 //}
 */
 
-/*
+
 AFC::scalar AFC::ChemistryCalc::calculateOmega
 (
     const word& species,
     const scalar& T,
-    map<word, scalar>& con,
+    const map<word, scalar>& con,
     const Thermo& thermo,
-    ChemistryData& chemData
-)
+    const ChemistryData& chemData
+) const
 {
-    //- Species list
-    const wordList& species = chemData.species();
 
-    //- Calculate Omega using GAUSS-SEIDEL
-    //  Each species has to be calculated
-    forAll(species, s)
+    //- Calculate Omega for species 
+    scalar omega{0};
+        
+    //- Get reaction no. where species is included
+    const List<int>& inReaction = chemData.reacNumbers(species); 
+
+    //Info<< "Species calculation " << species << "\n"
+    //    << "--------------------------------------\n";
+
+    for(size_t i = 0; i<inReaction.size(); ++i)
     {
-        //- Get reaction no. where species is included
-        //const List<int>& inReaction = chemData.reacNumbers(species[s]); 
+        //- Elementar Reaction number
+        const size_t r = inReaction[i];
 
-        //- Elementarreaction no.
-        const unsigned int& r = inReaction[i];
-
-        //- Temporar fields
-        scalar kf{0};
-        scalar kb{0};
-
-        //- Calculate reaction rate kf and kb for reaction r
-        calculatekfkb(r, T, con, thermo, chemData);
-
-        //- Get all species that are used in reaction r
-        const wordList& speciesInReaction = chemData.speciesInReaction(r);
-
+        //- Calculate the forward and backward reaction rates
+        const scalar kf_ = kf(r, T, chemData);
+        const scalar kb_ = kb(r, T, chemData, thermo);
 
         //- Get all species that are acting as products in reaction r
-        const wordList& prodSpecies = chemData.prodSpecies(r);
+        const List<word>& prodSpecies = chemData.speciesProducts(r);
 
         //- Get all species that act as educts in reaction r
-        const wordList& educSpecies = chemData.educSpecies(r);
-
-        //- Scalar list of stochiometric factors of reaction r
-        const scalarList& nu = chemData.nu(r);
+        const List<word>& educSpecies = chemData.speciesEducts(r);
 
         //- Stochiometric factors of products
-        map<word, scalar> nuProd = chemData.nuProd(r);
+        map<word, int> nuProd = chemData.nuProducts(r);
 
         //- Stochiometric factors of educts
-        map<word, scalar> nuEduc = chemData.nuEduc(r);
+        map<word, int> nuEduc = chemData.nuEducts(r);
 
         //- TMP fields
         scalar prod{1};
         scalar educ{1};
 
-
         //- Product side, con is in [mol/cm^3]
         forAll(prodSpecies, s)
         {
-            prod *= pow(con.at(prodSpecies[s]), nuProd.at(prodSpecies[s]));
+            prod *= pow(con.at(s), nuProd.at(s));
         }
 
         //- Educt side, con is in [mol/cm^3]
+        //  Note, abs needed
         forAll(educSpecies, s)
         {
-            educ *= pow(con.at(educSpecies[s]), nuEduc.at(educSpecies[s]));
+            educ *= pow(con.at(s), abs(nuEduc.at(s)));
         }
 
-        const scalar nuSpecies = nuProd[species] - nuEduc[species];
+        //- Get pre-factor nu'' - nu' :: based on the fact that we already
+        //  know the right value, we just have to check if the species
+        //  is within the product or educt side
+        scalar nuSpecies{0};
 
-        //- kf is in cm^3, prod and educ in mol/cm^3
-        const scalar& kf = chemData.kf();
-        const scalar& kb = chemData.kb();
+        if (nuEduc.count(species) && !nuProd.count(species))
+        {
+            nuSpecies = nuEduc.at(species);
+        }
+        else if (!nuEduc.count(species) && nuProd.count(species))
+        {
+            nuSpecies = nuProd.at(species);
+        }
+        else if (nuEduc.count(species) && nuProd.count(species))
+        {
+            nuSpecies = nuProd.at(species) + nuEduc.at(species);
+        }
+        else
+        {
+            FatalError
+            (
+                "Not implemented. Error.",
+                __FILE__,
+                __LINE__
+            );
+        }
 
-        omega += chemData.M() * nuSpecies * (kf * educ + kb * prod);
-    } 
+        //Info<<std::setw(30) << chemData.elementarReaction(r)
+        //    <<std::setw(20) << nuSpecies * (kf_ * educ - kb_ * prod)
+        //    << "   "
+        //    << nuSpecies << " *( "
+        //    << kf_ << " * " 
+        //    << educ << " - " 
+        //    << kb_ << " * " 
+        //    << prod << ")\n" ;
+
+
+        omega += nuSpecies * (kf_ * educ - kb_ * prod);
+
+    }
 
     return omega;
 }
 
 
+/*
 void AFC::ChemistryCalc::calculateM
 (
-    const int& r,
+    const int r,
     const map<word, scalar>& speciesCon,
     ChemistryData& data 
 )
@@ -759,7 +784,7 @@ void AFC::ChemistryCalc::calculateM
 
 bool AFC::ChemistryCalc::thirdBodyReaction
 (
-    const int& r,    
+    const int r,    
     bool& enhanced,
     const ChemistryData& data
 )

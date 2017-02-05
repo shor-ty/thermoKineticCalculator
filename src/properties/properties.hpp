@@ -251,13 +251,13 @@ class Properties
             //- Insert nZPoints_
             void insertMFPoints
             (
-                const int&
+                const int
             );
         
             //- Insert nZvarPoints_
             void insertVMFPoints
             (
-                const int&
+                const int
             );
 
             //- Insert 
@@ -487,7 +487,7 @@ class Properties
             //- Return scalar dissipation rate i [1/s]
             scalar sDRs
             (
-                const int&  
+                const int  
             ) const;
 
             //- Return enthalpy defects [J/kg]
@@ -511,7 +511,7 @@ class Properties
             //- Return the enthalpy defect value [J/kg]
             scalar defect
             (
-                const int&
+                const int
             ) const;
 
             //- Return pressure [Pa]

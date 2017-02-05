@@ -7,6 +7,10 @@ INC_DIR=-I$(WORK_DIR)/chemistry \
 		-I$(WORK_DIR)/mixtureFraction \
 		-I$(WORK_DIR)/constants \
 		-I$(WORK_DIR)/numerics \
+		-I$(WORK_DIR)/numerics/ODE \
+		-I$(WORK_DIR)/numerics/jacobian \
+		-I$(WORK_DIR)/numerics/seulex \
+		-I$(WORK_DIR)/numerics/stepStatus \
 		-I$(WORK_DIR)/typedef \
 		-I$(WORK_DIR)/interpreter \
 		-I$(WORK_DIR)/tensors/tensor \
@@ -20,6 +24,10 @@ INC_DIR=-I$(WORK_DIR)/chemistry \
 
 SOURCE_FILES=automaticFlameletCreator.cpp \
 			 numerics/numerics.cpp \
+			 numerics/stepStatus/stepStatus.cpp \
+			 numerics/jacobian/jacobian.cpp \
+			 numerics/seulex/seulex.cpp \
+			 numerics/ODE/ODE.cpp \
 			 tensors/tensor/tensor.cpp \
 			 tensors/matrix/matrix.cpp \
 			 tensors/vector/vector.cpp \

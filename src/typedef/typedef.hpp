@@ -147,6 +147,17 @@ T min
     return std::min(tmp1, tmp2);
 }
 
+
+template <typename T>
+T max 
+(
+    const T& tmp1,
+    const T& tmp2
+)
+{
+    return std::max(tmp1, tmp2);
+}
+
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 } // End namespace AFC

@@ -133,7 +133,7 @@ class ThermoData
             void insertAtomAndFactor
             (
                 const word&,
-                const unsigned int&
+                const unsigned int
             );
 
             //- Insert molecular weight [g/mol]

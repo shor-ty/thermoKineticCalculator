@@ -243,7 +243,7 @@ void AFC::PropertiesReader::findKeyword
     int& start,
     unsigned int& end,
     const stringList& fileContent,
-    unsigned int line
+    unsigned int& line
 )
 {
     for (; line < fileContent.size(); line++)
@@ -288,7 +288,7 @@ void AFC::PropertiesReader::findKeyword
 void AFC::PropertiesReader::enthalpyDefects
 (
     const stringList& fileContent,
-    unsigned int& line,
+    unsigned int line,
     Properties& data
 )
 {
@@ -331,7 +331,7 @@ void AFC::PropertiesReader::enthalpyDefects
 void AFC::PropertiesReader::scalarDissipationRates
 (
     const stringList& fileContent,
-    unsigned int& line,
+    unsigned int line,
     Properties& data
 )
 {
@@ -374,7 +374,7 @@ void AFC::PropertiesReader::scalarDissipationRates
 void AFC::PropertiesReader::molFractionOxidizer
 (
     const stringList& fileContent,
-    unsigned int& line,
+    unsigned int line,
     Properties& data
 )
 {
@@ -452,7 +452,7 @@ void AFC::PropertiesReader::molFractionOxidizer
 void AFC::PropertiesReader::massFractionOxidizer
 (
     const stringList& fileContent,
-    unsigned int& line,
+    unsigned int line,
     Properties& data
 )
 {
@@ -530,7 +530,7 @@ void AFC::PropertiesReader::massFractionOxidizer
 void AFC::PropertiesReader::molFractionFuel
 (
     const stringList& fileContent,
-    unsigned int& line,
+    unsigned int line,
     Properties& data
 )
 {
@@ -608,7 +608,7 @@ void AFC::PropertiesReader::molFractionFuel
 void AFC::PropertiesReader::massFractionFuel
 (
     const stringList& fileContent,
-    unsigned int& line,
+    unsigned int line,
     Properties& data
 )
 {
@@ -686,7 +686,7 @@ void AFC::PropertiesReader::massFractionFuel
 void AFC::PropertiesReader::control
 (
     const stringList& fileContent,
-    unsigned int& line,
+    unsigned int line,
     Properties& data
 )
 {
@@ -835,7 +835,7 @@ void AFC::PropertiesReader::input
 void AFC::PropertiesReader::interpreter
 (
     const stringList& fileContent,
-    unsigned int& line,
+    unsigned int line,
     Properties& data
 )
 {

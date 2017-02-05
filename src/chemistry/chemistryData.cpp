@@ -120,8 +120,8 @@ void AFC::ChemistryData::product
 
 void AFC::ChemistryData::nuEducts
 (
-    const word& species,
-    const scalar& nu
+    const word species,
+    const int nu
 )
 {
     //- Check if species already there, if yes, increment nu
@@ -138,8 +138,8 @@ void AFC::ChemistryData::nuEducts
 
 void AFC::ChemistryData::nuProducts
 (
-    const word& species,
-    const scalar& nu
+    const word species,
+    const int nu
 )
 {
     //- Check if species already there, if yes, increment nu
@@ -189,7 +189,7 @@ void AFC::ChemistryData::arrheniusCoeffs
 void AFC::ChemistryData::LOWCoeffs
 (
     const scalar& coeff,
-    const unsigned int& coeffNo
+    const unsigned int coeffNo
 )
 {
     if (debug_)
@@ -204,7 +204,7 @@ void AFC::ChemistryData::LOWCoeffs
 void AFC::ChemistryData::TROECoeffs
 (
     const scalar& coeff,
-    const unsigned int& coeffNo
+    const unsigned int coeffNo
 )
 {
     if (debug_)
@@ -219,7 +219,7 @@ void AFC::ChemistryData::TROECoeffs
 void AFC::ChemistryData::SRICoeffs
 (
     const scalar& coeff,
-    const unsigned int& coeffNo
+    const unsigned int coeffNo
 )
 {
     if (debug_)
@@ -284,10 +284,10 @@ void AFC::ChemistryData::incrementMatrixesVectors()
     products_.push_back(List<word>(0));
 
     //- MapList for for stochiometric factors for educts (species + value)
-    nuEducts_.push_back(map<word,scalar>());
+    nuEducts_.push_back(map<word, int>());
 
     //- MapList for for stochiometric factors for products (species + value)
-    nuProducts_.push_back(map<word,scalar>());
+    nuProducts_.push_back(map<word, int>());
 
     //- scalarList for forward reaction order
     forwardReactionOrder_.push_back(0);
@@ -392,7 +392,7 @@ void AFC::ChemistryData::ENHANCE(const bool set)
 void AFC::ChemistryData::setReacNumbers
 (
     const word& species,
-    const int& r
+    const int r
 )
 {
     reactionI_.at(species).push_back(r);
@@ -402,7 +402,7 @@ void AFC::ChemistryData::setReacNumbers
 void AFC::ChemistryData::forwardReactionOrder()
 {
     //- Stochiometric coefficients of educt species 
-    const map<word, scalar>& educt = nuEducts(nReac_);
+    const map<word, int>& educt = nuEducts(nReac_);
 
     scalar order{0};
 
@@ -419,7 +419,7 @@ void AFC::ChemistryData::forwardReactionOrder()
 void AFC::ChemistryData::backwardReactionOrder()
 {
     //- Stochiometric coefficients of product species 
-    const map<word, scalar>& product = nuProducts(nReac_);
+    const map<word, int>& product = nuProducts(nReac_);
 
     scalar order{0};
 
@@ -436,7 +436,7 @@ void AFC::ChemistryData::backwardReactionOrder()
 
 void AFC::ChemistryData::updateKf
 (
-    const int& r,
+    const int r,
     const scalar& kf
 )
 {
@@ -446,7 +446,7 @@ void AFC::ChemistryData::updateKf
 
 void AFC::ChemistryData::updateKb
 (
-    const int& r,
+    const int r,
     const scalar& kb
 )
 {
@@ -456,7 +456,7 @@ void AFC::ChemistryData::updateKb
 
 void AFC::ChemistryData::updateKc
 (
-    const int& r,
+    const int r,
     const scalar& Kc
 )
 {
@@ -466,7 +466,7 @@ void AFC::ChemistryData::updateKc
 
 void AFC::ChemistryData::calculateOmega
 (
-    const int& s,
+    const int s,
     const scalar& omega
 )
 {
@@ -499,7 +499,7 @@ void AFC::ChemistryData::updateGlobalReactionOrder()
 
 bool AFC::ChemistryData::BR
 (
-    const int& reacNo
+    const int reacNo
 ) const
 {
     return backwardReaction_[reacNo];
@@ -508,7 +508,7 @@ bool AFC::ChemistryData::BR
 
 bool AFC::ChemistryData::BR
 (
-    const int& reacNo
+    const int reacNo
 )
 {
     return backwardReaction_[reacNo];
@@ -517,7 +517,7 @@ bool AFC::ChemistryData::BR
 
 bool AFC::ChemistryData::TBR
 (
-    const int& reacNo
+    const int reacNo
 ) const
 {
     return TBR_[reacNo];
@@ -526,7 +526,7 @@ bool AFC::ChemistryData::TBR
 
 bool AFC::ChemistryData::LOW
 (
-    const int& reacNo
+    const int reacNo
 ) const
 {
     return LOW_[reacNo];
@@ -535,7 +535,7 @@ bool AFC::ChemistryData::LOW
 
 bool AFC::ChemistryData::TROE
 (
-    const int& reacNo
+    const int reacNo
 ) const
 {
     return TROE_[reacNo];
@@ -544,7 +544,7 @@ bool AFC::ChemistryData::TROE
 
 bool AFC::ChemistryData::SRI
 (
-    const int& reacNo
+    const int reacNo
 ) const
 {
     return SRI_[reacNo];
@@ -553,7 +553,7 @@ bool AFC::ChemistryData::SRI
 
 bool AFC::ChemistryData::ENHANCED
 (
-    const int& reacNo
+    const int reacNo
 ) const
 {
     return ENHANCE_[reacNo];
@@ -584,36 +584,36 @@ AFC::wordList AFC::ChemistryData::species() const
 }
 
 
-AFC::wordList AFC::ChemistryData::educts
+AFC::wordList AFC::ChemistryData::speciesEducts
 (
-    const int& r
+    const int r
 ) const
 {
     return educts_[r];
 }
 
 
-AFC::wordList AFC::ChemistryData::products
+AFC::wordList AFC::ChemistryData::speciesProducts
 (
-    const int& r
+    const int r
 ) const
 {
     return products_[r];
 }
 
 
-AFC::map<AFC::word, AFC::scalar> AFC::ChemistryData::nuEducts
+AFC::map<AFC::word, int> AFC::ChemistryData::nuEducts
 (
-    const int& r 
+    const int r 
 ) const
 {
     return nuEducts_[r];
 }
 
 
-AFC::map<AFC::word, AFC::scalar> AFC::ChemistryData::nuProducts
+AFC::map<AFC::word, int> AFC::ChemistryData::nuProducts
 (
-    const int& r
+    const int r
 ) const
 {
     return nuProducts_[r];
@@ -640,7 +640,7 @@ AFC::List<AFC::string> AFC::ChemistryData::elementarReaction() const
 
 AFC::string AFC::ChemistryData::elementarReaction
 (
-    const int& r
+    const int r
 ) const
 {
     return elementarReaction_[r];
@@ -664,7 +664,7 @@ AFC::wordMatrix AFC::ChemistryData::speciesInReaction() const
 
 AFC::wordList AFC::ChemistryData::speciesInReaction
 (
-    const int& r 
+    const int r 
 ) const
 {
     return speciesInReaction_[r];
@@ -673,7 +673,7 @@ AFC::wordList AFC::ChemistryData::speciesInReaction
 
 AFC::scalarList AFC::ChemistryData::arrheniusCoeffs
 (
-    const int& reacNo
+    const int reacNo
 ) const
 {
     return arrheniusCoeffs_[reacNo];
@@ -682,7 +682,7 @@ AFC::scalarList AFC::ChemistryData::arrheniusCoeffs
 
 AFC::scalarList AFC::ChemistryData::LOWCoeffs
 (
-    const int& reacNo
+    const int reacNo
 ) const
 {
     return LOWCoeffs_[reacNo];
@@ -691,7 +691,7 @@ AFC::scalarList AFC::ChemistryData::LOWCoeffs
 
 AFC::scalarList AFC::ChemistryData::TROECoeffs
 (
-    const int& reacNo
+    const int reacNo
 ) const
 {
     return TROECoeffs_[reacNo];
@@ -700,7 +700,7 @@ AFC::scalarList AFC::ChemistryData::TROECoeffs
 
 AFC::scalarList AFC::ChemistryData::SRICoeffs
 (
-    const int& reacNo
+    const int reacNo
 ) const
 {
     return SRICoeffs_[reacNo];
@@ -709,7 +709,7 @@ AFC::scalarList AFC::ChemistryData::SRICoeffs
 
 AFC::map<AFC::word, AFC::scalar> AFC::ChemistryData::ENHANCEDCoeffs
 (
-    const int& reacNo
+    const int reacNo
 ) const
 {
     return ENHANCEDCoeffs_[reacNo];
@@ -718,7 +718,7 @@ AFC::map<AFC::word, AFC::scalar> AFC::ChemistryData::ENHANCEDCoeffs
 
 AFC::scalar AFC::ChemistryData::kf
 (
-    const int& reacNo 
+    const int reacNo 
 ) const
 {
     return kf_[reacNo];
@@ -733,7 +733,7 @@ AFC::scalarList AFC::ChemistryData::kf() const
 
 AFC::scalar AFC::ChemistryData::kb
 (
-    const int& reacNo 
+    const int reacNo 
 ) const
 {
     return kb_[reacNo];
@@ -748,7 +748,7 @@ AFC::scalarList AFC::ChemistryData::kb() const
 
 AFC::scalar AFC::ChemistryData::Kc
 (
-    const int& reacNo
+    const int reacNo
 ) const
 {
     return Kc_[reacNo];
@@ -763,7 +763,7 @@ AFC::scalarList AFC::ChemistryData::Kc() const
 
 AFC::scalar AFC::ChemistryData::omega
 (
-    const int& s
+    const int s
 ) const
 {
     return omega_[s];
@@ -778,7 +778,7 @@ AFC::scalarField AFC::ChemistryData::omega() const
 
 AFC::scalar AFC::ChemistryData::forwardReactionOrder
 (
-    const int& r
+    const int r
 ) const
 {
     return forwardReactionOrder_[r];
@@ -787,7 +787,7 @@ AFC::scalar AFC::ChemistryData::forwardReactionOrder
 
 AFC::scalar AFC::ChemistryData::backwardReactionOrder
 (
-    const int& r
+    const int r
 ) const
 {
     return backwardReactionOrder_[r];
@@ -796,7 +796,7 @@ AFC::scalar AFC::ChemistryData::backwardReactionOrder
 
 AFC::scalar AFC::ChemistryData::globalReactionOrder
 (
-    const int& r
+    const int r
 ) const
 {
     return globalReactionOrder_[r];

@@ -97,7 +97,7 @@ void AFC::Properties::inertSpecies
 
 void AFC::Properties::insertMFPoints
 (
-    const int& nZPoints
+    const int nZPoints
 )
 {
     nZPoints_ = nZPoints;
@@ -106,7 +106,7 @@ void AFC::Properties::insertMFPoints
 
 void AFC::Properties::insertVMFPoints
 (
-    const int& nZvarPoints
+    const int nZvarPoints
 )
 {
     nZvarPoints_ = nZvarPoints;
@@ -781,7 +781,7 @@ AFC::scalarField AFC::Properties::defects() const
 
 AFC::scalar AFC::Properties::sDRs
 (
-    const int& i 
+    const int i 
 ) const
 {
     return sDRs_[i];
@@ -826,7 +826,7 @@ unsigned int AFC::Properties::nDefects() const
 
 AFC::scalar AFC::Properties::defect
 (
-    const int& defectNo
+    const int defectNo
 ) const
 {
     return defects_[defectNo];

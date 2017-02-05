@@ -99,7 +99,7 @@ void AFC::Footer
 {
     const scalar execTime = (clock()-startTime) / (scalar) CLOCKS_PER_SEC; 
 
-    Info<< " c-o Execution: " << execTime  << " s\n\n" 
+    Info<< "\n\n c-o Execution: " << execTime  << " s\n\n" 
         << " ============================================================\n\n"
         << " c-o Programmed by Tobias Holzmann (shor-ty)\n\n"
         << " c-o Tobias.Holzmann@Holzmann-cfd.de\n" << endl;

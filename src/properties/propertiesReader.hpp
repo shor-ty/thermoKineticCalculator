@@ -93,7 +93,7 @@ class PropertiesReader
                 int&,
                 unsigned int&,
                 const stringList&,
-                unsigned int
+                unsigned int&
             );
 
             //- Return string between '/' and '/'
@@ -105,7 +105,7 @@ class PropertiesReader
             void enthalpyDefects 
             (
                 const stringList&,
-                unsigned int&,
+                unsigned int,
                 Properties&
             );
         
@@ -113,7 +113,7 @@ class PropertiesReader
             void scalarDissipationRates
             (
                 const stringList&,
-                unsigned int&,
+                unsigned int,
                 Properties&
             );
 
@@ -121,7 +121,7 @@ class PropertiesReader
             void molFractionOxidizer
             (
                 const stringList&,
-                unsigned int&,
+                unsigned int,
                 Properties&
             );
 
@@ -129,7 +129,7 @@ class PropertiesReader
             void massFractionOxidizer
             (
                 const stringList&,
-                unsigned int&,
+                unsigned int,
                 Properties&
             );
                 
@@ -137,7 +137,7 @@ class PropertiesReader
             void molFractionFuel    
             (
                 const stringList&,
-                unsigned int&,
+                unsigned int,
                 Properties&
             );
                 
@@ -145,7 +145,7 @@ class PropertiesReader
             void massFractionFuel    
             (
                 const stringList&,
-                unsigned int&,
+                unsigned int,
                 Properties&
             );
 
@@ -153,7 +153,7 @@ class PropertiesReader
             void control
             (
                 const stringList&,
-                unsigned int&,
+                unsigned int,
                 Properties&
             );
 
@@ -168,7 +168,7 @@ class PropertiesReader
             void interpreter
             (
                 const stringList&,
-                unsigned int&,
+                unsigned int,
                 Properties&
             );
 };

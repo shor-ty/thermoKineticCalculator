@@ -92,19 +92,25 @@ class Chemistry
 
         // Calculation Functions
 
-            //- Calculate the source term of each species (omega)
+            //- Calculate the source term of species s (omega) and return it
             scalar calculateOmega
             (
 	            const word&,
                 const scalar&,
-                map<word, scalar>&,
-                const Thermo&
-            );
+                const map<word, scalar>&
+            ) const;
+
+            //- Calculate the source term the species (omega) and return it
+            map<word, scalar> calculateOmega
+            (
+                const scalar&,
+                const map<word, scalar>&
+            ) const;
 
             //- Calculate forward reaction rate kf
             scalar kf
             (
-                const int&,
+                const int,
                 const scalar&,
                 const bool LOW = false
             ) const;
@@ -112,7 +118,7 @@ class Chemistry
             //- Calculate backward reaction rate kf
             scalar kb
             (
-                const int&,
+                const int,
                 const scalar&,  
                 const bool LOW = false
             ) const;
@@ -120,28 +126,34 @@ class Chemistry
             //- Calculate equilibrium reaction rate keq
             scalar keq 
             (
-                const int&,
+                const int,
                 const scalar&
             ) const;
 
             //- Calculate Fcent for TROE formula
             scalar Fcent
             (
-                const int&,
+                const int,
                 const scalar&
             ) const;
 
             //- Calculate logF for TROE formula
             scalar Flog
             (
-                const int&,
+                const int,
                 const scalar&,
                 const scalar&
             ) const;
+            
+            //- Calculate the reaction rate k and return it
+            scalarField calculatek 
+            (
+                const scalarField&
+            );
 
 
             //- Calculate backward reaction kb ::Interpreter
-            void calculateKb ();
+            void calculateKb();
 
 
         // Update Functions
@@ -152,6 +164,7 @@ class Chemistry
                 const scalar&
             );
 
+
         // Create Functions
 
             //- Create field that contains all reaction no. for each species
@@ -160,8 +173,8 @@ class Chemistry
             //- Insert reaction no. for species delegated to CHEMISTRYDATA
             void insertReacNoForSpecies
             (
-                const int&,
-                const int&
+                const int,
+                const int
             );
 
         // Return Functions
@@ -172,37 +185,37 @@ class Chemistry
                 //  forward and backward reaction character
                 bool BR
                 (
-                    const int&
+                    const int
                 ) const;
 
                 //- Return true if elementar reaction is a TBR reaction
                 bool TBR
                 (
-                    const int&
+                    const int
                 ) const;
 
                 //- Return true if elementar reaction is a LOW reaction
                 bool LOW
                 (
-                    const int&
+                    const int
                 ) const;
 
                 //- Return true if elementar reaction is a TROE reaction
                 bool TROE
                 (
-                    const int&
+                    const int
                 ) const;
 
                 //- Return true if elementar reaction is a SRI reaction
                 bool SRI
                 (
-                    const int&
+                    const int
                 ) const;
 
                 //- Return true if elementar reaction has enhanced factors
                 bool ENHANCED
                 (
-                    const int&
+                    const int
                 ) const;
 
 
@@ -221,7 +234,7 @@ class Chemistry
             //- Return elementar reaction r (as string) 
             string elementarReaction
             (
-                const int&
+                const int
             ) const;
 
             //- Return all elementar reaction (as wordList)
@@ -230,54 +243,85 @@ class Chemistry
             //- Return all reaction no of species 
             /*scalarField reacNoForSpecies
             (
-                const int&
+                const int
             ) const;
 
             //- Return reaction rates k
             scalarField k() const;
 
             //- Return wordMatrix for species in reactions
-            wordMatrix speciesInReactions() const;
-
-            //- Return reaction rate k of reaction no.
-            scalar k
-            (
-                const int& 
-            ) const;*/
-
-
+            wordMatrix speciesInReactions() const;*/
+            
             //- Return enhanced factors ::Interpreter
             map<word, scalar> enhancedFactors
             (
-                const int&
+                const int
             ) const;
 
             //- Return enhanced species ::Interpreter
             wordList enhancedSpecies
             (
-                const int&
+                const int
             ) const;
 
             //- Return enthalpy of reaction r and temperature T
             scalar dH
             (
-                const int&,
+                const int,
                 const scalar&
             ) const;
             
             //- Return free GIBBS energy of reaction r and temperature T
             scalar dG
             (
-                const int&,
+                const int,
                 const scalar&
             ) const;
 
             //- Return entropy of reaction r and temperature T
             scalar dS
             (
-                const int&,
+                const int,
                 const scalar&
             ) const;
+
+            //- Return the reaction numbers where species s is involved
+            List<int> reacNumbers
+            (
+                const word
+            ) const;
+
+            //- Return the species that are in reaction r
+            wordList speciesInReaction
+            (
+                const int
+            ) const;
+
+            //- Return the product species in reaction r
+            wordList speciesProducts
+            (
+                const int
+            ) const;
+
+            //- Return the educt species in reaction r
+            wordList speciesEducts
+            (
+                const int
+            ) const;
+
+            //- Return the stochiometric factors for the products in reaction
+            map<word, int> nuProducts
+            (
+                const int
+            ) const;
+
+            //- Return the stochiometric factors for the educts in reaction
+            map<word, int> nuEducts
+            (
+                const int
+            ) const;
+
+
 
 
         //- Summary Functions
@@ -298,7 +342,7 @@ class Chemistry
             //  or if we specify "LOW" then based on low coefficients
             void buildTablekf
             (
-                const int&,
+                const int,
                 ostream&,
                 const bool LOW = false 
             ) const;
@@ -306,7 +350,7 @@ class Chemistry
             //- Build TROE table (calculate F_cent and logF)
             void buildTROETable
             (
-                const int&,
+                const int,
                 ostream&
             ) const;
 };

@@ -73,7 +73,7 @@ class ChemistryCalc
             //- Calculate the reaction rates kf and kb [units depend]
             void calculatekfkb 
             (
-                const int&,
+                const int,
                 const scalar&,
                 const map<word, scalar>&,
                 const Thermo&,
@@ -83,7 +83,7 @@ class ChemistryCalc
             //- Calculate reaction rate kf
             scalar kf 
             (
-                const int&,
+                const int,
                 const scalar&,
                 const ChemistryData&,
                 const bool LOW = false
@@ -92,7 +92,7 @@ class ChemistryCalc
             //- Calculate reaction rate kb
             scalar kb 
             (
-                const int&,
+                const int,
                 const scalar&,
                 const ChemistryData&,
                 const Thermo&,
@@ -102,7 +102,7 @@ class ChemistryCalc
             //- Calculate equilibrium reaction rate keq
             scalar keq 
             (
-                const int&,
+                const int,
                 const scalar&,
                 const ChemistryData&,
                 const Thermo&
@@ -120,7 +120,7 @@ class ChemistryCalc
             //- Calculate Fcent for TROE formulation
             scalar Fcent
             (
-                const int&,
+                const int,
                 const scalar&,
                 const ChemistryData&
             ) const;
@@ -128,26 +128,26 @@ class ChemistryCalc
             //- Calculate Flog for TROE formulation
             scalar Flog
             (
-                const int&,
+                const int,
                 const scalar&,
                 const scalar&,
                 const ChemistryData&
             ) const;
 
-            //- Calculate the source term of each species (omega)
+            //- Calculate the source term of species s (omega)
             scalar calculateOmega
             (
 	            const word&,
                 const scalar&,
-                map<word, scalar>&,
+                const map<word, scalar>&,
                 const Thermo&,
-                ChemistryData&
-            );
+                const ChemistryData&
+            ) const;
             
             //- Calculate [M] partner [mol/m^3]
             void calculateM
             (
-                const int&,
+                const int,
                 const map<word, scalar>&,
                 ChemistryData&
             );
@@ -156,14 +156,14 @@ class ChemistryCalc
             //  if we have to use enhanced factors for calculating [M]
             bool thirdBodyReaction
             (
-                const int&,
+                const int,
                 const ChemistryData&
             );
 
             //- Calculate dH for reaction r and given temperature
             scalar dH
             (
-                const int&,
+                const int,
                 const scalar&,
                 const ChemistryData&,
                 const Thermo&
@@ -172,7 +172,7 @@ class ChemistryCalc
             //- Calculate dG for reaction r and given temperature
             scalar dG
             (
-                const int&,
+                const int,
                 const scalar&,
                 const ChemistryData&,
                 const Thermo&
@@ -181,7 +181,7 @@ class ChemistryCalc
             //- Calculate dS for reaction r and given temperature
             scalar dS
             (
-                const int&,
+                const int,
                 const scalar&,
                 const ChemistryData&,
                 const Thermo&

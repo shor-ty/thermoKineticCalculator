@@ -150,6 +150,18 @@ AFC::scalarField AFC::Tensor::values() const
 }
 
 
+void AFC::Tensor::reset()
+{
+    for (size_t i = 0; i < nRows_; i++)
+    {
+        for (size_t j = 0; j < nCols_; j++)
+        {
+            this->operator()(i, j, scalar(0));
+        }
+    }
+}
+
+
 // * * * * * * * * * * * * * * Calculation Functions * * * * * * * * * * * * //
 
 

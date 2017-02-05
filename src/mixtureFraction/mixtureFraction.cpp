@@ -56,7 +56,7 @@ AFC::MixtureFraction::MixtureFraction
 
     //- Number of points for the discretisation
     //  The number also contains the boundary conditions
-    const int& nZ = prop.nZPoints();
+    const int nZ = prop.nZPoints();
 
     //- Calculate deltaZ
     const scalar delta = 1. / (nZ-1);
@@ -98,6 +98,7 @@ AFC::MixtureFraction::MixtureFraction
             speciesMol_.resize(nZ, tmp);
             speciesMass_.resize(nZ, tmp);
             speciesCon_.resize(nZ, tmp);
+            omega_.resize(nZ, tmp);
         }
     }
 
@@ -166,6 +167,9 @@ AFC::MixtureFraction::MixtureFraction
     // Initialize with mass fraction
     else if (prop.input() == "mass")
     {
+        //- Actual field is mass fraction
+        actualField_ = "mass";
+
         //- Set boundary conditions for oxidizer stream
         {
             const wordList& speciesO = prop.speciesOxidizer();
@@ -187,19 +191,11 @@ AFC::MixtureFraction::MixtureFraction
             }
         }
 
-        //- Convert Y to X
-        YtoX();
+        //- Update fields
+        updateFields();
+
+        //- Update denisty
     }
-
-    //- Initiate all other stuff
-    {
-        //- Calculate concentration [X]
-        XtoC();
-
-        //- Calculate mean density rho
-        rhoX();
-    }
-
 }
 
 
@@ -217,10 +213,7 @@ AFC::MixtureFraction::~MixtureFraction()
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
 
-void AFC::MixtureFraction::updateMeanMW
-(
-    const word& funcSW
-)
+void AFC::MixtureFraction::updateMeanMW()
 {
     if (updatedMeanMW())
     {
@@ -239,7 +232,7 @@ void AFC::MixtureFraction::updateMeanMW
         value = 0;
 
         //- Calculate mean moleculare weight with mol fraction
-        if (funcSW == "mol")
+        if (actualField_ == "mol")
         {
             forAll(species_, s)
             {
@@ -248,7 +241,7 @@ void AFC::MixtureFraction::updateMeanMW
         } 
         
         //- Calculate mean moleculare weight with mass fraction
-        else if (funcSW == "mass")
+        else if (actualField_ == "mass")
         {
             scalar tmp{0};
 
@@ -268,7 +261,7 @@ void AFC::MixtureFraction::updateMeanMW
             }
         }
         //- Calculate mean moleculare weight with concentration 
-        else if (funcSW == "con")
+        else if (actualField_ == "con")
         {
             scalar numerator{0};
             scalar denominator{0};
@@ -376,18 +369,22 @@ void AFC::MixtureFraction::calculateMeanG
     //- Calculate Gibbs energy with known values
     G_ = thermo_.G(H, S, T);
 }
+*/
 
 
-void AFC::MixtureFraction::calculateOmega
+AFC::scalar AFC::MixtureFraction::calculateOmega
 (
     const word& species,
-    const scalar& T,
-    map<word, scalar>& con
-)
+    const int Z
+) const
 {
-    chemistry_.calculateOmega(T, con, thermo_);
+    //- Concentration map at discrete point
+    const map<word, scalar> con = C(Z); 
+
+    return chemistry_.calculateOmega(species, T_[Z], con);
 }
-*/
+
+
 
 /*AFC::scalar AFC::MixtureFraction::calculateHf
 (
@@ -398,6 +395,71 @@ void AFC::MixtureFraction::calculateOmega
     return thermo_.Hf(species, T);
 }*/
 
+
+void AFC::MixtureFraction::conservation() const
+{
+    for (int Zi = 0; Zi < nZPoints(); ++Zi)
+    {
+        conservation(Zi);
+    }
+
+    Info<< "\n";
+}
+
+
+void AFC::MixtureFraction::conservation
+(
+    const int Zi
+) const
+{
+    //- Species
+    const wordList& species_ = species();
+
+    scalar Ysum{0};
+    scalar Xsum{0};
+
+    forAll(species_, s)
+    {
+        Ysum += speciesMass_[Zi].at(s); 
+        Xsum += speciesMol_[Zi].at(s);
+    }
+
+    Info<< "   c-o Mass conservation: " << Zi << " >> " << Ysum << "\n"
+        << "       Mole conservation: " << Zi << " >> " << Xsum << "\n";
+}
+
+
+AFC::scalarField AFC::MixtureFraction::Yconservation() const
+{
+    scalarField Ysum(nZPoints(), 0);
+
+    for (int Zi = 0; Zi < nZPoints(); ++Zi)
+    {
+        Ysum[Zi] = Yconservation(Zi);
+    }
+
+    return Ysum;
+}
+
+
+AFC::scalar AFC::MixtureFraction::Yconservation
+(
+    const int Zi
+) const
+{
+    //- Species
+    const wordList& species_ = species();
+
+    scalar Ysum{0};
+
+    forAll(species_, s)
+    {
+        Ysum += speciesMass_[Zi].at(s);
+    }
+
+    //- Return the absolut value
+    return fabs(Ysum);
+}
 
 // * * * * * * * * * * * * * * * Update Functions  * * * * * * * * * * * * * //
 
@@ -416,18 +478,143 @@ void AFC::MixtureFraction::updateY
 
         ++i;
     }
+
+    //- Species changed, need to recalculate MMW
+    updatedMeanMW(false);
+    updatedMeanRho(false);
+
+    actualField_ = "mass";
+}
+
+
+void AFC::MixtureFraction::updateY
+(
+    const map<word, scalar>& Y_,
+    const int Z
+)
+{
+    speciesMass_[Z] = Y_;    
+    
+    //- Species changed, need to recalculate MMW
+    updatedMeanMW(false);
+    updatedMeanRho(false);
+
+    actualField_ = "mass";
+}
+
+
+void AFC::MixtureFraction::updateX
+(
+    const map<word, scalar>& X_,
+    const int Z
+)
+{
+    speciesMol_[Z] = X_;    
+    
+    //- Species changed, need to recalculate MMW
+    updatedMeanMW(false);
+    updatedMeanRho(false);
+
+    actualField_ = "mol";
+}
+
+
+void AFC::MixtureFraction::updateC
+(
+    const map<word, scalar>& C_,
+    const int Z
+)
+{
+    forAll(C_, c)
+    {
+        Info<< c.first << " = " << c.second << "\n";
+    }
+    Info<< "\n";
+    forAll(speciesCon_[Z], c)
+    {
+        Info<< c.first << " = " << c.second << "\n";
+    }
+
+    speciesCon_[Z] = C_;    
+
+    //- Species changed, need to recalculate MMW
+    updatedMeanMW(false);
+    updatedMeanRho(false);
+
+    actualField_ = "con";
+}
+
+
+void AFC::MixtureFraction::updateY()
+{
+    if (actualField_ == "mass")
+    {
+        //Info<< "updateY based on mass (return)\n";
+        return;
+    }
+
+    if (actualField_ == "mol")
+    {
+        //Info<< "updateY based on mol\n";
+        XtoY();
+    }
+    else if (actualField_ == "con")
+    {
+        //Info<< "updateY based on con\n";
+        CtoY();
+    }
 }
 
 
 void AFC::MixtureFraction::updateX()
 {
-    YtoX();
+    if (actualField_ == "mol")
+    {
+        //Info<< "updateX based on mol (return)\n";
+        return;
+    }
+
+    if (actualField_ == "mass")
+    {
+        //Info<< "updateX based on mass\n";
+        YtoX();
+    }
+    else if (actualField_ == "con")
+    {
+        //Info<< "updateX based on con\n";
+        CtoX();
+    }
 }
 
 
 void AFC::MixtureFraction::updateC()
 {
-    XtoC();
+    if (actualField_ == "con")
+    {
+        //Info<< "updateC based on con (return)\n";
+        return;
+    }
+
+    if (actualField_ == "mol")
+    {
+        //Info<< "updateC based on mol\n";
+        XtoC();
+    }
+    else if (actualField_ == "mass")
+    {
+        //Info<< "updateC based on mass\n";
+        YtoC();
+    }
+}
+
+
+void AFC::MixtureFraction::updateFields()
+{
+    updateY();
+    updateX();
+    updateC();
+    updateMeanMW();
+    updateRho();
 }
 
 
@@ -451,17 +638,17 @@ void AFC::MixtureFraction::updateRho
     }
 
     //- Calculate rho using mol fraction X
-    if (method == "mol")
+    if (actualField_ == "mol")
     {
         rhoX();
     }
-    else if (method == "mass")
+    else if (actualField_ == "mass")
     {
         rhoY();
     }
-    else if (method == "con")
+    else if (actualField_ == "con")
     {
-        //rhoC();
+        rhoC();
     }
     else
     {
@@ -498,6 +685,43 @@ void AFC::MixtureFraction::updateC()
 {
     YtoC();
 }*/
+
+
+void AFC::MixtureFraction::updateOmega()
+{
+    //- Mixture fraction space (we do not need to calc the boundaries)
+    for (int Zi = 1; Zi < nZPoints()-1; ++Zi)
+    {
+        updateOmega(Zi);
+    }
+}
+
+
+void AFC::MixtureFraction::updateOmega
+(
+    const int Zi 
+)
+{
+    //- Species that are used in combustion
+    const wordList& speciesInCombustion = species();
+
+    //- Calculate the source term for each species for all discrete points
+    forAll(speciesInCombustion, s)
+    {
+        updateOmega(Zi, s);
+    }
+}
+
+
+void AFC::MixtureFraction::updateOmega
+(
+    const int Zi,
+    const word species
+)
+{
+    //- Calculate the source terms omega for each species and Z
+    omega_[Zi][species] = calculateOmega(species, Zi);
+}
 
 
 // * * * * * * * * * * * * * * * * Bool Switch * * * * * * * * * * * * * * * //
@@ -547,7 +771,7 @@ void AFC::MixtureFraction::updatedFields
 void AFC::MixtureFraction::YtoX()
 {
     //- Update mean molecular weight
-    updateMeanMW("mass");
+    updateMeanMW();
 
     const wordList& species_ = species();
 
@@ -557,9 +781,10 @@ void AFC::MixtureFraction::YtoX()
 
         forAll(species_, s)
         {
-            speciesMol_[Zi][s]
-                = speciesMass_[Zi].at(s) * MMW_[Zi] / thermo_.MW(s);
+            speciesMol_[Zi][s] =
+                speciesMass_[Zi].at(s) * MMW_[Zi] / thermo_.MW(s);
         }
+
 
         if (debug_)
         {
@@ -576,82 +801,88 @@ void AFC::MixtureFraction::YtoX()
     }
 }
 
-/*
-
 
 void AFC::MixtureFraction::XtoY()
 {
-    const wordList& species = chemistry_.species();
-
     // update mean molecular weight
-    calculateMeanMW("mol");
+    updateMeanMW();
 
-    XtoC();
+    //- Species
+    const wordList& species_ = species();
 
-    forAll(species, s)
+    //- Mixture fraction space
+    for (int Zi = 0; Zi < nZPoints(); ++Zi)
     {
-        speciesMass_[species[s]]
-            = speciesMol_.at(species[s]) * thermo_.MW(species[s]) / MW_;
-    }
-
-    if (debug)
-    {
-        scalar sum{0};
-
-        forAll(species, s)
+        forAll(species_, s)
         {
-            if (speciesMass_.at(species[s]) > 0)
-            {
-                Info<< species[s] << ": " << speciesMass_.at(species[s])
-                    << endl;
-            }
-
-            sum += speciesMass_.at(species[s]);
+            speciesMass_[Zi][s] =
+                speciesMol_[Zi].at(s) * thermo_.MW(s) / MMW_[Zi];
         }
 
-        Info<< "    XtoY(), sum of mass = " << sum << endl;
+        if (debug_)
+        {
+            scalar sum{0};
+
+            forAll(species_, s)
+            {
+                if (speciesMass_[Zi].at(s) > 0)
+                {
+                    Info<< s << ": " << speciesMass_[Zi].at(s)
+                        << endl;
+                }
+
+                sum += speciesMass_[Zi].at(s);
+            }
+
+            Info<< "    Z = " << Z(Zi) << ": "
+                << "XtoY(), sum of mass = " << sum << endl;
+        }
     }
 }
 
 
 void AFC::MixtureFraction::YtoC()
 {
-    const wordList& species = chemistry_.species();
-
     // update mean molecular weight
-    calculateMeanMW("mass");
+    updateMeanMW();
 
-    scalar YTMW{0};
+    const wordList& species_ = species();
 
-    forAll(species, s)
+    for (int Zi = 0; Zi < nZPoints(); ++Zi)
     {
-        YTMW += speciesMass_.at(species[s]) * T() / thermo_.MW(species[s]);
-    }
+        scalar YTbyMW{0};
 
-    //- Pressure [Pa]
-    const scalar& p = properties_.p();
-
-    //- Unit of concentration [mol/m^3]
-    //  Change unit to [mol/cm^3] factor 100cm * 100cm * 100cm / m^3
-    forAll(species, s)
-    {
-        speciesCon_[species[s]]
-            = (p * speciesMass_.at(species[s]) / thermo_.MW(species[s]))
-            / (AFC::Constants::R * YTMW);
-    }
-
-    if (debug)
-    {
-        scalar sum{0};
-
-        forAll(species, s)
+        forAll(species_, s)
         {
-            sum += speciesCon_.at(species[s]);
+            YTbyMW += speciesMass_[Zi].at(s) * T(Zi) / thermo_.MW(s);
         }
 
-        Info<< "    YtoCon(), sum of concentration = " << sum << endl;
+        //- Pressure [Pa]
+        const scalar& p = properties_.p();
+
+        //- Unit of concentration [mol/m^3]
+        //  Change unit to [mol/cm^3] factor 100cm * 100cm * 100cm / m^3
+        forAll(species_, s)
+        {
+            speciesCon_[Zi][s] =
+                (p * speciesMass_[Zi].at(s) / thermo_.MW(s))
+                / (AFC::Constants::R * YTbyMW);
+        }
+
+        if (debug_)
+        {
+            scalar sum{0};
+
+            forAll(species_, s)
+            {
+                sum += speciesCon_[Zi].at(s);
+            }
+
+            Info<< "    Z = " << Z(Zi) << ": "
+                << "    YtoCon(), sum of concentration = " << sum << endl;
+        }
     }
-}*/
+}
 
 
 void AFC::MixtureFraction::XtoC()
@@ -660,10 +891,10 @@ void AFC::MixtureFraction::XtoC()
 
     const scalar& p = properties_.p();
 
-    scalar XT{0};
-
     for (int Zi = 0; Zi < nZPoints(); ++Zi)
     {
+        scalar XT{0};
+
         forAll(species_, s)
         {
             XT += speciesMol_[Zi].at(s) * T(Zi);
@@ -672,17 +903,44 @@ void AFC::MixtureFraction::XtoC()
         // In [mol/m^3]
         forAll(species_, s)
         {
-            speciesCon_[Zi][s] 
-                = speciesMol_[Zi].at(s) * p / (XT * AFC::Constants::R);
+            speciesCon_[Zi][s] =
+                speciesMol_[Zi].at(s) * p / (XT * AFC::Constants::R);
         }
     }
+}
+
+
+void AFC::MixtureFraction::CtoY()
+{
+    const wordList& species_ = species();
+
+    for (int Zi = 0; Zi < nZPoints(); ++Zi)
+    {
+        scalar CM{0};
+
+        forAll(species_, s)
+        {
+            CM += speciesCon_[Zi].at(s) * thermo_.MW(s); 
+        }
+
+        forAll(species_, s)
+        {
+            speciesMass_[Zi][s] = speciesCon_[Zi].at(s) * thermo_.MW(s) / CM;
+        }
+    }
+}
+
+
+void AFC::MixtureFraction::CtoX()
+{
+    
 }
 
 
 void AFC::MixtureFraction::rhoX()
 {
     //- Update the mean molecular weight
-    updateMeanMW("mol");
+    updateMeanMW();
 
     const scalar& p = properties_.p();
 
@@ -702,7 +960,7 @@ void AFC::MixtureFraction::rhoX()
 void AFC::MixtureFraction::rhoY()
 {
     //- Update the mean molecular weight
-    updateMeanMW("mass");
+    updateMeanMW();
 
     const scalar& p = properties_.p();
 
@@ -719,23 +977,27 @@ void AFC::MixtureFraction::rhoY()
 }
 
 
-/*void AFC::MixtureFraction::rhoC()
+void AFC::MixtureFraction::rhoC()
 {
     const wordList& species = chemistry_.species();
 
-    //- Reset rho_
-    rho_ = 0;
-
-    forAll(species, s)
+    for (int Zi = 0; Zi < nZPoints(); ++Zi)
     {
-        rho_ += speciesCon_.at(species[s]) * thermo_.MW(species[s]);
-    }
 
-    if (debug)
-    {
-        Info<< "    Mean density (rhoC): " << rho_ << endl;
+        //- Reset rho_
+        rho_[Zi] = 0;
+
+        forAll(species, s)
+        {
+            rho_[Zi] += speciesCon_[Zi].at(s) * thermo_.MW(s);
+        }
+
+        if (debug_)
+        {
+            Info<< "    Mean density (rhoC): " << rho_[Zi] << endl;
+        }
     }
-}*/
+}
 
 
 // * * * * * * * * * * * * * * * Return Functions  * * * * * * * * * * * * * //
@@ -766,46 +1028,61 @@ int AFC::MixtureFraction::nZPoints() const
 
 AFC::scalar AFC::MixtureFraction::Z
 (
-    const int i
+    const int Z
 ) const 
 {
-    return Z_[i];
+    return Z_[Z];
 }
 
 
 AFC::scalar AFC::MixtureFraction::T
 (
-    const int i 
+    const int Z 
 ) const 
 {
-    return T_[i];
+    return T_[Z];
 }
 
 
 AFC::map<AFC::word, AFC::scalar> AFC::MixtureFraction::X
 (
-    const int i 
+    const int Z 
 ) const
 {
-    return speciesMol_[i];
+    return speciesMol_[Z];
 }
 
 
 AFC::map<AFC::word, AFC::scalar> AFC::MixtureFraction::Y
 (
-    const int i 
+    const int Z 
 ) const
 {
-    return speciesMass_[i];
+    return speciesMass_[Z];
 }
 
 
 AFC::map<AFC::word, AFC::scalar> AFC::MixtureFraction::C
 (
-    const int i 
+    const int Z 
 ) const
 {
-    return speciesCon_[i];
+    return speciesCon_[Z];
+}
+
+
+AFC::map<AFC::word, AFC::scalar> AFC::MixtureFraction::omega
+(
+    const int Z
+) const
+{
+    return omega_[Z];
+}
+
+
+AFC::scalar AFC::MixtureFraction::sDR() const
+{
+    return sDR_;
 }
 
 
@@ -815,10 +1092,23 @@ AFC::scalarField AFC::MixtureFraction::Z() const
 }
 
 
+AFC::scalarField AFC::MixtureFraction::rho() const
+{
+    return rho_;
+}
+
+
 AFC::scalarField AFC::MixtureFraction::T() const
 {
     return T_;
 }
+
+
+AFC::scalar AFC::MixtureFraction::p() const
+{
+    return properties_.p();
+}
+
 
 AFC::List<AFC::map<AFC::word, AFC::scalar> > AFC::MixtureFraction::X() const
 {
@@ -835,6 +1125,13 @@ AFC::List<AFC::map<AFC::word, AFC::scalar> > AFC::MixtureFraction::Y() const
 AFC::List<AFC::map<AFC::word, AFC::scalar> > AFC::MixtureFraction::C() const
 {
     return speciesCon_;
+}
+
+
+AFC::List<AFC::map<AFC::word, AFC::scalar> >
+AFC::MixtureFraction::omega() const
+{
+    return omega_;
 }
 
 
@@ -899,6 +1196,256 @@ AFC::scalarField AFC::MixtureFraction::C
 
     return CforSpecies;
 }
+
+
+AFC::scalarField AFC::MixtureFraction::omega
+(
+    const word& species 
+) const
+{
+    //- Tmp field
+    scalarField omegaforSpecies(nZPoints(), 0);
+
+    size_t i{0};
+
+    forAll(omega_, discreteOmega)
+    {
+        omegaforSpecies[i] = discreteOmega.at(species);
+
+        ++i;
+    }
+
+    return omegaforSpecies;
+}
+
+
+AFC::map<AFC::word, AFC::scalarField> AFC::MixtureFraction::YField() const
+{
+    //- Tmp map field
+    map<word, scalarField> tmp;
+
+    //- Species
+    const wordList& speciesI = species();
+
+    //- Loop through all species
+    forAll(speciesI, s)
+    {
+        //- Temporar field that stores Y for species s
+        scalarField YforSpecies(nZPoints(), 0);
+
+        size_t Z{0};
+
+        //- Loop through all points
+        forAll(speciesMass_, discreteY)
+        {
+            YforSpecies[Z] = discreteY.at(s);
+
+            ++Z;
+        }
+
+        tmp[s] = YforSpecies;
+    }
+
+    return tmp;
+}
+
+
+AFC::map<AFC::word, AFC::scalarField> AFC::MixtureFraction::CField() const
+{
+    //- Tmp map field
+    map<word, scalarField> tmp;
+
+    //- Species
+    const wordList& speciesI = species();
+
+    //- Loop through all species
+    forAll(speciesI, s)
+    {
+        //- Temporar field that stores [X] for species s
+        scalarField CforSpecies(nZPoints(), 0);
+
+        size_t Z{0};
+
+        //- Loop through all points
+        forAll(speciesCon_, discreteC)
+        {
+            CforSpecies[Z] = discreteC.at(s);
+
+            ++Z;
+        }
+
+        tmp[s] = CforSpecies;
+    }
+
+    return tmp;
+}
+
+
+AFC::map<AFC::word, AFC::scalar> AFC::MixtureFraction::CField
+(
+    const int Z
+) const
+{
+    //- Tmp map field
+    map<word, scalarField> C_ = CField();
+    map<word, scalar> CatZ;
+
+    const wordList& speciesI = species();
+
+    forAll(speciesI, s)
+    {
+        CatZ[s] = C_.at(s)[Z];
+    }
+
+    return CatZ;
+}
+
+
+AFC::map<AFC::word, AFC::scalarField> AFC::MixtureFraction::omegaField() const
+{
+    //- Tmp map field
+    map<word, scalarField> tmp;
+
+    //- Species
+    const wordList& speciesI = species();
+
+    //- Loop through all species
+    forAll(speciesI, s)
+    {
+        //- Temporar field that stores omega for species s
+        scalarField omegaforSpecies(nZPoints(), 0);
+
+        size_t Z{0};
+
+        //- Loop through all points
+        forAll(omega_, discreteOmega)
+        {
+            omegaforSpecies[Z] = discreteOmega.at(s);
+
+            ++Z;
+        }
+
+        tmp[s] = omegaforSpecies;
+    }
+
+    return tmp;
+}
+
+
+AFC::map<AFC::word, AFC::scalar> AFC::MixtureFraction::omegaField
+(
+    const int Z
+) const
+{
+    //- Tmp map field
+    map<word, scalarField> omega_ = omegaField();
+    map<word, scalar> omegaatZ;
+
+    const wordList& speciesI = species();
+
+    forAll(speciesI, s)
+    {
+        omegaatZ[s] = omega_.at(s)[Z];
+    }
+
+    return omegaatZ;
+}
+
+
+AFC::List<int> AFC::MixtureFraction::reacNumbers
+(
+    const word species
+) const
+{
+    return chemistry_.reacNumbers(species);
+}
+
+
+AFC::wordList AFC::MixtureFraction::speciesInReaction
+(
+    const int r
+) const
+{
+    return chemistry_.speciesInReaction(r);
+}
+
+
+AFC::wordList AFC::MixtureFraction::speciesProducts
+(
+    const int r
+) const
+{
+    return chemistry_.speciesProducts(r);
+}
+
+
+AFC::wordList AFC::MixtureFraction::speciesEducts
+(
+    const int r
+) const
+{
+    return chemistry_.speciesEducts(r);
+}
+
+
+AFC::map<AFC::word, int> AFC::MixtureFraction::nuProducts
+(
+    const int r
+) const
+{
+    return chemistry_.nuProducts(r);
+}
+
+
+AFC::map<AFC::word, int> AFC::MixtureFraction::nuEducts
+(
+    const int r
+) const
+{
+    return chemistry_.nuEducts(r);
+}
+
+
+AFC::string AFC::MixtureFraction::elementarReaction
+(
+    const int r
+) const
+{
+    return chemistry_.elementarReaction(r);
+}
+
+
+AFC::Chemistry AFC::MixtureFraction::chemistry() const
+{
+    return chemistry_;
+}
+
+
+AFC::Thermo AFC::MixtureFraction::thermo() const
+{
+    return thermo_;
+}
+
+
+AFC::scalar AFC::MixtureFraction::kf
+(
+    const int r,
+    const int Z
+) const
+{
+    return chemistry_.kf(r, T_[Z]);
+}
+
+
+AFC::scalar AFC::MixtureFraction::kb
+(
+    const int r,
+    const int Z
+) const
+{
+    return chemistry_.kb(r, T_[Z]);
+}
+
 
 // * * * * * * * * * * * * * * * Write output  * * * * * * * * * * * * * * * //
 
@@ -1046,6 +1593,15 @@ void AFC::MixtureFraction::write() const
     }
 
     file.close();
+}
+
+
+AFC::scalar AFC::MixtureFraction::MW
+(
+    const word species
+) const
+{
+    return thermo_.MW(species);
 }
 
 

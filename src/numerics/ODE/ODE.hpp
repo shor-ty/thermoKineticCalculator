@@ -22,26 +22,22 @@ License
     along with AFC; if not, see <http://www.gnu.org/licenses/>
 
 Class
-    AFC::Matrix
+    AFC::ODE
     
 Description
-    Abstract AFC::Matrix class for building matrix and dealing with them
-    The matrix of rank 0 are scalars
-    The matrix of rank 1 are vectors
-    The matrix of rank 2 are matrices (n x m)
-
+    Abstract AFC::ODE class for numeric calculations for the ODE system
 
 SourceFiles
-    matrix.cpp
+    ODE.cpp
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef Matrix_hpp
-#define Matrix_hpp
+#ifndef ODE_hpp
+#define ODE_hpp
 
 #include "typedef.hpp"
-#include "tensor.hpp"
-#include "vector.hpp"
+#include "chemistry.hpp"
+#include "seulex.hpp"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -49,65 +45,54 @@ namespace AFC
 {
 
 /*---------------------------------------------------------------------------*\
-                            Class Matrix Declaration
+                            Class ODE Declaration
 \*---------------------------------------------------------------------------*/
 
-class Matrix
-:
-    public Tensor
+class ODE
 {
     private:
 
-        // Debug switch
+        //- Debug switch
         bool debug_{false};
+
+        //  TODO make Readable
+        //- Maximum allowed iterations that are used for the integration in
+        //  the chemistry calculation
+        const size_t maxIterations_{10000};
+
+        //- Absolute tolerance 
+        const scalar absoluteTolerance_{1e-15};
+
+        //- Relative tolerance 
+        const scalar relativeTolerance_{1e-4};
+        
+        //- Pointer to solver (Seulex)
+        Seulex* solver_;
 
 
     public:
 
         //- Constructor 
-        Matrix();
-
-        //- Constructor that creates a matrix n x m and init with the given
-        //  value (default value = 0)
-        Matrix
+        ODE
         (
-            const size_t,
-            const size_t,
-            const scalar value = 0
+            const Chemistry&
         );
 
         //- Destructor
-        ~Matrix();
-
-        // Operator Functions
-
-        // Arithmetric 
-
-            //- Matrix multiplication (n x m) * (m x n) 
-            //  The inner product A bullet B
-            Matrix operator*(const Matrix&) const;
+        ~ODE();
 
 
-        // Member Functions
+        // Member functions
 
-            //- Transpone the matrix A -> A^T
-            Matrix T() const;
-
-            //- Calcualte and return the inverse matrix of a squared matrix
-            Matrix inverse() const;
-
-            //- Return the identity matrix I with size of the call matrix
-            Matrix I() const;
-
-            //- Return the identity matrix I with given size (n x n)
-            Matrix I
+            //- Solve the chemistry using Seulex
+            void solve
             (
-                const size_t 
+                const scalar,
+                const scalar,
+                map<word, scalar>&,
+                const scalar,
+                scalar&
             ) const;
-
-            //- LU decomposition; decompose the Matrix A into L and U
-            void LU() const;
-
 };
 
 
@@ -117,6 +102,6 @@ class Matrix
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-#endif // Matrix_hpp included
+#endif // ODE_hpp included
 
 // ************************************************************************* //

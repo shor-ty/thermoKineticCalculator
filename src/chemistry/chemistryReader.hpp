@@ -155,7 +155,7 @@ class ChemistryReader
             void LOWCoeffs
             (
                 const string&,
-                const unsigned int&,
+                const unsigned int,
                 ChemistryData&
             );
 
@@ -163,7 +163,7 @@ class ChemistryReader
             void TROECoeffs
             (
                 const string&,
-                const unsigned int&,
+                const unsigned int,
                 ChemistryData&
             );
 
@@ -171,7 +171,7 @@ class ChemistryReader
             void SRICoeffs
             (
                 const string&,
-                const unsigned int&,
+                const unsigned int,
                 ChemistryData&
             );
 

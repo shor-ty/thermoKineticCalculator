@@ -22,26 +22,22 @@ License
     along with AFC; if not, see <http://www.gnu.org/licenses/>
 
 Class
-    AFC::Matrix
+    AFC::Jacobian
     
 Description
-    Abstract AFC::Matrix class for building matrix and dealing with them
-    The matrix of rank 0 are scalars
-    The matrix of rank 1 are vectors
-    The matrix of rank 2 are matrices (n x m)
-
+    Abstract AFC::Jacobian class for calculating the Jacobian matrix
 
 SourceFiles
-    matrix.cpp
+    jacobian.cpp
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef Matrix_hpp
-#define Matrix_hpp
+#ifndef Jacobian_hpp
+#define Jacobian_hpp
 
 #include "typedef.hpp"
-#include "tensor.hpp"
-#include "vector.hpp"
+#include "matrix.hpp"
+#include "chemistry.hpp"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -49,65 +45,59 @@ namespace AFC
 {
 
 /*---------------------------------------------------------------------------*\
-                            Class Matrix Declaration
+                            Class Jacobian Declaration
 \*---------------------------------------------------------------------------*/
 
-class Matrix
-:
-    public Tensor
+class Jacobian
 {
     private:
 
         // Debug switch
         bool debug_{false};
 
+        // Reference to the chemistry object
+        const Chemistry& chem_;
+
 
     public:
 
         //- Constructor 
-        Matrix();
-
-        //- Constructor that creates a matrix n x m and init with the given
-        //  value (default value = 0)
-        Matrix
+        Jacobian
         (
-            const size_t,
-            const size_t,
-            const scalar value = 0
+            const Chemistry&
         );
 
         //- Destructor
-        ~Matrix();
-
-        // Operator Functions
-
-        // Arithmetric 
-
-            //- Matrix multiplication (n x m) * (m x n) 
-            //  The inner product A bullet B
-            Matrix operator*(const Matrix&) const;
+        ~Jacobian();
 
 
-        // Member Functions
+        // Member functions
 
-            //- Transpone the matrix A -> A^T
-            Matrix T() const;
-
-            //- Calcualte and return the inverse matrix of a squared matrix
-            Matrix inverse() const;
-
-            //- Return the identity matrix I with size of the call matrix
-            Matrix I() const;
-
-            //- Return the identity matrix I with given size (n x n)
-            Matrix I
+            //- Calculate the Jacobian matrix
+            void jacobian 
             (
-                const size_t 
+                const scalar,
+                const scalar,
+                const scalar,
+                const map<word, scalar>&,
+                map<word, scalar>&,
+                Matrix&
+            );
+
+            //- Derive the elementar reaction based on the species s and return
+            //  the value of the derivation
+            scalar derivationOfReaction
+            (
+                const word,
+                const word,
+                const wordList&,
+                const wordList&,
+                const map<word, int>&,
+                const map<word, int>&,
+                const scalar,
+                const scalar,
+                const map<word, scalar>&
             ) const;
-
-            //- LU decomposition; decompose the Matrix A into L and U
-            void LU() const;
-
 };
 
 
@@ -117,6 +107,6 @@ class Matrix
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-#endif // Matrix_hpp included
+#endif // Jacobian_hpp included
 
 // ************************************************************************* //

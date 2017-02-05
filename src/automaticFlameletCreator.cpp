@@ -50,6 +50,21 @@ int main
     char** argv
 )
 {
+
+    Matrix A(5,5);
+
+    for(int i = 1; i<6; i++)
+    {
+        for(int j=1; j<6; j++)
+        {
+            A(i-1,j-1,i*j);
+        }
+    }
+
+    A.LU();
+
+    std::terminate();
+
     const std::clock_t startTime = clock();
 
     Info<< Header() << endl;
@@ -437,11 +452,18 @@ int main
     }*/
 
     //- Calculate initial solution
+    Numerics num(chemistry);
+
     Info<< " c-o Calculate initial solution for adiabatic flamelet\n\n";
     {
-        Numerics num;
-
         num.solveForInitialSolution(adiabaticFlamelet);
+
+        Info<< "\n";
+    }
+
+    Info<< " c-o Get it burn - calculate adiabatic flamelet\n\n";
+    {
+        num.solveAdiabaticFlamelet(adiabaticFlamelet);
     }
 
     //- Calculation start

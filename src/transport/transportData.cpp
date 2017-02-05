@@ -181,7 +181,7 @@ void AFC::TransportData::insertChemistrySpecies
 
 void AFC::TransportData::insertGeoConfig
 (
-    const int& geoConfig
+    const int geoConfig
 )
 {
     //- Species_ list must have one element more in this list 

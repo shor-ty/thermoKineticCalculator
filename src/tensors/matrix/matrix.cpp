@@ -277,6 +277,20 @@ AFC::Matrix AFC::Matrix::I
 }
 
 
+void AFC::Matrix::LU() const
+{
+    //- Temporary matrix U0
+    Matrix U0 = *this;
+
+    //- Temporary matrix L0
+    Matrix L0 = this->I();
+
+
+    U0();
+
+    L0();
+}
+
 // * * * * * * * * * * * * Special Matrix Functions  * * * * * * * * * * * * //
 
 /*void AFC::Matrix::polynomCoefficients

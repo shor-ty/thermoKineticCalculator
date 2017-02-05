@@ -75,19 +75,46 @@ AFC::scalar AFC::Chemistry::calculateOmega
 (
     const word& species,
     const scalar& T,
-    map<word, scalar>& con,
-    const Thermo& thermo
-)
+    const map<word, scalar>& con
+) const
 {
     //- Calculate source term omega
-    //return chemCalc_.calculateOmega(species, T, con, thermo, chemData_);
-    return 0;
+    return chemCalc_.calculateOmega(species, T, con, thermo_, chemData_);
+}
+
+
+AFC::map<AFC::word, AFC::scalar> AFC::Chemistry::calculateOmega
+(
+    const scalar& T,
+    const map<word, scalar>& con
+) const
+{
+    //- Species
+    const wordList& species = this->species();
+
+    //- Temporary map
+    map<word, scalar> dcdt;
+
+    //- Build the map
+    forAll(species, s)
+    {
+        dcdt[s] = scalar(0);
+    }
+
+    forAll(species, s)
+    {
+        //- Calculate source term omega for species s
+        dcdt[s] = calculateOmega(s, T, con);
+    }
+
+    //- Return the rate field
+    return dcdt;
 }
 
 
 AFC::scalar AFC::Chemistry::kf
 (
-    const int& r,
+    const int r,
     const scalar& T,
     const bool LOW
 ) const
@@ -98,7 +125,7 @@ AFC::scalar AFC::Chemistry::kf
 
 AFC::scalar AFC::Chemistry::kb
 (
-    const int& r,
+    const int r,
     const scalar& T,
     const bool LOW
 ) const
@@ -109,7 +136,7 @@ AFC::scalar AFC::Chemistry::kb
 
 AFC::scalar AFC::Chemistry::keq
 (
-    const int& r,
+    const int r,
     const scalar& T
 ) const
 {
@@ -119,7 +146,7 @@ AFC::scalar AFC::Chemistry::keq
 
 AFC::scalar AFC::Chemistry::Fcent
 (
-    const int& r,
+    const int r,
     const scalar& T
 ) const
 {
@@ -129,7 +156,7 @@ AFC::scalar AFC::Chemistry::Fcent
 
 AFC::scalar AFC::Chemistry::Flog
 (
-    const int& r,
+    const int r,
     const scalar& T,
     const scalar& M
 ) const
@@ -168,7 +195,7 @@ void AFC::Chemistry::createSpeciesInReaction()
     const wordList& species = chemData_.species();
 
     //- Reaction no.
-    const int& nReac = chemData_.nReac();
+    const int nReac = chemData_.nReac();
 
     //- List<wordList> that contains all species in each reaction
     const List<wordList>& speciesInReaction = chemData_.speciesInReaction();
@@ -208,7 +235,7 @@ void AFC::Chemistry::createSpeciesInReaction()
 
 bool AFC::Chemistry::BR
 (
-    const int& reacNo
+    const int reacNo
 ) const
 {
     return chemData_.BR(reacNo);
@@ -217,7 +244,7 @@ bool AFC::Chemistry::BR
 
 bool AFC::Chemistry::TBR
 (
-    const int& reacNo
+    const int reacNo
 ) const
 {
     return chemData_.TBR(reacNo);
@@ -226,7 +253,7 @@ bool AFC::Chemistry::TBR
 
 bool AFC::Chemistry::LOW
 (
-    const int& reacNo
+    const int reacNo
 ) const
 {
     return chemData_.LOW(reacNo);
@@ -235,7 +262,7 @@ bool AFC::Chemistry::LOW
 
 bool AFC::Chemistry::TROE
 (
-    const int& reacNo
+    const int reacNo
 ) const
 {
     return chemData_.TROE(reacNo);
@@ -244,7 +271,7 @@ bool AFC::Chemistry::TROE
 
 bool AFC::Chemistry::SRI
 (
-    const int& reacNo
+    const int reacNo
 ) const
 {
     return chemData_.SRI(reacNo);
@@ -253,7 +280,7 @@ bool AFC::Chemistry::SRI
 
 bool AFC::Chemistry::ENHANCED
 (
-    const int& reacNo
+    const int reacNo
 ) const
 {
     return chemData_.ENHANCED(reacNo);
@@ -286,7 +313,7 @@ int AFC::Chemistry::nReac() const
 
 AFC::string AFC::Chemistry::elementarReaction
 (
-    const int& r
+    const int r
 ) const
 {
     return chemData_.elementarReaction(r);
@@ -301,7 +328,7 @@ AFC::List<AFC::string> AFC::Chemistry::elementarReaction() const
 
 /*AFC::scalarField AFC::Chemistry::reacNoForSpecies
 (
-    const int& s
+    const int s
 ) const
 {
     return chemData_.reacNoForSpecies(s);
@@ -314,15 +341,10 @@ AFC::scalarField AFC::Chemistry::k() const
 }*/
 
 
-/*AFC::wordMatrix AFC::Chemistry::speciesInReactions() const
-{
-    return chemData_.speciesInReactions();
-}*/
-
 
 /*AFC::scalar AFC::Chemistry::k
 (
-    const int& reacNo 
+    const int reacNo 
 ) const
 {
     return chemData_.k(reacNo);
@@ -331,7 +353,7 @@ AFC::scalarField AFC::Chemistry::k() const
 
 AFC::scalar AFC::Chemistry::dH
 (
-    const int& r,
+    const int r,
     const scalar& T
 ) const
 {
@@ -341,7 +363,7 @@ AFC::scalar AFC::Chemistry::dH
 
 AFC::scalar AFC::Chemistry::dG
 (
-    const int& r,
+    const int r,
     const scalar& T
 ) const
 {
@@ -351,13 +373,66 @@ AFC::scalar AFC::Chemistry::dG
 
 AFC::scalar AFC::Chemistry::dS
 (
-    const int& r,
+    const int r,
     const scalar& T
 ) const
 {
     return chemCalc_.dS(r, T, chemData_, thermo_);
 }
 
+
+AFC::List<int> AFC::Chemistry::reacNumbers
+(
+    const word species
+) const
+{
+    return chemData_.reacNumbers(species);
+}
+
+
+AFC::wordList AFC::Chemistry::speciesInReaction
+(
+    const int r
+) const
+{
+    return chemData_.speciesInReaction(r);
+}
+
+
+AFC::wordList AFC::Chemistry::speciesProducts
+(
+    const int r
+) const
+{
+    return chemData_.speciesProducts(r);
+}
+
+
+AFC::wordList AFC::Chemistry::speciesEducts
+(
+    const int r
+) const
+{
+    return chemData_.speciesEducts(r);
+}
+
+
+AFC::map<AFC::word, int> AFC::Chemistry::nuProducts
+(
+    const int r
+) const
+{
+    return chemData_.nuProducts(r);
+}
+
+
+AFC::map<AFC::word, int> AFC::Chemistry::nuEducts
+(
+    const int r
+) const
+{
+    return chemData_.nuEducts(r);
+}
 
 // * * * * * * * * * * * * * * * Summary Functions * * * * * * * * * * * * * //
 
@@ -607,7 +682,7 @@ void AFC::Chemistry::chemicalTable
 
 void AFC::Chemistry::buildTablekf
 (
-    const int& r,
+    const int r,
     ostream& data,
     const bool LOW 
 ) const
@@ -648,7 +723,7 @@ void AFC::Chemistry::buildTablekf
 
 void AFC::Chemistry::buildTROETable
 (
-    const int& r,
+    const int r,
     ostream& data
 ) const
 {

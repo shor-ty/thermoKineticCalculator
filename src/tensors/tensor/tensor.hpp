@@ -115,6 +115,9 @@ class Tensor
 
             //- Return the values of the tensor
             scalarField values() const;
+
+            //- Reset the tensor and set all values to zero
+            void reset();
 };
 
 

@@ -177,7 +177,7 @@ class TransportData
             //- Insert geometrical configuration
             void insertGeoConfig
             (
-                const int&
+                const int
             );
 
             //- Insert Lennard-Jones potential

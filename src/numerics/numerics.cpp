@@ -25,16 +25,25 @@ License
 
 #include "typedef.hpp"
 #include "numerics.hpp"
+#include "ODE.hpp"
 #include <math.h>
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-AFC::Numerics::Numerics()
+AFC::Numerics::Numerics
+(
+    const Chemistry& chem 
+)
 {
     if (debug_)
     {
         Info<< "Constructor Numerics \n" << endl;
     }
+
+    ode_ = new ODE(chem);
+
+    //- TODO readable
+    deltaTChem_ = scalarField(11, 1e-7);
 }
 
 
@@ -56,7 +65,7 @@ void AFC::Numerics::solveForInitialSolution
     MixtureFraction& flamelet
 )
 {
-    Info<< "     c-o Solve Laplace Equation to get initial solution\n";
+    Info<< "     c-o Solve laplace equation to get initial solution\n";
 
     //- Solve the Laplace Equation to get initial (linear) profile
     //  We only need the boundary species
@@ -129,19 +138,148 @@ void AFC::Numerics::solveForInitialSolution
                     ) * dt + Yold[i];
             }
 
-            //- Update the fields (could be done with references faster)
+            //- Update the mass fraction
             flamelet.updateY(s, Ynew);
-            flamelet.updateX();
-            flamelet.updateC(); 
 
             finalResidual = residual(Yold, Ynew);
-        }
-        while (finalResidual > 1e-6);
 
-        Info<< "Solved for species " << s << ", Converged after " << nIter
-            << ", Residual = " << finalResidual << "\n";
+            //- Exit based on mass conservation TODO
+        }
+        while (finalResidual > 1e-9);
+
+        //- Update the other fields
+        flamelet.updateFields();
+
+        Info<< "         ++ Solved for species " << s << ", Converged after "
+            << nIter << ", Residual = " << finalResidual << "\n";
     }
+
 }
+
+
+void AFC::Numerics::solveAdiabaticFlamelet
+(
+    MixtureFraction& flamelet
+)
+{
+    Info<< "     c-o Solve the flamelet equation for the adiabatic flamelet\n";
+
+    // --------- NEW 
+    //
+    //
+    //
+    //
+
+
+    //- Iteration counter
+    size_t nIter{0};
+
+    scalar tEnd = 10;
+    scalar deltaTDiff = 0.05;
+    scalar deltaTChem = 1e-8;
+
+    //- Solve the flamelet equation. Therefore we split the calculation into
+    //  chemistry solving with the chemistry delta till we reach the diffusion
+    //  delta. After that we go on in time for the next time step
+    //
+    //  Time:
+    //      tEnd := Simulation end time 
+    //      deltaTDiff := Diffusion time step (for flamelet equation)
+    //      deltaTChem := Chemistry time step (sub time step for chemistry)
+    //    
+    //  Chemistry is solved using the Seulex algorithm
+    //
+    //  
+    //    
+
+    //- TH::Solver chemistry.solve()
+    //  {
+    //- Run time (solve till we reach end time)
+    while (deltaTDiff < tEnd)
+    {
+        //- Store old chemistry time step
+        scalar deltaTChem0 = deltaTChem;
+
+        //- Solve the chemistry and return the maximum time step for the 
+        //  chemistry during this calculation (used for the next iteration)
+        deltaTChem = solveChemistry(deltaTChem0, flamelet);
+
+        //-
+    }
+    //- TH::Solver chemistry.solve()
+    //  }
+}
+
+
+AFC::scalar AFC::Numerics::solveChemistry
+(
+    const scalar deltaTChem,
+    MixtureFraction& flamelet
+)
+{
+
+    //- TH::ChemistryModel
+    //{
+    scalar deltaTMin{1e6};
+
+    //- Temperature and pressure
+    const scalarField& T = flamelet.T();
+    const scalar p = flamelet.p();
+
+    //- Actual (old) concentration and the one we will change
+    map<word, scalarField> c0 = flamelet.CField();
+    List<map<word, scalar> > c = flamelet.C();
+    //map<word, scalarField> c = flamelet.CField();
+    
+    //- The density field [g/m^3]
+    const scalarField& rho = flamelet.rho();
+
+    //- Solve the chemistry for each discrete mixture fraction point
+    forEach(T, Zi)
+    {
+        //- Skip the first and last point (pure oxidizer and fuel)
+        if ((Zi > 0) && (Zi < T.size()))
+        {
+            //- Get values at the discrete point (pressure is constant)
+            scalar Ti = T[Zi];
+            scalar rhoi = rho[Zi];
+            map<word, scalar> ci = c[Zi];
+
+            //- This time is the time that shows us if we reached deltaTChem
+            //  It is the remaining time 
+            scalar timeLeft = deltaTChem;
+
+            //- Solve till the remaining time is lower than 1e-6s
+
+            size_t iterChem{0};
+
+            //- TODO SMALL
+            while (timeLeft > 1e-15)
+            {
+                //- Time step of actual chemistry iteration
+                scalar dt = timeLeft;
+
+                //- Solve the chemistry for the given dt using the Seulex
+                //  algorithm and return the smallest time step
+                ode_->solve(Ti, p, ci, dt, deltaTChem_[Zi]);
+
+                timeLeft -= dt;
+
+                iterChem++;
+            }
+
+            Info<< "  Chemistry solved in " << iterChem << " iterations\n";
+
+            deltaTMin = min(deltaTChem_[Zi], deltaTMin);
+        }
+    }
+
+    return deltaTMin;
+    //- TH::ChemistryModel
+    //}
+}
+
+
 
 
 AFC::scalar AFC::Numerics::FDMLapacian2ndOrder
@@ -307,7 +445,7 @@ void AFC::Numerics::jacobian
     lookUpTable& lut,
     const scalar& sDR,
     const scalar& defect,
-    const unsigned int& nDisPoints
+    const unsigned int nDisPoints
 )
 {
     //- TODO
@@ -406,3 +544,220 @@ AFC::scalar AFC::Numerics::max
 }
 
 // ************************************************************************* //
+/*
+                //- e) if species is in reaction we go on in calculating the
+                //  derivative
+                if (cont)
+                {
+                    //- f) Product and educt species
+                    const wordList& prodSpecies = flamelet.speciesProducts(r);
+                    const wordList& educSpecies = flamelet.speciesEducts(r);
+
+                    //- g) Concentrations of species at discrete point
+                    const map<word, scalar>& con = flamelet.C(Z);
+
+                    //- Where is the derivative species?
+                    bool inEducSite{false};
+                    bool inProdSite{false};
+
+                    forAll(prodSpecies, s)
+                    {
+                        if (s == species2)
+                        {
+                            inProdSite = true;
+                            break;
+                        }
+                    }
+
+                    forAll(educSpecies, s)
+                    {
+                        if (s == species2)
+                        {
+                            inEducSite = true;
+                            break;
+                        }
+                    }
+
+                    Info<< "In product site: " << inProdSite << "\n";
+                    Info<< "In educt   site: " << inEducSite << "\n";
+
+                    //- h) Derivative species is in reaction as educt
+                    if (inEducSite)
+                    {
+                        scalar educ{0};
+
+                        //- i) Get the stochiometric coeffs
+                        const map<word, int>& nuProd = flamelet.nuProducts(r);
+                        const map<word, int>& nuEduc = flamelet.nuEducts(r);
+
+                        //- j) Stochiometric factor of the derivative species
+                        const scalar nuDS = nuEduc.at(species2);
+
+                        Info<< "  The derivative species is of order " << nuDS << "\n";
+                        Info<< "  Educt = ";
+
+                        //- k) nuDS == 1 (linear) nuDS == 2 (non-linear)
+                        if (fabs(nuDS) == 1)
+                        {
+                            forAll(educSpecies, s)
+                            {
+                                if (s != species2)
+                                {
+                                    Info<< "["<< s << "]^" << fabs(nuEduc.at(s)) << " * "; 
+                                    educ *= pow(con.at(s), fabs(nuEduc.at(s)));
+                                }
+                            }
+
+                        }
+                        else if (fabs(nuDS) == 2)
+                        {
+                            //- Avoid repeating
+                            bool repeating{false};
+
+                            forAll(educSpecies, s)
+                            {
+                                if (s != species2)
+                                {
+                                    Info<< "["<< s << "]^" << fabs(nuEduc.at(s)) << " * "; 
+                                    educ *= pow(con.at(s), fabs(nuEduc.at(s)));
+                                }
+                                else
+                                {
+                                    if (!repeating)
+                                    {
+                                    Info<< fabs(nuEduc.at(s)) << "["<< s << "]^"
+                                        << fabs(nuEduc.at(s))-1 << " * "; 
+
+                                    //- First derivative of the term
+                                    educ *= (fabs(nuEduc.at(s)))
+                                        * pow(con.at(s), fabs(nuEduc.at(s))-1);
+                                    repeating = true;
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            FatalError
+                            (
+                                "The stochiometric factor is not defined\n",
+                                __FILE__,
+                                __LINE__
+                            );
+                        }
+                        Info<<"\n";
+
+                        //- l) get forward reaction rate kf
+                        const scalar kf = flamelet.kf(r, Z);
+
+                        //- Get pre-factor nu'' - nu' :: based on the fact that we already
+                        //  know the right value, we just have to check if the species
+                        //  is within the product or educt side
+                        scalar nuSpecies{0};
+
+                        if (nuEduc.count(species2))
+                        {
+                            nuSpecies = nuEduc.at(species2);
+                        }
+                        else
+                        {
+                            nuSpecies = nuProd.at(species2);
+                        }
+
+                        //- n) Add the value to the Jacobian element
+                        Info<< "---> " << nuSpecies << " * " << kf << " * " << educ 
+                            << " = " << nuSpecies * -1 * kf * educ <<  "\n";
+                        Jij += nuSpecies * kf * educ;
+                    }
+
+                    //- h) Derivative species is in reaction as product
+                    if (inProdSite)
+                    {
+                        scalar prod{0};
+
+                        //- i) Get the stochiometric coeffs
+                        const map<word, int>& nuProd = flamelet.nuProducts(r);
+                        const map<word, int>& nuEduc = flamelet.nuEducts(r);
+
+                        //- j) Stochiometric factor of the derivative species
+                        const scalar nuDS = nuProd.at(species2);
+
+                        Info<< "  The derivative species is of order " << nuDS << "\n";
+                        Info<< "  Prod = ";
+
+                        //- k) nuDS == 1 (linear) nuDS == 2 (non-linear)
+                        if (fabs(nuDS) == 1)
+                        {
+                            forAll(prodSpecies, s)
+                            {
+                                if (s != species2)
+                                {
+                                    Info<< "["<< s << "]^" << nuProd.at(s) << " * "; 
+                                    prod *= pow(con.at(s), nuProd.at(s));
+                                }
+                            }
+
+                        }
+                        else if (fabs(nuDS) == 2)
+                        {
+                            //- Avoid repeating
+                            bool repeating{false};
+
+                            forAll(prodSpecies, s)
+                            {
+                                if (s != species2)
+                                {
+                                    Info<< "["<< s << "]^" << nuProd.at(s) << " * "; 
+                                    prod *= pow(con.at(s), nuProd.at(s));
+                                }
+                                else
+                                {
+                                    if (!repeating)
+                                    {
+                                    //- First derivative of the term
+                                    Info<< nuProd.at(s) << "["<< s << "]^" << nuProd.at(s)-1 << " * "; 
+                                    prod *= (nuProd.at(s) - 1)
+                                        * pow(con.at(s), nuProd.at(s)-1);
+                                    repeating = true;
+                                    } 
+                                }
+                            }
+                        }
+                        else
+                        {
+                            FatalError
+                            (
+                                "The stochiometric factor is not defined\n",
+                                __FILE__,
+                                __LINE__
+                            );
+                        }
+                        Info<<"\n";
+
+                        //- l) get backward reaction rate kb
+                        const scalar kb = flamelet.kb(r, Z);
+
+                        //- Get pre-factor nu'' - nu' :: based on the fact that we already
+                        //  know the right value, we just have to check if the species
+                        //  is within the product or educt side
+                        scalar nuSpecies{0};
+
+                        if (inEducSite)
+                        {
+                            nuSpecies = nuEduc.at(species2);
+                        }
+                        else if (inProdSite) 
+                        {
+                            nuSpecies = nuProd.at(species2);
+                        }
+                        else if (inEducSite && inProdSite)
+                        {
+                            nuSpecies = nuProd.at(species2) + nuProd.at(species2);
+                        }
+
+                        //- n) Add the value to the Jacobian element
+                        Info<< "---> " << nuSpecies << " * - " << kb << " * " << prod
+                            << " = " << nuSpecies * -1 * kb * prod <<  "\n";
+                        Jij += nuSpecies * -1 * kb * prod; 
+                    }
+*/

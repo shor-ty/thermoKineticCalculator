@@ -72,7 +72,7 @@ void AFC::ThermoData::insertChemicalFormula
 void AFC::ThermoData::insertAtomAndFactor
 (
     const word& atom,
-    const unsigned int& factor
+    const unsigned int factor
 )
 {
     //- Using normal names

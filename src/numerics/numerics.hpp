@@ -37,6 +37,7 @@ SourceFiles
 
 #include "typedef.hpp"
 #include "mixtureFraction.hpp"
+#include "ODE.hpp"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -54,11 +55,21 @@ class Numerics
         // Debug switch
         bool debug_{false};
 
+        //- ODE pointer 
+        ODE* ode_;
+
+        //- Initial chemistry time step for each discrete point Z 
+        //  This time step will change during the calculation
+        scalarField deltaTChem_;
+
 
     public:
 
         //- Constructor 
-        Numerics();
+        Numerics
+        (
+            const Chemistry&  
+        );
 
         //- Destructor
         ~Numerics();
@@ -73,6 +84,20 @@ class Numerics
             //  a very fast solution
             void solveForInitialSolution
             (
+                MixtureFraction&
+            );
+
+            //- Solve the transient laminar flamelet equations for the species
+            //  and the temperature
+            void solveAdiabaticFlamelet 
+            (
+                MixtureFraction&
+            );
+            
+            //- Solve the chemistry with Seulex algorithm
+            scalar solveChemistry
+            (
+                const scalar,
                 MixtureFraction&
             );
 
@@ -95,12 +120,6 @@ class Numerics
                 MixtureFraction&,
                 const scalar&,
                 const scalar&
-            );
-
-            //- solve Jacobian
-            void jacobian
-            (
-                MixtureFraction&
             );
 
             //- Solve the problem Ax = b
