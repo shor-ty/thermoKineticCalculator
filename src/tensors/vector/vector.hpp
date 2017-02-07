@@ -94,13 +94,14 @@ class Vector
 
         // Operator Functions
 
+            //- Inner Product of Vector and Matrix
             Vector operator*
             (
                 const Matrix&
             ) const;
         
             //- Return the value at position
-            scalar operator()
+            /*scalar operator()
             (
                 const size_t&
             ) const;
@@ -110,10 +111,10 @@ class Vector
             (
                 const size_t,
                 const scalar
-            );
+            );*/
 
             //- Show the vector
-            void operator()() const;
+            //void operator()() const;
 
             //- Arithmetic += (const Matrix&)
             /*Vector operator()= 

@@ -101,6 +101,15 @@ AFC::scalar AFC::Tensor::operator()
 }
 
 
+AFC::scalar AFC::Tensor::operator()
+(
+    size_t rows
+) const
+{
+    return operator()(rows, 0);
+}
+
+
 void AFC::Tensor::operator()
 (
     size_t rows,
@@ -127,6 +136,25 @@ void AFC::Tensor::operator()() const
         Info << " |\n";
     }
     Info<< "\n";
+}
+
+
+AFC::scalar& AFC::Tensor::operator()
+(
+    const size_t rows,
+    const size_t cols
+)
+{
+    return values_[rows * nCols_ + cols];
+}
+
+
+AFC::scalar& AFC::Tensor::operator()
+(
+    const size_t rows
+)
+{
+    return operator()(rows, 0);
 }
 
 

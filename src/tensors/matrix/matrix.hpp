@@ -105,6 +105,15 @@ class Matrix
                 const size_t 
             ) const;
 
+            //- Return Lower Triagonal of the matrix (LT has 1 at diag)
+            //  Only for squared matrices
+            Matrix LT() const;
+
+            //- Return Upper Triagonal of the matrix
+            //  Only for squared matrices
+            Matrix UT() const;
+
+
             //- LU decomposition; decompose the Matrix A into L and U
             void LU() const;
 

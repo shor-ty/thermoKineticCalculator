@@ -277,6 +277,64 @@ AFC::Matrix AFC::Matrix::I
 }
 
 
+AFC::Matrix AFC::Matrix::LT() const
+{
+    if (this->rows() != this->cols())
+    {
+        FatalError
+        (
+            "Matrix is not a squared matrix",
+            __FILE__,
+            __LINE__
+        );
+    }
+
+    Matrix L = this->I();
+
+    size_t n = this->rows();
+
+    //- Fill L with values of matrix
+    for (size_t i=0; i<n; i++)
+    {
+        for (size_t j=0; j<i; j++)
+        {
+            L(i,j) = this->operator()(i,j);
+        }
+    }
+
+    return L;
+}
+
+
+AFC::Matrix AFC::Matrix::UT() const
+{
+    if (this->rows() != this->cols())
+    {
+        FatalError
+        (
+            "Matrix is not a squared matrix",
+            __FILE__,
+            __LINE__
+        );
+    }
+
+    Matrix U = this->I();
+
+    size_t n = this->rows();
+
+    //- Fill U with values of matrix
+    for (size_t i=0; i<n; i++)
+    {
+        for (size_t j=i; j<n; j++)
+        {
+            U(i,j) = this->operator()(i,j);
+        }
+    }
+
+    return U;
+}
+
+
 void AFC::Matrix::LU() const
 {
     //- Temporary matrix U0

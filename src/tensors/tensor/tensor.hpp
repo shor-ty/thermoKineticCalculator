@@ -82,6 +82,8 @@ class Tensor
             const scalar value = 0
         );
 
+
+
         //- Constructor that creates a tensor n x m using a scalarField
         Tensor
         (
@@ -95,8 +97,17 @@ class Tensor
 
         // Operator Functions
 
-            //- Return the tensor element at the given positions
+            //- Return the tensor element at the given positions (matrix)
             scalar operator()(size_t, size_t) const;
+
+            //- Return the tensor element at the given positions (vector)
+            scalar operator()(size_t) const;
+
+            //- Assign operator
+            scalar& operator()(const size_t, const size_t);
+
+            //- Assign operator (b(i) = value)
+            scalar& operator()(const size_t);
 
             //- Set tensor element at given position
             void operator()(size_t, size_t, scalar);
@@ -107,10 +118,10 @@ class Tensor
 
         // Member Functions
 
-            //- Return cols of the tensor
+            //- Return cols j of the tensor (Spalten)
             size_t cols() const;
 
-            //- Return rows of the tensor
+            //- Return rows i of the tensor (Zeilen)
             size_t rows() const;
 
             //- Return the values of the tensor

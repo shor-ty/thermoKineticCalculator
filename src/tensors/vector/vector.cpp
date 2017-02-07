@@ -130,7 +130,7 @@ AFC::Vector AFC::Vector::operator*
 }
 
 
-AFC::scalar AFC::Vector::operator()
+/*AFC::scalar AFC::Vector::operator()
 (
     const size_t& i
 ) const
@@ -168,7 +168,7 @@ void AFC::Vector::operator()
 void AFC::Vector::operator()() const
 {
     AFC::Tensor::operator()();
-}
+}*/
 
 
 // * * * * * * * * * * * * * * * Member function * * * * * * * * * * * * * * //
