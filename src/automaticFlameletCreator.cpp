@@ -28,15 +28,16 @@ Description
 
 #include "time.h"
 #include "typedef.hpp" 
-#include "chemistry.hpp"
-#include "thermo.hpp"
-#include "transport.hpp"
-#include "properties.hpp"
-#include "mixtureFraction.hpp"
+//#include "chemistry.hpp"
+//#include "thermo.hpp"
+//#include "transport.hpp"
+//#include "properties.hpp"
+//#include "mixtureFraction.hpp"
 #include "numerics.hpp"
-#include "interpreter.hpp"
+//#include "interpreter.hpp"
 #include "matrix.hpp"
 #include "vector.hpp"
+#include "LUDecompose.hpp"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -51,25 +52,84 @@ int main
 )
 {
 
-    Matrix A(5,5);
-
-    for(int i = 1; i<6; i++)
-    {
-        for(int j=1; j<6; j++)
-        {
-            A(i-1,j-1,i*j);
-        }
-    }
-
-    A.LU();
-
-    std::terminate();
-
     const std::clock_t startTime = clock();
 
     Info<< Header() << endl;
 
-    string file_AFC;
+
+    Matrix A(3,3);
+
+    /*A(0,0) =8;
+    A(0,1) =1;
+    A(0,2) =6;
+
+    A(1,0) =4;
+    A(1,1) =9;
+    A(1,2) =2;
+
+    A(2,0) =0;
+    A(2,1) =5;
+    A(2,2) =7;
+
+    */
+    A(0,0) = 0.000003;
+    A(0,1) = 0.213472;
+    A(0,2) = 0.332147;
+
+    A(1,0) = 0.215512;
+    A(1,1) = 0.375623;
+    A(1,2) = 0.476625;
+
+    A(2,0) = 0.173257;
+    A(2,1) = 0.663257;
+    A(2,2) = 0.625675;
+
+    /*
+    A(0,0) = 8;
+    A(0,1) =9 ;
+    A(0,2) =10;
+
+    A(1,0) =12;
+    A(1,1) =4;
+    A(1,2) =12;
+
+    A(2,0) =3;
+    A(2,1) =93;
+    A(2,2) =9;
+    */
+
+    A();
+
+    Vector b(3);
+
+    b(0) = 0.235262;
+    b(1) = 0.127653;
+    b(2) = 0.285321;
+    /*
+    b(0) = 2;
+    b(1) = 1;
+    b(2) = 4;
+    */
+
+    Vector x(3);
+
+    b();
+
+
+    LUDecompose T(A);
+
+    x();
+
+
+    T.solve(b, x);
+
+    b();
+    x();
+
+
+
+// TH 0502
+/*    string file_AFC;
     string file_Thermo;
     string file_Transport;
     string file_Chemistry;
@@ -306,6 +366,7 @@ int main
     {
 //        transport.prepareFitting(thermo);
     }
+    */
 
     //- Calculate first flamelet (initial - equilibrium)
     //AdiabaticFlamelet adiabaticFlamelet;
@@ -350,7 +411,8 @@ int main
         return 0;
     }*/
 
-    Info<< " c-o Overview of Look-Up-Tables ...\n" << endl;
+// TH 0502
+/*    Info<< " c-o Overview of Look-Up-Tables ...\n" << endl;
 
     //- Definition
     //  |
@@ -374,6 +436,7 @@ int main
         scalar(1e-6),
         scalar(0)
     );
+*/
     /*{
         const scalarField defects = properties.defects();
         const scalarField sDRs = properties.sDRs();
@@ -451,6 +514,8 @@ int main
         Info<< "\n";
     }*/
 
+// TH 0502
+/*
     //- Calculate initial solution
     Numerics num(chemistry);
 
@@ -465,6 +530,7 @@ int main
     {
         num.solveAdiabaticFlamelet(adiabaticFlamelet);
     }
+    */
 
     //- Calculation start
     /*Info<< " c-o Start flamelet calculation\n" << endl;

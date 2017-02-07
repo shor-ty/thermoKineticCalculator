@@ -1,5 +1,9 @@
 WORK_DIR=$(PWD)
 
+$(OUT_O_DIR)/%.o: %.cpp
+	        @mkdir -p $(@D)
+	        @$(CC) -c $< -o $@
+
 INC_DIR=-I$(WORK_DIR)/chemistry \
 		-I$(WORK_DIR)/thermo \
 		-I$(WORK_DIR)/transport \
@@ -9,6 +13,7 @@ INC_DIR=-I$(WORK_DIR)/chemistry \
 		-I$(WORK_DIR)/numerics \
 		-I$(WORK_DIR)/numerics/ODE \
 		-I$(WORK_DIR)/numerics/jacobian \
+		-I$(WORK_DIR)/numerics/LUDecompose \
 		-I$(WORK_DIR)/numerics/seulex \
 		-I$(WORK_DIR)/numerics/stepStatus \
 		-I$(WORK_DIR)/typedef \
@@ -23,16 +28,18 @@ INC_DIR=-I$(WORK_DIR)/chemistry \
 
 
 SOURCE_FILES=automaticFlameletCreator.cpp \
-			 numerics/numerics.cpp \
-			 numerics/stepStatus/stepStatus.cpp \
-			 numerics/jacobian/jacobian.cpp \
-			 numerics/seulex/seulex.cpp \
-			 numerics/ODE/ODE.cpp \
+			 typedef/typedef.cpp \
+			 numerics/LUDecompose/LUDecompose.cpp \
 			 tensors/tensor/tensor.cpp \
 			 tensors/matrix/matrix.cpp \
 			 tensors/vector/vector.cpp \
 			 tensors/scalar/scalar.cpp \
-			 tensors/dimensions/dimensions.cpp \
+			 tensors/dimensions/dimensions.cpp
+#			 numerics/seulex/seulex.cpp \
+			 numerics/numerics.cpp \
+			 numerics/stepStatus/stepStatus.cpp \
+			 numerics/jacobian/jacobian.cpp \
+			 numerics/ODE/ODE.cpp \
 			 chemistry/chemistry.cpp \
 			 chemistry/chemistryReader.cpp \
 			 chemistry/chemistryData.cpp \
@@ -48,7 +55,6 @@ SOURCE_FILES=automaticFlameletCreator.cpp \
 			 properties/properties.cpp \
 			 properties/propertiesReader.cpp \
 			 mixtureFraction/mixtureFraction.cpp \
-			 typedef/typedef.cpp \
 			 interpreter/interpreter.cpp \
 			 stringManipulator/stringManipulator.cpp
 
