@@ -1,28 +1,117 @@
+/*---------------------------------------------------------------------------*\
+  c-o-o-c-o-o-o             |
+  |     |     A utomatic    | Open Source Flamelet
+  c-o-o-c     F lamelet     | 
+  |     |     C onstructor  | Copyright (C) 2015 Holzmann-cfd
+  c     c-o-o-o             |
+-------------------------------------------------------------------------------
+License This file is part of Automatic Flamelet Constructor.
 
-    mixtureFractionPoints 20
+    AFC is free software; you can redistribute it and/or modify it under
+    the terms of the GNU General Public License as published by the
+    Free Software Foundation; either version 3 of the License, or 
+    (at your option) any later version.
 
+    AFC is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with AFC; if not, see <http://www.gnu.org/licenses/>
+
+\*---------------------------------------------------------------------------*/
+
+
+// * * * * * * * * * * * * * AFC Control And Settings  * * * * * * * * * * * //
+
+
+    //- Stuff for adiabatic flame calculation 
+    oxidizer O2
+    fuel H2
+    inertGas AR
+
+    //- Stuff for flamelet calculation
+    //  Either use molFraction or massFraction
+    massFractionOxidizer
+    {
+        O2 1
+    }
+
+    massFractionFuel
+    {
+        H2 1
+    }   
+
+    //- Pressure
+    pressure 101325
+
+    //- Discretization points in 1D  
+    mixtureFractionPoints 11
+
+    //- Discretization points for varianz of mixture fraciton Z''
+    //  Used in PDF (probability distribution fucntion, beta-PDF)
+    varianzOfMixtureFractionPoints 20
+
+    //- Scalar dissipation rates, for each rate the flamelet will be
+    //  calculated;
     scalarDissipationRates
     {
-        1e-6
         1e-3
-        1e-2
-        1
-        10
     }
          
 
-    temperatureOxidizer 298
+    //- Temperature of fuel and oxidizer at inlets
+    temperatureOxidizer 300
+    temperatureFuel 300
 
-    moleFractionOxidizer
+    //- Enthalpy defects in [J/kJ]; 
+    //  + negative, energy will be excluded
+    //  + positive, energy will be added
+    //  this value is a source/sink in the temperature equation
+    enthalpyDefects
     {
-        O2    0.21
-        N2    0.79
+        0
     }
 
-    temperatureFuel 298
-
-    moleFractionFuel
+    //- AFC Controls 
+    afcControl
     {
-        H2  0.3
-        CO  0.7 
-    }   
+        //- Transient simulation, end time
+        runTime     400
+
+        //- Time step
+        deltat      0.5
+
+        //- Write transient data each x seconds
+        writeInterval   1
+        writeControl    endTime
+        writeTime       20 
+    }
+
+    //- Data should only be interpreted -> output files
+    //  If analysed is used, no flamelet calculation is done 
+    interpreter
+    {
+        //- Output type, either into file or monitor
+        type    file;
+        file    afc.interpreter
+
+        //- Which data should be analysed
+        analyse  THERMO 
+        thermo      true;
+        chemistry   true; 
+        properties  true;
+    }
+
+    summary
+    {
+        //- Output type, either into file or monitor
+        type        file;
+        file        afc.summary
+
+        //- Summary output (yes, false)
+        thermo      true;
+        chemistry   true;
+        properties  true;
+    }

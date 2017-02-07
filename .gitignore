@@ -1,9 +1,18 @@
 #.gitignore
 #
-# codeBlocks
+# codeBlocks (old)
 *.cbp
 *.layout
 *.depend
+*.swp
+*.pdf
+*.eps
+*.png
+
+#documentation
+doc/doxygen
+doc/*pdf
+doc/UserGuide
 
 #gcc 
 obj/
@@ -16,6 +25,11 @@ html/
 
 #prog
 automaticFlameletCreator
+src/thirdParty
+summary
+files/
+src/flamelet/
+log
 
 #gedit
 *~
