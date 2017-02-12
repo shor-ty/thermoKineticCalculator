@@ -52,12 +52,8 @@ CPPFLAGS=-Wall \
 
 
 SOURCE_FILES=$(shell find $(DIRECTORIES) -name '*.cpp')
-#SOURCE_FILES:=$(SOURCE_FILES) automaticFlameletCreator.cpp
 
 OBJECT_FILES=$(addprefix obj/, $(addsuffix .o, $(basename $(SOURCE_FILES))))
-
-show:
-	@echo $(OBJECT_FILES)
 
 INCLUDE_DIR=$(addprefix -I,$(DIRECTORIES))
 
@@ -69,7 +65,7 @@ pre:
 	$(MAKE_DIR) $(addprefix obj/,$(DIRECTORIES))
 
 clean:
-	$(CLEAN_DIR) obj
+	$(CLEAN_DIR) obj $(PROGRAM)
 
 build : $(OBJECT_FILES) 
 	$(COMPILER) $(CPPFLAGS) $(INCLUDE_DIR) -o $(PROGRAM) $(addsuffix .cpp, $(PROGRAM)) $^
