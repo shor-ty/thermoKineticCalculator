@@ -68,6 +68,9 @@ class LUDecompose
         //- Size of the matrix (Rows and cols has to be equal)
         size_t n_;
 
+        //- Original matrix (needed for iterative improvment)
+        const Matrix A_;
+
         //- LU matrix (store the decomposition)
         Matrix LU_;
 
@@ -99,6 +102,14 @@ class LUDecompose
                 Vector&,
                 Vector&
             );
+
+            //- Solution improve. The solution optained by solve() can be
+            //  improved iteratively
+            void improveSolution
+            (
+                Vector&,
+                Vector&
+            ) const;
 };
 
 

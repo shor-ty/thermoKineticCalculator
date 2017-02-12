@@ -38,6 +38,8 @@ AFC::LUDecompose::LUDecompose
 
     j_(A.cols()),
 
+    A_(A),
+
     LU_(A),
 
     permut_(i_, 0)
@@ -255,6 +257,47 @@ void AFC::LUDecompose::solve
 
         //- Store the component of the solution vector
         x(i) = sum / LU_(i,i);
+    }
+}
+
+
+void AFC::LUDecompose::improveSolution
+(
+    Vector& b,
+    Vector& x
+) const 
+{
+    //- Temporary variables
+    size_t i{0}, j{0};
+
+    scalar sdp{0};
+
+    Vector r(n_);
+
+    for (i=0; i<n_; i++)
+    {
+        //- Store the RHS (b) into sdp
+        sdp = -b(i);
+
+        for (j=0; j<n_; j++)
+        {
+            //- Calculating RHS of Ax = b ... the result (sdp) should be equal
+            //  to b. In fact we get some deviation - a residual that we store
+            //  in sdp
+            sdp += A_(i,j) + x(j);
+        }
+        
+        //- Put the residual into the r vector
+        r(i) = sdp;
+    }
+
+    //- Solve for the error term
+    //solve(r, r);
+    
+    //- Substract the error from the solution
+    for (i=0; i<n_; i++)
+    {
+        x(i) -= r(i);
     }
 }
 

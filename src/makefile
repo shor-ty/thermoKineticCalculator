@@ -1,91 +1,86 @@
+#
+# Tobias Holzmann
+# Februar 2017
+#
+# Description
+#     This makefile compiles the libraries and the application for generating 
+#     steady-state flamelets that can be used with the flameletHolzmannFoam
+#
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+
+PROGRAM=automaticFlameletCreator
+OBJECTDIR=obj
+MAKE_DIR=mkdir -p
+CLEAN_DIR=rm -rfv
 WORK_DIR=$(PWD)
+COMPILER=g++
 
-$(OUT_O_DIR)/%.o: %.cpp
-	        @mkdir -p $(@D)
-	        @$(CC) -c $< -o $@
+# Compiling mode: DEBUG | OPT
+COMPILE_MODE=DEBUG
 
-INC_DIR=-I$(WORK_DIR)/chemistry \
-		-I$(WORK_DIR)/thermo \
-		-I$(WORK_DIR)/transport \
-		-I$(WORK_DIR)/properties \
-		-I$(WORK_DIR)/mixtureFraction \
-		-I$(WORK_DIR)/constants \
-		-I$(WORK_DIR)/numerics \
-		-I$(WORK_DIR)/numerics/ODE \
-		-I$(WORK_DIR)/numerics/jacobian \
-		-I$(WORK_DIR)/numerics/LUDecompose \
-		-I$(WORK_DIR)/numerics/seulex \
-		-I$(WORK_DIR)/numerics/stepStatus \
-		-I$(WORK_DIR)/typedef \
-		-I$(WORK_DIR)/interpreter \
-		-I$(WORK_DIR)/tensors/tensor \
-		-I$(WORK_DIR)/tensors/matrix \
-		-I$(WORK_DIR)/tensors/vector \
-		-I$(WORK_DIR)/tensors/scalar \
-		-I$(WORK_DIR)/tensors/dimensions \
-		-I$(WORK_DIR)/stringManipulator
-
-
-
-SOURCE_FILES=automaticFlameletCreator.cpp \
-			 typedef/typedef.cpp \
-			 numerics/LUDecompose/LUDecompose.cpp \
-			 tensors/tensor/tensor.cpp \
-			 tensors/matrix/matrix.cpp \
-			 tensors/vector/vector.cpp \
-			 tensors/scalar/scalar.cpp \
-			 tensors/dimensions/dimensions.cpp
-#			 numerics/seulex/seulex.cpp \
-			 numerics/numerics.cpp \
-			 numerics/stepStatus/stepStatus.cpp \
-			 numerics/jacobian/jacobian.cpp \
-			 numerics/ODE/ODE.cpp \
-			 chemistry/chemistry.cpp \
-			 chemistry/chemistryReader.cpp \
-			 chemistry/chemistryData.cpp \
-			 chemistry/chemistryCalc.cpp \
-			 thermo/thermo.cpp \
-			 thermo/thermoReader.cpp \
-			 thermo/thermoData.cpp \
-			 thermo/thermoCalc.cpp \
-			 transport/transport.cpp \
-			 transport/transportReader.cpp \
-			 transport/transportData.cpp \
-			 transport/transportCalc.cpp \
-			 properties/properties.cpp \
-			 properties/propertiesReader.cpp \
-			 mixtureFraction/mixtureFraction.cpp \
-			 interpreter/interpreter.cpp \
-			 stringManipulator/stringManipulator.cpp
+DIRECTORIES=chemistry \
+            thermo \
+            transport \
+            properties \
+            mixtureFraction \
+            constants \
+            numerics \
+            numerics/ODE \
+            numerics/jacobian \
+            numerics/LUDecompose \
+            numerics/seulex \
+            numerics/stepStatus \
+            typedef \
+            interpreter \
+            tensors/tensor \
+            tensors/matrix \
+            tensors/vector \
+            tensors/scalar \
+            tensors/dimensions \
+            stringManipulator
 
 
-#SRC_FILES=mixtureFraction/numerics.cpp
+CPPFLAGS=-Wall \
+		 -Wextra \
+         -std=c++11 \
+		 -D_GLIBCXX_DEBUG \
+         -g \
+         -pedantic-errors \
+         -ggdb \
+         -Wno-unused-parameter \
+         -Wno-unused-variable 
 
-CPPFLAGS=-g -Wall -Wextra -pedantic-errors -std=c++11 -Wno-unused-parameter -Wno-unused-variable -D_GLIBCXX_DEBUG
 
-OBJ := $(addprefix obj/,$(addsuffix .o,$(basename $(SOURCE_FILES))))
+SOURCE_FILES=$(shell find $(DIRECTORIES) -name '*.cpp')
+#SOURCE_FILES:=$(SOURCE_FILES) automaticFlameletCreator.cpp
 
+OBJECT_FILES=$(addprefix obj/, $(addsuffix .o, $(basename $(SOURCE_FILES))))
+
+show:
+	@echo $(OBJECT_FILES)
+
+INCLUDE_DIR=$(addprefix -I,$(DIRECTORIES))
+
+
+# Make  
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+
+pre:
+	$(MAKE_DIR) $(addprefix obj/,$(DIRECTORIES))
+
+clean:
+	$(CLEAN_DIR) obj
+
+build : $(OBJECT_FILES) 
+	$(COMPILER) $(CPPFLAGS) $(INCLUDE_DIR) -o $(PROGRAM) $(addsuffix .cpp, $(PROGRAM)) $^
 
 obj/%.o: %.cpp | obj
-	    g++ $(CPPFLAGS) $(INC_DIR) -c $< -o $@
+	$(COMPILER) $(CPPFLAGS) $(INCLUDE_DIR) -c $< -o $@
+			
+help: 
+	@echo "Targets:"
+	@echo "build        - build all libraries"
+	@echo "clean        - clean all libraries"
+	@echo "pre          - build directory tree for libraries"
 
-automaticFlameletCreator : $(OBJ)
-	g++ $(CPPFLAGS) $(INC_DIR) -o $@ $^
 
-
-#automaticFlameltCreator : automaticFlameletCreator.cpp
-#	g++ $(CPPFLAGS) $(INC_DIR) $(OBJ) -o automaticFlameletCreator 
-
-#CC=g++
-#CPPFLAGS=-g -Wall -Wextra -pedantic-errors -std=c++11 $(INC_DIR)
-# LDFLAGS=
-# OBJECTS=$(SOURCES:.cpp=.o)
-#	EXECUTABLE=automaticFlameletCreator
-#
-#all: $(SOURCE_FILES) $(EXECUTABLE)
-#	    
-#$(EXECUTABLE): $(OBJECTS) 
-#	    $(CC) $(LDFLAGS) $(OBJECTS) -o $@
-#
-#.cpp.o:
-#	    $(CC) $(CFLAGS) $< -o $@
