@@ -25,6 +25,7 @@ html/
 
 #prog
 automaticFlameletCreator
+solveMatrixSystem
 src/thirdParty
 summary
 files/
