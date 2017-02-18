@@ -27,7 +27,6 @@ Description
 
 \*---------------------------------------------------------------------------*/
 
-#include "time.h" 
 #include "typedef.hpp" 
 #include "matrix.hpp"
 #include "vector.hpp"
@@ -67,9 +66,6 @@ int main
     A(2,1) = 0.663257;
     A(2,2) = 0.625675;
 
-    //- Show matrix
-    A();
-
     //- Generate 3x1 matrix (vector)
     Vector b(3);
 
@@ -78,25 +74,32 @@ int main
     b(1) = 0.127653;
     b(2) = 0.285321;
 
-    //- Show vector
+    Info<< "The coefficient matrix A: \n";
+
+    A();
+
+    Info<< "The source vetor b: \n";
+    
     b();
 
     //- Solution vector
     Vector x(3);
 
-    //- Create a new object 
+    //- Create a new object and decompose A into LU
     LUDecompose LUD(A);
 
     //- Solve Ax = b using LU decomposition
     LUD.solve(b, x);
 
-    //- Show solution
+    Info<< "The solution of the LU decomposition method:\n";
+
     x();
 
     //- Improve the solution
     LUD.improveSolution(b, x);
 
-    //- Show solution
+    Info<< "The solution of the LU decomposition with improved solution:\n";
+
     x();
 
 

@@ -33,6 +33,10 @@ AFC::ODE::ODE
 (
     const Chemistry& chem
 )
+:
+    StepStatus(1),
+
+    chem_(chem)
 {
     if (debug_)
     {
@@ -56,6 +60,27 @@ AFC::ODE::~ODE()
 
 // * * * * * * * * * * * * * * * Member function * * * * * * * * * * * * * * //
 
+void AFC::ODE::derivative
+(
+    const scalar dt,
+    const map<word, scalar>& c0
+)
+{
+    //- Species      
+    const wordList& species = chem_.species();
+
+    forAll(species, s)
+    {
+        c_[s] = max(scalar(0), c0.at(s));
+    }
+
+    forAll(species, s)
+    {
+        dcdt_[s] = chem_.omega(
+    }
+}
+
+
 void AFC::ODE::solve
 (
     const scalar T,
@@ -63,74 +88,27 @@ void AFC::ODE::solve
     map<word, scalar>& c,
     const scalar dt,
     scalar& dtTry
-) const
+)
 {
-    //- TH::chemistrySolver::ode::solve
-    //  {
-    //     Jump over
-    //     ODESolver::solve
-    //     {
-    //- dt is the actual time step of the chemistry
+    size_t iterChem{0};
 
-    //- Integration starts always with t=0 till dt == tEnd
-    //  t represents the actual integration time
-    scalar t{0};
-    scalar tEnd = dt;
+    scalar timeLeft = dt;
 
-    //- Initialise the state quantities
-    StepStatus step(dtTry);
+    //- Copy of old concentrations
+    const map<word, scalar> c0 = c;
 
-    //- Now we are in the iteration stage
-    for (size_t nIter=0; nIter < maxIterations_; nIter++)
+    //- TODO SMALL
+    while (timeLeft > 1e-15)
     {
-        //- Previous time step that we used
-        scalar dtTry0 = step.dtTry_;
+        //- Time step of actual chemistry iteration
+        scalar dt = 0.00001;
 
-        step.reject_ = false;
+        //- Calculate the derivative dcdt
+        derivative(dt, c0);
 
-        //- Check if this step is truncated
-        //  If yes, set dtTry to the value that we reach tEnd
-        //  ATTENSION !!! TODO keep in mind
-        if ((t + step.dtTry_) > tEnd)
-        {
-            step.lastIter_ = true; 
-            step.dtTry_ = tEnd - t;
-        }
+        timeLeft -= dt;
 
-        //- Now we will solve the problem with seulex algorithm
-        solver_->solve(T, p, c, t, step);
-
-        //- Checking if we reached the end time and if yes, return the
-        //  actual time step that we used
-        if (t >= tEnd)
-        {
-            //- Set dtTry_ to the previous dt step if we made a calculation
-            //  and we are in the last step
-            if (nIter > 0 && step.lastIter_)
-            {
-                step.dtTry_ = dtTry0;
-            }
-
-            //- The time we return (dtTry is a reference)
-            dtTry = step.dtTry_;
-
-            Info<< " Time reached within " << nIter << " loops\n" << endl;
-
-            return;
-        }
-
-        //- After first iteration unset bool
-        step.firstIter_ = false;
-
-        //- If the dtTry step was rejected by seulex algorithm
-        //  we have to go one step back again and treat the step before
-        //  differently
-        if (step.reject_)
-        {
-            step.prevReject_ = true;
-        }
-
-        //- Next iteration
+        iterChem++;
     }
 }
 

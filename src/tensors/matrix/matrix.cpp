@@ -116,6 +116,44 @@ AFC::Matrix AFC::Matrix::operator*
 }
 
 
+AFC::Vector AFC::Matrix::operator*
+(
+    const Vector& b
+) const
+{
+    //- Inner Product of Matrix and Vector
+    
+    //- Check if A cols == b rows
+    if (cols() != b.rows())
+    {
+        FatalError
+        (
+            "    The cols of matrix A does not match the rows of vector b",
+            __FILE__,
+            __LINE__
+        );
+    }
+
+    //- The matrix A is the object itself
+    const Matrix& A = *this;
+
+    //- The inner product of a matrix and vector results in a vector
+    //  See [Holzmann] for further information
+    Vector c(b.rows());
+
+
+    for(size_t i=0; i<rows(); i++)
+    {
+        for (size_t j=0; j<b.rows(); j++)
+        {
+            c(i) += A(i,j) * b(j);
+        }
+    }
+
+    return c;
+}
+
+
 // * * * * * * * * * * * * * * * Member function * * * * * * * * * * * * * * //
 
 

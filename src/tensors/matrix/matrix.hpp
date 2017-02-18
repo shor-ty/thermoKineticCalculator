@@ -48,6 +48,11 @@ SourceFiles
 namespace AFC
 {
 
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+class Vector;
+
+
 /*---------------------------------------------------------------------------*\
                             Class Matrix Declaration
 \*---------------------------------------------------------------------------*/
@@ -86,6 +91,9 @@ class Matrix
             //- Matrix multiplication (n x m) * (m x n) 
             //  The inner product A bullet B
             Matrix operator*(const Matrix&) const;
+
+            //- Inner product of Matrix and Vector
+            Vector operator*(const Vector&) const;
 
 
         // Member Functions

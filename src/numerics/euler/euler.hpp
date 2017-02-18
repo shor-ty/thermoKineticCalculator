@@ -22,23 +22,23 @@ License
     along with AFC; if not, see <http://www.gnu.org/licenses/>
 
 Class
-    AFC::ODE
+    AFC::Euler
     
 Description
-    Abstract AFC::ODE class for numeric calculations for the ODE system
+    Abstract AFC::Euler class for building and calculating matrices
 
 SourceFiles
-    ODE.cpp
+    numerics.cpp
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef ODE_hpp
-#define ODE_hpp
+#ifndef Euler_hpp
+#define Euler_hpp
 
 #include "typedef.hpp"
+#include "matrix.hpp"
+#include "jacobian.hpp"
 #include "stepStatus.hpp"
-#include "chemistry.hpp"
-#include "seulex.hpp"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -46,75 +46,111 @@ namespace AFC
 {
 
 /*---------------------------------------------------------------------------*\
-                            Class ODE Declaration
+                            Class Euler Declaration
 \*---------------------------------------------------------------------------*/
 
-class ODE
-:
-    public StepStatus
+class Euler
 {
     private:
 
-        //- Chemistry obj
-        const Chemistry& chem_;
-
-        //- Debug switch
+        // Debug switch
         bool debug_{false};
 
-        //  TODO make Readable
-        //- Maximum allowed iterations that are used for the integration in
-        //  the chemistry calculation
-        const size_t maxIterations_{10000};
+        //- Pointer to Jacobian object
+        Jacobian* jac_;
 
-        //- Absolute tolerance 
-        const scalar absoluteTolerance_{1e-15};
+        //- Rate of concentration change
+        mutable map<word, scalar> dcdt_;
 
-        //- Relative tolerance 
-        const scalar relativeTolerance_{1e-4};
+        //- Jacobian Matrix
+        mutable Matrix dcdc_;
+
+        /*size_t n_{10};
+
+        //- Euler constants and variables
+        const size_t kMax_ = 12;
+        const size_t iMax_ = 13;
         
-        //- Pointer to solver (Seulex)
-        Seulex* solver_;
+        size_t kTarget_;
 
-        //- Time derivative 
-        map<word, scalar> dcdt_;
+        List<size_t> pivotIndices_;
+        List<size_t> nSeq_;
 
-        //- Field for concentration
-        map<word, scalar> c_;
+        scalar stepFactor_1;
+        scalar stepFactor_2;
+        scalar stepFactor_3;
+        scalar stepFactor_4;
+        scalar stepFactor_5;
+        scalar kFactor1_;
+        scalar kFactor2_;
+        mutable scalar jacRedo_;
+        mutable scalar theta_;
 
-        //- Jacobian
-         
+        mutable scalarField dcdt_;
+        scalarField cpu_;
+        mutable scalarField dtOpt_;
+        mutable scalarField temp_;
+        scalarField cSequence_;
+        scalarField scale_;
+
+        scalarField dc_;
+        scalarField cTemp_;
+
+        Matrix coeff_;
+        mutable Matrix dcdc_;
+        Matrix table_;
+
+        mutable map<word, scalar> c0_;
+        */
 
 
     public:
 
         //- Constructor 
-        ODE
+        Euler
         (
             const Chemistry&
         );
 
         //- Destructor
-        ~ODE();
+        ~Euler();
 
 
         // Member functions
 
-            //- Calculate the time derivative dc/dt
-            void derivative
-            (
-                const scalar,
-                const map<word, scalar>& 
-            );
-
-            //- Solve the chemistry using Seulex
+            //- Solve using euler algorithm
             void solve
             (
                 const scalar,
                 const scalar,
                 map<word, scalar>&,
+                scalar&,
+                StepStatus&
+            ) const;
+
+
+    private:
+
+        // Private member functions
+
+            //- Comutes the j-th line of the extrapolation table
+            bool seul
+            (
                 const scalar,
-                scalar&
-            );
+                const scalarField&,
+                const scalar,
+                const size_t,
+                scalarField&,
+                const scalarField&
+            ) const;
+
+            //- Polynomial extrapolation
+            void extrapolate
+            (
+                const size_t,
+                Matrix&,
+                scalarField&
+            ) const;
 };
 
 
@@ -124,6 +160,6 @@ class ODE
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-#endif // ODE_hpp included
+#endif // Euler_hpp included
 
 // ************************************************************************* //

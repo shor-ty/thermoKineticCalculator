@@ -26,6 +26,7 @@ DIRECTORIES=chemistry \
             constants \
             numerics \
             numerics/ODE \
+            numerics/euler \
             numerics/jacobian \
             numerics/LUDecompose \
             numerics/seulex \

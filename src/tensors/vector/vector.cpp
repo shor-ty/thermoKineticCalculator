@@ -130,6 +130,20 @@ AFC::Vector AFC::Vector::operator*
 }
 
 
+void AFC::Vector::operator-=
+(
+    const Vector& b
+)
+{
+    //- The vector on the left is the object itself
+    Vector& a = *this;
+
+    for (size_t i=0; i<rows(); i++)
+    {
+        a(i) = a(i) - b(i);
+    }
+}
+
 /*AFC::scalar AFC::Vector::operator()
 (
     const size_t& i

@@ -8,23 +8,22 @@
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 
-PROGRAM=SolveAx
+PROGRAM=solveMatrixSystem
 OBJECTDIR=obj
 MAKE_DIR=mkdir -p
-CLEAN_DIR=rm -rf
+CLEAN_DIR=rm -rfv
 WORK_DIR=$(PWD)
 COMPILER=g++
-PATH=../../src/
+SRC_PATH=../../src/
 
 # Compiling mode: DEBUG | OPT
 COMPILE_MODE=DEBUG
 
-DIRECTORIES=numerics/ODE \
-            numerics/LUDecompose \
-            typedef \
-            tensors/tensor \
-            tensors/matrix \
-            tensors/vector
+CLASSES=numerics/LUDecompose \
+		tensors/matrix \
+		tensors/vector \
+		tensors/tensor \
+        typedef
 
 
 CPPFLAGS=-Wall \
@@ -38,28 +37,23 @@ CPPFLAGS=-Wall \
          -Wno-unused-variable 
 
 
-DIRECTORIES_LIBS=$(addprefix $(PATH), $(DIRECTORIES))
-
-SOURCE_FILES=$(shell find $(DIRECTORIES_LIBS) -name '*.cpp')
+SOURCE_FILES=$(shell find $(CLASSES) -name '*.cpp')
 
 OBJECT_FILES=$(addprefix obj/, $(addsuffix .o, $(basename $(SOURCE_FILES))))
 
-INCLUDE_DIR=$(addprefix -I,$(DIRECTORIES))
+INCLUDE_DIR=$(addprefix -I,$(CLASSES))
 
 
 # Make  
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 
-show:
-	@echo "Foo"
-	@echo "me"
-	@echo $(MAKE_DIR)
-
 pre:
-	$(MAKE_DIR) $(addprefix obj/,$(DIRECTORIES))
+	$(MAKE_DIR) $(CLASSES)
+	$(MAKE_DIR) $(addprefix obj/,$(CLASSES))
+	./link.sh N
 
 clean:
-	$(CLEAN_DIR) obj
+	$(CLEAN_DIR) obj $(PROGRAM) $(CLASSES) tensors numerics
 
 build : $(OBJECT_FILES) 
 	$(COMPILER) $(CPPFLAGS) $(INCLUDE_DIR) -o $(PROGRAM) $(addsuffix .cpp, $(PROGRAM)) $^

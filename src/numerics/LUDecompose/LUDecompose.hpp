@@ -57,7 +57,7 @@ class LUDecompose
     private:
 
         // Debug switch
-        bool debug_{true};
+        bool debug_{false};
 
         //- Rows of matrix 
         size_t i_;
@@ -109,7 +109,7 @@ class LUDecompose
             (
                 Vector&,
                 Vector&
-            ) const;
+            );
 };
 
 

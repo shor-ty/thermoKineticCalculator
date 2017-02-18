@@ -177,6 +177,7 @@ void AFC::Numerics::solveAdiabaticFlamelet
     scalar tEnd = 10;
     scalar deltaTDiff = 0.05;
     scalar deltaTChem = 1e-8;
+    scalar dt{0.5};
 
     //- Solve the flamelet equation. Therefore we split the calculation into
     //  chemistry solving with the chemistry delta till we reach the diffusion
@@ -202,7 +203,8 @@ void AFC::Numerics::solveAdiabaticFlamelet
 
         //- Solve the chemistry and return the maximum time step for the 
         //  chemistry during this calculation (used for the next iteration)
-        deltaTChem = solveChemistry(deltaTChem0, flamelet);
+        deltaTChem = solveChemistry(dt, flamelet);
+
 
         //-
     }
@@ -213,7 +215,7 @@ void AFC::Numerics::solveAdiabaticFlamelet
 
 AFC::scalar AFC::Numerics::solveChemistry
 (
-    const scalar deltaTChem,
+    const scalar dt,
     MixtureFraction& flamelet
 )
 {
@@ -226,10 +228,8 @@ AFC::scalar AFC::Numerics::solveChemistry
     const scalarField& T = flamelet.T();
     const scalar p = flamelet.p();
 
-    //- Actual (old) concentration and the one we will change
-    map<word, scalarField> c0 = flamelet.CField();
-    List<map<word, scalar> > c = flamelet.C();
-    //map<word, scalarField> c = flamelet.CField();
+    //- Copy of concentration field
+    const List<map<word, scalar> > c0 = flamelet.C();
     
     //- The density field [g/m^3]
     const scalarField& rho = flamelet.rho();
@@ -243,34 +243,13 @@ AFC::scalar AFC::Numerics::solveChemistry
             //- Get values at the discrete point (pressure is constant)
             scalar Ti = T[Zi];
             scalar rhoi = rho[Zi];
-            map<word, scalar> ci = c[Zi];
+            const map<word, scalar>& c0i = c0[Zi];
 
-            //- This time is the time that shows us if we reached deltaTChem
-            //  It is the remaining time 
-            scalar timeLeft = deltaTChem;
+            //- New concentration field that is been updated
+            map<word, scalar> ci = c0[Zi];
 
-            //- Solve till the remaining time is lower than 1e-6s
+            ode_->solve(Ti, p, ci, dt, deltaTChem_[Zi]);
 
-            size_t iterChem{0};
-
-            //- TODO SMALL
-            while (timeLeft > 1e-15)
-            {
-                //- Time step of actual chemistry iteration
-                scalar dt = timeLeft;
-
-                //- Solve the chemistry for the given dt using the Seulex
-                //  algorithm and return the smallest time step
-                ode_->solve(Ti, p, ci, dt, deltaTChem_[Zi]);
-
-                timeLeft -= dt;
-
-                iterChem++;
-            }
-
-            Info<< "  Chemistry solved in " << iterChem << " iterations\n";
-
-            deltaTMin = min(deltaTChem_[Zi], deltaTMin);
         }
     }
 
