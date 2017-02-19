@@ -29,6 +29,7 @@ License
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
+template<typename Type>
 AFC::ODE::ODE
 (
     const Chemistry& chem
@@ -63,21 +64,13 @@ AFC::ODE::~ODE()
 void AFC::ODE::derivative
 (
     const scalar dt,
+    const scalar T,
     const map<word, scalar>& c0
 )
 {
-    //- Species      
-    const wordList& species = chem_.species();
-
-    forAll(species, s)
-    {
-        c_[s] = max(scalar(0), c0.at(s));
-    }
-
-    forAll(species, s)
-    {
-        dcdt_[s] = chem_.omega(
-    }
+    //- Calculate all source terms dc/dt based on
+    //  Arrhenius with modificaion of LOW / TROE / SRI / Enhanced
+    dcdt_ = chem_.calculateOmega(T, c0);
 }
 
 
@@ -103,8 +96,38 @@ void AFC::ODE::solve
         //- Time step of actual chemistry iteration
         scalar dt = 0.00001;
 
+        scalar err = scalar(0);
+
         //- Calculate the derivative dcdt
-        derivative(dt, c0);
+        derivative(dt, T, c0);
+
+        //- Loop and adjust ste-size to achieve the desired error
+        do
+        {
+
+
+            //- Error is larger than one, reduce dt
+            if (err > 1)
+            {
+                const scalar scale =
+                    max(safeScale_*pow(err, -alphaDec_), minScale_);
+
+                dt *= scale;
+
+                //- TODO small
+                if (dt < 1e-15)
+                {
+                    FatalError
+                    (
+                        "Time step is going to zero",
+                        __FILE__,
+                        __LINE__
+                    );
+                }
+            }
+
+        }
+        while(err > 1);
 
         timeLeft -= dt;
 

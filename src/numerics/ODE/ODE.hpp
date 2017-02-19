@@ -49,6 +49,7 @@ namespace AFC
                             Class ODE Declaration
 \*---------------------------------------------------------------------------*/
 
+template<typename Type>
 class ODE
 :
     public StepStatus
@@ -72,8 +73,8 @@ class ODE
         //- Relative tolerance 
         const scalar relativeTolerance_{1e-4};
         
-        //- Pointer to solver (Seulex)
-        Seulex* solver_;
+        //- Pointer to solve
+        Type* solver_;
 
         //- Time derivative 
         map<word, scalar> dcdt_;
@@ -82,7 +83,12 @@ class ODE
         map<word, scalar> c_;
 
         //- Jacobian
+
          
+        //- Adaptive solver
+        scalar safeScale_{0.9};
+        scalar alphaDec_{0.25};
+        scalar minScale_{0.2};
 
 
     public:
@@ -102,6 +108,7 @@ class ODE
             //- Calculate the time derivative dc/dt
             void derivative
             (
+                const scalar,
                 const scalar,
                 const map<word, scalar>& 
             );
