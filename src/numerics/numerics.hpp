@@ -48,6 +48,7 @@ namespace AFC
                             Class Numerics Declaration
 \*---------------------------------------------------------------------------*/
 
+template <typename Type>
 class Numerics
 {
     private:
@@ -56,7 +57,7 @@ class Numerics
         bool debug_{false};
 
         //- ODE pointer 
-        ODE* ode_;
+        ODE<Type>* ode_;
 
         //- Initial chemistry time step for each discrete point Z 
         //  This time step will change during the calculation

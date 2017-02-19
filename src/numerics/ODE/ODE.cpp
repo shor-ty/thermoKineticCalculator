@@ -30,7 +30,7 @@ License
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 template<typename Type>
-AFC::ODE::ODE
+AFC::ODE<Type>::ODE
 (
     const Chemistry& chem
 )
@@ -50,7 +50,8 @@ AFC::ODE::ODE
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-AFC::ODE::~ODE()
+template<typename Type>
+AFC::ODE<Type>::~ODE()
 {
     if (debug_)
     {
@@ -61,7 +62,8 @@ AFC::ODE::~ODE()
 
 // * * * * * * * * * * * * * * * Member function * * * * * * * * * * * * * * //
 
-void AFC::ODE::derivative
+template<typename Type>
+void AFC::ODE<Type>::derivative
 (
     const scalar dt,
     const scalar T,
@@ -74,7 +76,8 @@ void AFC::ODE::derivative
 }
 
 
-void AFC::ODE::solve
+template<typename Type>
+void AFC::ODE<Type>::solve
 (
     const scalar T,
     const scalar p,

@@ -26,11 +26,13 @@ License
 #include "typedef.hpp"
 #include "numerics.hpp"
 #include "ODE.hpp"
+#include "euler.hpp"
 #include <math.h>
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-AFC::Numerics::Numerics
+template <typename Type>
+AFC::Numerics<Type>::Numerics
 (
     const Chemistry& chem 
 )
@@ -40,7 +42,11 @@ AFC::Numerics::Numerics
         Info<< "Constructor Numerics \n" << endl;
     }
 
-    ode_ = new ODE(chem);
+    //- TODO readabil and switchable
+    if (true)
+    {
+        ode_ = new ODE<Euler>(chem);
+    }
 
     //- TODO readable
     deltaTChem_ = scalarField(11, 1e-7);
@@ -49,7 +55,8 @@ AFC::Numerics::Numerics
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-AFC::Numerics::~Numerics()
+template <typename Type>
+AFC::Numerics<Type>::~Numerics()
 {
     if (debug_)
     {
@@ -60,7 +67,8 @@ AFC::Numerics::~Numerics()
 
 // * * * * * * * * * * * * * * * Member function * * * * * * * * * * * * * * //
 
-void AFC::Numerics::solveForInitialSolution
+template <typename Type>
+void AFC::Numerics<Type>::solveForInitialSolution
 (
     MixtureFraction& flamelet
 )
@@ -157,7 +165,8 @@ void AFC::Numerics::solveForInitialSolution
 }
 
 
-void AFC::Numerics::solveAdiabaticFlamelet
+template <typename Type>
+void AFC::Numerics<Type>::solveAdiabaticFlamelet
 (
     MixtureFraction& flamelet
 )
@@ -213,7 +222,8 @@ void AFC::Numerics::solveAdiabaticFlamelet
 }
 
 
-AFC::scalar AFC::Numerics::solveChemistry
+template <typename Type>
+AFC::scalar AFC::Numerics<Type>::solveChemistry
 (
     const scalar dt,
     MixtureFraction& flamelet
@@ -261,7 +271,8 @@ AFC::scalar AFC::Numerics::solveChemistry
 
 
 
-AFC::scalar AFC::Numerics::FDMLapacian2ndOrder
+template <typename Type>
+AFC::scalar AFC::Numerics<Type>::FDMLapacian2ndOrder
 (
     const scalar& phi_l,
     const scalar& phi,
@@ -288,7 +299,8 @@ AFC::scalar AFC::Numerics::FDMLapacian2ndOrder
     );
 }
 
-void AFC::Numerics::solveFlamelet
+template <typename Type>
+void AFC::Numerics<Type>::solveFlamelet
 (
     MixtureFraction& flamelet,
     const scalar& chi,
@@ -407,14 +419,14 @@ void AFC::Numerics::solveFlamelet
 
 
 /*
-void AFC::Numerics::jacobian
+void AFC::Numerics<Type>::jacobian
 (
     MixtureFraction& mf
 )
 {
     if (debug)
     {
-        Info<< " --> AFC::Numerics::jacobian" << endl;
+        Info<< " --> AFC::Numerics<Type>::jacobian" << endl;
     }
 }
 */
@@ -487,7 +499,8 @@ void AFC::Numerics::jacobian
 }*/
 
 
-AFC::scalar AFC::Numerics::residual
+template <typename Type>
+AFC::scalar AFC::Numerics<Type>::residual
 (
     const scalarField& oldField,
     const scalarField& newField
@@ -504,7 +517,8 @@ AFC::scalar AFC::Numerics::residual
 }
 
 
-AFC::scalar AFC::Numerics::max
+template <typename Type>
+AFC::scalar AFC::Numerics<Type>::max
 (
     const scalarField& sF
 ) const
