@@ -27,12 +27,9 @@ License
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-AFC::Transport::Transport
-(
-    const string& fileName,
-    const Thermo& thermo
-)
-    : thermo_(thermo)
+AFC::Transport::Transport(const string fileName, const Thermo& thermo)
+:
+    thermo_(thermo)
 {
     TransportReader transReader(fileName);
     
@@ -48,10 +45,7 @@ AFC::Transport::~Transport()
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-void AFC::Transport::insertChemistrySpecies
-(
-    const wordList& speciesCH 
-)
+void AFC::Transport::insertChemistrySpecies(const wordList& speciesCH)
 {
     transData_.insertChemistrySpecies(speciesCH);
 }
@@ -74,52 +68,35 @@ void AFC::Transport::fitCurves()
 
 AFC::scalar AFC::Transport::viscosity
 (
-    const word& species,
-    const scalar& T,
-    const word& method
+    const word species,
+    const scalar T,
+    const word method
 ) const
 {
-    return 
-    (
-        transCalc_.viscosity
-        (
-            species,
-            T,
-            thermo_,
-            transData_,
-            method
-        )
-    );
+    return (transCalc_.viscosity(species, T, thermo_, transData_, method));
 }
 
 
 AFC::scalar AFC::Transport::thermalConductivity
 (
-    const word& species,
-    const scalar& T,
-    const word& method
+    const word species,
+    const scalar T,
+    const word method
 ) const
 {
     return
     (
-        transCalc_.thermalConductivity
-        (
-            species,
-            T,
-            thermo_,
-            transData_,
-            method
-        )
+        transCalc_.thermalConductivity(species, T, thermo_, transData_, method)
     );
 }
 
 
 AFC::scalar AFC::Transport::binaryDiffusivity
 (
-    const word& species1,
-    const word& species2,
-    const scalar& T,
-    const word& method
+    const word species1,
+    const word species2,
+    const scalar T,
+    const word method
 ) const
 {
     return 
@@ -157,73 +134,49 @@ AFC::wordList AFC::Transport::chemicalFormula() const
 }
 
 
-AFC::word AFC::Transport::chemicalFormula
-(
-    const word& species 
-) const
+AFC::word AFC::Transport::chemicalFormula(const word species) const
 {
     return transData_.chemicalFormula(species);
 }
 
 
-int AFC::Transport::geometricalConfig
-(
-    const word& species
-) const
+int AFC::Transport::geometricalConfig(const word species) const
 {
     return transData_.geometricalConfig(species);
 }
 
 
-AFC::scalar AFC::Transport::LJCD
-(
-    const word& species
-) const
+AFC::scalar AFC::Transport::LJCD(const word species) const
 {
     return transData_.LJCD(species);
 }
 
 
-AFC::scalar AFC::Transport::LJP
-(
-    const word& species
-) const
+AFC::scalar AFC::Transport::LJP(const word species) const
 {
     return transData_.LJP(species);
 }
 
 
-AFC::scalar AFC::Transport::muk
-(
-    const word& species
-) const
+AFC::scalar AFC::Transport::muk(const word species) const
 {
     return transData_.muk(species);
 }
 
 
-AFC::scalar AFC::Transport::alpha
-(
-    const word& species
-) const
+AFC::scalar AFC::Transport::alpha(const word species) const
 {
     return transData_.alpha(species);
 }
 
 
-AFC::scalar AFC::Transport::ZRot298
-(
-    const word& species
-) const
+AFC::scalar AFC::Transport::ZRot298(const word species) const
 {
     return transData_.ZRot298(species);
 }
 
 
-AFC::scalarField AFC::Transport::viscosityPolyCoeffs
-(
-    const word& species
-) const
+AFC::scalarField AFC::Transport::viscosityPolyCoeffs(const word species) const
 {
     return transData_.viscosityPolyCoeffs(species);
 }
@@ -231,7 +184,7 @@ AFC::scalarField AFC::Transport::viscosityPolyCoeffs
 
 AFC::scalarField AFC::Transport::thermalConductivityPolyCoeffs
 (
-    const word& species
+    const word species
 ) const
 {
     return transData_.thermalConductivityPolyCoeffs(species);
@@ -240,8 +193,8 @@ AFC::scalarField AFC::Transport::thermalConductivityPolyCoeffs
 
 AFC::scalarField AFC::Transport::binaryDiffusivityPolyCoeffs
 (
-    const word& species1,
-    const word& species2
+    const word species1,
+    const word species2
 ) const
 {
     return transData_.binaryDiffusivityPolyCoeffs(species1, species2);
@@ -250,10 +203,7 @@ AFC::scalarField AFC::Transport::binaryDiffusivityPolyCoeffs
 
 // * * * * * * * * * * * * * * * Summary Functions * * * * * * * * * * * * * //
 
-void AFC::Transport::summary
-(
-    ostream& data 
-) const
+void AFC::Transport::summary(ostream& data) const
 {
     data<< Header() << "\n";
 
@@ -397,10 +347,7 @@ void AFC::Transport::summary
 }
 
 
-void AFC::Transport::summaryFittingProcedure
-(
-    ostream& data
-) const
+void AFC::Transport::summaryFittingProcedure(ostream& data) const
 {
     data<< Header() << "\n";
 

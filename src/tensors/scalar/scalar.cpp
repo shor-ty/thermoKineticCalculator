@@ -32,12 +32,7 @@ License
 AFC::Scalar::Scalar()
 :
     Tensor(0, 0)
-{
-    if (debug_)
-    {
-        Info<< "Constructor Scalar() \n" << endl;
-    }
-}
+{}
 
 
 /*AFC::Scalar::Scalar
@@ -46,12 +41,7 @@ AFC::Scalar::Scalar()
 )
 :
     Tensor(vec.rows(), vec.cols(), vec.values())
-{
-    if (debug_)
-    {
-        Info<< "Constructor Scalar(const Scalar&) Copy Const\n" << endl;
-    }
-}
+{}
 
 
 AFC::Scalar::Scalar
@@ -61,12 +51,7 @@ AFC::Scalar::Scalar
 )
 :
     Tensor(row, 1, value)
-{
-    if (debug_)
-    {
-        Info<< "Constructor Scalar (row, value)\n" << endl;
-    }
-}
+{}
 
 
 AFC::Scalar::Scalar
@@ -75,23 +60,13 @@ AFC::Scalar::Scalar
 )
 :
     Tensor(sF.size(), 1, sF)
-{
-    if (debug_)
-    {
-        Info<< "Constructor Scalar (row, scalarField)\n" << endl;
-    }
-}*/
+{}*/
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
 AFC::Scalar::~Scalar()
-{
-    if (debug_)
-    {
-        Info<< "Destructor Scalar\n" << endl;
-    }
-}
+{}
 
 
 // * * * * * * * * * * * * * * Operator Functions  * * * * * * * * * * * * * //

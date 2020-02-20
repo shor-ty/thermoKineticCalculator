@@ -104,55 +104,34 @@ template<class T, class Z> using mapList = typename std::vector<map<T, Z> >;
 
 void Print();
 
-void FatalError
-(
-    const string,
-    const char*, 
-    const unsigned long
-);
+void ErrorMsg(const string, const char*, const unsigned long);
 
-void Warning
-(
-    const string,
-    const char*, 
-    const unsigned long
-);
+void Warning(const string, const char*, const unsigned long);
+
+void NotImplemented(const char*, const unsigned long);
 
 string Header();
 
-void Footer
-(
-    const scalar& 
-);
+void Footer(const scalar);
 
 // * * * * * * * * * * * * * * String Conversation * * * * * * * * * * * * * //
 
 template <typename T>
-string toStr
-(
-    const T& tmp
-)
+string toStr(const T& tmp)
 {
     return std::to_string(tmp);
 }
 
 
 template <typename T>
-T min
-(
-    const T& tmp1,
-    const T& tmp2
-)
+T min(const T tmp1, const T tmp2)
 {
     return std::min(tmp1, tmp2);
 }
 
 
 template <typename T>
-T max 
-(
-    const T& tmp1,
-    const T& tmp2
+T max(const T tmp1, const T tmp2
 )
 {
     return std::max(tmp1, tmp2);

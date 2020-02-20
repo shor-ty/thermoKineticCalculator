@@ -54,9 +54,6 @@ class Tensor
 {
     private:
 
-        // Debug switch
-        bool debug_{false};
-
         // Private Data
 
             //- Rows
@@ -75,25 +72,14 @@ class Tensor
         Tensor();
 
         //- Constructor that create tensor n x m and init with zero
-        Tensor
-        (
-            const size_t,
-            const size_t,
-            const scalar value = 0
-        );
-
-
+        Tensor(const size_t, const size_t, const scalar value = 0);
 
         //- Constructor that creates a tensor n x m using a scalarField
-        Tensor
-        (
-            const size_t,
-            const size_t,
-            const scalarField&
-        );
+        Tensor(const size_t, const size_t, const scalarField&);
 
         //- Destructor
         ~Tensor();
+
 
         // Operator Functions
 

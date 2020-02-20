@@ -53,9 +53,6 @@ class Seulex
 {
     private:
 
-        // Debug switch
-        bool debug_{false};
-
         //- Pointer to Jacobian object
         Jacobian* jac_;
 
@@ -107,10 +104,7 @@ class Seulex
     public:
 
         //- Constructor 
-        Seulex
-        (
-            const Chemistry&
-        );
+        Seulex(const Chemistry&);
 
         //- Destructor
         ~Seulex();
@@ -145,12 +139,7 @@ class Seulex
             ) const;
 
             //- Polynomial extrapolation
-            void extrapolate
-            (
-                const size_t,
-                Matrix&,
-                scalarField&
-            ) const;
+            void extrapolate(const size_t, Matrix&, scalarField&) const;
 };
 
 

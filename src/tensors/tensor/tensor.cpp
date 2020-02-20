@@ -2,7 +2,8 @@
   c-o-o-c-o-o-o             |
   |     |     A utomatic    | Open Source Flamelet
   c-o-o-c     F lamelet     | 
-  |     |     C onstructor  | Copyright (C) 2015 Holzmann-cfd c     c-o-o-o             |
+  |     |     C onstructor  | Copyright (C) 2015 Holzmann-cfd 
+  c     c-o-o-o             |
 -------------------------------------------------------------------------------
 License
     This file is part of Automatic Flamelet Constructor.
@@ -32,90 +33,46 @@ AFC::Tensor::Tensor()
 :
     nRows_(0),
     nCols_(0)
-{
-    if (debug_)
-    {
-        Info<< "Constructor Tensor() \n" << endl;
-    }
-
-}
+{}
 
 
-AFC::Tensor::Tensor
-(
-    const size_t rows,
-    const size_t cols,
-    const scalar value
-
-)
+AFC::Tensor::Tensor(const size_t rows, const size_t cols, const scalar value)
 :
     nRows_(rows),
     nCols_(cols),
     values_(rows * cols, value)
-{
-    if (debug_)
-    {
-        Info<< "Constructor Tensor (rows, cols, value)\n" << endl;
-    }
-}
+{}
 
 
-AFC::Tensor::Tensor
-(
-    const size_t rows,
-    const size_t cols,
-    const scalarField& sF
-)
+AFC::Tensor::Tensor(const size_t rows, const size_t cols, const scalarField& sF)
 :
     nRows_(rows),
     nCols_(cols),
     values_(sF)
-{
-    if (debug_)
-    {
-        Info<< "Constructor Tensor (rows, cols, scalarField)\n" << endl;
-    }
-}
+{}
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
 AFC::Tensor::~Tensor()
-{
-    if (debug_)
-    {
-        Info<< "Destructor Tensor\n" << endl;
-    }
-}
+{}
 
 
 // * * * * * * * * * * * * * * Operator Functions  * * * * * * * * * * * * * //
 
-AFC::scalar AFC::Tensor::operator()
-(
-    size_t rows,
-    size_t cols 
-) const
+AFC::scalar AFC::Tensor::operator()(size_t rows, size_t cols) const
 {
     return values_[rows * nCols_ + cols];
 }
 
 
-AFC::scalar AFC::Tensor::operator()
-(
-    size_t rows
-) const
+AFC::scalar AFC::Tensor::operator()(size_t rows) const
 {
     return operator()(rows, 0);
 }
 
 
-void AFC::Tensor::operator()
-(
-    size_t rows,
-    size_t cols,
-    scalar value
-)
+void AFC::Tensor::operator()(size_t rows, size_t cols, scalar value)
 {
     values_[rows * nCols_ + cols] = value;
 }
@@ -139,20 +96,13 @@ void AFC::Tensor::operator()() const
 }
 
 
-AFC::scalar& AFC::Tensor::operator()
-(
-    const size_t rows,
-    const size_t cols
-)
+AFC::scalar& AFC::Tensor::operator()(const size_t rows, const size_t cols)
 {
     return values_[rows * nCols_ + cols];
 }
 
 
-AFC::scalar& AFC::Tensor::operator()
-(
-    const size_t rows
-)
+AFC::scalar& AFC::Tensor::operator()(const size_t rows)
 {
     return operator()(rows, 0);
 }

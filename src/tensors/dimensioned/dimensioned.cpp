@@ -23,43 +23,38 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "dimensions.hpp"
+#include "dimensioned.hpp"
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-AFC::Dimensions::Dimensions()
-: 
-    dimension_(scalarField(4, 0))
-{
-    if (debug_)
-    {
-        Info<< "Constructor Dimensions() \n" << endl;
-    }
-}
+template<typename Type>
+AFC::Dimensioned<Type>::Dimensioned
+(
+    const size_t kg,
+    const size_t m,
+    const size_t s,
+    const size_t K
+)
+:
+    value_(4)
+{}
 
-AFC::Dimensions::Dimensions
+
+template<typename Type>
+AFC::Dimensioned<Type>::Dimensioned
 (
     const scalarField& dimension 
 )
 : 
-    dimension_(dimension)
-{
-    if (debug_)
-    {
-        Info<< "Constructor Dimensions(const scalarField&) \n" << endl;
-    }
-}
+    value_(4)
+{}
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-AFC::Dimensions::~Dimensions()
-{
-    if (debug_)
-    {
-        Info<< "Destructor Dimensions \n" << endl;
-    }
-}
+template<typename Type>
+AFC::Dimensioned<Type>::~Dimensioned()
+{}
 
 
 // * * * * * * * * * * * * * * Operator Functions  * * * * * * * * * * * * * //

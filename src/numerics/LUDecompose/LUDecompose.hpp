@@ -56,9 +56,6 @@ class LUDecompose
 {
     private:
 
-        // Debug switch
-        bool debug_{false};
-
         //- Rows of matrix 
         size_t i_;
 
@@ -85,10 +82,7 @@ class LUDecompose
     public:
 
         //- Constructor 
-        LUDecompose
-        (
-            Matrix& 
-        );
+        LUDecompose(Matrix&);
 
         //- Destructor
         ~LUDecompose();
@@ -97,19 +91,11 @@ class LUDecompose
         // Member functions
 
             //- Solve the linear set of equations A x = b
-            void solve
-            (
-                Vector&,
-                Vector&
-            );
+            void solve(Vector&, Vector&);
 
             //- Solution improve. The solution optained by solve() can be
             //  improved iteratively
-            void improveSolution
-            (
-                Vector&,
-                Vector&
-            );
+            void improveSolution(Vector&, Vector&);
 };
 
 

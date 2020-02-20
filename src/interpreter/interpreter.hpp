@@ -26,7 +26,7 @@ Class
     
 Description
     Abstract AFC::Interpreter class that interpretes all data. The class
-    inherits just one function that is building the output string and calles
+    inherits just one function which is building the output string and calles
     the summary functions of the classes
 
 SourceFiles
@@ -54,10 +54,7 @@ class Interpreter
 {
     private:
 
-        // Debug swithc
-        bool debug{false};
-
-        //- Switch if all data have to be interpreted
+        //- Switch if interpreter is used or not
         bool interprete_{false};
 
 
@@ -72,12 +69,9 @@ class Interpreter
 
         // Member functions
 
-            bool analyse() const;
+            bool analyze() const;
 
-            void analyse
-            (
-                const bool&
-            );
+            void analyze(const bool&);
 
             //- Create a summary of the loaded data
             void summary 

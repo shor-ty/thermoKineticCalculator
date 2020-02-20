@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   c-o-o-c-o-o-o             |
   |     |     A utomatic    | Open Source Flamelet
-  c-o-o-c     F lamelet     | 
+  c-o-o-c     F lamelet     |
   |     |     C onstructor  | Copyright (C) 2015 Holzmann-cfd
   c     c-o-o-o             |
 -------------------------------------------------------------------------------
@@ -10,7 +10,7 @@ License
 
     AFC is free software; you can redistribute it and/or modify it under
     the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 3 of the License, or 
+    Free Software Foundation; either version 3 of the License, or
     (at your option) any later version.
 
     AFC is distributed in the hope that it will be useful, but
@@ -28,29 +28,16 @@ License
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-AFC::Jacobian::Jacobian
-(
-    const Chemistry& chem 
-)
+AFC::Jacobian::Jacobian(const Chemistry& chem)
 :
     chem_(chem)
-{
-    if (debug_)
-    {
-        Info<< "Constructor Jacobian \n" << endl;
-    }
-}
+{}
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
 AFC::Jacobian::~Jacobian()
-{
-    if (debug_)
-    {
-        Info<< "Destructor Jacobian \n" << endl;
-    }
-}
+{}
 
 
 // * * * * * * * * * * * * * * * Member function * * * * * * * * * * * * * * //
@@ -65,11 +52,6 @@ void AFC::Jacobian::jacobian
     Matrix& dcdc
 )
 {
-    if (debug_)
-    {
-        Info<< " --> Enter AFC::Jacobian::jacobian" << endl;
-    }
-
     //- Calculate the Jacobian matrix
 
     //- Species
@@ -99,8 +81,8 @@ void AFC::Jacobian::jacobian
     //  The first column is the derivation with repect to the first species
     //  i = row
     //  j = column
-    
-    //- Row 
+
+    //- Row
     for (size_t i = 0; i<nSpecies; ++i)
     {
         //- f([x]) :: X -> Species1
@@ -109,7 +91,7 @@ void AFC::Jacobian::jacobian
         //- Get information about the reactions where species1 is involved
         const List<int>& inReaction = chem_.reacNumbers(species1);
 
-        //- Column 
+        //- Column
         for (size_t j = 0; j<nSpecies; ++j)
         {
             //- The species2 is the derivation guy
@@ -146,7 +128,7 @@ void AFC::Jacobian::jacobian
                 //  and we do not have to take care about that
                 if (cont)
                 {
-                    //- Get educt/product species and the corresponding 
+                    //- Get educt/product species and the corresponding
                     //  stochiometetric factors
                     const List<word>& eductSpecies = chem_.speciesEducts(r);
                     const List<word>& productSpecies = chem_.speciesProducts(r);
@@ -188,11 +170,6 @@ void AFC::Jacobian::jacobian
 
     //- Loop function
     }
-
-    if (debug_)
-    {
-        Info<< " --> Leave AFC::Jacobian::jacobian" << endl;
-    }
 }
 
 
@@ -209,21 +186,16 @@ AFC::scalar AFC::Jacobian::derivationOfReaction
     const map<word, scalar>& con
 ) const
 {
-    if (debug_)
-    {
-        Info<< " --> Enter AFC::Jacobian::derivationOfReaction" << endl;
-    }
-
     //- This function calculates the derivation of the elementar reaction
     //  with respect to the speciesOfDerivation
-   
+
     //- If the concentration of speciesOfDerivation is zero, -> return 0
     if (con.at(speciesOfDerivation) < 1e-15)
     {
         return 0;
     }
 
-    
+
     //- Check where the species is included
     bool inEduct{false};
     bool inProduct{false};
@@ -250,10 +222,10 @@ AFC::scalar AFC::Jacobian::derivationOfReaction
     //  TODO [M] not included
     scalar conEduct{1};
     scalar conProduct{1};
-        
+
     if (inEduct)
     {
-        //- Linear 
+        //- Linear
         if (abs(nuEduct.at(speciesOfDerivation)) == 1)
         {
             forAll(eductSpecies, s)
@@ -300,8 +272,8 @@ AFC::scalar AFC::Jacobian::derivationOfReaction
 
     if (inProduct)
     {
-        
-        //- Linear 
+
+        //- Linear
         if (nuProduct.at(speciesOfDerivation) == 1)
         {
             forAll(productSpecies, s)
@@ -356,7 +328,7 @@ AFC::scalar AFC::Jacobian::derivationOfReaction
 
     //- Get pre-factor (nu'' - nu') :: based on the fact that we already
     //  know the right value, we just have to check if the species
-    //  is within the product or educt side. We need + because educt 
+    //  is within the product or educt side. We need + because educt
     //  took already a minus sign.
     scalar nuSpecies{0};
 
@@ -380,26 +352,6 @@ AFC::scalar AFC::Jacobian::derivationOfReaction
             __FILE__,
             __LINE__
         );
-    }
-
-    /*
-    {
-
-    Info<< std::setw(20) << "nu'' - nu'  = " <<std::setw(20) <<  nuSpecies << "\n";
-    Info<< std::setw(20) << "kf = " <<std::setw(20) <<  kf << "\n";
-    Info<< std::setw(20) << "kb = " <<std::setw(20) <<  kb << "\n";
-    Info<< std::setw(20) << " conEduc = "<< std::setw(20) << conEduct << "\n";
-    Info<< std::setw(20) << " conProd = "<< std::setw(20) << conProduct<< "\n";
-
-    //- Return the derivation value
-    Info << std::setw(20)<< " === " << std::setw(20)
-        <<  nuSpecies * (kf * conEduct - kb * conProduct) << "\n\n";
-    }
-    */
-
-    if (debug_)
-    {
-        Info<< " --> Leave AFC::Jacobian::derivationOfReaction" << endl;
     }
 
     return nuSpecies * (kf * conEduct - kb * conProduct);

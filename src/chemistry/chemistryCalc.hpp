@@ -49,11 +49,6 @@ namespace AFC
 
 class ChemistryCalc
 {
-    private:
-
-        // Debug 
-        bool debug{false};
-
     public:
 
         //- Constructor
@@ -65,16 +60,13 @@ class ChemistryCalc
 
         // Calculation Functions
 
-            void k
-            (
-                const ChemistryData&
-            ) const;
+            void k(const ChemistryData&) const;
 
             //- Calculate the reaction rates kf and kb [units depend]
             void calculatekfkb 
             (
                 const int,
-                const scalar&,
+                const scalar,
                 const map<word, scalar>&,
                 const Thermo&,
                 ChemistryData&
@@ -84,7 +76,7 @@ class ChemistryCalc
             scalar kf 
             (
                 const int,
-                const scalar&,
+                const scalar,
                 const ChemistryData&,
                 const bool LOW = false
             ) const;
@@ -93,7 +85,7 @@ class ChemistryCalc
             scalar kb 
             (
                 const int,
-                const scalar&,
+                const scalar,
                 const ChemistryData&,
                 const Thermo&,
                 const bool LOW = false
@@ -103,7 +95,7 @@ class ChemistryCalc
             scalar keq 
             (
                 const int,
-                const scalar&,
+                const scalar,
                 const ChemistryData&,
                 const Thermo&
             ) const;
@@ -111,34 +103,29 @@ class ChemistryCalc
             //- Calculate k with standard arrhenius [units depend]
             scalar arrhenius
             (
-                const scalar&,
-                const scalar&,
-                const scalar&,
-                const scalar&
+                const scalar,
+                const scalar,
+                const scalar,
+                const scalar
             ) const;
 
             //- Calculate Fcent for TROE formulation
-            scalar Fcent
-            (
-                const int,
-                const scalar&,
-                const ChemistryData&
-            ) const;
+            scalar Fcent(const int, const scalar, const ChemistryData&) const;
 
             //- Calculate Flog for TROE formulation
             scalar Flog
             (
                 const int,
-                const scalar&,
-                const scalar&,
+                const scalar,
+                const scalar,
                 const ChemistryData&
             ) const;
 
             //- Calculate the source term of species s (omega)
             scalar calculateOmega
             (
-	            const word&,
-                const scalar&,
+	            const word,
+                const scalar,
                 const map<word, scalar>&,
                 const Thermo&,
                 const ChemistryData&
@@ -154,17 +141,13 @@ class ChemistryCalc
 
             //- Get information about TBR (if [M] is included or not) and
             //  if we have to use enhanced factors for calculating [M]
-            bool thirdBodyReaction
-            (
-                const int,
-                const ChemistryData&
-            );
+            bool thirdBodyReaction(const int, const ChemistryData&);
 
             //- Calculate dH for reaction r and given temperature
             scalar dH
             (
                 const int,
-                const scalar&,
+                const scalar,
                 const ChemistryData&,
                 const Thermo&
             ) const;
@@ -173,7 +156,7 @@ class ChemistryCalc
             scalar dG
             (
                 const int,
-                const scalar&,
+                const scalar,
                 const ChemistryData&,
                 const Thermo&
             ) const;
@@ -182,7 +165,7 @@ class ChemistryCalc
             scalar dS
             (
                 const int,
-                const scalar&,
+                const scalar,
                 const ChemistryData&,
                 const Thermo&
             ) const;

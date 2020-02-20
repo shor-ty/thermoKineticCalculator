@@ -29,10 +29,7 @@ License
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-AFC::Seulex::Seulex
-(
-    const Chemistry& chem
-)
+AFC::Seulex::Seulex(const Chemistry& chem)
 :
     //- Rate of concentration change
     //dcdt_("H2", 0),
@@ -62,11 +59,6 @@ AFC::Seulex::Seulex
 
 //    dfdc_(n_)
 {
-    if (debug_)
-    {
-        Info<< "Constructor Seulex \n" << endl;
-    }
-
     //- Make new object for Jacobion calculation
     jac_ = new Jacobian(chem);
 
@@ -122,12 +114,7 @@ AFC::Seulex::Seulex
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
 AFC::Seulex::~Seulex()
-{
-    if (debug_)
-    {
-        Info<< "Destructor Seulex \n" << endl;
-    }
-}
+{}
 
 
 // * * * * * * * * * * * * * * * Member function * * * * * * * * * * * * * * //

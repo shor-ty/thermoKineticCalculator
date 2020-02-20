@@ -48,12 +48,6 @@ namespace AFC
 
 class StepStatus
 {
-    private:
-
-        // Debug switch
-        bool debug_{false};
-
-
     public:
             
             //- Bool if we have to calculate or not

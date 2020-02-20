@@ -33,23 +33,13 @@ AFC::TransportReader::TransportReader
 )
 :
     file_(file)
-{
-    if (debug_)
-    {
-        Info<< "Constructor TransportReader\n" << endl;
-    }
-}
+{}
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
 AFC::TransportReader::~TransportReader()
-{
-    if (debug_)
-    {
-        Info<< "Destructor TransportReader\n" << endl;
-    }
-}
+{}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //

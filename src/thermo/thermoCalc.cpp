@@ -30,20 +30,18 @@ License
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 AFC::ThermoCalc::ThermoCalc()
-{
-}
+{}
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
 AFC::ThermoCalc::~ThermoCalc()
-{
-}
+{}
 
 
 // * * * * * * * * * * * * * Calculation Functions * * * * * * * * * * * * * //
 
-AFC::scalar AFC::ThermoCalc::MmeanX
+AFC::scalar AFC::ThermoCalc::MWmeanX
 (
     const map<word, scalar>& X,
     const map<word, scalar>& MW
@@ -60,7 +58,7 @@ AFC::scalar AFC::ThermoCalc::MmeanX
 }
 
 
-AFC::scalar AFC::ThermoCalc::MmeanY
+AFC::scalar AFC::ThermoCalc::MWmeanY
 (
     const map<word, scalar>& Y,
     const map<word, scalar>& MW
@@ -77,7 +75,7 @@ AFC::scalar AFC::ThermoCalc::MmeanY
 }
 
 
-AFC::scalar AFC::ThermoCalc::MmeanC
+AFC::scalar AFC::ThermoCalc::MWmeanC
 (
     const map<word, scalar>& C,
     const map<word, scalar>& MW
@@ -96,34 +94,25 @@ AFC::scalar AFC::ThermoCalc::MmeanC
 }
 
 
-AFC::scalar AFC::ThermoCalc::rho
-(
-    const scalar& T,
-    const scalar& p,
-    const scalar& MW
-) const
+AFC::scalar
+AFC::ThermoCalc::rho(const scalar T, const scalar p, const scalar MW) const
 {
-    //- Density in [g/m^3] 
     return (p * MW / AFC::Constants::R / T);
 }
 
 
 AFC::scalar AFC::ThermoCalc::rhoMean
 (
-    const scalar& Mmean,
-    const scalar& p,
-    const scalar& T
+    const scalar Mmean,
+    const scalar p,
+    const scalar T
 ) const
 {
     return (p * Mmean/ (AFC::Constants::R * T));
 }
 
 
-AFC::scalar AFC::ThermoCalc::C
-(
-    const scalar& p,
-    const scalar& T
-) const
+AFC::scalar AFC::ThermoCalc::C(const scalar p, const scalar T) const
 {
     return (p / (AFC::Constants::R * T));
 }
@@ -131,8 +120,8 @@ AFC::scalar AFC::ThermoCalc::C
 
 AFC::scalar AFC::ThermoCalc::cp
 (
-    const word& species,
-    const scalar& T,
+    const word species,
+    const scalar T,
     const ThermoData& data
 ) const
 {
@@ -154,8 +143,8 @@ AFC::scalar AFC::ThermoCalc::cp
 
 AFC::scalar AFC::ThermoCalc::cv
 (
-    const word& species,
-    const scalar& T,
+    const word species,
+    const scalar T,
     const ThermoData& data
 ) const
 {
@@ -178,12 +167,12 @@ AFC::scalar AFC::ThermoCalc::cv
 
 AFC::scalar AFC::ThermoCalc::H
 (
-    const word& species,
-    const scalar& T,
+    const word species,
+    const scalar T,
     const ThermoData& thermoData
 ) const
 {
-    scalarField coeffs = getCoeffs(species, T, thermoData);
+    const scalarField& coeffs = getCoeffs(species, T, thermoData);
 
     //- calculate and return [J/mol]
     return
@@ -202,8 +191,8 @@ AFC::scalar AFC::ThermoCalc::H
 
 AFC::scalar AFC::ThermoCalc::dHf
 (
-    const word& species,
-    const scalar& T,
+    const word species,
+    const scalar T,
     const ThermoData& data 
 ) const
 {
@@ -213,12 +202,12 @@ AFC::scalar AFC::ThermoCalc::dHf
 
 AFC::scalar AFC::ThermoCalc::S
 (
-    const word& species,
-    const scalar& T,
+    const word species,
+    const scalar T,
     const ThermoData& thermoData
 ) const
 {
-    const scalarField coeffs = getCoeffs(species, T, thermoData);
+    const scalarField& coeffs = getCoeffs(species, T, thermoData);
 
     //- calculate and return [J/mol/K]
     return
@@ -238,8 +227,8 @@ AFC::scalar AFC::ThermoCalc::S
 
 AFC::scalar AFC::ThermoCalc::G
 (
-    const word& species,
-    const scalar& T,
+    const word species,
+    const scalar T,
     const ThermoData& thermoData
 ) const
 {
@@ -256,8 +245,8 @@ AFC::scalar AFC::ThermoCalc::G
 
 AFC::scalar AFC::ThermoCalc::dGf
 (
-    const word& species,
-    const scalar& T,
+    const word species,
+    const scalar T,
     const ThermoData& data
 ) const
 {
@@ -265,33 +254,23 @@ AFC::scalar AFC::ThermoCalc::dGf
 }
 
 
-AFC::scalar AFC::ThermoCalc::G
-(
-    const scalar& h,
-    const scalar& s,
-    const scalar& T
-) const
+AFC::scalar
+AFC::ThermoCalc::G(const scalar h, const scalar s, const scalar T) const
 {
     //- calculate mean free Gibbs energy
     return ( h - s * T);
 }
 
 
-AFC::scalar AFC::ThermoCalc::Hf
-(
-    const word& species,
-    const ThermoData& data
-) const
+AFC::scalar
+AFC::ThermoCalc::Hf(const word species, const ThermoData& data) const
 {
     return H(species, 298, data);
 }
 
 
-AFC::scalar AFC::ThermoCalc::Gf
-(
-    const word& species,
-    const ThermoData& data
-) const
+AFC::scalar
+AFC::ThermoCalc::Gf(const word species, const ThermoData& data) const
 {
     return G(species, 298, data);
 }
@@ -301,8 +280,8 @@ AFC::scalar AFC::ThermoCalc::Gf
 
 AFC::scalarField AFC::ThermoCalc::getCoeffs
 (
-    const word& species,
-    const scalar& T,
+    const word species,
+    const scalar T,
     const ThermoData& thermoData
 ) const
 {
@@ -322,21 +301,20 @@ AFC::scalarField AFC::ThermoCalc::getCoeffs
 }
 
 
-bool AFC::ThermoCalc::whichTempRange
-(
-    const word& species,
-    const scalar& T,
+bool AFC::ThermoCalc::whichTempRange(
+    const word species,
+    const scalar T,
     const ThermoData& thermoData
 ) const
 {
     //- Low temperature 
-    const scalar& TL = thermoData.LT(species);
+    const scalar TL = thermoData.LT(species);
 
     //- Common temperature
-    const scalar& TC = thermoData.CT(species);
+    const scalar TC = thermoData.CT(species);
 
     //- High temperature
-    const scalar& TH = thermoData.HT(species);
+    const scalar TH = thermoData.HT(species);
 
     //- Check if temperature T is in range of NASA
     if (T < TL)
@@ -387,5 +365,6 @@ bool AFC::ThermoCalc::whichTempRange
         }
     }
 }
+
 
 // ************************************************************************* //

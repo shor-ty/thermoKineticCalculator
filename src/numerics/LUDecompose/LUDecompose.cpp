@@ -29,10 +29,7 @@ License
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-AFC::LUDecompose::LUDecompose
-(
-    Matrix& A
-)
+AFC::LUDecompose::LUDecompose(Matrix& A)
 :
     i_(A.rows()),
 
@@ -44,17 +41,14 @@ AFC::LUDecompose::LUDecompose
 
     permut_(i_, 0)
 {
-    if (debug_)
-    {
-        Info<< "Constructor LUDecompose \n" << endl;
-    }
-
     //- Check for square matrix
     if (i_ != j_)
     {
-        throw
+        FatalError 
         (
-            "    *** Error in LUDecompose::LUDecompose - Not a square matrix"
+            "*** Error in LUDecompose::LUDecompose - Not a square matrix",
+            __FILE__,
+            __LINE__
         );
     }
     else
@@ -91,9 +85,11 @@ AFC::LUDecompose::LUDecompose
         //- If in one row we have only zeros
         if (large == scalar(0))
         {
-            throw
+            FatalError 
             (
-                "    *** Error in LUDecompose::LUDecompose - Singular matrix"
+                "*** Error in LUDecompose::LUDecompose - Singular matrix",
+                __FILE__,
+                __LINE__
             );
         }
 
@@ -175,21 +171,12 @@ AFC::LUDecompose::LUDecompose
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
 AFC::LUDecompose::~LUDecompose()
-{
-    if (debug_)
-    {
-        Info<< "Destructor LUDecompose \n" << endl;
-    }
-}
+{}
 
 
 // * * * * * * * * * * * * * * * Member function * * * * * * * * * * * * * * //
 
-void AFC::LUDecompose::solve
-(
-    Vector& b,
-    Vector& x
-)
+void AFC::LUDecompose::solve(Vector& b, Vector& x)
 {
     //- Temporary variables
     size_t i{0}, ii{0}, ip{0}, j{0};
@@ -199,10 +186,12 @@ void AFC::LUDecompose::solve
     //- First check size of vectors compared to matrix
     if (x.size() != n_)
     {
-        throw
+        FatalError
         (
-            "    *** Error in LUDecompose::solve - Matrix size does not match"
-            " with the vector x"
+            "*** Error in LUDecompose::solve - Matrix size does not match"
+            " with the vector x",
+            __FILE__,
+            __LINE__
         );
     }
     else if (b.size() != n_)
@@ -261,11 +250,7 @@ void AFC::LUDecompose::solve
 }
 
 
-void AFC::LUDecompose::improveSolution
-(
-    Vector& b,
-    Vector& x
-)
+void AFC::LUDecompose::improveSolution(Vector& b, Vector& x)
 {
     //- Solve the system Ax to get b* (x is the calculated solution)
     Vector bstar = A_ * x;

@@ -65,25 +65,14 @@ class TransportCalc
 
             //- Lenard 12-6 assumption, collision integral omega 2.2
             //  Neufeld et. al. (1972)
-            scalar reducedCollisionIntegralOmega22
-            (
-                const scalar&
-            ) const;
+            scalar reducedCollisionIntegralOmega22(const scalar) const;
 
             //- Lenard 12-6 assumption, collision integral omega 1.1
             //  Neufeld et. al. (1972)
-            scalar reducedCollisionIntegralOmega11
-            (
-                const scalar&
-            ) const;
+            scalar reducedCollisionIntegralOmega11(const scalar) const;
 
             //- Calculate density out of ideal gas law [kg/m^3]
-            scalar rho
-            (
-                const scalar&,
-                const scalar&,
-                const scalar&
-            );
+            scalar rho(const scalar, const scalar, const scalar) const;
 
 
         // Calculation functions for viscosity
@@ -91,48 +80,40 @@ class TransportCalc
             //- Kinetic calculation, pure species viscosity
             scalar viscosity
             (
-                const word&,
-                const scalar&,
+                const word,
+                const scalar,
                 const Thermo&,
                 const TransportData&,
-                const word& method = "Hirschfelder"
+                const word method = "Hirschfelder"
             ) const;
 
             //- Return the viscosity suggested by Hirschfelder et. al. (1954)
             //  [kg/m/s]
             scalar viscosityHirschfelder
             (
-                const word&,
-                const scalar&,
-                const scalar&,
-                const scalar&,
-                const scalar&
+                const word,
+                const scalar,
+                const scalar,
+                const scalar,
+                const scalar
             ) const;
 
             //- Return the viscosity suggested by Chung
             //  [kg/m/s]
             scalar viscosityChung
             (
-                const word&,
-                const scalar&,
+                const word,
+                const scalar,
                 const Thermo&,
                 const TransportData&
             ) const;
 
             //- Return the viscosity using the polynomial
             //  [kg/m/s]
-            scalar viscosityPolynomial
-            (
-                const scalar&,
-                const scalarField&
-            ) const;
+            scalar viscosityPolynomial(const scalar, const scalarField&) const;
 
             //- Fitting function for viscosity
-            void fitViscosity
-            (
-                TransportData&,
-                const Thermo&
-            );
+            void fitViscosity(TransportData&, const Thermo&) const;
 
 
         // Calculation functions for thermal conductivity
@@ -140,11 +121,11 @@ class TransportCalc
             //- Kinetic calculation, pure species thermal conductivity
             scalar thermalConductivity
             (
-                const word&,
-                const scalar&,
+                const word,
+                const scalar,
                 const Thermo&,
                 const TransportData&,
-                const word& method = "Warnatz" 
+                const word method = "Warnatz" 
             ) const;
 
             //- Return the thermal conductivity suggested by Warnatz in the
@@ -152,8 +133,8 @@ class TransportCalc
             //  [W/m/K]
             scalar thermalConductivityWarnatz
             (
-                const word&,
-                const scalar&,
+                const word,
+                const scalar,
                 const Thermo&,
                 const TransportData&
             ) const;
@@ -164,8 +145,8 @@ class TransportCalc
             //  [W/m/K]
             scalar thermalConductivityWarnatzCC
             (
-                const word&,
-                const scalar&,
+                const word,
+                const scalar,
                 const Thermo&,
                 const TransportData&
             ) const;
@@ -173,16 +154,12 @@ class TransportCalc
             //- Return the thermal conductivity using the polynomial 
             scalar thermalConductivityPolynomial
             (
-                const scalar&,
+                const scalar,
                 const scalarField&
             ) const;
 
             //- Fitting function for thermal conductivity
-            void fitThermalConductivity
-            (
-                TransportData&,
-                const Thermo&
-            );
+            void fitThermalConductivity(TransportData&, const Thermo&) const;
 
 
         // Calculation functions for binary diffusivity
@@ -190,21 +167,21 @@ class TransportCalc
             //- Kinetic calculation, pure species binary diffusivity
             scalar binaryDiffusivity
             (
-                const word&,
-                const word&,
-                const scalar&,
+                const word,
+                const word,
+                const scalar,
                 const Thermo&,
                 const TransportData&,
-                const word& method = "ChapmanAndEnskog"
+                const word method = "ChapmanAndEnskog"
             ) const;
 
             //- Return the binary diffusivity suggested by Warnatz et. al.
             //  in the book Verbrennung by Warnatz et. al.
             scalar binaryDiffusivityWarnatz
             (
-                const word&,
-                const word&,
-                const scalar&,
+                const word,
+                const word,
+                const scalar,
                 const Thermo&,
                 const TransportData&
             ) const;
@@ -213,9 +190,9 @@ class TransportCalc
             //  [m^2/s]
             scalar binaryDiffusivityChapmanAndEnskog
             (
-                const word&,
-                const word&,
-                const scalar&,
+                const word,
+                const word,
+                const scalar,
                 const Thermo&,
                 const TransportData&
             ) const;
@@ -224,9 +201,9 @@ class TransportCalc
             //  summary of the Chemkin Collection Release 3.6 (2000)
             scalar binaryDiffusivityCC
             (
-                const word&,
-                const word&,
-                const scalar&,
+                const word,
+                const word,
+                const scalar,
                 const Thermo&,
                 const TransportData&
             ) const;
@@ -235,26 +212,18 @@ class TransportCalc
             //  [m^2/s]
             scalar binaryDiffusivityPolynomial
             (
-                const scalar&,
+                const scalar,
                 const scalarField&
             ) const;
 
             //- Fitting function for binary diffusivity 
-            void fitBinaryDiffusivity
-            (
-                TransportData&,
-                const Thermo&
-            );
+            void fitBinaryDiffusivity(TransportData&, const Thermo&) const;
 
 
         // Additional Functions
 
             //- Return the temperature dependence of ZRot
-            scalar F
-            (
-                const scalar&,
-                const scalar&
-            ) const;
+            scalar F(const scalar, const scalar) const;
 };
 
 

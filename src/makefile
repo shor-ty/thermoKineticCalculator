@@ -3,10 +3,10 @@
 # Februar 2017
 #
 # Description
-#     This makefile compiles the libraries and the application for generating 
+#     This makefile compiles the libraries and the application for generating
 #     steady-state flamelets that can be used with the flameletHolzmannFoam
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 PROGRAM=automaticFlameletCreator
 OBJECTDIR=obj
@@ -18,27 +18,27 @@ COMPILER=g++
 # Compiling mode: DEBUG | OPT
 COMPILE_MODE=DEBUG
 
-DIRECTORIES=chemistry \
-            thermo \
-            transport \
-            properties \
-            mixtureFraction \
+DIRECTORIES=typedef \
             constants \
-            numerics \
-            numerics/ODE \
-            numerics/euler \
-            numerics/jacobian \
-            numerics/LUDecompose \
-            numerics/seulex \
-            numerics/stepStatus \
-            typedef \
-            interpreter \
-            tensors/tensor \
-            tensors/matrix \
+			tensors/tensor \
+			tensors/matrix \
             tensors/vector \
             tensors/scalar \
-            tensors/dimensions \
-            stringManipulator
+            tensors/dimensioned \
+            stringManipulator \
+            interpreter \
+            properties \
+            thermo \
+            transport \
+			chemistry
+            #mixtureFraction \
+            #numerics \
+            #numerics/ODE \
+            #numerics/euler \
+            #numerics/jacobian \
+            #numerics/LUDecompose \
+            #numerics/seulex \
+            #numerics/stepStatus
 
 
 CPPFLAGS=-Wall \
@@ -49,7 +49,7 @@ CPPFLAGS=-Wall \
          -pedantic-errors \
          -ggdb \
          -Wno-unused-parameter \
-         -Wno-unused-variable 
+         -Wno-unused-variable
 
 
 SOURCE_FILES=$(shell find $(DIRECTORIES) -name '*.cpp')
@@ -59,8 +59,12 @@ OBJECT_FILES=$(addprefix obj/, $(addsuffix .o, $(basename $(SOURCE_FILES))))
 INCLUDE_DIR=$(addprefix -I,$(DIRECTORIES))
 
 
-# Make  
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+# Make
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+
+build : $(OBJECT_FILES)
+	$(COMPILER) $(CPPFLAGS) $(INCLUDE_DIR) -o $(PROGRAM) $(addsuffix .cpp, $(PROGRAM)) $^
 
 pre:
 	$(MAKE_DIR) $(addprefix obj/,$(DIRECTORIES))
@@ -68,13 +72,10 @@ pre:
 clean:
 	$(CLEAN_DIR) obj $(PROGRAM)
 
-build : $(OBJECT_FILES) 
-	$(COMPILER) $(CPPFLAGS) $(INCLUDE_DIR) -o $(PROGRAM) $(addsuffix .cpp, $(PROGRAM)) $^
-
 obj/%.o: %.cpp | obj
 	$(COMPILER) $(CPPFLAGS) $(INCLUDE_DIR) -c $< -o $@
-			
-help: 
+
+help:
 	@echo "Targets:"
 	@echo "build        - build all libraries"
 	@echo "clean        - clean all libraries"

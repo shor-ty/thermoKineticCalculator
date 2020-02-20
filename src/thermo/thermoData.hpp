@@ -25,7 +25,8 @@ Class
    AFC::ThermoData
    
 Description
-    This class contains all thermo data e.g. elements, reactions, species
+    This class contains all thermo data e.g. coeffs of NASA polynomials,
+    the pressure, species names (nick-names and chemical formula),...
 
 SourceFiles
     thermoData.cpp
@@ -52,47 +53,50 @@ class ThermoData
 
         // Private data
 
-            //- Pressure for calculation [Pa]
+            //- Pressure [Pa]
             scalar p_;
 
-            //- List of species (official species name)
-            wordList species_;
 
-            //- List of species formula (chemical formula)
-            //  + ACETOL -> C3H6O2
-            wordList formula_;
+            //- Data related to species
+            
+                //- List of species names -> ACETOL
+                wordList species_;
 
-            //- map of List of atoms of each species
-            // wordMatrix elementsInSpecies_;
-            map<word, wordList> elementsInSpecies_;
+                //- List of species formula -> C3H6O2
+                wordList formula_;
 
-            //- map of List of coeffs of atoms
-            // matrix elementsFactors_;
-            map<word, scalarList> elementsFactors_;
+                //- List of elements in each species
+                map<word, wordList> elementsInSpecies_;
 
-            //- Atoms and amount in species
-            map<word, map<word, scalar> > atoms_;
+                //- List of stochiometric factors of each element in species
+                map<word, scalarList> elementFactors_;
 
-            //- Hashtable of molecular weight of species [g/mol]
-            map<word, scalar> MW_;
+                //- Elements and amount in species (Summary of both above)
+                map<word, map<word, scalar> > elements_;
 
-            //- Hashtable of phase of species
-            map<word, word> phase_;
+                //- Molecular weight of each single species [kg/mol]
+                map<word, scalar> MW_;
 
-            //- Hashtable of low temperature
-            map<word, scalar> LT_;
+                //- Phase status of each species
+                map<word, word> phase_;
 
-            //- Hashtable of high temperature
-            map<word, scalar> HT_;
 
-            //- Hashtable of common temperature
-            map<word, scalar> CT_;
+            //- NASA Polynomial related information
 
-            //- Hashtable of polycoeffs for high temperature range
-            map<word, scalarField> NASACoeffsHT_;
+                //- List of Low Temperature limit for NASA of each species
+                map<word, scalar> LT_;
 
-            //- Hashtable of polycoeffs for high temperature range
-            map<word, scalarField> NASACoeffsLT_;
+                //- List of Common Temperature limit for NASA of each species
+                map<word, scalar> CT_;
+
+                //- List of High Temperature limit for NASA of each species
+                map<word, scalar> HT_;
+
+                //- List of the polynomial coefficients for LT of each species
+                map<word, scalarField> NASACoeffsLT_;
+
+                //- List of the polynomial coefficients for HT of each species
+                map<word, scalarField> NASACoeffsHT_;
 
 
         //- Thermodynamic available in chemistry file
@@ -101,191 +105,109 @@ class ThermoData
 
     public:
 
-        //- Constructor that take ChemistryData::thermo_
-        ThermoData
-        (
-            const bool& 
-        );
+        //- Constructor that take ChemistryData::thermo_: that means if we 
+        //  extract the thermodynamics from the chemistry file or not. Default
+        //  is false. That lead to reading a thermodynamic file.
+        ThermoData(const bool);
 
         //- Destructor
         ~ThermoData();
 
 
-        // Member functions
+        // Insert functions, from Thermo:: delegated
 
+            //- Insert the pressure
+            void p(const scalar);
 
 
         // Insert functions, from ThermoReader:: delegated 
 
             //- Insert species
-            void insertSpecies
-            (
-                const word&
-            );
+            void insertSpecies(const word);
 
             //- Insert chemical species (formula)
-            void insertChemicalFormula
-            (
-                const word&
-            );
+            void insertChemicalFormula(const word);
 
-            //- Insert atom and factor of species
-            void insertAtomAndFactor
-            (
-                const word&,
-                const unsigned int
-            );
+            //- Insert element and factor of species
+            void insertElementAndFactor(const word, const unsigned int);
 
-            //- Insert molecular weight [g/mol]
-            void insertMolecularWeight
-            (
-                const scalar&
-            );
+            //- Insert molecular weight [kg/mol]
+            void insertMolecularWeight(const scalar);
 
             //- Insert phase of species
-            void insertPhase
-            (
-                const word&
-            );
+            void insertPhase(const word);
 
             //- Insert low temperature
-            void insertLT
-            (
-                const scalar&
-            );
+            void insertLT(const scalar);
 
             //- Insert high temperature
-            void insertHT
-            (
-                const scalar&
-            );
+            void insertHT(const scalar);
 
             //- Insert common temperature
-            void insertCT
-            (
-                const scalar&
-            );
+            void insertCT(const scalar);
 
             //- Insert hight temperature poly coeffs
-            void insertNASACoeffsHT
-            (
-                const scalar&
-            );
+            void insertNASACoeffsHT(const scalar);
 
             //- Insert low temperature poly coeffs
-            void insertNASACoeffsLT
-            (
-                const scalar&
-            );
+            void insertNASACoeffsLT(const scalar);
 
-            //- Update the atoms map (stores atoms and factors)
-            void updateAtomsAndFactorsMap();
+            //- Update the elements map (stores elements and factors)
+            void updateElementsAndFactors();
 
-
-        // Insert functions, from Thermo:: delegated
-
-            //- Insert the pressure
-            void p
-            (
-                const scalar&
-            );
-
-
-        // Setter functions, from ThermoReader:: delegated
 
         // Return functions
-
-            //- Return species as wordList
-            wordList species() const;
-
-            //- Return the formula of species as wordList
-            wordList formula() const;
-
-            //- Return moleculare weight of species s
-            scalar MW
-            (
-                const word&
-            ) const;
-
-            //- Return moleculare weight as map
-            map<word, scalar> MW() const;
-
-            //- Return LOW temperature of polynomials of species s
-            scalar LT
-            (
-                const word&
-            ) const;
-
-            //- Return COMMON temperature of polynomials of species s
-            scalar CT 
-            (
-                const word&
-            ) const;
-
-            //- Return HIGH temperature of polynomials of species s
-            scalar HT 
-            (
-                const word&
-            ) const;
-
-            //- Return polyCoeffs for HIGH temperature
-            List<scalar> NASACoeffsHT 
-            (
-                const word&
-            ) const;
-
-            //- Return polyCoeffs for LOW temperature
-            List<scalar> NASACoeffsLT 
-            (
-                const word&
-            ) const;
 
             //- Return the pressure [Pa]
             scalar p() const;
 
-            //- Return the atoms of species
-            wordList elementsInSpecies
-            (
-                const word&
-            ) const;
+            //- Return species as wordList
+            const wordList species() const;
+
+            //- Return the formula of species as wordList
+            const wordList formula() const;
+
+            //- Return the elements of species s
+            const wordList elementsInSpecies(const word) const;
             
-            //- Return the atoms of species (chemical form)
-            //  Not implemented
-            wordList elementsInSpeciesChem
-            (
-                const word&
-            ) const;
+            //- Return the elements of species (chemical form) s 
+            const wordList elementsInSpeciesChem(const word) const;
 
-            //- Return the factor of atoms in species
-            scalarList elementFactors
-            (
-                const word&
-            ) const;
+            //- Return the factor of elements in species s
+            const scalarList elementFactors(const word) const;
 
-            //- Return the factor of elements as map
-            map<word, scalar> elementFactors() const;
+            //- Return the factor of elements as map of species s
+            const map<word, scalar> elementFactorsMap(const word) const;
 
-            //- Return the factor of atoms in species (chemical form)
-            //  Not implemented
-            scalarList elementFactorsChem
-            (
-                const word&
-            ) const;
+            //- Return the factor of elements in species (chemical form) s 
+            const map<word, scalar> elementFactorsChem(const word) const;
+            
+            //- Return moleculare weight as map
+            const map<word, scalar> MW() const;
 
-            //- Return atoms and factors as map
-            map<word, scalar> atomsAndFactors
-            (
-                const word&
-            ) const;
+            //- Return moleculare weight of species s
+            scalar MW(const word) const;
+
+            //- Return the phase of species as map
+            const map<word, word> phase() const;
 
             //- Return the phase of species s
-            word phase
-            (
-                const word& 
-            ) const;
+            const word phase(const word) const;
             
-            //- Return the phase of species as map
-            map<word, word> phase() const;
+            //- Return LOW temperature of polynomials of species s
+            scalar LT(const word) const;
+
+            //- Return COMMON temperature of polynomials of species s
+            scalar CT(const word) const;
+
+            //- Return HIGH temperature of polynomials of species s
+            scalar HT(const word) const;
+
+            //- Return polyCoeffs for HIGH temperature
+            const List<scalar> NASACoeffsHT(const word) const;
+
+            //- Return polyCoeffs for LOW temperature
+            const List<scalar> NASACoeffsLT(const word) const;
 };
 
 

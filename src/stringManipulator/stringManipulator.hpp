@@ -49,12 +49,6 @@ namespace AFC
 
 class StringManipulator
 {
-    protected:
-
-        // Debug switch
-        const bool debug_{false};
-
-
     public:
 
         //- Constructor
@@ -67,43 +61,22 @@ class StringManipulator
         // Member function
 
             //- Open file and return file content as stringList
-            const stringList readFile
-            (
-                const string& 
-            );
+            const stringList readFile(const string);
 
-            //- Split string; delimiter ' '
-            const stringList splitStrAtWS 
-            (
-                const string&
-            );
+            //- Split string; delimiter is space ' '
+            const stringList splitStrAtWS (const string);
 
-            //- Split string; delimiter as parameter
-            const stringList splitStrAtDelimiter
-            (
-                const string&,
-                const char&
-            );
+            //- Split string; delimiter is a character
+            const stringList splitStrAtDelimiter(const string, const char);
 
-            //- Split string; delimiter as parameter
-            const stringList splitStrAtDelimiter
-            (
-                const string&,
-                const string&
-            );
+            //- Split string; delimiter is a string
+            const stringList splitStrAtDelimiter(const string, const string);
 
             //- Remove str2 from str and return str from 0 - pos
-            const string removeAtEnd
-            (
-                const string&,
-                const string&
-            );
+            const string removeAtEnd(const string, const string);
 
             //- Remove first character from string
-            void removeFirstChar
-            (
-                string&
-            );
+            void removeFirstChar(string&);
 };
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

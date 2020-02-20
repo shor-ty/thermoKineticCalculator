@@ -62,9 +62,6 @@ class ThermoCalc
 {
     private:
 
-        // Debug
-        bool debug{true};
-
         // Warnings
         bool warnings{false};
 
@@ -80,136 +77,88 @@ class ThermoCalc
 
         // Calculation functions
 
-            //- Calculate mean molecular weight out of the mol fraction [g/mol]
-            scalar MmeanX
+            //- Calculate mean molecular weight out of the mol fraction
+            //  [kg/mol]
+            scalar MWmeanX
             (
                 const map<word, scalar>&,
                 const map<word, scalar>&
             ) const;
             
-            //- Calculate mean molecular weight out of the mass fraction [g/mol]
-            scalar MmeanY
+            //- Calculate mean molecular weight out of the mass fraction
+            //  [kg/mol]
+            scalar MWmeanY
             (
                 const map<word, scalar>&,
                 const map<word, scalar>&
             ) const;
             
-            //- Calculate mean molecular weight out of the concentration [g/mol]
-            scalar MmeanC
+            //- Calculate mean molecular weight out of the concentration
+            //  [kg/mol]
+            scalar MWmeanC
             (
                 const map<word, scalar>&,
                 const map<word, scalar>&
             ) const;
 
-            //- Calculate rho for species based on the ideal gas law [g/m^3]
-            scalar rho
-            (
-                const scalar&,
-                const scalar&,
-                const scalar&
-            ) const;
+            //- Calculate rho for species based on the ideal gas law
+            //  [kg/m^3]
+            scalar rho(const scalar, const scalar, const scalar) const;
 
-            //- Calculate mean density based on the mean molecular weight [g/m^3]
-            scalar rhoMean
-            (
-                const scalar&,
-                const scalar&,
-                const scalar&
-            ) const;
+            //- Calculate mean density based on the mean molecular weight
+            //  [kg/m^3]
+            scalar rhoMean(const scalar, const scalar, const scalar) const;
 
             //- Calculate complete concentration C [mol/m^3]
-            scalar C
-            (
-                const scalar&,
-                const scalar&
-            ) const;
+            scalar C(const scalar, const scalar) const;
             
 
-            //- Calculate temperature depended specific heat capacity (NASA)
-            //  [J/mol/K] of species s for constant pressure
-            scalar cp
-            (
-                const word&,
-                const scalar&,
-                const ThermoData&
-            ) const;
+            //- Calculate temperature depended specific heat capacity via
+            //  NASA polynomials of species s for constant pressure
+            //  [J/mol/K] 
+            scalar cp(const word, const scalar, const ThermoData&) const;
 
-            //- Calculate temperature depended specific heat capcity (NASA)
-            //  [J/mol/K] of species s for constant volume
-            scalar cv
-            (
-                const word&,
-                const scalar&,
-                const ThermoData&
-            ) const;
+            //- Calculate temperature depended specific heat capcity via
+            //  NASA polynomials of species s for constant volume
+            //  [J/mol/K] 
+            scalar cv(const word, const scalar, const ThermoData&) const;
 
-            //- Calculate temperature dependend enthalpy (NASA) [J/mol]
-            //  of species s
-            scalar H
-            (
-                const word&,
-                const scalar&,
-                const ThermoData&
-            ) const;
+            //- Calculate temperature dependend enthalpy via 
+            //  NASA polynomials of species s
+            //  [J/mol]
+            scalar H(const word, const scalar, const ThermoData&) const;
 
-            //- Calculate the enthalpy difference from H and Hf (NASA) [J/mol]
-            scalar dHf
-            (
-                const word&,
-                const scalar&,
-                const ThermoData&
-            ) const;
+            //- Calculate the enthalpy difference from H and Hf via
+            //  NASA polynomials for species s
+            //  [J/mol]
+            scalar dHf(const word, const scalar, const ThermoData&) const;
 
-            //- Calculate temperature dependend entropy (NASA) [J/mol/K] 
-            //  of species s
-            scalar S
-            (
-                const word&,
-                const scalar&,
-                const ThermoData&
-            ) const;
+            //- Calculate temperature dependend entropy via
+            //  NASA polynomials for species s
+            //  [J/mol/K] 
+            scalar S(const word, const scalar, const ThermoData&) const;
 
-            //- Calculate temperature dependend free GIBBS energy (NASA)
-            //  of species s [J/mol/K] 
-            scalar G
-            (
-                const word&,
-                const scalar&,
-                const ThermoData&
-            ) const;
+            //- Calculate temperature dependend free GIBBS energy via
+            //  NASA polynomials for species s
+            //  [J/mol/K] 
+            scalar G(const word, const scalar, const ThermoData&) const;
 
             //- Calculate the free GIBBS energy difference from G and G(298)
             //  [J/mol]
-            scalar dGf
-            (
-                const word&,
-                const scalar&,
-                const ThermoData&
-            ) const;
+            scalar dGf(const word, const scalar, const ThermoData&) const;
 
+            //- Calculate temperature dependend free GIBBS energy via
+            //  NASA polynomials of the mixture (mean value)
+            //  [J/mol] 
+            scalar G(const scalar, const scalar, const scalar) const;
 
-            //- Calculate temperature dependend free GIBBS energy (NASA)
-            //  of mixture (mean) [J/mol] 
-            scalar G
-            (
-                const scalar&,
-                const scalar&,
-                const scalar&
-            ) const;
+            //- Calculate formation enthalpy Hf == H(298) of species s
+            //  [J/mol]
+            scalar Hf(const word, const ThermoData&) const;
 
-            //- Calculate formation enthalpy Hf == H(298) [J/mol]
-            scalar Hf
-            (
-                const word&,
-                const ThermoData&
-            ) const;
-
-            //- Calculate formation free GIBBS energy Gf == G(298) [J/mol]
-            scalar Gf
-            (
-                const word&,
-                const ThermoData&
-            ) const;
+            //- Calculate formation free GIBBS energy Gf == G(298) of species s
+            //  [J/mol]
+            scalar Gf(const word, const ThermoData&) const;
 
 
         // Return functions
@@ -217,17 +166,16 @@ class ThermoCalc
             //- Get correct NASA coeffs
             scalarField getCoeffs
             (
-                const word&,
-                const scalar&,
+                const word,
+                const scalar,
                 const ThermoData&
             ) const;
 
-            //- Return true or false to choose the correct NASA polys
-            //  of species s
+            //- Checking for correct temperature range
             bool whichTempRange
             (
-                const word&,
-                const scalar&,
+                const word,
+                const scalar,
                 const ThermoData&
             ) const;
 };

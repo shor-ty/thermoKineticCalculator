@@ -25,7 +25,7 @@ Class
     AFC::ThermoReader    
 
 Description
-    Reading the chemkin III file
+    Reading the thermo file
 
 SourceFiles
     thermoReader.cpp
@@ -54,7 +54,7 @@ class ThermoReader
     private:
 
         //- List of available keywords for thermo
-        wordList THERMO{ "THERMO", "THERMO ALL" };
+        wordList THERMO{"THERMO", "THERMO ALL"};
 
         // Private data
 
@@ -67,10 +67,7 @@ class ThermoReader
         // Constructor and Destructor
 
             //- Constructor with file string and Thermo:: obj adress
-            ThermoReader
-            (
-                const string&
-            );
+            ThermoReader(const string);
 
             //- Destructor
             ~ThermoReader();
@@ -79,50 +76,27 @@ class ThermoReader
         // Member functions
 
             //- Read thermo file and return pointer to ThermoData:: obj
-            void read
-            (
-                ThermoData&
-            );
+            void read(ThermoData&);
 
             //- Read file and get NASA polynomials
-            void readNasaPolynomials
-            (
-                const stringList&
-            );
+            void readNasaPolynomials(const stringList&);
 
 
         // Helper functions
         
             //- Find line number of keywords
-            void findKeyword
-            (
-                int&,
-                unsigned int&,
-                const stringList&
-            );
+            void findKeyword(int&, unsigned int&, const stringList&);
 
-            //- Return the atomic weight of the atoms
-            scalar calcWeight
-            (
-                const word&,
-                const scalar&,
-                const word&
-            );
+            //- Return the atomic weight of the elements 
+            scalar calcWeight(const word, const scalar, const word);
 
             //- Construct species formula
-            word constructFormula
-            (
-                const string&
-            );
+            word constructFormula(const string);
             
             //- Split formula into species and factors
-            //  + Store atoms
+            //  + Store elements (atoms) 
             //  + Store atomic factors
-            void atomsAndFactors
-            (
-                const string&,
-                ThermoData&
-            );
+            void elementsAndFactors(const string, ThermoData&);
 
 
         // Data manipulation functions
@@ -130,7 +104,7 @@ class ThermoReader
             //- NASAPolynomial reader for first line
             void NASAPolynomialNo1
             (
-                const string&,
+                const string,
                 const unsigned int&,
                 ThermoData&
             );
@@ -138,36 +112,29 @@ class ThermoReader
             //- NASAPolynomial reader for second line
             void NASAPolynomialNo2
             (
-                const string&,
+                const string,
                 const unsigned int&,
                 ThermoData&
-
             );
 
             //- NASAPolynomial reader for third line
             void NASAPolynomialNo3
             (
-                const string&,
+                const string,
                 const unsigned int&,
                 ThermoData&
-
             );
 
             //- NASAPolynomial reader for fourth line
             void NASAPolynomialNo4
             (
-                const string&,
+                const string,
                 const unsigned int&,
                 ThermoData&
-
             );
 
             //- Calculate molecular weight of species
-            void calcMolecularWeight
-            (
-                const word&,
-                ThermoData&
-            );
+            void calcMolecularWeight(const word, ThermoData&);
             
 };
 

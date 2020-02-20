@@ -27,16 +27,17 @@ Description
 \*---------------------------------------------------------------------------*/
 
 #include "typedef.hpp" 
-//#include "chemistry.hpp"
-//#include "thermo.hpp"
-//#include "transport.hpp"
-//#include "properties.hpp"
+#include "interpreter.hpp"
+#include "scalar.hpp"
+#include "vector.hpp"
+#include "matrix.hpp"
+#include "chemistry.hpp"
+#include "thermo.hpp"
+#include "transport.hpp"
+#include "properties.hpp"
 //#include "mixtureFraction.hpp"
 //#include "numerics.hpp"
-//#include "interpreter.hpp"
-#include "matrix.hpp"
-#include "vector.hpp"
-#include "LUDecompose.hpp"
+//#include "LUDecompose.hpp"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -55,248 +56,239 @@ int main
 
     Info<< Header() << endl;
 
-//
-//
-//    string file_AFC;
-//    string file_Thermo;
-//    string file_Transport;
-//    string file_Chemistry;
-//
-//    //- Interpreter object
-//    Interpreter interpreter;
-//
-//    if (argc != 9 && argc != 10)
-//    {
-//        FatalError
-//        (
-//            "    Program needs one or eight arguments.\n\n"
-//            "    For calculating flamelets you have to use\n"
-//            "    ./automaticFlameletCreator\n"
-//            "      -transport $pathToFile\n"
-//            "      -thermodynamic $pathToFile\n"
-//            "      -chemistry $pathToFile\n"
-//            "      -AFCDict $pathToFile\n\n"
-//            "    For interpreting the data you have to add\n"
-//            "      -interprete\n",
-//            __FILE__,
-//            __LINE__
-//        ); 
-//    }
-//    else
-//    {
-//        if (argc == 10)
-//        {
-//            interpreter.analyse(true);
-//        }
-//
-//        for (int i=0; i<argc; i++)
-//        {
-//            if (string(argv[i]) == "-transport")
-//            {
-//                file_Transport = string(argv[i+1]);
-//            }
-//            else if (string(argv[i]) == "-thermodynamic")
-//            {
-//                file_Thermo = string(argv[i+1]);
-//            }
-//            else if (string(argv[i]) == "-chemistry")
-//            {
-//                file_Chemistry = string(argv[i+1]);
-//            }
-//            else if (string(argv[i]) == "-AFCDict")
-//            {
-//                file_AFC = string(argv[i+1]);
-//            }
-//        }
-//
-//        if
-//        (
-//            file_Transport.empty()
-//         || file_Thermo.empty()
-//         || file_Chemistry.empty()
-//         || file_AFC.empty()
-//        )
-//        {
-//            FatalError
-//            (
-//                "    Tranport, Thermo, Chemistry or AFCDict is missing.\n"
-//                "    Check the command that you use for running the "
-//                "application.",
-//                __FILE__,
-//                __LINE__
-//            );
-//        }
-//    }
-//
-//    Thermo thermo(file_Thermo);
-//
-//    Transport transport(file_Transport, thermo);
-//
-//    Chemistry chemistry(file_Chemistry, thermo);
-//
-//    Properties properties(file_AFC, thermo, chemistry);
-//
-//    Info<< " c-o All data read successfully\n" << endl;
-//
-//    Info<< " c-o Check transportData (all species available)\n" << endl;
-//
-//    //- Proof if all species used in chemistryData have transportData
-//    {
-//        const wordList& speciesCH = chemistry.species();
-//        const wordList& speciesTD = transport.species();
-//
-//        forAll(speciesCH, i)
-//        {
-//            bool found{false};
-//
-//            forAll(speciesTD, j)
-//            {
-//                if (i == j)
-//                {
-//                    found = true;
-//                }
-//            }
-//
-//            //- Chemistry species not found in transportData
-//            if (!found)
-//            {
-//                FatalError
-//                (
-//                    "    Species " + i + " was not found in "
-//                    "the transportData class.\n"
-//                    "    Please be sure that the transport properties of "
-//                    "this species is available\n"
-//                    "    in the transport file.",
-//                    __FILE__,
-//                    __LINE__
-//                );
-//            }
-//        }
-//
-//        //- Insert chemical species to transportData
-//        transport.insertChemistrySpecies(speciesCH);
-//    }
-//
-//    Info<< " c-o Check thermodynamicData (all species available)\n" << endl;
-//
-//    //- Proof if all species used in chemistryData have thermodynamicData
-//    {
-//        const wordList& speciesCH = chemistry.species();
-//        const wordList& speciesTHD = thermo.species();
-//
-//        forAll(speciesCH, i)
-//        {
-//            bool found{false};
-//
-//            forAll(speciesTHD, j)
-//            {
-//                if (i == j)
-//                {
-//                    found = true;
-//                }
-//            }
-//
-//            //- Chemistry species not found in thermodynamicData
-//            if (!found)
-//            {
-//                FatalError
-//                (
-//                    "    Species " + i + " was not found in "
-//                    "the thermodynamicData class.\n"
-//                    "    Please be sure that the thermodynamic properties of "
-//                    "this species is available\n"
-//                    "    in the thermodynamic file.",
-//                    __FILE__,
-//                    __LINE__
-//                );
-//            }
-//        }
-//    }
-//
-//    Info<< " c-o Check if species used in afcDict are available\n" << endl;
-//
-//    //- Proof if all species in afcDict are in chemistryData
-//    {
-//        wordList speciesOAFC = properties.speciesOxidizer();
-//        wordList speciesFAFC = properties.speciesFuel();
-//        wordList speciesAFC = speciesOAFC;
-//
-//        //- Add fuel species
-//        forAll(speciesFAFC, i)
-//        {
-//            speciesAFC.push_back(i);
-//        }
-//
-//        wordList speciesCH = chemistry.species();
-//
-//        forAll(speciesAFC, i)
-//        {
-//            bool found{false};
-//
-//            forAll(speciesCH, j)
-//            {
-//                if (i == j)
-//                {
-//                    found = true;
-//                }
-//            }
-//
-//            //- afc species not found in chemistryData 
-//            if (!found)
-//            {
-//                FatalError
-//                (
-//                    "    Species " + i + " was not found in "
-//                    "the chemistryData class.\n"
-//                    "    Please be sure that the species is available in all "
-//                    "files; chemistry, tranpsort\n"
-//                    "    and the thermodynamic file.",
-//                    __FILE__,
-//                    __LINE__
-//                );
-//            }
-//        }
-//
-//        Info<< " c-o Data O.K.\n" << endl;
-//    }
-//    
-//    //- Interprete data 
-//    if (interpreter.analyse())
-//    {
-//        Info<< " c-o Interprete data ...\n" << endl;
-//
-//        transport.fitCurves();
-//
-//        interpreter.summary(chemistry, thermo, transport);
-//
-//        Footer(startTime);
-//
-//        return 0;
-//    }
-//
-//    //- Fit data to polynomials
-//    transport.fitCurves();
-//
+    string file_AFC;
+    string file_Thermo;
+    string file_Transport;
+    string file_Chemistry;
+
+    //- Build Interpreter object which makes a summary at the end if the switch
+    //  is set on (-interprete)
+    Interpreter interpreter;
+
+    //- Check if all arguments are correct 
+    if (argc != 9 && argc != 10)
+    {
+        ErrorMsg
+        (
+            "    Program needs one or eight arguments.\n\n"
+            "    For calculating flamelets you have to use\n"
+            "    ./automaticFlameletCreator\n"
+            "      -transport $pathToFile\n"
+            "      -thermodynamic $pathToFile\n"
+            "      -chemistry $pathToFile\n"
+            "      -AFCDict $pathToFile\n\n"
+            "    For interpreting the data you have to add\n"
+            "      -interprete\n",
+            __FILE__,
+            __LINE__
+        ); 
+    }
+    else
+    {
+        for (int i=0; i<argc; i++)
+        {
+            const string input = string(argv[i]);
+
+            if (input == "-transport")
+            {
+                file_Transport = string(argv[i+1]);
+            }
+            else if (input == "-thermodynamic")
+            {
+                file_Thermo = string(argv[i+1]);
+            }
+            else if (input == "-chemistry")
+            {
+                file_Chemistry = string(argv[i+1]);
+            }
+            else if (input == "-AFCDict")
+            {
+                file_AFC = string(argv[i+1]);
+            }
+            else if (input == "-interprete")
+            {
+                interpreter.analyze();
+            }
+        }
+
+        if
+        (
+            file_Transport.empty()
+         || file_Thermo.empty()
+         || file_Chemistry.empty()
+         || file_AFC.empty()
+        )
+        {
+            ErrorMsg
+            (
+                "    Transport, Thermo, Chemistry or AFCDict is missing.\n"
+                "    Check the command that you use for running the "
+                "application.",
+                __FILE__,
+                __LINE__
+            );
+        }
+    }
+
+    Thermo thermo(file_Thermo);
+
+    Transport transport(file_Transport, thermo);
+
+    Chemistry chemistry(file_Chemistry, thermo);
+
+    Properties properties(file_AFC, thermo, chemistry);
+
+    Info<< " c-o All data read successfully\n" << endl;
+
+    Info<< " c-o Check transportData (all species available)\n" << endl;
+
+    //- Proof if all species used in chemistryData have transportData
+    {
+       const wordList& speciesCH = chemistry.species();
+       const wordList& speciesTD = transport.species();
+
+       forAll(speciesCH, i)
+       {
+           bool found{false};
+
+           forAll(speciesTD, j)
+           {
+               if (i == j)
+               {
+                   found = true;
+               }
+           }
+
+           //- Chemistry species not found in transportData
+           if (!found)
+           {
+               ErrorMsg
+               (
+                   "Species " + i + " was not found in the transportData class."
+                   "\n    Please be sure that the transport properties of "
+                   "this species is available in the transport file.",
+                   __FILE__,
+                   __LINE__
+               );
+           }
+       }
+
+        //- Insert chemical species to transportData
+        transport.insertChemistrySpecies(speciesCH);
+    }
+
+    Info<< " c-o Check thermodynamicData (all species available)\n" << endl;
+
+    //- Proof if all species used in chemistryData have thermodynamicData
+    {
+        const wordList& speciesCH = chemistry.species();
+        const wordList& speciesTHD = thermo.species();
+
+        forAll(speciesCH, i)
+        {
+            bool found{false};
+
+            forAll(speciesTHD, j)
+            {
+                if (i == j)
+                {
+                    found = true;
+                }
+            }
+
+            //- Chemistry species not found in thermodynamicData
+            if (!found)
+            {
+                ErrorMsg
+                (
+                    "Species " + i + " was not found in the thermodynamicData"
+                    "class.\n    Please be sure that the thermodynamic propert"
+                    "ies of this species is available in the termo file.",
+                    __FILE__,
+                    __LINE__
+                );
+            }
+        }
+    }
+
+    Info<< " c-o Check if species used in afcDict are available\n" << endl;
+
+    //- Proof if all species in afcDict are in chemistryData
+    {
+        wordList speciesOAFC = properties.speciesOxidizer();
+        wordList speciesFAFC = properties.speciesFuel();
+        wordList speciesAFC = speciesOAFC;
+
+        //- Add fuel species
+        forAll(speciesFAFC, i)
+        {
+            speciesAFC.push_back(i);
+        }
+
+        wordList speciesCH = chemistry.species();
+
+        forAll(speciesAFC, i)
+        {
+            bool found{false};
+
+            forAll(speciesCH, j)
+            {
+                if (i == j)
+                {
+                    found = true;
+                }
+            }
+
+            //- afc species not found in chemistryData 
+            if (!found)
+            {
+                ErrorMsg
+                (
+                    "Species " + i + " was not found in the chemistryData "
+                    "class.\n    Please be sure that the species is available "
+                    "in all files.",
+                    __FILE__,
+                    __LINE__
+                );
+            }
+        }
+
+        Info<< " c-o Data O.K.\n" << endl;
+    }
+    
+    //- Interprete data 
+    if (interpreter.analyze())
+    {
+        Info<< " c-o Interprete data ...\n" << endl;
+
+        transport.fitCurves();
+
+        interpreter.summary(chemistry, thermo, transport);
+
+        Footer(startTime);
+
+        return 0;
+    }
+
+    //- Fit data to polynomials
+    transport.fitCurves();
+
+
+//- TH::200217 
 //
 //    //- Now we can proceed doing some other stuff after the check
 //    {
 //        //- Calculate adiabatic enthalpy of fuel and oxidizer
-//        //properties.calcProperties();
+//        properties.calcProperties();
 //
 //        //- Calculate adiabatic flame temperature (simple estimate)
-//        //properties.calcAdiabaticTemperature();
+//        properties.calcAdiabaticTemperature();
 //
-//        //transport.calcAtomComposition();
-//    }
-//
-//    //- Calculate viscosity and binary diffusion coefficients for fitting
-//    //  procedure
-//    {
-////        transport.prepareFitting(thermo);
+//        transport.calcAtomComposition();
 //    }
 //
 //    //- Calculate first flamelet (initial - equilibrium)
-//    //AdiabaticFlamelet adiabaticFlamelet;
+//    AdiabaticFlamelet adiabaticFlamelet;
 //
 //    //- First lookUpTable for first scalar dissipation rate
 //    //  and adiabatic enthalpy (no defect)

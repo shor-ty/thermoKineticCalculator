@@ -631,7 +631,7 @@ AFC::scalar AFC::Numerics<Type>::max
                         }
                         else
                         {
-                            FatalError
+                            ErrorMsg
                             (
                                 "The stochiometric factor is not defined\n",
                                 __FILE__,
@@ -718,7 +718,7 @@ AFC::scalar AFC::Numerics<Type>::max
                         }
                         else
                         {
-                            FatalError
+                            ErrorMsg
                             (
                                 "The stochiometric factor is not defined\n",
                                 __FILE__,

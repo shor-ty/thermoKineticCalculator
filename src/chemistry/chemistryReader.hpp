@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   c-o-o-c-o-o-o             |
   |     |     A utomatic    | Open Source Flamelet
-  c-o-o-c     F lamelet     | 
+  c-o-o-c     F lamelet     |
   |     |     C onstructor  | Copyright (C) 2015 Holzmann-cfd
   c     c-o-o-o             |
 -------------------------------------------------------------------------------
@@ -10,7 +10,7 @@ License
 
     AFC is free software; you can redistribute it and/or modify it under
     the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 3 of the License, or 
+    Free Software Foundation; either version 3 of the License, or
     (at your option) any later version.
 
     AFC is distributed in the hope that it will be useful, but
@@ -22,7 +22,7 @@ License
     along with AFC; if not, see <http://www.gnu.org/licenses/>
 
 Class
-    AFC::ChemistryReader    
+    AFC::ChemistryReader
 
 Description
     Reading the chemkin III file
@@ -54,16 +54,16 @@ class ChemistryReader
     private:
 
         //- List of available keywords for element block
-        wordList ELEMENT{ "ELEMENTS", "ELEM" };
+        wordList ELEMENT{"ELEMENTS", "ELEM"};
 
         //- List of available keywords for species block
-        wordList SPECIES{ "SPECIES", "SPEC" };
+        wordList SPECIES{"SPECIES", "SPEC"};
 
         //- List of available keywords for thermo block
-        wordList THERMO{ "THERMO", "THERMO ALL" };
+        wordList THERMO{"THERMO", "THERMO ALL"};
 
         //- List of available keywords for reaction block
-        wordList REACTION{ "REACTIONS", "REACT" };
+        wordList REACTION{"REACTIONS", "REACT"};
 
 
         // Private data
@@ -71,61 +71,38 @@ class ChemistryReader
             //- Chemistry file
             string file_;
 
-        // Debug switch - from StringManipulator
 
     public:
 
         // Constructor and Destructor
 
             //- Constructor with file string and Chemistry:: obj adress
-            ChemistryReader
-            (
-                const string&
-            );
+            ChemistryReader(const string);
 
             //- Destructor
             ~ChemistryReader();
 
-        
+
         // Member functions
 
             //- Read chemistry file and delegate data
-            void read
-            (
-                ChemistryData&
-            );
+            void read(ChemistryData&);
 
             //- Take all data from ELEMENT block
-            void readElementBlock
-            (
-                const stringList&,
-                ChemistryData&
-            );
+            void readElementBlock(const stringList&, ChemistryData&);
 
             //- Take all data from SPECIES block
-            void readSpeciesBlock
-            (
-                const stringList&,
-                ChemistryData&
-            );
+            void readSpeciesBlock(const stringList&, ChemistryData&);
 
             //- Take all data from THERMO block
-            void readThermoBlock
-            (
-                const stringList&,
-                ChemistryData&
-            );
+            void readThermoBlock(const stringList&, ChemistryData&);
 
             //- Take all data from REACTION block
-            void readReactionBlock
-            (
-                const stringList&,
-                ChemistryData&
-            );
+            void readReactionBlock(const stringList&, ChemistryData&);
 
 
         // Helper functions
-        
+
             //- Find line number of keyword
             void findKeyword
             (
@@ -136,60 +113,30 @@ class ChemistryReader
             );
 
             //- Return string between '/' and '/'
-            stringList extractData
-            (
-                const string&
-            );
+            stringList extractData(const string);
 
 
         // Data manipulation functions
-        
+
             //- Manipulate elementar reaction string and analyze reaction
-            void analyzeReaction
-            (
-                const string&,
-                ChemistryData&
-            );
+            void analyzeReaction(const string, ChemistryData&);
 
             //- Manipulate LOW coeffs
-            void LOWCoeffs
-            (
-                const string&,
-                const unsigned int,
-                ChemistryData&
-            );
+            void LOWCoeffs(const string, const unsigned int, ChemistryData&);
 
             //- Manipulate TROE coeffs
-            void TROECoeffs
-            (
-                const string&,
-                const unsigned int,
-                ChemistryData&
-            );
+            void TROECoeffs(const string, const unsigned int, ChemistryData&);
 
             //- Manipulate SRI coeffs
-            void SRICoeffs
-            (
-                const string&,
-                const unsigned int,
-                ChemistryData&
-            );
+            void SRICoeffs(const string, const unsigned int, ChemistryData&);
 
             //- Manipulate ENHANCE factors
-            void enhanceFactors
-            (
-                const string&,
-                ChemistryData&
-            );
+            void enhanceFactors(const string, ChemistryData&);
 
             //- Analyse reaction site (product or reactants)
-            void analyzeReacSite
-            (
-                const word&,
-                const word,
-                ChemistryData&
-            );
+            void analyzeReacSite(const word, const word, ChemistryData&);
 };
+
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

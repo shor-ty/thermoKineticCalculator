@@ -32,12 +32,7 @@ License
 AFC::Matrix::Matrix()
 :
     Tensor(0, 0)
-{
-    if (debug_)
-    {
-        Info<< "Constructor Matrix()\n" << endl;
-    }
-}
+{}
 
 
 AFC::Matrix::Matrix
@@ -48,32 +43,19 @@ AFC::Matrix::Matrix
 )
 :
     Tensor(rows, cols, value)
-{
-    if (debug_)
-    {
-        Info<< "Constructor Matrix (rows, cols, value)\n" << endl;
-    }
-}
+{}
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
 AFC::Matrix::~Matrix()
-{
-    if (debug_)
-    {
-        Info<< "Destructor Matrix \n" << endl;
-    }
-}
+{}
 
 
 // * * * * * * * * * * * * * * Operator Functions  * * * * * * * * * * * * * //
 
 
-AFC::Matrix AFC::Matrix::operator*
-(
-    const Matrix& B
-) const
+AFC::Matrix AFC::Matrix::operator*(const Matrix& B) const
 {
     //- Calculation of the inner product of two matrices 
     //  The result is a matrix again C_ij = A_ik * B_kj
@@ -81,7 +63,7 @@ AFC::Matrix AFC::Matrix::operator*
     //- Check if A cols == B rows
     if (cols() != B.rows())
     {
-        FatalError
+        ErrorMsg
         (
             "    The cols of matrix A does not match the rows of matrix B",
             __FILE__,
@@ -116,17 +98,14 @@ AFC::Matrix AFC::Matrix::operator*
 }
 
 
-AFC::Vector AFC::Matrix::operator*
-(
-    const Vector& b
-) const
+AFC::Vector AFC::Matrix::operator*(const Vector& b) const
 {
     //- Inner Product of Matrix and Vector
     
     //- Check if A cols == b rows
     if (cols() != b.rows())
     {
-        FatalError
+        ErrorMsg
         (
             "    The cols of matrix A does not match the rows of vector b",
             __FILE__,
@@ -194,7 +173,7 @@ AFC::Matrix AFC::Matrix::inverse() const
     //- Inverse only for squared matrix
     if (row != col)
     {
-        FatalError
+        ErrorMsg
         (
             "    You try to use A.inverse() for a non-squared matrix.\n"
             "    The inverse function is only available for squared matrices",
@@ -241,7 +220,10 @@ AFC::Matrix AFC::Matrix::inverse() const
                 const scalar modifiedElementI = inverse(r, cc);
 
                 A(rr, cc, actualElement - modifiedElement * multiplicator);
-                inverse(rr, cc, actualElementI - modifiedElementI * multiplicator);
+                inverse
+                (
+                    rr, cc, actualElementI - modifiedElementI * multiplicator
+                );
             }
         }
     }
@@ -263,7 +245,10 @@ AFC::Matrix AFC::Matrix::inverse() const
                 const scalar modifiedElementI = inverse(r,cc);
 
                 A(rr, cc, actualElement - modifiedElement * multiplicator);
-                inverse(rr, cc, actualElementI - modifiedElementI * multiplicator);
+                inverse
+                (
+                    rr, cc, actualElementI - modifiedElementI * multiplicator
+                );
             }
         }
     }
@@ -298,10 +283,7 @@ AFC::Matrix AFC::Matrix::I() const
 }
 
 
-AFC::Matrix AFC::Matrix::I
-(
-    const size_t n 
-) const
+AFC::Matrix AFC::Matrix::I(const size_t n) const
 {
     //- Build n x n matrix with zero
     Matrix tmp(n, n);
@@ -319,7 +301,7 @@ AFC::Matrix AFC::Matrix::LT() const
 {
     if (this->rows() != this->cols())
     {
-        FatalError
+        ErrorMsg
         (
             "Matrix is not a squared matrix",
             __FILE__,
@@ -348,7 +330,7 @@ AFC::Matrix AFC::Matrix::UT() const
 {
     if (this->rows() != this->cols())
     {
-        FatalError
+        ErrorMsg
         (
             "Matrix is not a squared matrix",
             __FILE__,

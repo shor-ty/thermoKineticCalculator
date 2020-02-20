@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   c-o-o-c-o-o-o             |
   |     |     A utomatic    | Open Source Flamelet
-  c-o-o-c     F lamelet     | 
+  c-o-o-c     F lamelet     |
   |     |     C onstructor  | Copyright (C) 2015 Holzmann-cfd
   c     c-o-o-o             |
 -------------------------------------------------------------------------------
@@ -10,7 +10,7 @@ License
 
     AFC is free software; you can redistribute it and/or modify it under
     the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 3 of the License, or 
+    Free Software Foundation; either version 3 of the License, or
     (at your option) any later version.
 
     AFC is distributed in the hope that it will be useful, but
@@ -32,23 +32,13 @@ AFC::ChemistryData::ChemistryData()
     nReac_{-1},
 
     thermo_{false}
-{
-    if (debug_)
-    {
-        Info<< "Constructor ChemistryData\n";
-    }
-}
+{}
 
 
 // * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * * //
 
 AFC::ChemistryData::~ChemistryData()
-{
-    if (debug_)
-    {
-        Info<< "Destructor ChemistryData\n";
-    }
-}
+{}
 
 
 // * * * * * * * * * * * * * * * Member functions  * * * * * * * * * * * * * //
@@ -66,22 +56,16 @@ bool AFC::ChemistryData::thermo()
 
 // * * * * * * * * * Insert functions from ChemistryReader:: * * * * * * * * //
 
-void AFC::ChemistryData::elements
-(
-    const word& element
-)
+void AFC::ChemistryData::elements(const word element)
 {
     elements_.push_back(element);
 }
 
 
-void AFC::ChemistryData::species
-(
-    const word& species
-)
+void AFC::ChemistryData::species(const word species)
 {
     species_.push_back(species);
-    
+
     //- Increment matrix
     reactionI_[species] = List<int>(0);
 
@@ -90,39 +74,19 @@ void AFC::ChemistryData::species
 }
 
 
-void AFC::ChemistryData::educt
-(
-    const word& species
-)
+void AFC::ChemistryData::educt(const word species)
 {
-    if (debug_)
-    {
-        Info<< " --> AFC::ChemistryData::educt" << endl;
-    }
-
     educts_[educts_.size()-1].push_back(species);
 }
 
 
-void AFC::ChemistryData::product
-(
-    const word& species
-)
+void AFC::ChemistryData::product(const word species)
 {
-    if (debug_)
-    {
-        Info<< " --> AFC::ChemistryData::product" << endl;
-    }
-
     products_[products_.size()-1].push_back(species);
-}    
+}
 
 
-void AFC::ChemistryData::nuEducts
-(
-    const word species,
-    const int nu
-)
+void AFC::ChemistryData::nuEducts(const word species, const int nu)
 {
     //- Check if species already there, if yes, increment nu
     if (nuEducts_[nReac_].find(species) != nuEducts_[nReac_].end())
@@ -136,11 +100,7 @@ void AFC::ChemistryData::nuEducts
 }
 
 
-void AFC::ChemistryData::nuProducts
-(
-    const word species,
-    const int nu
-)
+void AFC::ChemistryData::nuProducts(const word species, const int nu)
 {
     //- Check if species already there, if yes, increment nu
     if (nuProducts_[nReac_].find(species) != nuProducts_[nReac_].end())
@@ -154,32 +114,19 @@ void AFC::ChemistryData::nuProducts
 }
 
 
-void AFC::ChemistryData::elementarReaction
-(
-    const string& reaction
-)
+void AFC::ChemistryData::elementarReaction(const string reaction)
 {
-    if (debug_)
-    {
-        Info<< " --> AFC::ChemistryData::elementarReaction" << endl;
-    }
-
     elementarReaction_[nReac_] = reaction;
 }
 
 
 void AFC::ChemistryData::arrheniusCoeffs
 (
-    const scalar& coeff_1,
-    const scalar& coeff_2,
-    const scalar& coeff_3
+    const scalar coeff_1,
+    const scalar coeff_2,
+    const scalar coeff_3
 )
 {
-    if (debug_)
-    {
-        Info<< " --> AFC::ChemistryData::arrheniusCoeffs" << endl;
-    }
-
     arrheniusCoeffs_[nReac_][0] = coeff_1;
     arrheniusCoeffs_[nReac_][1] = coeff_2;
     arrheniusCoeffs_[nReac_][2] = coeff_3;
@@ -188,14 +135,10 @@ void AFC::ChemistryData::arrheniusCoeffs
 
 void AFC::ChemistryData::LOWCoeffs
 (
-    const scalar& coeff,
+    const scalar coeff,
     const unsigned int coeffNo
 )
 {
-    if (debug_)
-    {
-        Info<< " --> AFC::ChemistryData::LOWCoeffs" << endl;
-    }
 
     LOWCoeffs_[nReac_][coeffNo] = coeff;
 }
@@ -203,45 +146,30 @@ void AFC::ChemistryData::LOWCoeffs
 
 void AFC::ChemistryData::TROECoeffs
 (
-    const scalar& coeff,
+    const scalar coeff,
     const unsigned int coeffNo
 )
 {
-    if (debug_)
-    {
-        Info<< " --> AFC::ChemistryData::TROECoeffs" << endl;
-    }
-
     TROECoeffs_[nReac_][coeffNo] = coeff;
 }
 
 
 void AFC::ChemistryData::SRICoeffs
 (
-    const scalar& coeff,
+    const scalar coeff,
     const unsigned int coeffNo
 )
 {
-    if (debug_)
-    {
-        Info<< " --> AFC::ChemistryData::SRICoeffs" << endl;
-    }
-
     SRICoeffs_[nReac_][coeffNo] = coeff;
 }
 
 
 void AFC::ChemistryData::ENHANCEDCoeffs
 (
-    const word& species,
-    const scalar& factor 
+    const word species,
+    const scalar factor
 )
 {
-    if (debug_)
-    {
-        Info<< " --> AFC::ChemistryData::ENHANCEDCoeffs" << endl;
-    }
-
     ENHANCEDCoeffs_[nReac_][species] = factor;
 }
 
@@ -258,10 +186,7 @@ void AFC::ChemistryData::incrementReac()
 }
 
 
-void AFC::ChemistryData::speciesInReaction
-(
-    const word& species
-)
+void AFC::ChemistryData::speciesInReaction(const word species)
 {
     speciesInReaction_[nReac_].push_back(species);
 }
@@ -269,11 +194,6 @@ void AFC::ChemistryData::speciesInReaction
 
 void AFC::ChemistryData::incrementMatrixesVectors()
 {
-    if (debug_)
-    {
-        Info<< " --> AFC::ChemistryData::incrementMatrixesVectors" << endl;
-    }
-
     //- stringList for saving reactions
     elementarReaction_.push_back("");
 
@@ -389,11 +309,7 @@ void AFC::ChemistryData::ENHANCE(const bool set)
 }
 
 
-void AFC::ChemistryData::setReacNumbers
-(
-    const word& species,
-    const int r
-)
+void AFC::ChemistryData::setReacNumbers(const word species, const int r)
 {
     reactionI_.at(species).push_back(r);
 }
@@ -401,7 +317,7 @@ void AFC::ChemistryData::setReacNumbers
 
 void AFC::ChemistryData::forwardReactionOrder()
 {
-    //- Stochiometric coefficients of educt species 
+    //- Stochiometric coefficients of educt species
     const map<word, int>& educt = nuEducts(nReac_);
 
     scalar order{0};
@@ -418,7 +334,7 @@ void AFC::ChemistryData::forwardReactionOrder()
 
 void AFC::ChemistryData::backwardReactionOrder()
 {
-    //- Stochiometric coefficients of product species 
+    //- Stochiometric coefficients of product species
     const map<word, int>& product = nuProducts(nReac_);
 
     scalar order{0};
@@ -434,50 +350,31 @@ void AFC::ChemistryData::backwardReactionOrder()
 
 // * * * * * * * * * * * * * * * Update functions  * * * * * * * * * * * * * //
 
-void AFC::ChemistryData::updateKf
-(
-    const int r,
-    const scalar& kf
-)
+void AFC::ChemistryData::updateKf(const int r, const scalar kf)
 {
     kf_[r] = kf;
 }
 
 
-void AFC::ChemistryData::updateKb
-(
-    const int r,
-    const scalar& kb
-)
+void AFC::ChemistryData::updateKb(const int r, const scalar kb)
 {
     kb_[r] = kb;
 }
 
 
-void AFC::ChemistryData::updateKc
-(
-    const int r,
-    const scalar& Kc
-)
+void AFC::ChemistryData::updateKc(const int r, const scalar Kc)
 {
     Kc_[r] = Kc;
 }
 
 
-void AFC::ChemistryData::calculateOmega
-(
-    const int s,
-    const scalar& omega
-)
+void AFC::ChemistryData::calculateOmega(const int s, const scalar omega)
 {
     omega_[s] = omega;
 }
 
 
-void AFC::ChemistryData::calculateOmega
-(
-    const scalarField& omega
-)
+void AFC::ChemistryData::calculateOmega(const scalarField& omega)
 {
     omega_ = omega;
 }
@@ -497,64 +394,43 @@ void AFC::ChemistryData::updateGlobalReactionOrder()
 
 // * * * * * * * * * * * * * * * Return functions  * * * * * * * * * * * * * //
 
-bool AFC::ChemistryData::BR
-(
-    const int reacNo
-) const
+bool AFC::ChemistryData::BR(const int reacNo) const
 {
     return backwardReaction_[reacNo];
 }
 
 
-bool AFC::ChemistryData::BR
-(
-    const int reacNo
-)
+bool AFC::ChemistryData::BR(const int reacNo)
 {
     return backwardReaction_[reacNo];
 }
 
 
-bool AFC::ChemistryData::TBR
-(
-    const int reacNo
-) const
+bool AFC::ChemistryData::TBR(const int reacNo) const
 {
     return TBR_[reacNo];
 }
 
 
-bool AFC::ChemistryData::LOW
-(
-    const int reacNo
-) const
+bool AFC::ChemistryData::LOW(const int reacNo) const
 {
     return LOW_[reacNo];
 }
 
 
-bool AFC::ChemistryData::TROE
-(
-    const int reacNo
-) const
+bool AFC::ChemistryData::TROE(const int reacNo) const
 {
     return TROE_[reacNo];
 }
 
 
-bool AFC::ChemistryData::SRI
-(
-    const int reacNo
-) const
+bool AFC::ChemistryData::SRI(const int reacNo) const
 {
     return SRI_[reacNo];
 }
 
 
-bool AFC::ChemistryData::ENHANCED
-(
-    const int reacNo
-) const
+bool AFC::ChemistryData::ENHANCED(const int reacNo) const
 {
     return ENHANCE_[reacNo];
 }
@@ -584,37 +460,25 @@ AFC::wordList AFC::ChemistryData::species() const
 }
 
 
-AFC::wordList AFC::ChemistryData::speciesEducts
-(
-    const int r
-) const
+AFC::wordList AFC::ChemistryData::speciesEducts(const int r) const
 {
     return educts_[r];
 }
 
 
-AFC::wordList AFC::ChemistryData::speciesProducts
-(
-    const int r
-) const
+AFC::wordList AFC::ChemistryData::speciesProducts(const int r) const
 {
     return products_[r];
 }
 
 
-AFC::map<AFC::word, int> AFC::ChemistryData::nuEducts
-(
-    const int r 
-) const
+AFC::map<AFC::word, int> AFC::ChemistryData::nuEducts(const int r ) const
 {
     return nuEducts_[r];
 }
 
 
-AFC::map<AFC::word, int> AFC::ChemistryData::nuProducts
-(
-    const int r
-) const
+AFC::map<AFC::word, int> AFC::ChemistryData::nuProducts(const int r) const
 {
     return nuProducts_[r];
 }
@@ -638,19 +502,13 @@ AFC::List<AFC::string> AFC::ChemistryData::elementarReaction() const
 }
 
 
-AFC::string AFC::ChemistryData::elementarReaction
-(
-    const int r
-) const
+AFC::string AFC::ChemistryData::elementarReaction(const int r) const
 {
     return elementarReaction_[r];
 }
 
 
-AFC::List<int> AFC::ChemistryData::reacNumbers
-(
-    const word& species
-) const
+AFC::List<int> AFC::ChemistryData::reacNumbers(const word species) const
 {
     return reactionI_.at(species);
 }
@@ -662,64 +520,44 @@ AFC::wordMatrix AFC::ChemistryData::speciesInReaction() const
 }
 
 
-AFC::wordList AFC::ChemistryData::speciesInReaction
-(
-    const int r 
-) const
+AFC::wordList AFC::ChemistryData::speciesInReaction(const int r) const
 {
     return speciesInReaction_[r];
 }
 
 
-AFC::scalarList AFC::ChemistryData::arrheniusCoeffs
-(
-    const int reacNo
-) const
+AFC::scalarList AFC::ChemistryData::arrheniusCoeffs(const int reacNo) const
 {
     return arrheniusCoeffs_[reacNo];
 }
 
 
-AFC::scalarList AFC::ChemistryData::LOWCoeffs
-(
-    const int reacNo
-) const
+AFC::scalarList AFC::ChemistryData::LOWCoeffs(const int reacNo) const
 {
     return LOWCoeffs_[reacNo];
 }
 
 
-AFC::scalarList AFC::ChemistryData::TROECoeffs
-(
-    const int reacNo
-) const
+AFC::scalarList AFC::ChemistryData::TROECoeffs(const int reacNo) const
 {
     return TROECoeffs_[reacNo];
 }
 
 
-AFC::scalarList AFC::ChemistryData::SRICoeffs
-(
-    const int reacNo
-) const
+AFC::scalarList AFC::ChemistryData::SRICoeffs(const int reacNo) const
 {
     return SRICoeffs_[reacNo];
 }
 
 
-AFC::map<AFC::word, AFC::scalar> AFC::ChemistryData::ENHANCEDCoeffs
-(
-    const int reacNo
-) const
+AFC::map<AFC::word, AFC::scalar>
+AFC::ChemistryData::ENHANCEDCoeffs(const int reacNo) const
 {
     return ENHANCEDCoeffs_[reacNo];
 }
 
 
-AFC::scalar AFC::ChemistryData::kf
-(
-    const int reacNo 
-) const
+AFC::scalar AFC::ChemistryData::kf(const int reacNo) const
 {
     return kf_[reacNo];
 }
@@ -731,10 +569,7 @@ AFC::scalarList AFC::ChemistryData::kf() const
 }
 
 
-AFC::scalar AFC::ChemistryData::kb
-(
-    const int reacNo 
-) const
+AFC::scalar AFC::ChemistryData::kb(const int reacNo) const
 {
     return kb_[reacNo];
 }
@@ -746,10 +581,7 @@ AFC::scalarList AFC::ChemistryData::kb() const
 }
 
 
-AFC::scalar AFC::ChemistryData::Kc
-(
-    const int reacNo
-) const
+AFC::scalar AFC::ChemistryData::Kc(const int reacNo) const
 {
     return Kc_[reacNo];
 }
@@ -761,10 +593,7 @@ AFC::scalarList AFC::ChemistryData::Kc() const
 }
 
 
-AFC::scalar AFC::ChemistryData::omega
-(
-    const int s
-) const
+AFC::scalar AFC::ChemistryData::omega(const int s) const
 {
     return omega_[s];
 }
@@ -776,28 +605,19 @@ AFC::scalarField AFC::ChemistryData::omega() const
 }
 
 
-AFC::scalar AFC::ChemistryData::forwardReactionOrder
-(
-    const int r
-) const
+AFC::scalar AFC::ChemistryData::forwardReactionOrder(const int r) const
 {
     return forwardReactionOrder_[r];
 }
 
 
-AFC::scalar AFC::ChemistryData::backwardReactionOrder
-(
-    const int r
-) const
+AFC::scalar AFC::ChemistryData::backwardReactionOrder(const int r) const
 {
     return backwardReactionOrder_[r];
 }
 
 
-AFC::scalar AFC::ChemistryData::globalReactionOrder
-(
-    const int r
-) const
+AFC::scalar AFC::ChemistryData::globalReactionOrder(const int r) const
 {
     return globalReactionOrder_[r];
 }

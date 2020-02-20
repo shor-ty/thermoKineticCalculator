@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   c-o-o-c-o-o-o             |
   |     |     A utomatic    | Open Source Flamelet
-  c-o-o-c     F lamelet     | 
+  c-o-o-c     F lamelet     |
   |     |     C onstructor  | Copyright (C) 2015 Holzmann-cfd
   c     c-o-o-o             |
 -------------------------------------------------------------------------------
@@ -10,7 +10,7 @@ License
 
     AFC is free software; you can redistribute it and/or modify it under
     the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 3 of the License, or 
+    Free Software Foundation; either version 3 of the License, or
     (at your option) any later version.
 
     AFC is distributed in the hope that it will be useful, but
@@ -23,7 +23,7 @@ License
 
 Class
    AFC::ChemistryData
-   
+
 Description
     This class contains all chemistry data e.g. elements, reactions, species
 
@@ -50,9 +50,6 @@ namespace AFC
 class ChemistryData
 {
     private:
-
-        // Debug switch
-        const bool debug_{false};
 
 
         // Private data
@@ -108,7 +105,7 @@ class ChemistryData
             //- Contains all reaction numbers where species i is included
             map<word, List<int>> reactionI_;
 
-            //- boolList for TBR  
+            //- boolList for TBR
             //  + true if [M] is there
             //  + false if [M] is not included
             List<bool> TBR_;
@@ -119,13 +116,13 @@ class ChemistryData
             List<bool> ENHANCE_;
 
             //- boolList for TBR LOW
-            //  + true if 
+            //  + true if
             List<bool> LOW_;
 
-            //- boolList for TBR TROE 
+            //- boolList for TBR TROE
             List<bool> TROE_;
 
-            //- boolList for TBR SRI 
+            //- boolList for TBR SRI
             List<bool> SRI_;
 
             //- boolList for backward reaction (equilibrium)
@@ -144,7 +141,7 @@ class ChemistryData
             //- Matrix of SRI coeffs
             matrix SRICoeffs_;
 
-            //- Enhanced coeffs for adjustment  
+            //- Enhanced coeffs for adjustment
             mapList<word, scalar> ENHANCEDCoeffs_;
 
             //- Omega
@@ -173,91 +170,47 @@ class ChemistryData
             //- Set thermo_ if available in chemistry file
             void setThermo();
 
-            //- Returnt thermo 
+            //- Returnt thermo
             bool thermo();
 
 
-        // Insert functions, from ChemistryReader:: delegated 
+        // Insert functions, from ChemistryReader:: delegated
 
             //- Insert elements
-            void elements
-            (
-                const word&
-            );
+            void elements(const word);
 
             //- Insert species
-            void species
-            (
-                const word&
-            );
+            void species(const word);
 
             //- Insert species as educt
-            void educt
-            (
-                const word&
-            );
-            
+            void educt(const word);
+
             //- Insert species as product
-            void product
-            (
-                const word&
-            );
+            void product(const word);
 
             //- Insert stochiometric coeff for educts of actual reaction
-            void nuEducts 
-            (
-                const word,
-                const int
-            );
+            void nuEducts(const word, const int);
 
             //- Insert stochiometric coeff for products of actual reaction
-            void nuProducts
-            (
-                const word,
-                const int
-            );
+            void nuProducts(const word, const int);
 
             //- Insert elementar reaction
-            void elementarReaction
-            (
-                const string&
-            );
+            void elementarReaction(const string);
 
             //- Set arrhenius coeffs
-            void arrheniusCoeffs
-            (
-                const scalar&,
-                const scalar&,
-                const scalar&
-            );
+            void arrheniusCoeffs(const scalar, const scalar, const scalar);
 
             //- Insert LOW coeffs
-            void LOWCoeffs
-            (
-                const scalar&,
-                const unsigned int
-            );
+            void LOWCoeffs(const scalar, const unsigned int);
 
             //- Insert TROE coeffs
-            void TROECoeffs
-            (
-                const scalar&,
-                const unsigned int
-            );
+            void TROECoeffs(const scalar, const unsigned int);
 
             //- Insert SRI coeffs
-            void SRICoeffs
-            (
-                const scalar&,
-                const unsigned int
-            );
+            void SRICoeffs(const scalar, const unsigned int);
 
-            //- Insert ENHANCE factors (species + value) 
-            void ENHANCEDCoeffs 
-            (
-                const word&,
-                const scalar&
-            );
+            //- Insert ENHANCE factors (species + value)
+            void ENHANCEDCoeffs(const word, const scalar);
 
             //- Increment nDuplicated_
             void incrementDuplicated();
@@ -266,10 +219,7 @@ class ChemistryData
             void incrementReac();
 
             //- Build List<wordList> of species included in reaction r
-            void speciesInReaction
-            (
-                const word&
-            );
+            void speciesInReaction(const word);
 
             //- Increment vectors and matrix size
             void incrementMatrixesVectors();
@@ -280,7 +230,7 @@ class ChemistryData
             //- Set [M]
             void setM
             (
-                const scalar& 
+                const scalar&
             );
 
             //- Set the backward reaction boolean
@@ -302,11 +252,7 @@ class ChemistryData
             void ENHANCE(const bool);
 
             //- Set the reaction no. where species is included
-            void setReacNumbers
-            (
-                const word&,
-                const int
-            );
+            void setReacNumbers(const word, const int);
 
             //- Set forward reaction order
             void forwardReactionOrder();
@@ -318,87 +264,49 @@ class ChemistryData
         // Update functions
 
             //- Update reaction rates kf
-            void updateKf
-            (
-                const int,
-                const scalar&
-            );
-            
-            //- Update reaction rates kb
-            void updateKb
-            (
-                const int,
-                const scalar&
-            );
-            
-            //- Update reaction rates constant Kc
-            void updateKc
-            (
-                const int,
-                const scalar&
-            );
-            
-            //- Update source term omega for species s
-            void calculateOmega
-            (
-                const int,
-                const scalar&
-            );
-            
-            //- Update source term omega for all species
-            void calculateOmega
-            (
-                const scalarField&
-            );
+            void updateKf(const int, const scalar);
 
-            //- Update the global reaction order list 
+            //- Update reaction rates kb
+            void updateKb(const int, const scalar);
+
+            //- Update reaction rates constant Kc
+            void updateKc(const int, const scalar);
+
+            //- Update source term omega for species s
+            void calculateOmega(const int, const scalar);
+
+            //- Update source term omega for all species
+            void calculateOmega(const scalarField&);
+
+            //- Update the global reaction order list
             void updateGlobalReactionOrder();
 
         // Return functions
+        
 
             //- Return bool
 
                 //- Backward reaction for const
-                bool BR
-                (
-                    const int
-                ) const;
+                bool BR(const int) const;
 
                 //- Backward reaction
-                bool BR
-                (
-                    const int
-                );
+                bool BR(const int);
 
                 //- Return true if elementar reaction is a TBR reaction
-                bool TBR
-                (
-                    const int
-                ) const;
+                bool TBR(const int) const;
 
                 //- Return true if elementar reaction is a LOW reaction
-                bool LOW
-                (
-                    const int
-                ) const;
+                bool LOW(const int) const;
 
                 //- Return true if elementar reaction is a TROE reaction
-                bool TROE
-                (
-                    const int
-                ) const;
+                bool TROE(const int) const;
 
                 //- Return true if elementar reaction is a SRI reaction
-                bool SRI
-                (
-                    const int
-                ) const;
+                bool SRI(const int) const;
 
                 //- Return true if elementar reaction has enhanced factors
-                bool ENHANCED
-                (
-                    const int
-                ) const;
+                bool ENHANCED(const int) const;
+
 
             //- Return M_ [g/cm^3]
             scalar M() const;
@@ -416,16 +324,10 @@ class ChemistryData
             wordList species() const;
 
             //- Return the educt species of reaction r
-            wordList educts
-            (
-                const int
-            ) const;
+            wordList educts(const int) const;
 
             //- Return the product species of reaction r
-            wordList products
-            (
-                const int
-            ) const;
+            wordList products(const int) const;
 
             //- Return amount of dublicated entries
             unsigned int nDublicated() const;
@@ -433,152 +335,89 @@ class ChemistryData
             //- Return no. of reaction
             int nReac() const;
 
-            //- Return elementar reaction 
+            //- Return elementar reaction
             wordList elementarReaction() const;
 
             //- Return elementar reaction (as string)
-            word elementarReaction
-            (
-                const int
-            ) const;
+            word elementarReaction(const int) const;
 
             //- Return List of reaction no. of species
-            List<int> reacNumbers
-            (
-                const word&
-            ) const;
+            List<int> reacNumbers(const word) const;
 
             //- Return species matrix for reactions
             wordMatrix speciesInReaction() const;
 
             //- Return species list for reaction r
-            wordList speciesInReaction
-            (
-                const int 
-            ) const;
+            wordList speciesInReaction(const int) const;
 
             //- Return species list that act as product in reaction r
-            List<word> speciesProducts 
-            (
-                const int
-            ) const;
-            
+            List<word> speciesProducts (const int) const;
+
             //- Return species list that act as educt in reaction r
-            List<word> speciesEducts 
-            (
-                const int
-            ) const;
+            List<word> speciesEducts (const int) const;
 
             //- Return stochiometric factors of educts of reaction r
-            map<word, int> nuEducts
-            (
-                const int 
-            ) const;
+            map<word, int> nuEducts(const int) const;
 
             //- Return stochiometric factors of educts of reaction r
-            map<word, int> nuProducts
-            (
-                const int 
-            ) const;
+            map<word, int> nuProducts(const int) const;
 
             //- Return the exponent factor for Keq calculation
-            scalar exponent
-            (
-                const int
-            ) const;
+            scalar exponent(const int) const;
 
             //- Return arrhenius coeffs for reaction no.
             //  [0] -> pre-exponent [units depend on equation]
             //  [1] -> temperature exponent [-]
             //  [2] -> activation energy [cal/mol]
-            scalarList arrheniusCoeffs
-            (
-                const int
-            ) const;
+            scalarList arrheniusCoeffs(const int) const;
 
             //- Return arrhenius coeffs for high pressure for reaction no.
-            scalarList LOWCoeffs
-            (
-                const int
-            ) const;
+            scalarList LOWCoeffs(const int) const;
 
             //- Return TROE coeffs
-            scalarList TROECoeffs
-            (
-                const int
-            ) const;
+            scalarList TROECoeffs(const int) const;
 
             //- Return SRI coeffs
-            scalarList SRICoeffs
-            (
-                const int
-            ) const;
+            scalarList SRICoeffs(const int) const;
 
             //- Return ENHANCED factors (species + value) of reac no.
-            map<word, scalar> ENHANCEDCoeffs 
-            (
-                const int
-            ) const;
+            map<word, scalar> ENHANCEDCoeffs (const int) const;
 
             //- Return reaction rate kf for reaction no.
-            scalar kf
-            (
-                const int
-            ) const;
+            scalar kf(const int) const;
 
             //- Return reaction rates kf
             scalarList kf() const;
 
             //- Return reaction rate kb for reaction no.
-            scalar kb
-            (
-                const int
-            ) const;
+            scalar kb(const int) const;
 
             //- Return reaction rates kb
             scalarList kb() const;
-            
+
             //- Return reaction rate constant Kc for reaction no.
-            scalar Kc
-            (
-                const int
-            ) const;
+            scalar Kc(const int) const;
 
             //- Return reaction rate constant Kc
             scalarList Kc() const;
-            
+
             //- Return omega of species s
-            scalar omega
-            (
-                const int
-            ) const;
+            scalar omega(const int) const;
 
             //- Return omega field
             scalarField omega() const;
 
             //- Return stochiometric factors of products of reaction r
-            map<word, scalar> nuEduc
-            (
-                const int
-            ) const;
+            map<word, scalar> nuEduc(const int) const;
 
             //- Return forward reaction order of reaction r
-            scalar forwardReactionOrder
-            (
-                const int
-            ) const;
+            scalar forwardReactionOrder(const int) const;
 
             //- Return backward reaction order of reaction r
-            scalar backwardReactionOrder
-            (
-                const int
-            ) const;
+            scalar backwardReactionOrder(const int) const;
 
             //- Return global reaction order of reaction r
-            scalar globalReactionOrder
-            (
-                const int
-            ) const;
+            scalar globalReactionOrder(const int) const;
 };
 
 

@@ -27,22 +27,17 @@ License
 
 // * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * * //
 
-AFC::ThermoData::ThermoData
-(
-    const bool& thermo
-)
+AFC::ThermoData::ThermoData(const bool thermo)
 :
     thermo_{thermo}
 
-{
-}
+{}
 
 
 // * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * * //
 
 AFC::ThermoData::~ThermoData()
-{
-}
+{}
 
 
 // * * * * * * * * * * * * * * * Member functions  * * * * * * * * * * * * * //
@@ -51,27 +46,21 @@ AFC::ThermoData::~ThermoData()
 
 // * * * * * * * * * Insert functions from ThermoReader:: * * * * * * * * //
 
-void AFC::ThermoData::insertSpecies
-(
-    const word& species
-)
+void AFC::ThermoData::insertSpecies(const word species)
 {
     species_.push_back(species);
 }
 
 
-void AFC::ThermoData::insertChemicalFormula
-(
-    const word& chemFormula 
-)
+void AFC::ThermoData::insertChemicalFormula(const word chemFormula)
 {
     formula_.push_back(chemFormula);
 }
 
 
-void AFC::ThermoData::insertAtomAndFactor
+void AFC::ThermoData::insertElementAndFactor
 (
-    const word& atom,
+    const word atom,
     const unsigned int factor
 )
 {
@@ -82,14 +71,11 @@ void AFC::ThermoData::insertAtomAndFactor
     elementsInSpecies_[actualSpecies].push_back(atom);
 
     //- Insert multiplication factor
-    elementsFactors_[actualSpecies].push_back(factor);
+    elementFactors_[actualSpecies].push_back(factor);
 }
 
 
-void AFC::ThermoData::insertMolecularWeight
-(
-    const scalar& MW 
-)
+void AFC::ThermoData::insertMolecularWeight(const scalar MW) 
 {
     //- Species_ list must have one element more in list than MW_
     if (species_.size()-1 == MW_.size())
@@ -98,7 +84,7 @@ void AFC::ThermoData::insertMolecularWeight
     }
     else
     {
-        FatalError
+        ErrorMsg
         (
             "    MW_.size() is not equal to species_.size()-1.\n"
             "    Some error occur.",
@@ -109,12 +95,8 @@ void AFC::ThermoData::insertMolecularWeight
 }
 
 
-void AFC::ThermoData::insertPhase
-(
-    const word& phase
-)
+void AFC::ThermoData::insertPhase(const word phase)
 {
-    
     //- Species_ list must have one element more in list than phase_
     if (species_.size()-1 == phase_.size())
     {
@@ -122,7 +104,7 @@ void AFC::ThermoData::insertPhase
     }
     else
     {
-        FatalError
+        ErrorMsg
         (
             "    phase_.size() is not equal to species_.size()-1.\n"
             "    Some error occur.",
@@ -133,12 +115,8 @@ void AFC::ThermoData::insertPhase
 }
 
 
-void AFC::ThermoData::insertLT
-(
-    const scalar& LT
-)
+void AFC::ThermoData::insertLT(const scalar LT)
 {
-    
     //- Species_ list must have one element more in this list 
     if (species_.size()-1 == LT_.size())
     {
@@ -146,7 +124,7 @@ void AFC::ThermoData::insertLT
     }
     else
     {
-        FatalError
+        ErrorMsg
         (
             "    LT_.size() is not equal to species_.size()-1.\n"
             "    Some error occur.",
@@ -157,12 +135,8 @@ void AFC::ThermoData::insertLT
 }
 
 
-void AFC::ThermoData::insertHT
-(
-    const scalar& HT
-)
+void AFC::ThermoData::insertHT(const scalar HT)
 {
-    
     //- Species_ list must have one element more in this list 
     if (species_.size()-1 == HT_.size())
     {
@@ -170,7 +144,7 @@ void AFC::ThermoData::insertHT
     }
     else
     {
-        FatalError
+        ErrorMsg
         (
             "    HT_.size() is not equal to species_.size()-1.\n"
             "    Some error occur.",
@@ -181,12 +155,8 @@ void AFC::ThermoData::insertHT
 }
 
 
-void AFC::ThermoData::insertCT
-(
-    const scalar& CT
-)
+void AFC::ThermoData::insertCT(const scalar CT)
 {
-    
     //- Species_ list must have one element more in this list 
     if (species_.size()-1 == CT_.size())
     {
@@ -194,7 +164,7 @@ void AFC::ThermoData::insertCT
     }
     else
     {
-        FatalError
+        ErrorMsg
         (
             "    CT_.size() is not equal to species_.size()-1.\n"
             "    Some error occur.",
@@ -205,52 +175,44 @@ void AFC::ThermoData::insertCT
 }
 
 
-void AFC::ThermoData::insertNASACoeffsHT
-(
-    const scalar& pc
-)
+void AFC::ThermoData::insertNASACoeffsHT(const scalar coeff)
 {
     //- Insert value
-    NASACoeffsHT_[species_[species_.size()-1]].push_back(pc);
+    NASACoeffsHT_[species_[species_.size()-1]].push_back(coeff);
 }
 
 
-void AFC::ThermoData::insertNASACoeffsLT
-(
-    const scalar& pc
-)
+void AFC::ThermoData::insertNASACoeffsLT(const scalar coeff)
 {
     //- Insert value
-    NASACoeffsLT_[species_[species_.size()-1]].push_back(pc);
+    NASACoeffsLT_[species_[species_.size()-1]].push_back(coeff);
 }
 
 
-void AFC::ThermoData::updateAtomsAndFactorsMap()
+void AFC::ThermoData::updateElementsAndFactors()
 {
-    //- Temporar map that contains all atoms and factors of the actual species
+    //- Temporary map that contains all elements and factors of
+    //  the actual species
     map<word, scalar> tmp;
 
     //- Actual species
-    const word& species = species_[species_.size()-1];
+    const word species = species_[species_.size()-1];
 
-    const wordList& atoms = elementsInSpecies(species);
+    const wordList& elements = elementsInSpecies(species);
     const scalarList& factors = elementFactors(species);
 
-    forEach(atoms, a)
+    forEach(elements, a)
     {
-        tmp[atoms[a]] = factors[a];
+        tmp[elements[a]] = factors[a];
     }
 
-    atoms_[species] = tmp;
+    elements_[species] = tmp;
 }
 
 
 // * * * * * * * * * * * Insert functions from Thermo::  * * * * * * * * * * //
 
-void AFC::ThermoData::p
-(
-    const scalar& pressure
-) 
+void AFC::ThermoData::p(const scalar pressure) 
 {
     p_ = pressure;
 }
@@ -261,117 +223,116 @@ void AFC::ThermoData::p
 
 // * * * * * * * * * * * * * * Return functions  * * * * * * * * * * * * * * //
 
-AFC::wordList AFC::ThermoData::species() const
-{
-    return species_;
-}
-
-
-AFC::wordList AFC::ThermoData::formula() const
-{
-    return formula_;
-}
-
-
-AFC::scalar AFC::ThermoData::MW
-(
-    const word& species
-) const
-{
-    return MW_.at(species);
-}
-
-
-AFC::map<AFC::word, AFC::scalar> AFC::ThermoData::MW() const
-{
-    return MW_;
-}
-
-
-AFC::scalar AFC::ThermoData::LT
-(
-    const word& species
-) const
-{
-    return LT_.at(species);
-}
-
-
-AFC::scalar AFC::ThermoData::CT
-(
-    const word& species
-) const
-{
-    return CT_.at(species);
-}
-
-
-AFC::scalar AFC::ThermoData::HT
-(
-    const word& species
-) const
-{
-    return HT_.at(species);
-}
-
-
-AFC::scalarField AFC::ThermoData::NASACoeffsHT
-(
-    const word& species
-) const
-{
-    return NASACoeffsHT_.at(species); 
-}
-
-
-AFC::scalarField AFC::ThermoData::NASACoeffsLT
-(
-    const word& species
-) const
-{
-    return NASACoeffsLT_.at(species); 
-}
-
-
 AFC::scalar AFC::ThermoData::p() const
 {
     return p_;
 }
 
 
-AFC::wordList AFC::ThermoData::elementsInSpecies
-(
-    const word& species
-) const
+const AFC::wordList AFC::ThermoData::species() const
+{
+    return species_;
+}
+
+
+const AFC::wordList AFC::ThermoData::formula() const
+{
+    return formula_;
+}
+
+
+const AFC::wordList
+AFC::ThermoData::elementsInSpecies(const word species) const
 {
     return elementsInSpecies_.at(species);
 }
 
 
-AFC::scalarList AFC::ThermoData::elementFactors
-(
-    const word& species
-) const
+const AFC::wordList
+AFC::ThermoData::elementsInSpeciesChem(const word species) const
 {
-    return elementsFactors_.at(species);
+    NotImplemented(__FILE__, __LINE__);
+
+    return wordList(0);
 }
 
 
-AFC::map<AFC::word, AFC::scalar> AFC::ThermoData::atomsAndFactors
-(
-    const word& species
-) const
+const AFC::scalarList AFC::ThermoData::elementFactors(const word species) const
 {
-    return atoms_.at(species);
+    return elementFactors_.at(species);
 }
 
 
-AFC::word AFC::ThermoData::phase
-(
-    const word& species
-) const
+const AFC::map<AFC::word, AFC::scalar>
+AFC::ThermoData::elementFactorsMap(const word species) const
+{
+    return elements_.at(species);
+}
+
+
+const AFC::map<AFC::word, AFC::scalar>
+AFC::ThermoData::elementFactorsChem(const word species) const
+{
+    NotImplemented(__FILE__, __LINE__);
+
+    map<word, scalar> temp;
+    temp["NONE"] = scalar(0);
+
+    return temp;
+}
+
+
+const AFC::map<AFC::word, AFC::scalar> AFC::ThermoData::MW() const
+{
+    return MW_;
+}
+
+
+AFC::scalar AFC::ThermoData::MW(const word species) const
+{
+    return MW_.at(species);
+}
+
+
+const AFC::map<AFC::word, AFC::word> AFC::ThermoData::phase() const
+{
+    return phase_;
+}
+
+
+const AFC::word AFC::ThermoData::phase(const word species) const
 {
     return phase_.at(species);
+}
+
+
+AFC::scalar AFC::ThermoData::LT(const word species) const
+{
+    return LT_.at(species);
+}
+
+
+AFC::scalar AFC::ThermoData::CT(const word species) const
+{
+    return CT_.at(species);
+}
+
+
+AFC::scalar AFC::ThermoData::HT(const word species) const
+{
+    return HT_.at(species);
+}
+
+
+const AFC::scalarField AFC::ThermoData::NASACoeffsLT(const word species) const
+{
+    return NASACoeffsLT_.at(species); 
+}
+
+
+const AFC::scalarField AFC::ThermoData::NASACoeffsHT(const word species) const
+{
+    return NASACoeffsHT_.at(species); 
 }
 
 

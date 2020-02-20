@@ -27,38 +27,21 @@ License
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-AFC::ChemistryReader::ChemistryReader
-(
-    const string& file
-)
+AFC::ChemistryReader::ChemistryReader(const string file)
 :
     file_(file)
-
-{
-    if (debug_)
-    {
-        Info<< "Constructor ChemistryReader\n" << endl;
-    }
-}
+{}
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
 AFC::ChemistryReader::~ChemistryReader()
-{
-    if (debug_)
-    {
-        Info<< "Destructor ChemistryReader\n" << endl;
-    }
-}
+{}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-void AFC::ChemistryReader::read
-(
-    ChemistryData& data
-)
+void AFC::ChemistryReader::read(ChemistryData& data)
 {
     Info<< " c-o Reading chemistry data\n" << endl;
 
@@ -71,11 +54,6 @@ void AFC::ChemistryReader::read
     readThermoBlock(fileContent, data);
 
     readReactionBlock(fileContent, data);
-
-    if (debug_)
-    {
-        Info<< " --> Reading chemistry data done" << endl;
-    }
 }
 
 
@@ -85,11 +63,6 @@ void AFC::ChemistryReader::readElementBlock
     ChemistryData& data
 )
 {
-    if (debug_)
-    {
-        Info<< " --> AFC::ChemistryReader::readElementBlock" << endl;
-    }
-
     //- STEP 1: find line no. of wordList ELEMENTS and "END"
     int lineNoKeyword{-1};
     unsigned int lineNoEnd{0};
@@ -102,22 +75,15 @@ void AFC::ChemistryReader::readElementBlock
         "E"
     );
 
-    if (debug_)
-    {
-        Info<< " --> ELEMENT block starts at line " << lineNoKeyword 
-            << " and ends at line " << lineNoEnd << endl;
-    }
-
     //- STEP 2: check if wordList ELEMENT found
     if
     (
         lineNoKeyword == -1
     )
     {
-        FatalError
+        ErrorMsg
         (
-            "    Keyword in list 'ELEMENT' not found in chemistry"
-            " file " + file_,
+            "Keyword in list 'ELEMENT' not found in chemistry file " + file_,
             __FILE__,
             __LINE__
         );
@@ -158,11 +124,6 @@ void AFC::ChemistryReader::readSpeciesBlock
    ChemistryData& data
 )
 {
-    if (debug_)
-    {
-        Info<< " --> AFC::ChemistryReader::readSpeciesBlock" << endl;
-    }
-
     //- STEP 1: find line no. of wordList SPECIES and "END"
     int lineNoKeyword{-1};
     unsigned int lineNoEnd{0};
@@ -175,22 +136,15 @@ void AFC::ChemistryReader::readSpeciesBlock
         "S"
     );
 
-    if (debug_)
-    {
-        Info<< " --> SPECIES block starts at line " << lineNoKeyword 
-            << " and ends at line " << lineNoEnd << endl;
-    }
-
     //- STEP 2: check if wordList SPECIES found
     if
     (
         lineNoKeyword == -1
     )
     {
-        FatalError
+        ErrorMsg
         (
-            "    Keyword in list 'SPECIES' not found in chemistry"
-            " file " + file_,
+            "Keyword in list 'SPECIES' not found in chemistry file " + file_,
             __FILE__,
             __LINE__
         );
@@ -231,11 +185,6 @@ void AFC::ChemistryReader::readThermoBlock
     ChemistryData& data
 )
 {
-    if (debug_)
-    {
-        Info<< " --> AFC::ChemistryReader::readThermoBlock" << endl;
-    }
-
     //- STEP 1: find line no. of wordList THERMO and "END"
     int lineNoKeyword{-1};
     unsigned int lineNoEnd{0};
@@ -248,17 +197,8 @@ void AFC::ChemistryReader::readThermoBlock
         "T"
     );
 
-    if (debug_)
-    {
-        Info<< " --> THERMO block starts at line " << lineNoKeyword 
-            << " and ends at line " << lineNoEnd << endl;
-    }
-
     //- STEP 2: check if wordList THERMO found
-    if
-    (
-        lineNoKeyword != -1
-    )
+    if (lineNoKeyword != -1)
     {
         data.setThermo();
     }
@@ -270,11 +210,6 @@ void AFC::ChemistryReader::readReactionBlock
     ChemistryData& data
 )
 {
-    if (debug_)
-    {
-        Info<< " --> AFC::ChemistryReader::readReactionBlock" << endl;
-    }
-
     //- STEP 1: find line no. of wordList REACTIONS and "END"
     int lineNoKeyword{-1};
     unsigned int lineNoEnd{0};
@@ -287,22 +222,12 @@ void AFC::ChemistryReader::readReactionBlock
         "R"
     );
 
-    if (debug_)
-    {
-        Info<< " --> REACTIION block starts at line " << lineNoKeyword 
-            << " and ends at line " << lineNoEnd << endl;
-    }
- 
     //- STEP 2: check if wordList REACTION found
-    if
-    (
-        lineNoKeyword == -1
-    )
+    if (lineNoKeyword == -1)
     {
-        FatalError
+        ErrorMsg
         (
-            "    Keyword in list 'REACTIONS' not found in chemistry"
-            " file " + file_,
+            "Keyword in list 'REACTIONS' not found in chemistry file " + file_,
             __FILE__,
             __LINE__
         );
@@ -311,11 +236,6 @@ void AFC::ChemistryReader::readReactionBlock
     //- Reading REACTION block
     for (unsigned int line = lineNoKeyword+1; line < lineNoEnd; line++)
     {
-        if (debug_)
-        {
-            Info<< "Analyze " << fileContent[line] << endl;
-        }
-
         stringList tmp = splitStrAtWS(fileContent[line]);
 
         //- If line is not empty and no comment, proceed
@@ -407,11 +327,6 @@ void AFC::ChemistryReader::findKeyword
     const string search
 )
 {
-    if (debug_)
-    {
-        Info<< " --> AFC::ChemistryReader::findKeyword" << endl;
-    }
-
     //- Search pattern (wordList)
     wordList searchPattern;
 
@@ -477,16 +392,8 @@ void AFC::ChemistryReader::findKeyword
 }
 
 
-AFC::stringList AFC::ChemistryReader::extractData
-(
-    const string& str
-)
+AFC::stringList AFC::ChemistryReader::extractData(const string str)
 {
-    if (debug_)
-    {
-        Info<< " --> AFC::ChemistryReader::extractData" << endl;
-    }
-
     //- STEP 1: find first '/' 
     string delimiter="/";
 
@@ -509,15 +416,10 @@ AFC::stringList AFC::ChemistryReader::extractData
 
 void AFC::ChemistryReader::analyzeReaction
 (
-    const string& reaction,
+    const string reaction,
     ChemistryData& data
 )
 {
-    if (debug_)
-    {
-        Info<< " --> AFC::ChemistryReader::analyzeReaction" << endl;
-    }
-
     //- STEP 1: manipulate string to get reaction
     stringList tmp = splitStrAtWS(reaction);
 
@@ -544,9 +446,9 @@ void AFC::ChemistryReader::analyzeReaction
     //  +  d)  A+A<=B  (only backward reaction)
     //  d) is not implemented
 
-    std::size_t found1 = tmp2.find(delimiter1);
-    std::size_t found2 = tmp2.find(delimiter2);
-    std::size_t found3 = tmp2.find(delimiter3);
+    size_t found1 = tmp2.find(delimiter1);
+    size_t found2 = tmp2.find(delimiter2);
+    size_t found3 = tmp2.find(delimiter3);
 
     //- a)
     if
@@ -588,12 +490,12 @@ void AFC::ChemistryReader::analyzeReaction
      && found3 == std::string::npos
     )
     {
-        FatalError
+        ErrorMsg
         (
-            "    Only backward reaction is not implemented. If for some reason"
-            " you want to implement it, feel free to open a issue at\n"
-            "    www.bitbucket.org/shorty or implement it yourself and"
-            " make a pull request.",
+            "Only backward reaction is not implemented. If for some reason\n   "
+            " you want to implement it, feel free to open a issue at\n    "
+            "www.bitbucket.org/shorty or implement it yourself and "
+            "make a pull request.",
             __FILE__,
             __LINE__
         );
@@ -638,28 +540,23 @@ void AFC::ChemistryReader::analyzeReaction
 
 void AFC::ChemistryReader::LOWCoeffs
 (
-    const string& coeffStr,
+    const string coeffStr,
     const unsigned int lineNo,
     ChemistryData& data
 )
 {
-    if (debug_)
-    {
-        Info<< " --> AFC::ChemistryReader::LOWCoeffs" << endl;
-    }
-
     //- STEP 1: get data inbetween '/'
     List<string> coeffs = extractData(coeffStr);
 
     //- STEP 2: check if 3 values are available
     if (coeffs.size() != 3)
     {
-        FatalError
+        ErrorMsg
         (
-            "    More or less than three arrhenius coeffs for LOW found.\n"
-            "    Arrhenius coeffs: " + std::to_string(coeffs.size()) +
-            " found in line " + std::to_string(lineNo) + ".\n"
-            "    Problem occur in file " + file_,
+            "More or less than three arrhenius coeffs for LOW found.\n    "
+            "Arrhenius coeffs: " + std::to_string(coeffs.size()) +
+            " found in line " + std::to_string(lineNo) + ".\n    "
+            "Problem occur in file " + file_,
             __FILE__,
             __LINE__
         );
@@ -678,32 +575,23 @@ void AFC::ChemistryReader::LOWCoeffs
 
 void AFC::ChemistryReader::TROECoeffs
 (
-    const string& coeffStr,
+    const string coeffStr,
     const unsigned int lineNo,
     ChemistryData& data
 )
 {
-    if (debug_)
-    {
-        Info<< " --> AFC::ChemistryReader::TROECoeffs" << endl;
-    }
-
     //- STEP 1: get data inbetween '/'
     stringList coeffs = extractData(coeffStr);
 
     //- STEP 2: check if more or less values
-    if
-    (
-        coeffs.size() < 3
-     || coeffs.size() > 4
-    )
+    if (coeffs.size() < 3 || coeffs.size() > 4)
     {
-        FatalError
+        ErrorMsg
         (
-            "    More than 4 or less than 3 TROE coeffs found.\n"
-            "    TROE coeffs: " + std::to_string(coeffs.size()) +
-            " found in line " + std::to_string(lineNo) + ".\n"
-            "    Problem occur in file " + file_,
+            "More than 4 or less than 3 TROE coeffs found.\n    "
+            "TROE coeffs: " + std::to_string(coeffs.size()) +
+            " found in line " + std::to_string(lineNo) + ".\n    "
+            "Problem occur in file " + file_,
             __FILE__,
             __LINE__
         );
@@ -722,32 +610,23 @@ void AFC::ChemistryReader::TROECoeffs
 
 void AFC::ChemistryReader::SRICoeffs
 (
-    const string& coeffStr,
+    const string coeffStr,
     const unsigned int lineNo,
     ChemistryData& data
 )
 {
-    if (debug_)
-    {
-        Info<< " --> AFC::ChemistryReader::SRICoeffs" << endl;
-    }
-
     //- STEP 1: get data inbetween '/'
     stringList coeffs = extractData(coeffStr);
 
     //- STEP 2: check if more or less values
-    if
-    (
-        coeffs.size() < 4
-     || coeffs.size() > 5
-    )
+    if (coeffs.size() < 4 || coeffs.size() > 5)
     {
-        FatalError
+        ErrorMsg
         (
-            "    More than 5 or less than 4 SRI coeffs found.\n"
-            "    SRI coeffs: " + std::to_string(coeffs.size()) +
-            " found in line " + std::to_string(lineNo) + ".\n"
-            "    Problem occur in file " + file_,
+            "More than 5 or less than 4 SRI coeffs found.\n    "
+            "SRI coeffs: " + std::to_string(coeffs.size()) +
+            " found in line " + std::to_string(lineNo) + ".\n    "
+            "Problem occur in file " + file_,
             __FILE__,
             __LINE__
         );
@@ -765,15 +644,10 @@ void AFC::ChemistryReader::SRICoeffs
 
 void AFC::ChemistryReader::enhanceFactors
 (
-    const string& enhanceFactors,
+    const string enhanceFactors,
     ChemistryData& data
 )
 {
-    if (debug_)
-    {
-        Info<< " --> AFC::ChemistryReader::enhanceFactors" << endl;
-    }
-
     //- STEP 1: split string at whitespace and re-arrange
     stringList tmp = splitStrAtWS(enhanceFactors);
 
@@ -810,17 +684,11 @@ void AFC::ChemistryReader::enhanceFactors
 
 void AFC::ChemistryReader::analyzeReacSite
 (
-    const string& reactionSite,
+    const string reactionSite,
     const word site,
     ChemistryData& data
 )
 {
-    if (debug_)
-    {
-        Info<< " --> AFC::ChemistryReader::analyzeReacSite" << endl;
-        Info<< " To be analyzed: " << site << endl;
-    }
-
     //- First: remove (+M) if it is there
     string removed1 = removeAtEnd(reactionSite, "(+M)");
 
@@ -932,10 +800,10 @@ void AFC::ChemistryReader::analyzeReacSite
             }
             else
             {
-                FatalError
+                ErrorMsg
                 (
-                    "    You only can call this function with 'e' or"
-                    " 'p' arguments.",
+                    "You only can call this function with 'e' or "
+                    "'p' arguments.",
                     __FILE__,
                     __LINE__
                 );
@@ -952,11 +820,11 @@ void AFC::ChemistryReader::analyzeReacSite
             //  Input !integer -> 0.4 -> 4  % 10 = 4
             if ((modTmp % 10) != 0)
             {
-                FatalError
+                ErrorMsg
                 (
-                    "    The stochiometric factor is not an integer."
-                    " Error occured in analyzing\n    reaction site "
-                    + reactionSite + " (" + site,
+                    "The stochiometric factor is not an integer.\n    "
+                    "Error occured in analyzing reaction site "
+                    + reactionSite + " (" + site + ")",
                     __FILE__,
                     __LINE__
                 );

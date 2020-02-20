@@ -59,9 +59,6 @@ class ODE
         //- Chemistry obj
         const Chemistry& chem_;
 
-        //- Debug switch
-        bool debug_{false};
-
         //  TODO make Readable
         //- Maximum allowed iterations that are used for the integration in
         //  the chemistry calculation

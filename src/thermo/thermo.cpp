@@ -30,7 +30,7 @@ License
 
 AFC::Thermo::Thermo
 (
-    const string& fileName,
+    const string fileName,
     const bool thermo
 )
 :
@@ -52,7 +52,7 @@ AFC::Thermo::~Thermo()
 
 void AFC::Thermo::p
 (
-    const scalar& pressure
+    const scalar pressure
 )
 {
     thermoData_.p(pressure);
@@ -61,18 +61,15 @@ void AFC::Thermo::p
 
 // * * * * * * * * * * * * * * * Return Functions  * * * * * * * * * * * * * //
 
-AFC::wordList AFC::Thermo::species() const
+AFC::scalar AFC::Thermo::p() const
 {
-    return thermoData_.species();
+    return thermoData_.p();
 }
 
 
-AFC::scalar AFC::Thermo::MW
-(
-    const word& species
-) const
+AFC::wordList AFC::Thermo::species() const
 {
-    return thermoData_.MW(species);
+    return thermoData_.species();
 }
 
 
@@ -82,149 +79,91 @@ AFC::map<AFC::word, AFC::scalar> AFC::Thermo::MW() const
 }
 
 
-AFC::scalar AFC::Thermo::MmeanX
-(
-    const map<word, scalar>& X
-) const
+AFC::scalar AFC::Thermo::MW(const word species) const
 {
-    return thermoCalc_.MmeanX(X, MW());    
+    return thermoData_.MW(species);
 }
 
 
-AFC::scalar AFC::Thermo::cp
-(
-    const word& species,
-    const scalar& T
-) const
+AFC::scalar AFC::Thermo::MWmeanX(const map<word, scalar>& X) const
+{
+    return thermoCalc_.MWmeanX(X, MW());    
+}
+
+
+AFC::scalar AFC::Thermo::cp(const word species, const scalar T) const
 {
     return thermoCalc_.cp(species, T, thermoData_);
 }
 
 
-AFC::scalar AFC::Thermo::cv
-(
-    const word& species,
-    const scalar& T
-) const
+AFC::scalar AFC::Thermo::cv(const word species, const scalar T) const
 {
     return thermoCalc_.cv(species, T, thermoData_);
 }
 
 
-AFC::scalar AFC::Thermo::H
-(
-    const word& species,
-    const scalar& T
-) const
+AFC::scalar AFC::Thermo::H(const word species, const scalar T) const
 {
     return thermoCalc_.H(species, T, thermoData_);
 }
 
 
-AFC::scalar AFC::Thermo::S
-(
-    const word& species,
-    const scalar& T
-) const
+AFC::scalar AFC::Thermo::S(const word species, const scalar T) const
 {
     return thermoCalc_.S(species, T, thermoData_);
 }
 
 
-AFC::scalar AFC::Thermo::G
-(
-    const word& species,
-    const scalar& T
-) const
+AFC::scalar AFC::Thermo::G(const word species, const scalar T) const
 {
     return thermoCalc_.G(species, T, thermoData_);
 }
 
 
-AFC::scalar AFC::Thermo::G
-(
-    const scalar& H,
-    const scalar& S,
-    const scalar& T
-) const
+AFC::scalar AFC::Thermo::G(const scalar H, const scalar S, const scalar T) const
 {
     return thermoCalc_.G(H, S, T);
 }
 
 
-AFC::scalar AFC::Thermo::p() const
-{
-    return thermoData_.p();
-}
-
-
-AFC::scalar AFC::Thermo::Hf
-(
-    const word& species
-) const
+AFC::scalar AFC::Thermo::Hf(const word species) const
 {
     return thermoCalc_.Hf(species, thermoData_);
 }
 
 
-AFC::scalar AFC::Thermo::Gf
-(
-    const word& species
-) const
+AFC::scalar AFC::Thermo::Gf(const word species) const
 {
     return thermoCalc_.Gf(species, thermoData_);
 }
 
 
-AFC::scalar AFC::Thermo::dHf
-(
-    const word& species,
-    const scalar& T
-) const
+AFC::scalar AFC::Thermo::dHf(const word species, const scalar T) const
 {
     return thermoCalc_.dHf(species, T, thermoData_);
 }
 
 
-AFC::scalar AFC::Thermo::dGf
-(
-    const word& species,
-    const scalar& T
-) const
+AFC::scalar AFC::Thermo::dGf(const word species, const scalar T) const
 {
     return thermoCalc_.dGf(species, T, thermoData_);
 }
 
 
-AFC::scalar AFC::Thermo::C
-(
-    const scalar& T
-) const
+AFC::scalar AFC::Thermo::C(const scalar T) const
 {
     return thermoCalc_.C(p(), T);
 }
 
 
-AFC::scalar AFC::Thermo::rho
-(
-    const word& species,
-    const scalar& T
-) const
+AFC::scalar AFC::Thermo::rho(const word species, const scalar T) const
 {
-    //- Molecular weight of species
-    const scalar& MWspecies = MW(species);
-
-    //- Pressure
-    const scalar& pressure = p();
-
-    return thermoCalc_.rho(T, pressure, MWspecies);
+    return thermoCalc_.rho(T, p(), MW(species));
 }
 
 
-AFC::word AFC::Thermo::phase
-(
-    const word& species
-) const
+AFC::word AFC::Thermo::phase(const word species) const
 {
     return thermoData_.phase(species);
 }
@@ -232,12 +171,8 @@ AFC::word AFC::Thermo::phase
 // * * * * * * * * * * * * * * Summary Function  * * * * * * * * * * * * * * //
 
 
-void AFC::Thermo::summary
-(
-    ostream& data
-) const
+void AFC::Thermo::summary(ostream& data) const
 {
-
     //- Header
     data<< Header() << "\n"; 
 
@@ -268,11 +203,7 @@ void AFC::Thermo::summary
 }
 
 
-void AFC::Thermo::NASAPolynomials
-(
-    ostream& data,
-    const word coeff
-) const
+void AFC::Thermo::NASAPolynomials(ostream& data, const word coeff) const
 {
     word range;
 
@@ -343,10 +274,7 @@ void AFC::Thermo::NASAPolynomials
 }
 
 
-void AFC::Thermo::thermoTable
-(
-    ostream& data
-) const
+void AFC::Thermo::thermoTable(ostream& data) const
 {
     //- Species of Thermodynamic Data
     const wordList& species = thermoData_.species();
@@ -366,10 +294,10 @@ void AFC::Thermo::thermoTable
             << " Formula: " << formula[s] << "\n"
             << " Composition: \n   |\n";
 
-        const map<word, scalar>& atoms =
-            thermoData_.atomsAndFactors(species[s]);
+        const map<word, scalar>& elements =
+            thermoData_.elementFactorsMap(species[s]);
 
-        forAll(atoms, a)
+        forAll(elements, a)
         {
             data<< "   |--> " << std::setw(4) << a.first
                 << " " << a.second << "\n";

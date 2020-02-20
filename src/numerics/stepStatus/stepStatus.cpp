@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   c-o-o-c-o-o-o             |
   |     |     A utomatic    | Open Source Flamelet
-  c-o-o-c     F lamelet     | 
+  c-o-o-c     F lamelet     |
   |     |     C onstructor  | Copyright (C) 2015 Holzmann-cfd
   c     c-o-o-o             |
 -------------------------------------------------------------------------------
@@ -10,7 +10,7 @@ License
 
     AFC is free software; you can redistribute it and/or modify it under
     the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 3 of the License, or 
+    Free Software Foundation; either version 3 of the License, or
     (at your option) any later version.
 
     AFC is distributed in the hope that it will be useful, but
@@ -28,10 +28,7 @@ License
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-AFC::StepStatus::StepStatus
-(
-    const scalar dt
-)
+AFC::StepStatus::StepStatus(const scalar dt)
 :
     forward_(dt > scalar(0) ? true : false),
 
@@ -46,19 +43,13 @@ AFC::StepStatus::StepStatus
     reject_(false),
 
     prevReject_(false)
-{
-}
+{}
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
 AFC::StepStatus::~StepStatus()
-{
-    if (debug_)
-    {
-        Info<< "Destructor StepStatus \n" << endl;
-    }
-}
+{}
 
 
 // * * * * * * * * * * * * * * * Member function * * * * * * * * * * * * * * //

@@ -64,11 +64,7 @@ class Thermo
     public:
 
         //- Constructor with fileName
-        Thermo
-        (
-            const string&,
-            const bool thermo = false
-        );
+        Thermo(const string, const bool thermo = false);
 
         //- Destructor
         ~Thermo();
@@ -77,158 +73,95 @@ class Thermo
         // Insert functions delegated to thermoData
 
             //- Insert pressure (from properties)
-            void p
-            (
-               const scalar&
-            );
+            void p(const scalar);
 
 
-        // Return | calculation functions
+        // Member functions
         
             //- Return species as word list
             wordList species() const;
 
-            //- Return moleculare weight of species s [g/mol]
-            scalar MW
-            (
-                const word&
-            ) const;
 
-            //- Return moleculare weight as map 
-            map<word, scalar> MW() const;
+            //- Moleculare weight [kg/mol]
 
-            //- Return the mean molecular weight based on X [g/mol]
-            scalar MmeanX
-            (
-                const map<word, scalar>&
-            ) const;
+                //- Return moleculare weight as map 
+                map<word, scalar> MW() const;
+            
+                //- Return moleculare weight of species s
+                scalar MW(const word) const;
 
-            //- Return molar heat capacity of species s [J/mol/K]
-            //  for constant pressure
-            scalar cp
-            (
-                const word&,
-                const scalar&
-            ) const;
+                //- Return the mean molecular weight based on mole fraction X
+                scalar MWmeanX(const map<word, scalar>&) const;
 
-            //- Return heat capacity of species s [J/mol/K] 
-            //  for constant volume
-            scalar cv
-            (
-                const word&,
-                const scalar&
-            ) const;
 
-            //- Return enthalpy of species s [J/mol]
-            scalar H
-            (
-                const word&,
-                const scalar&
-            ) const;
+            //- Heat capacity [J/mol/K] 
+            
+                //- Return molar heat capacity of species s 
+                //  for constant pressure
+                scalar cp(const word, const scalar) const;
 
-            //- Return entropy of species s [J/mol/K]
-            scalar S
-            (
-                const word&,
-                const scalar&
-            ) const;
+                //- Return heat capacity of species s 
+                //  for constant volume
+                scalar cv(const word, const scalar) const;
 
-            //- Return free Gibbs of species s [J/mol]
-            scalar G
-            (
-                const word&,
-                const scalar&
-            ) const;
-
-            //- Return mean free Gibbs of species s [J/mol]
-            scalar G
-            (
-                const scalar&,
-                const scalar&,
-                const scalar&
-            ) const;
 
             //- Return the pressure [Pa]
             scalar p() const;
 
-            //- Return formation enthalpy Hf == H(293) [J/mol]
-            scalar Hf
-            (
-                const word&
-            ) const;
 
-            //- Return formation free GIBBS energy Gf = G(293) [J/mol]
-            scalar Gf
-            (
-                const word&
-            ) const;
+            //- Energy, enthalpy and entropy related stuff
 
-            //- Return dHf [J/mol]
-            scalar dHf
-            (
-                const word&,
-                const scalar&
-            ) const;
+                //- Return enthalpy of species s [J/mol]
+                scalar H(const word, const scalar) const;
 
-            //- Return dGf [J/mol]
-            scalar dGf
-            (
-                const word&,
-                const scalar&
-            ) const;
+                //- Return entropy of species s [J/mol/K]
+                scalar S(const word, const scalar) const;
+
+                //- Return free Gibbs of species s [J/mol]
+                scalar G(const word, const scalar) const;
+
+                //- Return mean free Gibbs of species s [J/mol]
+                scalar G(const scalar, const scalar, const scalar) const;
+
+                //- Return formation enthalpy Hf == H(293) [J/mol]
+                scalar Hf(const word) const;
+
+                //- Return formation free GIBBS energy Gf = G(293) [J/mol]
+                scalar Gf(const word) const;
+
+                //- Return dHf [J/mol]
+                scalar dHf(const word, const scalar) const;
+
+                //- Return dGf [J/mol]
+                scalar dGf(const word, const scalar) const;
+
 
             //- Return the mixture concentration [mol/m^3]
-            scalar C
-            (
-                const scalar&
-            ) const;
+            scalar C(const scalar) const;
 
             //- Return the density of the species [kg/m^3]
-            scalar rho
-            (
-                const word&,
-                const scalar&
-            ) const;
+            scalar rho(const word, const scalar) const;
 
             //- Return low temperature bound (from NASA)
-            scalar LT
-            (
-                const word&
-            ) const;
+            scalar LT(const word) const;
 
             //- Return the phase of molecule (GAS, LIQUID, SOLID)
-            word phase
-            (
-                const word&
-            ) const;
+            word phase(const word) const;
             
             //- Return factors of atoms in species s
-            scalarList elementsFactors
-            (
-                const word&
-            ) const;
+            scalarList elementsFactors(const word) const;
 
 
         // Summary function
 
             //- Build the output file that contains all data
-            void summary
-            (
-                ostream&
-            ) const;
+            void summary(ostream&) const;
 
             //- Build NASA Coefficient table 
-            void NASAPolynomials
-            (
-                ostream&,
-                const word
-            ) const;
+            void NASAPolynomials(ostream&, const word) const;
 
             //- Build thermoanalyse table (calcualte thermo properties)
-            void thermoTable
-            (
-                ostream&
-            ) const;
+            void thermoTable(ostream&) const;
 
             
 };

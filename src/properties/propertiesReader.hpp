@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   c-o-o-c-o-o-o             |
   |     |     A utomatic    | Open Source Flamelet
-  c-o-o-c     F lamelet     | 
+  c-o-o-c     F lamelet     |
   |     |     C onstructor  | Copyright (C) 2015 Holzmann-cfd
   c     c-o-o-o             |
 -------------------------------------------------------------------------------
@@ -10,7 +10,7 @@ License
 
     AFC is free software; you can redistribute it and/or modify it under
     the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 3 of the License, or 
+    Free Software Foundation; either version 3 of the License, or
     (at your option) any later version.
 
     AFC is distributed in the hope that it will be useful, but
@@ -22,7 +22,7 @@ License
     along with AFC; if not, see <http://www.gnu.org/licenses/>
 
 Class
-    AFC::PropertiesReader    
+    AFC::PropertiesReader
 
 Description
     Reading the AFCDict file
@@ -67,26 +67,20 @@ class PropertiesReader
         // Constructor and Destructor
 
             //- Constructor with file string and Properties:: obj adress
-            PropertiesReader
-            (
-                const string&
-            );
+            PropertiesReader(const string);
 
             //- Destructor
             ~PropertiesReader();
 
-        
+
         // Member functions
 
             //- Read properties file and delegate data
-            void read
-            (
-                Properties&
-            );
+            void read(Properties&);
 
 
         // Helper functions
-        
+
             //- Find line number of keyword
             void findKeyword
             (
@@ -96,19 +90,12 @@ class PropertiesReader
                 unsigned int&
             );
 
-            //- Return string between '/' and '/'
-
 
         // Data manipulation functions
-        
+
             //- Reading enthalpy defects dictionary
-            void enthalpyDefects 
-            (
-                const stringList&,
-                unsigned int,
-                Properties&
-            );
-        
+            void enthalpyDefects(const stringList&, unsigned int, Properties&);
+
             //- Reading scalar dissipation rate dictionary
             void scalarDissipationRates
             (
@@ -132,45 +119,21 @@ class PropertiesReader
                 unsigned int,
                 Properties&
             );
-                
+
             //- Reading mol fraction fuel dictionary
-            void molFractionFuel    
-            (
-                const stringList&,
-                unsigned int,
-                Properties&
-            );
-                
+            void molFractionFuel(const stringList&, unsigned int, Properties&);
+
             //- Reading mass fraction fuel dictionary
-            void massFractionFuel    
-            (
-                const stringList&,
-                unsigned int,
-                Properties&
-            );
+            void massFractionFuel(const stringList&, unsigned int, Properties&);
 
             //- Reading control dictionary
-            void control
-            (
-                const stringList&,
-                unsigned int,
-                Properties&
-            );
+            void control(const stringList&, unsigned int, Properties&);
 
             //- Set wheater input is mol or mass fraction
-            void input
-            (
-                const word&,
-                Properties&
-            );
+            void input(const word, Properties&);
 
             //- Read interpreter dictionary
-            void interpreter
-            (
-                const stringList&,
-                unsigned int,
-                Properties&
-            );
+            void interpreter(const stringList&, unsigned int, Properties&);
 };
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

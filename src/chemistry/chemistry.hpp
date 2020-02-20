@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   c-o-o-c-o-o-o             |
   |     |     A utomatic    | Open Source Flamelet
-  c-o-o-c     F lamelet     | 
+  c-o-o-c     F lamelet     |
   |     |     C onstructor  | Copyright (C) 2015 Holzmann-cfd
   c     c-o-o-o             |
 -------------------------------------------------------------------------------
@@ -10,7 +10,7 @@ License
 
     AFC is free software; you can redistribute it and/or modify it under
     the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 3 of the License, or 
+    Free Software Foundation; either version 3 of the License, or
     (at your option) any later version.
 
     AFC is distributed in the hope that it will be useful, but
@@ -23,7 +23,7 @@ License
 
 Class
     AFC::Chemistry
-    
+
 Description
     Abstract AFC::Chemistry class for chemistry data and calculation
 
@@ -65,24 +65,17 @@ class Chemistry
             const Thermo& thermo_;
 
 
-        // Debug 
-        bool debug_{false};
-
     public:
 
         //- Constructor
-        Chemistry
-        (
-            const string&,
-            const Thermo&
-        );
+        Chemistry(const string, const Thermo&);
 
         //- Destructor
         ~Chemistry();
 
 
         // Member Functions
-            
+
             //- Read chemistry file
             void readChemistry();
 
@@ -93,63 +86,39 @@ class Chemistry
         // Calculation Functions
 
             //- Calculate the source term of species s (omega) and return it
+            //  omega = dcdt
             scalar calculateOmega
             (
-	            const word&,
-                const scalar&,
+	            const word,
+                const scalar,
                 const map<word, scalar>&
             ) const;
 
-            //- Calculate the source term the species (omega) and return it
+            //- Calculate the source term of all species (omega) and return it
+            //  omega = dcdt
             map<word, scalar> calculateOmega
             (
-                const scalar&,
+                const scalar,
                 const map<word, scalar>&
             ) const;
 
             //- Calculate forward reaction rate kf
-            scalar kf
-            (
-                const int,
-                const scalar&,
-                const bool LOW = false
-            ) const;
+            scalar kf(const int, const scalar, const bool LOW = false) const;
 
             //- Calculate backward reaction rate kf
-            scalar kb
-            (
-                const int,
-                const scalar&,  
-                const bool LOW = false
-            ) const;
+            scalar kb(const int, const scalar, const bool LOW = false) const;
 
             //- Calculate equilibrium reaction rate keq
-            scalar keq 
-            (
-                const int,
-                const scalar&
-            ) const;
+            scalar keq(const int, const scalar) const;
 
             //- Calculate Fcent for TROE formula
-            scalar Fcent
-            (
-                const int,
-                const scalar&
-            ) const;
+            scalar Fcent(const int, const scalar) const;
 
             //- Calculate logF for TROE formula
-            scalar Flog
-            (
-                const int,
-                const scalar&,
-                const scalar&
-            ) const;
-            
+            scalar Flog(const int, const scalar, const scalar) const;
+
             //- Calculate the reaction rate k and return it
-            scalarField calculatek 
-            (
-                const scalarField&
-            );
+            scalarField calculatek(const scalarField&);
 
 
             //- Calculate backward reaction kb ::Interpreter
@@ -159,10 +128,7 @@ class Chemistry
         // Update Functions
 
             //- Update [M] (only inert gas) ::Interpreter
-            void updateM
-            (
-                const scalar&
-            );
+            void updateM(const scalar);
 
 
         // Create Functions
@@ -171,11 +137,7 @@ class Chemistry
             void createSpeciesInReaction();
 
             //- Insert reaction no. for species delegated to CHEMISTRYDATA
-            void insertReacNoForSpecies
-            (
-                const int,
-                const int
-            );
+            void insertReacNoForSpecies(const int, const int);
 
         // Return Functions
 
@@ -183,40 +145,22 @@ class Chemistry
 
                 //- Return true if elementar reaction is handled with
                 //  forward and backward reaction character
-                bool BR
-                (
-                    const int
-                ) const;
+                bool BR(const int) const;
 
                 //- Return true if elementar reaction is a TBR reaction
-                bool TBR
-                (
-                    const int
-                ) const;
+                bool TBR(const int) const;
 
                 //- Return true if elementar reaction is a LOW reaction
-                bool LOW
-                (
-                    const int
-                ) const;
+                bool LOW(const int) const;
 
                 //- Return true if elementar reaction is a TROE reaction
-                bool TROE
-                (
-                    const int
-                ) const;
+                bool TROE(const int) const;
 
                 //- Return true if elementar reaction is a SRI reaction
-                bool SRI
-                (
-                    const int
-                ) const;
+                bool SRI(const int) const;
 
                 //- Return true if elementar reaction has enhanced factors
-                bool ENHANCED
-                (
-                    const int
-                ) const;
+                bool ENHANCED(const int) const;
 
 
 
@@ -231,128 +175,60 @@ class Chemistry
             //- Return no. of elementar reaction
             int nReac() const;
 
-            //- Return elementar reaction r (as string) 
-            string elementarReaction
-            (
-                const int
-            ) const;
+            //- Return elementar reaction r (as string)
+            string elementarReaction(const int) const;
 
             //- Return all elementar reaction (as wordList)
             List<string> elementarReaction() const;
 
-            //- Return all reaction no of species 
-            /*scalarField reacNoForSpecies
-            (
-                const int
-            ) const;
-
-            //- Return reaction rates k
-            scalarField k() const;
-
-            //- Return wordMatrix for species in reactions
-            wordMatrix speciesInReactions() const;*/
-            
             //- Return enhanced factors ::Interpreter
-            map<word, scalar> enhancedFactors
-            (
-                const int
-            ) const;
+            map<word, scalar> enhancedFactors(const int) const;
 
             //- Return enhanced species ::Interpreter
-            wordList enhancedSpecies
-            (
-                const int
-            ) const;
+            wordList enhancedSpecies(const int) const;
 
             //- Return enthalpy of reaction r and temperature T
-            scalar dH
-            (
-                const int,
-                const scalar&
-            ) const;
-            
+            scalar dH(const int, const scalar) const;
+
             //- Return free GIBBS energy of reaction r and temperature T
-            scalar dG
-            (
-                const int,
-                const scalar&
-            ) const;
+            scalar dG(const int, const scalar) const;
 
             //- Return entropy of reaction r and temperature T
-            scalar dS
-            (
-                const int,
-                const scalar&
-            ) const;
+            scalar dS(const int, const scalar) const;
 
             //- Return the reaction numbers where species s is involved
-            List<int> reacNumbers
-            (
-                const word
-            ) const;
+            List<int> reacNumbers(const word) const;
 
             //- Return the species that are in reaction r
-            wordList speciesInReaction
-            (
-                const int
-            ) const;
+            wordList speciesInReaction(const int) const;
 
             //- Return the product species in reaction r
-            wordList speciesProducts
-            (
-                const int
-            ) const;
+            wordList speciesProducts(const int) const;
 
             //- Return the educt species in reaction r
-            wordList speciesEducts
-            (
-                const int
-            ) const;
+            wordList speciesEducts(const int) const;
 
             //- Return the stochiometric factors for the products in reaction
-            map<word, int> nuProducts
-            (
-                const int
-            ) const;
+            map<word, int> nuProducts(const int) const;
 
             //- Return the stochiometric factors for the educts in reaction
-            map<word, int> nuEducts
-            (
-                const int
-            ) const;
-
-
+            map<word, int> nuEducts(const int) const;
 
 
         //- Summary Functions
 
             //- Build the summary as ostream
-            void summary
-            (
-                ostream&   
-            ) const;
+            void summary(ostream&) const;
 
             //- Build chemical table for reaction r (for summary)
-            void chemicalTable
-            (
-                ostream&
-            ) const;
+            void chemicalTable(ostream&) const;
 
             //- Build table for kf and kb based on general coefficients
             //  or if we specify "LOW" then based on low coefficients
-            void buildTablekf
-            (
-                const int,
-                ostream&,
-                const bool LOW = false 
-            ) const;
+            void buildTablekf(const int, ostream&,const bool LOW = false) const;
 
             //- Build TROE table (calculate F_cent and logF)
-            void buildTROETable
-            (
-                const int,
-                ostream&
-            ) const;
+            void buildTROETable(const int, ostream&) const;
 };
 
 

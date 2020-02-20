@@ -52,12 +52,7 @@ class Properties
 {
     private:
 
-        // Private class data
-
-        // Debug
-        const bool debug_{false};
-
-        // Private Data
+        // General private data
 
             //- Fuel species (for adiabatic flame calculation)
             word fuel_;
@@ -235,12 +230,7 @@ class Properties
     public:
 
         //- Constructor
-        Properties
-        (
-            const string&,
-            Thermo&,
-            const Chemistry&
-        );
+        Properties(const string, Thermo&, const Chemistry&);
 
         //- Destructor
         ~Properties();
@@ -249,105 +239,53 @@ class Properties
         // Member functions
         
             //- Insert nZPoints_
-            void insertMFPoints
-            (
-                const int
-            );
+            void insertMFPoints(const int);
         
             //- Insert nZvarPoints_
-            void insertVMFPoints
-            (
-                const int
-            );
+            void insertVMFPoints(const int);
 
             //- Insert 
-            void insertEnthalpyDefects
-            (
-                const scalar&
-            );
+            void insertEnthalpyDefects(const scalar);
 
             //- Insert scalar dissipation rates
             //  TODO sort after everything is read
-            void insertScalarDissipationRates
-            (
-                const scalar&
-            );
+            void insertScalarDissipationRates(const scalar);
 
             //- Insert temperature oxidizer
-            void insertTemperatureOxidizer
-            (
-                const scalar&
-            );
+            void insertTemperatureOxidizer(const scalar);
 
             //- Insert temperature fuel
-            void insertTemperatureFuel
-            (
-                const scalar&
-            );
+            void insertTemperatureFuel(const scalar);
             
             //- Insert oxidizer mol composition 
-            void insertCompositionOxidizerMol
-            (
-                const word&,
-                const scalar&
-            );
+            void insertCompositionOxidizerMol(const word, const scalar);
             
             //- Insert oxidizer mass composition 
-            void insertCompositionOxidizerMass
-            (
-                const word&,
-                const scalar&
-            );
+            void insertCompositionOxidizerMass(const word, const scalar);
             
             //- Insert fuel mol composition 
-            void insertCompositionFuelMol
-            (
-                const word&,
-                const scalar&
-            );
+            void insertCompositionFuelMol(const word, const scalar);
             
             //- Insert fuel mass composition 
-            void insertCompositionFuelMass
-            (
-                const word&,
-                const scalar&
-            );
+            void insertCompositionFuelMass(const word, const scalar);
 
             //- Insert endTime of calculation
-            void insertRunTime
-            (
-                const scalar&
-            );
+            void insertRunTime(const scalar);
 
             //- Insert control of write the solution
-            void insertWriteControl
-            (
-                const word&
-            );
+            void insertWriteControl(const word);
             
             //- Insert write control (save each x iterations)
-            void insertWriteControlInterval
-            (
-                const scalar&
-            );
+            void insertWriteControlInterval(const scalar);
             
             //- Insert write control time (save each x seconds)
-            void insertWriteControlTime
-            (
-                const scalar&
-            );
+            void insertWriteControlTime(const scalar);
 
             //- Insert deltat
-            void insertDeltat
-            (
-                const scalar&
-            );
+            void insertDeltat(const scalar);
 
             //- Insert pressure
-            void insertPressure
-            (
-                const scalar&
-            );
+            void insertPressure(const scalar);
 
             //- Insert bool for inputMol
             void inputMol();
@@ -356,28 +294,16 @@ class Properties
             void inputMass();
 
             //- Insert interpreter keyword 
-            void insertInterpreter
-            (
-                const word& 
-            );
+            void insertInterpreter(const word);
 
             //- Insert fuel species
-            void fuelSpecies
-            (
-                const word&
-            );
+            void fuelSpecies(const word);
 
             //- Set oxidizer species
-            void oxidizerSpecies
-            (
-                const word&
-            );
+            void oxidizerSpecies(const word);
 
             //- Set inert species
-            void inertSpecies
-            (
-                const word&
-            );
+            void inertSpecies(const word);
 
 
         // Other functions
@@ -396,18 +322,15 @@ class Properties
 
             //- Mass fraction to mol fraction
             //  + word -> oxidizer (O) or fuel (F)
-            /*void YtoX
-            (
-                const word 
-            );*/
+            //void YtoX
+            //(
+            //    const word 
+            //);
 
-        // Time RelateD Functions 
+        // Time Related Functions 
 
             //- Update the current time stamp [s]
-            void updateCurrentTime
-            (
-                const scalar&
-            );
+            void updateCurrentTime(const scalar);
 
             //- Return runTime [s]
             scalar runTime() const;
@@ -446,16 +369,10 @@ class Properties
             map<word, scalar> oxidizerZj() const;
 
             //- Return mof fraction of species s in oxidizer (Z = 0)
-            scalar oxidizerX
-            (
-                const word&
-            ) const;
+            scalar oxidizerX(const word) const;
 
             //- Return mass fraction of species s in oxidizer (Z = 0)
-            scalar oxidizerY
-            (
-                const word&
-            ) const;
+            scalar oxidizerY(const word) const;
 
             //- Return species of fuel (Z = 1)
             wordList speciesFuel() const;
@@ -470,25 +387,16 @@ class Properties
             map<word, scalar> fuelZj() const;
 
             //- Return mol fraction of species s of fuel (Z = 1)
-            scalar fuelX
-            (
-                const word&
-            ) const;
+            scalar fuelX(const word) const;
 
             //- Return mass fraction of species s of fuel (Z = 1)
-            scalar fuelY
-            (
-                const word&
-            ) const;
+            scalar fuelY(const word) const;
 
             //- Return scalar dissipation rates [1/s]
             scalarField sDRs() const;
 
             //- Return scalar dissipation rate i [1/s]
-            scalar sDRs
-            (
-                const int  
-            ) const;
+            scalar sDRs(const int) const;
 
             //- Return enthalpy defects [J/kg]
             scalarField defects() const;
@@ -509,10 +417,7 @@ class Properties
             unsigned int nDefects() const;
 
             //- Return the enthalpy defect value [J/kg]
-            scalar defect
-            (
-                const int
-            ) const;
+            scalar defect(const int) const;
 
             //- Return pressure [Pa]
             scalar p() const;
@@ -528,17 +433,11 @@ class Properties
 
             //- Return mass fraction at stochiometric mixture fraction Zst [-]
             //  unburned state
-            scalar YatZstu
-            (
-                const word&
-            ) const;
+            scalar YatZstu(const word) const;
 
             //- Return mass fraction at stochiometric mixture fraction Zst [-]
             //  burned state
-            scalar YatZstb
-            (
-                const word&
-            ) const;
+            scalar YatZstb(const word) const;
 
             //- Return adiabatic flame temperature [K]
             scalar Tadiabatic() const;

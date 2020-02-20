@@ -30,35 +30,25 @@ License
 // * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * * //
 
 AFC::Interpreter::Interpreter()
-{
-    if (debug)
-    {
-        Info<< "Constructor Interpreter\n" << endl;
-    }
-}
+{}
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
 AFC::Interpreter::~Interpreter()
-{
-    if (debug)
-    {
-        Info<< "Destructor Interpreter \n" << endl;
-    }
-}
+{}
 
 
 // * * * * * * * * * * * * * * * Member function * * * * * * * * * * * * * * //
 
 
-bool AFC::Interpreter::analyse() const
+bool AFC::Interpreter::analyze() const
 {
     return interprete_;
 }
 
 
-void AFC::Interpreter::analyse
+void AFC::Interpreter::analyze
 (
     const bool& interprete 
 )

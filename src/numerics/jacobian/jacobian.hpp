@@ -52,9 +52,6 @@ class Jacobian
 {
     private:
 
-        // Debug switch
-        bool debug_{false};
-
         // Reference to the chemistry object
         const Chemistry& chem_;
 
@@ -62,10 +59,7 @@ class Jacobian
     public:
 
         //- Constructor 
-        Jacobian
-        (
-            const Chemistry&
-        );
+        Jacobian(const Chemistry&);
 
         //- Destructor
         ~Jacobian();

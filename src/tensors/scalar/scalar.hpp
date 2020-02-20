@@ -58,59 +58,33 @@ class Scalar
 :
     public Tensor
 {
-    private:
-
-        // Debug switch 
-        bool debug_{false};
-
-
     public:
 
         //- Constructor 
         Scalar();
 
         //- Copy constructor
-        Scalar
-        (
-            const Scalar&
-        );
+        Scalar(const Scalar&);
 
         //- Constructor that creates a row scalar n x 1 and init with the 
         //  given value.
-        Scalar
-        (
-            const size_t,
-            const scalar value = 0
-        );
+        Scalar(const size_t, const scalar value = 0);
 
         //- Constructor that creates a row scalar n x 1 with an scalarField
-        Scalar
-        (
-            const scalarField&
-        );
+        Scalar(const scalarField&);
 
         //- Destructor
         ~Scalar();
 
         // Operator Functions
 
-            Scalar operator*
-            (
-                const Matrix&
-            ) const;
+            Scalar operator*(const Matrix&) const;
         
             //- Return the value at position
-            scalar operator()
-            (
-                const size_t&
-            ) const;
+            scalar operator()(const size_t) const;
 
             //- Insert the value at position
-            void operator()
-            (
-                const size_t,
-                const scalar
-            );
+            void operator()(const size_t, const scalar);
 
             //- Show the scalar
             void operator()() const;

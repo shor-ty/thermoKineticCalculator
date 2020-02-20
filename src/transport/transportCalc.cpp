@@ -44,10 +44,8 @@ AFC::TransportCalc::~TransportCalc()
 
 // * * * * * * * * * * * * Reduced collision integrals * * * * * * * * * * * //
 
-AFC::scalar AFC::TransportCalc::reducedCollisionIntegralOmega22
-(
-    const scalar& Ts
-) const
+AFC::scalar
+AFC::TransportCalc::reducedCollisionIntegralOmega22(const scalar Ts) const
 {
     //- Constants
     const scalar A = 1.16145;
@@ -62,10 +60,8 @@ AFC::scalar AFC::TransportCalc::reducedCollisionIntegralOmega22
 }
 
 
-AFC::scalar AFC::TransportCalc::reducedCollisionIntegralOmega11
-(
-    const scalar& Ts
-) const
+AFC::scalar
+AFC::TransportCalc::reducedCollisionIntegralOmega11(const scalar Ts) const
 {
     //- Constants
     const scalar A = 1.06036;
@@ -82,12 +78,8 @@ AFC::scalar AFC::TransportCalc::reducedCollisionIntegralOmega11
 }
 
 
-AFC::scalar AFC::TransportCalc::rho
-(
-    const scalar& MW, 
-    const scalar& T,
-    const scalar& p 
-)
+AFC::scalar
+AFC::TransportCalc::rho(const scalar MW, const scalar T, const scalar p) const
 {
     //- Return density [kg/m^3]
     return (p * MW / AFC::Constants::R / T); 
@@ -98,21 +90,21 @@ AFC::scalar AFC::TransportCalc::rho
 
 AFC::scalar AFC::TransportCalc::viscosity
 (
-    const word& species,
-    const scalar& T,
+    const word species,
+    const scalar T,
     const Thermo& thermo,
     const TransportData& transData,
-    const word& method
+    const word method
 ) const
 {
-    //- Molecular weight [g/mol]
-    const scalar& MW = thermo.MW(species);
+    //- Molecular weight [kg/mol]
+    const scalar MW = thermo.MW(species);
 
     //- Lennard-Jones potential well depth eps/kb [K]
-    const scalar& LJP = transData.LJP(species);
+    const scalar LJP = transData.LJP(species);
 
     //- Lennard-Jones collision diameter [Angstroms]
-    const scalar& sigma = transData.LJCD(species);
+    const scalar sigma = transData.LJCD(species);
 
     //- Method of Hirschfelder et. al. 1954 [kg/m/s]
     if (method == "Hirschfelder")
@@ -123,7 +115,14 @@ AFC::scalar AFC::TransportCalc::viscosity
     //- Method of Chung et. al. 1984, 1988
     else if (method == "Chung")
     {
-        return 0; 
+        NotImplemented
+        (
+            __FILE__,
+            __LINE__
+        );
+
+        //- For compiler
+        return -1; 
     }
 
     //- Polynomial fit
@@ -136,7 +135,7 @@ AFC::scalar AFC::TransportCalc::viscosity
     }
     else
     {
-        FatalError
+        ErrorMsg
         (
             "   Method " + method + " is not available for calculation of\n"
             "   viscosity. You have to implement it yourself or ask for help",
@@ -152,11 +151,11 @@ AFC::scalar AFC::TransportCalc::viscosity
 
 AFC::scalar AFC::TransportCalc::viscosityHirschfelder
 (
-    const word& species,
-    const scalar& T,
-    const scalar& MW,
-    const scalar& LJP,
-    const scalar& sigma
+    const word species,
+    const scalar T,
+    const scalar MW,
+    const scalar LJP,
+    const scalar sigma
 ) const
 {
     //- Viscosity calculation suggested by Hirschfelder et. al. (1954)
@@ -173,9 +172,10 @@ AFC::scalar AFC::TransportCalc::viscosityHirschfelder
     //- Calculate collision integral omega 22
     const scalar omegaColl = reducedCollisionIntegralOmega22(Ts);
 
-    //- Calculate viscosity in micro Poise 10^-6 [P] 
+    //- Calculate viscosity in micro Poise 10^-6 [P]
     //  [P] = 0.1 [Pa s]
-    const scalar mu = 26.693 * sqrt(MW * T) / (pow(sigma, 2) * omegaColl);
+    //  MW [kg/mol] here we need [g/mol]
+    const scalar mu = 26.693 * sqrt(MW * 1e3 * T) / (pow(sigma, 2) * omegaColl);
 
     //- Return vicsosity as [Pa s] = [kg/m/s]
     return (mu * 1e-7);
@@ -281,7 +281,7 @@ AFC::scalar AFC::TransportCalc::viscosityHirschfelder
 
 AFC::scalar AFC::TransportCalc::viscosityPolynomial
 (
-    const scalar& T,
+    const scalar T,
     const scalarField& polyCoeffs 
 ) const
 {
@@ -302,7 +302,7 @@ void AFC::TransportCalc::fitViscosity
 (
     TransportData& transData,
     const Thermo& thermo
-)
+) const
 {
     //- TODO use one function instead of 3
     //- Species from chemistry
@@ -317,7 +317,7 @@ void AFC::TransportCalc::fitViscosity
         //- Mu field
         scalarField mu;
 
-        //- n values for fitting from 300K - 4300K
+        //- Fitting curve are made out of n discrete points from 300K - 4300K
         //  TODO bounds as parameters
         const unsigned int n{10};
 
@@ -452,11 +452,11 @@ void AFC::TransportCalc::fitViscosity
 
 AFC::scalar AFC::TransportCalc::thermalConductivity
 (
-    const word& species,
-    const scalar& T,
+    const word species,
+    const scalar T,
     const Thermo& thermo,
     const TransportData& transData,
-    const word& method
+    const word method
 ) const
 {
     //- Methode mentioned by Warnatz
@@ -467,8 +467,14 @@ AFC::scalar AFC::TransportCalc::thermalConductivity
     //- Methode mentioned by Warnatz and given in Chemkin Collection
     if (method == "WarnatzCC")
     {
+        NotImplemented
+        (
+            __FILE__,
+            __LINE__
+        );
+
+        //return (thermalConductivityWarnatzCC(species, T, thermo, transData));
         return -1;
-//        return (thermalConductivityWarnatzCC(species, T, thermo, transData));
     }
     else if (method == "Polynomial")
     {
@@ -480,11 +486,11 @@ AFC::scalar AFC::TransportCalc::thermalConductivity
     }
     else
     {
-        FatalError
+        ErrorMsg
         (
-            "   Method " + method + " is not available for calculation of\n"
-            "   thermal conductivity. You have to implement it yourself\n"
-            "   or ask for help",
+            "Method " + method + " is not available for calculation of\n"
+            "thermal conductivity. You have to implement it yourself\n"
+            "or ask for help",
             __FILE__,
             __LINE__
         );
@@ -497,24 +503,23 @@ AFC::scalar AFC::TransportCalc::thermalConductivity
 
 AFC::scalar AFC::TransportCalc::thermalConductivityWarnatz
 (
-    const word& species,
-    const scalar& T,
+    const word species,
+    const scalar T,
     const Thermo& thermo,
     const TransportData& transData
 ) const
 {
     //- Calculation of thermal conductivity by Warnatz
 
-    //- Molecular weight [g/mol]
-    //  For the calculation we need [kg/mol]
-    const scalar MW = thermo.MW(species) / scalar(1000);
+    //  Molecular weight [kg/mol]
+    const scalar MW = thermo.MW(species);
 
     //- Lennard-Jones potential well depth eps/kb [K]
-    const scalar& LJP = transData.LJP(species);
+    const scalar LJP = transData.LJP(species);
 
     //- Lennard-Jones collision diameter [Angstroms]
     //  We need [m] in the formula -> 1 [Anstroms] = 1e-10 [m]
-    const scalar& sigma = transData.LJCD(species) * scalar(1e-10);
+    const scalar sigma = transData.LJCD(species) * scalar(1e-10);
 
     //- Dimensionless temperature T*
     const scalar Ts =   T * pow(LJP, -1);
@@ -523,7 +528,14 @@ AFC::scalar AFC::TransportCalc::thermalConductivityWarnatz
     if (Ts < 0.3 || Ts > 100)
     {
         //- Output warning to file
-        // TODO
+        Warning
+        (
+            "Calculation of thermal conductivity based on Warnatz is\n"
+            "not in the valid anymore. 0.3 < Ts < 100 while Ts = " + toStr(Ts) +
+            "\nGoing on in calculation...\n",
+            __FILE__,
+            __LINE__
+        );
     }
 
     //- Calculate collision integral omega 22
@@ -652,7 +664,7 @@ AFC::scalar AFC::TransportCalc::thermalConductivityWarnatz
 
 AFC::scalar AFC::TransportCalc::thermalConductivityPolynomial
 (
-    const scalar& T,
+    const scalar T,
     const scalarField& polyCoeffs
 ) const
 {
@@ -673,7 +685,7 @@ void AFC::TransportCalc::fitThermalConductivity
 (
     TransportData& transData,
     const Thermo& thermo
-)
+) const
 {
     //- Species from chemistry
     const wordList& species = transData.chemistrySpecies();
@@ -824,12 +836,12 @@ void AFC::TransportCalc::fitThermalConductivity
 
 AFC::scalar AFC::TransportCalc::binaryDiffusivity
 (
-    const word& species1,
-    const word& species2,
-    const scalar& T,
+    const word species1,
+    const word species2,
+    const scalar T,
     const Thermo& thermo,
     const TransportData& transData,
-    const word& method
+    const word method
 ) const
 {
     if (method == "ChapmanAndEnskog")
@@ -853,7 +865,7 @@ AFC::scalar AFC::TransportCalc::binaryDiffusivity
     }
     else
     {
-        FatalError
+        ErrorMsg
         (
             "   Method " + method + " is not available for calculation of\n"
             "   binary diffusifity. You have to implement it yourself\n"
@@ -870,9 +882,9 @@ AFC::scalar AFC::TransportCalc::binaryDiffusivity
 
 AFC::scalar AFC::TransportCalc::binaryDiffusivityChapmanAndEnskog
 (
-    const word& species1,
-    const word& species2,
-    const scalar& T,
+    const word species1,
+    const word species2,
+    const scalar T,
     const Thermo& thermo,
     const TransportData& transData
 ) const
@@ -918,9 +930,9 @@ AFC::scalar AFC::TransportCalc::binaryDiffusivityChapmanAndEnskog
 
 /*AFC::scalar AFC::TransportCalc::binaryDiffusivityWarnatz
 (
-    const word& species1,
-    const word& species2,
-    const scalar& T,
+    const word species1,
+    const word species2,
+    const scalar T,
     const Thermo& thermo,
     const TransportData& transData
 ) const
@@ -955,18 +967,17 @@ AFC::scalar AFC::TransportCalc::binaryDiffusivityChapmanAndEnskog
     const scalar omegaColl = reducedCollisionIntegralOmega11(Ts12);
 
     //- Calculate binary diffusivity [cm^2/s]
-    // TODO
-//    const scalar Dij =
-//        2.662e-5 * sqrt(pow(T, 3) * 333; 
+    //const scalar Dij =
+    //     2.662e-5 * sqrt(pow(T, 3) * 333; 
 
 }*/
 
 
 /*AFC::scalar AFC::TransportCalc::binaryDiffusivityCC
 (
-    const word& species1,
-    const word& species2,
-    const scalar& T,
+    const word species1,
+    const word species2,
+    const scalar T,
     const Thermo& thermo,
     const TransportData& transData
 ) const
@@ -1006,7 +1017,7 @@ AFC::scalar AFC::TransportCalc::binaryDiffusivityChapmanAndEnskog
 
 AFC::scalar AFC::TransportCalc::binaryDiffusivityPolynomial
 (
-    const scalar& T,
+    const scalar T,
     const scalarField& pC
 ) const
 {
@@ -1027,7 +1038,7 @@ void AFC::TransportCalc::fitBinaryDiffusivity
 (
     TransportData& transData,
     const Thermo& thermo
-)
+) const
 {
     //- Species from chemistry
     const wordList& species = transData.chemistrySpecies();
@@ -1184,11 +1195,7 @@ void AFC::TransportCalc::fitBinaryDiffusivity
 
 // * * * * * * * * * * * * Additional Functions * * * * * * * * * * * * * * *//
 
-AFC::scalar AFC::TransportCalc::F
-(
-    const scalar& T,
-    const scalar& LJP
-) const
+AFC::scalar AFC::TransportCalc::F(const scalar T, const scalar LJP) const
 {
     //- LJP Lennard-Jones potential well depth epsilon/kB [K]
     //- Return the temperature modifier

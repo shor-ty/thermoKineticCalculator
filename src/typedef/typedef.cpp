@@ -30,26 +30,18 @@ std::ostream& AFC::Info = std::cout;
 
 std::ostream& AFC::Error = std::cerr;
 
-std::basic_ostream<char>& (& AFC::endl)(std::basic_ostream<char>&)
-    = std::endl;
+std::basic_ostream<char>& (& AFC::endl)(std::basic_ostream<char>&) = std::endl;
 
 
-void AFC::Print()
-{
-    Info<< ":::" << endl;
-}
-
-
-void AFC::FatalError
+void AFC::ErrorMsg
 (
     const string msg,
     const char* file, 
     const unsigned long line
 )
 {
-    Error<< "\n"
-         << "    *** Error in " << file << " line " << line << endl
-         << msg << "\n\n"
+    Error<< "\n    *** Error in " << file << " line " << line << "\n"
+         << "    " << msg << "\n\n"
          << "    If there is a bug or a problem you can not solve,\n"
          << "    do not hesitate to write an email to "
          << " Tobias.Holzmann@holzmann-cfd.de.\n" << endl;
@@ -58,16 +50,17 @@ void AFC::FatalError
 }
 
 
-void AFC::Warning
-(
-    const string msg,
-    const char* file, 
-    const unsigned long line
-)
+void AFC::Warning(const string msg, const char* file, const unsigned long line)
+{
+    Error<< "\n    * Warning in " << file << " line " << line << "\n" << msg
+         << "\n" << endl;
+}
+
+
+void AFC::NotImplemented(const char* file, const size_t line)
 {
     Error<< "\n"
-         << "    * Warning in " << file << " line " << line << endl
-         << msg << "\n" << endl;
+         << "    * The functionality is not implemented.\n" << endl;
 }
 
 
@@ -92,10 +85,7 @@ AFC::string AFC::Header()
 
 
 
-void AFC::Footer
-(
-    const scalar& startTime
-)
+void AFC::Footer(const scalar startTime)
 {
     const scalar execTime = (clock()-startTime) / (scalar) CLOCKS_PER_SEC; 
 

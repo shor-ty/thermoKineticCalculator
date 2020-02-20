@@ -27,38 +27,21 @@ License
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-AFC::PropertiesReader::PropertiesReader
-(
-    const string& file
-)
+AFC::PropertiesReader::PropertiesReader(const string file)
 :
     file_(file)
-
-{
-    if (debug_)
-    {
-        Info<< "Constructor PropertiesReader\n" << endl;
-    }
-}
+{}
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
 AFC::PropertiesReader::~PropertiesReader()
-{
-    if (debug_)
-    {
-        Info<< "Destructor PropertiesReader\n" << endl;
-    }
-}
+{}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-void AFC::PropertiesReader::read
-(
-    Properties& data
-)
+void AFC::PropertiesReader::read(Properties& data)
 {
     Info<< " c-o Reading AFCDict\n" << endl;
 
@@ -80,9 +63,9 @@ void AFC::PropertiesReader::read
             {
                 if (tmp[1].empty())
                 {
-                    FatalError
+                    ErrorMsg
                     (
-                        "    No pressure specified (" + file_ +")",
+                        "No pressure specified (" + file_ +")",
                         __FILE__,
                         __LINE__
                     );
@@ -94,9 +77,9 @@ void AFC::PropertiesReader::read
             {
                 if (tmp[1].empty())
                 {
-                    FatalError
+                    ErrorMsg
                     (
-                        "    No inert gas specified (" + file_ +")",
+                        "No inert gas specified (" + file_ +")",
                         __FILE__,
                         __LINE__
                     );
@@ -108,9 +91,9 @@ void AFC::PropertiesReader::read
             {
                 if (tmp[1].empty())
                 {
-                    FatalError
+                    ErrorMsg
                     (
-                        "    No fuel specified (" + file_ +")",
+                        "No fuel specified (" + file_ +")",
                         __FILE__,
                         __LINE__
                     );
@@ -122,9 +105,9 @@ void AFC::PropertiesReader::read
             {
                 if (tmp[1].empty())
                 {
-                    FatalError
+                    ErrorMsg
                     (
-                        "    No oxidizer specified (" + file_ +")",
+                        "No oxidizer specified (" + file_ +")",
                         __FILE__,
                         __LINE__
                     );
@@ -136,9 +119,9 @@ void AFC::PropertiesReader::read
             {
                 if (tmp[1].empty())
                 {
-                    FatalError
+                    ErrorMsg
                     (
-                        "    No mixtureFractionPoints specified (" + file_ + ")",
+                        "No mixtureFractionPoints specified (" + file_ + ")",
                         __FILE__,
                         __LINE__
                     );
@@ -150,9 +133,9 @@ void AFC::PropertiesReader::read
             {
                 if (tmp[1].empty())
                 {
-                    FatalError
+                    ErrorMsg
                     (
-                        "   No varianzOfMixtureFractionPoints specified ("
+                        "No varianzOfMixtureFractionPoints specified ("
                         + file_ + ")",
                         __FILE__,
                         __LINE__
@@ -173,9 +156,9 @@ void AFC::PropertiesReader::read
             {
                 if (tmp[1].empty())
                 {
-                    FatalError
+                    ErrorMsg
                     (
-                        "   No temperature for oxidizer specified ("
+                        "No temperature for oxidizer specified ("
                         + file_ + ")",
                         __FILE__,
                         __LINE__
@@ -188,9 +171,9 @@ void AFC::PropertiesReader::read
             {
                 if (tmp[1].empty())
                 {
-                    FatalError
+                    ErrorMsg
                     (
-                        "   No temperature for fuel specified ("
+                        "No temperature for fuel specified ("
                         + file_ + ")",
                         __FILE__,
                         __LINE__
@@ -408,9 +391,9 @@ void AFC::PropertiesReader::molFractionOxidizer
                     {
                         if (tmp[element+1].empty())
                         {
-                            FatalError
+                            ErrorMsg
                             (
-                                "    Error in dictionary molFractionOxidizer "
+                                "Problem in dictionary molFractionOxidizer "
                                 "(" + file_ + ")",
                                 __FILE__,
                                 __LINE__
@@ -429,9 +412,9 @@ void AFC::PropertiesReader::molFractionOxidizer
             {
                 if (tmp[1].empty())
                 {
-                    FatalError
+                    ErrorMsg
                     (
-                        "    Error in dictionary molFractionOxidizer "
+                        "Problem in dictionary molFractionOxidizer "
                         "(" + file_ + ")",
                         __FILE__,
                         __LINE__
@@ -486,9 +469,9 @@ void AFC::PropertiesReader::massFractionOxidizer
                     {
                         if (tmp[element+1].empty())
                         {
-                            FatalError
+                            ErrorMsg
                             (
-                                "    Error in dictionary massFractionOxidizer "
+                                "Problem in dictionary massFractionOxidizer "
                                 "(" + file_ + ")",
                                 __FILE__,
                                 __LINE__
@@ -507,9 +490,9 @@ void AFC::PropertiesReader::massFractionOxidizer
             {
                 if (tmp[1].empty())
                 {
-                    FatalError
+                    ErrorMsg
                     (
-                        "    Error in dictionary massFractionOxidizer "
+                        "Problem in dictionary massFractionOxidizer "
                         "(" + file_ + ")",
                         __FILE__,
                         __LINE__
@@ -562,9 +545,9 @@ void AFC::PropertiesReader::molFractionFuel
 
                     if (tmp[element+1].empty())
                     {
-                        FatalError
+                        ErrorMsg
                         (
-                            "    Error in dictionary molFractionFuel "
+                            "Problem in dictionary molFractionFuel "
                             "(" + file_ + ")",
                             __FILE__,
                             __LINE__
@@ -585,9 +568,9 @@ void AFC::PropertiesReader::molFractionFuel
             {
                 if (tmp[1].empty())
                 {
-                    FatalError
+                    ErrorMsg
                     (
-                        "    Error in dictionary molFractionFuel " 
+                        "Problem in dictionary molFractionFuel " 
                         "(" + file_ + ")",
                        __FILE__,
                         __LINE__
@@ -640,9 +623,9 @@ void AFC::PropertiesReader::massFractionFuel
 
                     if (tmp[element+1].empty())
                     {
-                        FatalError
+                        ErrorMsg
                         (
-                            "    Error in dictionary massFractionFuel "
+                            "Problem in dictionary massFractionFuel "
                             "(" + file_ + ")",
                             __FILE__,
                             __LINE__
@@ -663,9 +646,9 @@ void AFC::PropertiesReader::massFractionFuel
             {
                 if (tmp[1].empty())
                 {
-                    FatalError
+                    ErrorMsg
                     (
-                        "    Error in dictionary massFractionFuel " 
+                        "Problem in dictionary massFractionFuel " 
                         "(" + file_ + ")",
                        __FILE__,
                         __LINE__
@@ -713,10 +696,10 @@ void AFC::PropertiesReader::control
             {
                 if (tmp[1].empty())
                 {
-                    FatalError
+                    ErrorMsg
                     (
-                        "    No runTime specified in afcDict after keyword runTime ("
-                        + file_ + ")",
+                        "No runTime specified in afcDict after keyword runTime "
+                        "(" + file_ + ")",
                         __FILE__,
                         __LINE__
                     );
@@ -728,10 +711,10 @@ void AFC::PropertiesReader::control
             {
                 if (tmp[1].empty())
                 {
-                    FatalError
+                    ErrorMsg
                     (
-                        "   No deltat specified in afcDict after keyword deltat ("
-                        + file_ + ")",
+                        "No deltat specified in afcDict after keyword deltat "
+                        "(" + file_ + ")",
                         __FILE__,
                         __LINE__
                     );
@@ -743,9 +726,9 @@ void AFC::PropertiesReader::control
             {
                 if (tmp[1].empty())
                 {
-                    FatalError
+                    ErrorMsg
                     (
-                        "   No writeInterval specified in afcDict after keyword "
+                        "No writeInterval specified in afcDict after keyword "
                         "writeInterval (" + file_ + ")",
                         __FILE__,
                         __LINE__
@@ -758,9 +741,9 @@ void AFC::PropertiesReader::control
             {
                 if (tmp[1].empty())
                 {
-                    FatalError
+                    ErrorMsg
                     (
-                        "   No writeTime specified in afcDict after keyword "
+                        "No writeTime specified in afcDict after keyword "
                         "writeTime (" + file_ + ")",
                         __FILE__,
                         __LINE__
@@ -774,9 +757,9 @@ void AFC::PropertiesReader::control
             {
                 if (tmp[1].empty())
                 {
-                    FatalError
+                    ErrorMsg
                     (
-                        "   No writeControl specified in afcDict after keyword "
+                        "No writeControl specified in afcDict after keyword "
                         "writeControl (" + file_ + ")",
                         __FILE__,
                         __LINE__
@@ -789,7 +772,7 @@ void AFC::PropertiesReader::control
                  && tmp[1] != "interval"
                 )
                 {
-                    Info<< "    + writeControl definition '" << tmp[1] << "' is not"
+                    Info<< "+ writeControl definition '" << tmp[1] << "' is not"
                         << " defined. Using endTime instead\n"
                         << endl;
 
@@ -805,11 +788,7 @@ void AFC::PropertiesReader::control
 }
 
 
-void AFC::PropertiesReader::input
-(
-    const word& inp,
-    Properties& data
-)
+void AFC::PropertiesReader::input(const word inp, Properties& data)
 {
     if (inp == "mol")
     {
@@ -821,10 +800,10 @@ void AFC::PropertiesReader::input
     }
     else
     {
-        FatalError
+        ErrorMsg
         (
-            "    No fraction input found. Specify either mol or mass \n"
-            "    fraction in the afcDict.",
+            "No fraction input found. Specify either mol or mass "
+            "fraction in the afcDict.",
             __FILE__,
             __LINE__
         );
@@ -862,9 +841,9 @@ void AFC::PropertiesReader::interpreter
             {
                 if (tmp[1].empty())
                 {
-                    FatalError
+                    ErrorMsg
                     (
-                        "    No analyse keyword specified in afcDict ("
+                        "No analyse keyword specified in afcDict ("
                         + file_ + ")",
                         __FILE__,
                         __LINE__
@@ -874,10 +853,10 @@ void AFC::PropertiesReader::interpreter
                 //- Check input
                 if (tmp[1] != "THERMO" && tmp[1] != "CHEMISTRY")
                 {
-                    FatalError
+                    ErrorMsg
                     (
-                        "    You can only use the keyword 'THERMO' \n"
-                        "    'CHEMSITRY' for analyse type",
+                        "You can only use the keyword 'THERMO' "
+                        "'CHEMSITRY' for analyse type",
                         __FILE__,
                         __LINE__
                     );

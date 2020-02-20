@@ -58,36 +58,20 @@ class Vector
 :
     public Tensor
 {
-    private:
-
-        // Debug switch
-        bool debug_{false};
-
-
     public:
 
         //- Constructor 
         Vector();
 
         //- Copy constructor
-        Vector
-        (
-            const Vector&
-        );
+        Vector(const Vector&);
 
         //- Constructor that creates a row vector n x 1 and init with the 
         //  given value.
-        Vector
-        (
-            const size_t,
-            const scalar value = 0
-        );
+        Vector(const size_t, const scalar value = 0);
 
         //- Constructor that creates a row vector n x 1 with an scalarField
-        Vector
-        (
-            const scalarField&
-        );
+        Vector(const scalarField&);
 
         //- Destructor
         ~Vector();
@@ -95,10 +79,7 @@ class Vector
         // Operator Functions
 
             //- Inner Product of Vector and Matrix
-            Vector operator*
-            (
-                const Matrix&
-            ) const;
+            Vector operator*(const Matrix&) const;
 
             //- Subtract one vector to the actual one
             void operator-=(const Vector&);

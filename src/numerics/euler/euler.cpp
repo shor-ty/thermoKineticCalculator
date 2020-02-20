@@ -29,153 +29,41 @@ License
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-AFC::Euler::Euler
-(
-    const Chemistry& chem
-)
-:
-    //- Rate of concentration change
-    //dcdt_("H2", 0),
-
-    //- Square matrix for Jacobian
-    dcdc_
-    (
-        chem.species().size(),
-        chem.species().size()
-    )
-
-    //- TODO relTol (min(1e-4, relTol_))
-
-//    nSeq_(iMax_),
-
-//    jacRedo_(1e-5),
-
-//    theta_(2*jacRedo_),
-
-//    cpu_(iMax_),
-
-//    coeff_(iMax_, iMax_)
-
-//    table_(kMax_, n_),
-
-//    dfdt_(n_),
-
-//    dfdc_(n_)
-{
-    if (debug_)
-    {
-        Info<< "Constructor Euler \n" << endl;
-    }
-
-    //- Make new object for Jacobion calculation
-    jac_ = new Jacobian(chem);
-
-    //- Init the dcdt field
-    {
-        const wordList& species = chem.species();
-
-        forAll(species, s)
-        {
-            dcdt_[s] = scalar(0);
-        }
-    }
-
-    /*
-    //- Quantities to evaluate the factors for the major parts of the algorithm
-    const scalar cpuFunc{1};
-
-    const scalar cpuJac{5};
-
-    const scalar cpuLU{1};
-
-    const scalar cpuSolve{1};
-
-    nSeq_[0] = 2;
-    nSeq_[1] = 3;
-
-    for (size_t i=2; i<iMax_; i++)
-    {
-        nSeq_[i] = 2*nSeq_[i-2];
-    }
-
-    cpu_[0] = cpuJac + cpuLU + nSeq_[0]*(cpuFunc + cpuSolve);
-
-    for (size_t k=0; k<kMax_; k++)
-    {
-        cpu_[k+1] = cpu_[k] + (nSeq_[k+1]-1)*(cpuFunc + cpuSolve) + cpuLU;
-    }
-
-    // Calculate and set the extrapolation coeff array
-    for (size_t k=0; k<iMax_; k++)
-    {
-        for (size_t l=0; l<k; l++)
-        {
-            const scalar ratio = scalar(nSeq_[k])/nSeq_[l];
-
-            coeff_(k, l, 1/(ratio -1));
-        }
-    }
-    */
-}
+AFC::Euler::Euler(const size_t nSpecies)
+{}
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
 AFC::Euler::~Euler()
-{
-    if (debug_)
-    {
-        Info<< "Destructor Euler \n" << endl;
-    }
-}
+{}
 
 
 // * * * * * * * * * * * * * * * Member function * * * * * * * * * * * * * * //
 
-void AFC::Euler::solve
+AFC::scalar AFC::Euler::solve
 (
-    const scalar T,
-    const scalar p,
-    map<word, scalar>& c,
-    scalar& t,
-    StepStatus& step 
+    const scalar t0,
+    const scalar dt,
+    const map<word, scalar>& c0,
+    const map<word, scalar>& dcdt,
+    map<word, scalar>& c
 ) const
 {
-//    temp_[0] = 1e15;
+    //- TODO make everything consitent
+    //  Map<word, scalar> replace by vector or find some nice solution
+    size_t i{0};
 
-    scalar dt = step.dtTry_;
-
-/*    c0_ = c;
-
-    dtOpt_[0] = fabs(0.1*dt);
-
-    if (step.firstIter_ || step.prevReject_)
+    //- Calculate error estimated by the change in the state
+    //  and update the state
+    forAll(c0, s)
     {
-        theta_ = 2*jacRedo_;
+        err_[s.first] = dt * dcdt.at(s.first);
+        c[s.first] = err_.at(s.first) * s.second;
     }
 
-    if (step.firstIter_)
-    {
-        //- TODO relTol
-//        const scalar logTol = -log10(10-5 + 1e-8) * 0.6 + 0.5;
-//        kTarget_ = max(1, min(kMax_ - 1, int(logTol)));
-    }
-
-    bool jacUpdated = false;
-    */
-
-    //if (theta_ > jacRedo_)
-    //{
-        jac_->jacobian(T, p, t, c, dcdt_, dcdc_);
-    //}
-    //
-    forAll(dcdt_, t)
-    {
-        Info<< t.first << "  " << t.second << endl;
-    }
-
-    dcdc_();
-    std::terminate();
+    //- Normalize error
+    return normalizeError(c0, c, err_);
 }
 
 

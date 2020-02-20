@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   c-o-o-c-o-o-o             |
   |     |     A utomatic    | Open Source Flamelet
-  c-o-o-c     F lamelet     | 
+  c-o-o-c     F lamelet     |
   |     |     C onstructor  | Copyright (C) 2015 Holzmann-cfd
   c     c-o-o-o             |
 -------------------------------------------------------------------------------
@@ -10,7 +10,7 @@ License
 
     AFC is free software; you can redistribute it and/or modify it under
     the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 3 of the License, or 
+    Free Software Foundation; either version 3 of the License, or
     (at your option) any later version.
 
     AFC is distributed in the hope that it will be useful, but
@@ -30,21 +30,13 @@ License
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 template<typename Type>
-AFC::ODE<Type>::ODE
-(
-    const Chemistry& chem
-)
+AFC::ODE<Type>::ODE(const Chemistry& chem)
 :
     StepStatus(1),
 
     chem_(chem)
 {
-    if (debug_)
-    {
-        Info<< "Constructor ODE \n" << endl;
-    }
-
-    solver_ = new Seulex(chem); 
+    solver_ = new Type(chem.species().size());
 }
 
 
@@ -52,12 +44,7 @@ AFC::ODE<Type>::ODE
 
 template<typename Type>
 AFC::ODE<Type>::~ODE()
-{
-    if (debug_)
-    {
-        Info<< "Destructor ODE \n" << endl;
-    }
-}
+{}
 
 
 // * * * * * * * * * * * * * * * Member function * * * * * * * * * * * * * * //
@@ -107,7 +94,8 @@ void AFC::ODE<Type>::solve
         //- Loop and adjust ste-size to achieve the desired error
         do
         {
-
+            //- Integration starts always from zero
+            solver_->solve(0, c0, dcdt_, dt, c_);
 
             //- Error is larger than one, reduce dt
             if (err > 1)
@@ -138,5 +126,26 @@ void AFC::ODE<Type>::solve
     }
 }
 
+
+template<typename Type>
+AFC::scalar AFC::ODE<Type>::normalizeError
+(
+    const map<word, scalar>& c0,
+    const map<word, scalar>& c,
+    const map<word, scalar>& err
+)
+{
+    scalar maxErr{0};
+
+    //- TODO
+    forAll(err, i)
+    {
+        //scalar tol = absTol_[i] + relTol_[i] * max(mag(c0[i]), mag(c[i]));
+        //maxErr = max(maxErr, mag(err[i])/tol);
+        std::terminate();
+    }
+
+    return maxErr;
+}
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

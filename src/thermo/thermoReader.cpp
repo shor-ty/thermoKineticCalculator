@@ -28,71 +28,35 @@ License
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-AFC::ThermoReader::ThermoReader
-(
-    const string& file
-)
+AFC::ThermoReader::ThermoReader(const string file)
 :
     file_(file)
-{
-    if (debug_)
-    {
-        Info<< "Constructor ThermoReader\n" << endl;
-    }
-}
+{}
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
 AFC::ThermoReader::~ThermoReader()
-{
-    if (debug_)
-    {
-        Info<< "Destructor ThermoReader\n" << endl;
-    }
-}
+{}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-void AFC::ThermoReader::read
-(
-    ThermoData& data
-)
+void AFC::ThermoReader::read(ThermoData& data)
 {
     Info<< " c-o Reading thermodynamic data\n" << endl;
 
-    //- TODO if thermo true --> use chemistry file
     const auto fileContent = readFile(file_);
-
-    if (debug_)
-    {
-        Info<< " --> The thermodynamic file contains " << fileContent.size()
-            << " lines\n" << endl;
-    }
 
     int lineNoKeyword{-1};
     unsigned int lineNoEnd{0};
 
-    findKeyword
-    (
-        lineNoKeyword,
-        lineNoEnd,
-        fileContent
-    );
-
-
+    findKeyword(lineNoKeyword, lineNoEnd, fileContent);
 
     //- Reading THERMO block
     for (unsigned int line = lineNoKeyword+2; line < lineNoEnd; line++)
     {
         stringList tmp = splitStrAtWS(fileContent[line]);
-
-        if (debug_)
-        {
-            Info<< " --> Line to analyse: \n (" << line << ")" 
-                << fileContent[line] << endl;
-        }
 
         //- If line is not empty and no comment, proceed
         if
@@ -160,17 +124,17 @@ void AFC::ThermoReader::findKeyword
 
 AFC::scalar AFC::ThermoReader::calcWeight
 (
-    const word& atom,
-    const scalar& multiplicator,
-    const word& species 
+    const word element,
+    const scalar multiplicator,
+    const word species 
 )
 {
-    if (!(AFC::Constants::AW.find(atom) != AFC::Constants::AW.end()))
+    if (!(AFC::Constants::AW.find(element) != AFC::Constants::AW.end()))
     {
-        FatalError
+        ErrorMsg
         (
-            "    Atom '" + atom + "' not found in the database of the\n"
-            "    thermoReader:: class. Please implement the atom and its\n"
+            "    Element '" + element + "' not found in the database of the\n"
+            "    thermoReader:: class. Please implement the element and its\n"
             "    weight into the thermoReader.hpp file. \n",
             __FILE__,
             __LINE__
@@ -180,23 +144,21 @@ AFC::scalar AFC::ThermoReader::calcWeight
     //- Multiplicator
     if (multiplicator <= 0)
     {
-        FatalError
+        ErrorMsg
         (
-            "    Multiplicator is less than 0 of '" + atom + " in species "
-            + species + ".",
+            "    Multiplicator of '" + element + " in species "
+            + species + " is less or equal to zero.",
             __FILE__,
             __LINE__
         );
     }
 
-    return AFC::Constants::AW.at(atom) * multiplicator;
+    //- Element (atom) weight is in [g/mol]
+    return AFC::Constants::AW.at(element)/scalar(1000) * multiplicator;
 }
 
 
-AFC::word AFC::ThermoReader::constructFormula
-(
-    const string& composition 
-)
+AFC::word AFC::ThermoReader::constructFormula(const string composition)
 {
     //- Remove whitespaces
     wordList tmp = splitStrAtWS(composition);
@@ -217,7 +179,7 @@ AFC::word AFC::ThermoReader::constructFormula
 
 void AFC::ThermoReader::NASAPolynomialNo1
 (
-    const string& lineContent,
+    const string lineContent,
     const unsigned int& line,
     ThermoData& data
 )
@@ -231,7 +193,7 @@ void AFC::ThermoReader::NASAPolynomialNo1
         }
         else
         {
-            FatalError
+            ErrorMsg
             (
                 "    No species entry found in file " + file_ + " line no. "
                 + std::to_string(line),
@@ -244,17 +206,17 @@ void AFC::ThermoReader::NASAPolynomialNo1
     // Species formula [22-44] || more complex stuff
     {
 
-        //- Get all information about the atoms and factors of the species
-        const word atomicComposition = lineContent.substr(24,20);
+        //- Get all information about the elements and factors of the species
+        const word elementicComposition = lineContent.substr(24,20);
 
         //- Build the species (formula)
-        const word formula = constructFormula(atomicComposition);
+        const word formula = constructFormula(elementicComposition);
 
         //- Insert chemical formula
         data.insertChemicalFormula(formula);
 
-        //- Split formula into atoms and factors and store them
-        atomsAndFactors(formula, data);
+        //- Split formula into elements and factors and store them
+        elementsAndFactors(formula, data);
 
         //- Calculate molecular weight and store them
         calcMolecularWeight(species[0], data);
@@ -272,19 +234,19 @@ void AFC::ThermoReader::NASAPolynomialNo1
     //- Common temperature [66-73]
     data.insertCT(stod(lineContent.substr(65,8)));
 
-    //- Addition atomic symbolic and formula [74-78] 
+    //- Addition elementic symbolic and formula [74-78] 
     //  Not implemented yet (should be done before)
 
     //- Integer 1 [80]
 
-    //- Addition atomic symbolic and formula [81-100]
+    //- Addition elementic symbolic and formula [81-100]
     //  Not implemented yet (should be done before)
 }
 
 
 void AFC::ThermoReader::NASAPolynomialNo2
 (
-    const string& lineContent,
+    const string lineContent,
     const unsigned int& line,
     ThermoData& data
 )
@@ -292,7 +254,7 @@ void AFC::ThermoReader::NASAPolynomialNo2
     //- First check integer '2' [80]
     if (lineContent[79] != '2')
     {
-        FatalError
+        ErrorMsg
         (
             "    Thermodynamic database is destroyed in line "
             + std::to_string(line) + ". No. '2' not found at pos 80.",
@@ -320,7 +282,7 @@ void AFC::ThermoReader::NASAPolynomialNo2
 
 void AFC::ThermoReader::NASAPolynomialNo3
 (
-    const string& lineContent,
+    const string lineContent,
     const unsigned int& line,
     ThermoData& data
 )
@@ -328,7 +290,7 @@ void AFC::ThermoReader::NASAPolynomialNo3
     //- First check integer '3' [80]
     if (lineContent[79] != '3')
     {
-        FatalError
+        ErrorMsg
         (
             "    Thermodynamic database is destroyed in line "
             + std::to_string(line) + ". No. '3' not found at pos 80.",
@@ -356,7 +318,7 @@ void AFC::ThermoReader::NASAPolynomialNo3
 
 void AFC::ThermoReader::NASAPolynomialNo4
 (
-    const string& lineContent,
+    const string lineContent,
     const unsigned int& line,
     ThermoData& data
 )
@@ -364,7 +326,7 @@ void AFC::ThermoReader::NASAPolynomialNo4
     //- First check integer '4' [80]
     if (lineContent[79] != '4')
     {
-        FatalError
+        ErrorMsg
         (
             "    Thermodynamic database is destroyed in line "
             + std::to_string(line) + ". No. '4' not found at pos 80.",
@@ -389,32 +351,32 @@ void AFC::ThermoReader::NASAPolynomialNo4
 
 void AFC::ThermoReader::calcMolecularWeight
 (
-    const word& species,
+    const word species,
     ThermoData& data
 )
 {
     //- Elements of species
-    const wordList& atoms = data.elementsInSpecies(species);
+    const wordList& elements = data.elementsInSpecies(species);
 
     //- Factors of elements 
-    const scalarList& factors = data.elementFactors(species);
+    const map<word, scalar>& factors = data.elementFactorsMap(species);
 
     //- Temp molecular weight
     scalar tmp = 0;
 
-    forEach(atoms, a)
+    forAll(elements, e)
     {
-        tmp += calcWeight(atoms[a], factors[a], species);
+        tmp += calcWeight(e, factors.at(e), species);
     }
 
-    //- Molecular weight [g/mol]
+    //- Molecular weight [kg/mol]
     data.insertMolecularWeight(tmp);
 }
 
 
-void AFC::ThermoReader::atomsAndFactors
+void AFC::ThermoReader::elementsAndFactors
 (
-    const word& formula,
+    const word formula,
     ThermoData& data
 )
 {
@@ -423,7 +385,7 @@ void AFC::ThermoReader::atomsAndFactors
 
     bool lastNumber{false};
 
-    word atom;
+    word element;
 
     //- Type string due to adding letters
     string multiplicator{""};
@@ -458,19 +420,19 @@ void AFC::ThermoReader::atomsAndFactors
         //- If letter found and last letter was a number (new element)
         if (foundLetter && lastNumber)
         {
-            //- Insert atom and its factor
-            data.insertAtomAndFactor(atom, stoi(multiplicator));
+            //- Insert element and its factor
+            data.insertElementAndFactor(element, stoi(multiplicator));
 
             //- Reset
-            atom.clear();
+            element.clear();
             multiplicator.clear();
             lastNumber = false;
         }
 
-        //- Form atom
+        //- Form element
         if (foundLetter)
         {
-            atom += formula[pos];
+            element += formula[pos];
         }
         else if (foundNumber)
         {
@@ -482,16 +444,16 @@ void AFC::ThermoReader::atomsAndFactors
         //- If pos is at last position
         if (pos == formula.size()-1)
         {
-            //- Insert atom and its factor
-            data.insertAtomAndFactor(atom, stoi(multiplicator));
+            //- Insert element and its factor
+            data.insertElementAndFactor(element, stoi(multiplicator));
 
             //- Everything is done
             break;
         }
     }
 
-    //- All atoms and factors stored, now we can update the map
-    data.updateAtomsAndFactorsMap();
+    //- All elements and factors stored, now we can update the map
+    data.updateElementsAndFactors();
 }
 
 

@@ -61,12 +61,6 @@ class Matrix
 :
     public Tensor
 {
-    private:
-
-        // Debug switch
-        bool debug_{false};
-
-
     public:
 
         //- Constructor 
@@ -74,12 +68,7 @@ class Matrix
 
         //- Constructor that creates a matrix n x m and init with the given
         //  value (default value = 0)
-        Matrix
-        (
-            const size_t,
-            const size_t,
-            const scalar value = 0
-        );
+        Matrix(const size_t, const size_t, const scalar value = 0);
 
         //- Destructor
         ~Matrix();
@@ -108,10 +97,7 @@ class Matrix
             Matrix I() const;
 
             //- Return the identity matrix I with given size (n x n)
-            Matrix I
-            (
-                const size_t 
-            ) const;
+            Matrix I(const size_t) const;
 
             //- Return Lower Triagonal of the matrix (LT has 1 at diag)
             //  Only for squared matrices

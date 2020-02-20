@@ -28,15 +28,13 @@ License
 // * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * * //
 
 AFC::TransportData::TransportData()
-{
-}
+{}
 
 
 // * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * * //
 
 AFC::TransportData::~TransportData()
-{
-}
+{}
 
 
 // * * * * * * * * * * * * * * * Member functions  * * * * * * * * * * * * * //
@@ -46,7 +44,7 @@ AFC::TransportData::~TransportData()
 
 void AFC::TransportData::viscosityPolyCoeffs
 (
-    const word& species,
+    const word species,
     const Vector& x
 )
 {
@@ -55,10 +53,8 @@ void AFC::TransportData::viscosityPolyCoeffs
 }
 
 
-AFC::scalarField AFC::TransportData::viscosityPolyCoeffs
-(
-    const word& species
-) const
+AFC::scalarField
+AFC::TransportData::viscosityPolyCoeffs(const word species) const
 {
     return viscosity_.at(species);
 }
@@ -66,7 +62,7 @@ AFC::scalarField AFC::TransportData::viscosityPolyCoeffs
 
 void AFC::TransportData::thermalConductivityPolyCoeffs
 (
-    const word& species,
+    const word species,
     const Vector& x
 )
 {
@@ -75,10 +71,8 @@ void AFC::TransportData::thermalConductivityPolyCoeffs
 }
 
 
-AFC::scalarField AFC::TransportData::thermalConductivityPolyCoeffs
-(
-    const word& species
-) const
+AFC::scalarField
+AFC::TransportData::thermalConductivityPolyCoeffs(const word species) const
 {
     return thermalConductivity_.at(species);
 }
@@ -86,8 +80,8 @@ AFC::scalarField AFC::TransportData::thermalConductivityPolyCoeffs
 
 void AFC::TransportData::binaryDiffusivityPolyCoeffs
 (
-    const word& species1,
-    const word& species2,
+    const word species1,
+    const word species2,
     const Vector& x
 )
 {
@@ -122,7 +116,7 @@ void AFC::TransportData::binaryDiffusivityPolyCoeffs
     }
     else
     {
-        FatalError
+        ErrorMsg
         (
             "    Building the binaryDiffusivity_ field went wrong\n"
             "    Please check the code or ask for help",
@@ -135,8 +129,8 @@ void AFC::TransportData::binaryDiffusivityPolyCoeffs
 
 AFC::scalarField AFC::TransportData::binaryDiffusivityPolyCoeffs
 (
-    const word& species1,
-    const word& species2
+    const word species1,
+    const word species2
 ) const
 {
     //- First find the ID of first species
@@ -161,10 +155,7 @@ AFC::scalarField AFC::TransportData::binaryDiffusivityPolyCoeffs
 
 // * * * * * * * * * Insert functions from TransportReader:: * * * * * * * * //
 
-void AFC::TransportData::insertSpecies
-(
-    const word& species
-)
+void AFC::TransportData::insertSpecies(const word species)
 {
     species_.push_back(species);
 }
@@ -179,10 +170,7 @@ void AFC::TransportData::insertChemistrySpecies
 }
 
 
-void AFC::TransportData::insertGeoConfig
-(
-    const int geoConfig
-)
+void AFC::TransportData::insertGeoConfig(const int geoConfig)
 {
     //- Species_ list must have one element more in this list 
     if (species_.size()-1 == geoConfig_.size())
@@ -191,7 +179,7 @@ void AFC::TransportData::insertGeoConfig
     }
     else
     {
-        FatalError
+        ErrorMsg
         (
             "    geoConfig_.size() is not equal to species_.size()-1.\n"
             "    Some error occur.",
@@ -202,10 +190,7 @@ void AFC::TransportData::insertGeoConfig
 }
 
 
-void AFC::TransportData::insertLenJonPot
-(
-    const scalar& lenJonPot
-)
+void AFC::TransportData::insertLenJonPot(const scalar lenJonPot)
 {
     //- Species_ list must have one element more in this list 
     if (species_.size()-1 == lenJonPot_.size())
@@ -214,7 +199,7 @@ void AFC::TransportData::insertLenJonPot
     }
     else
     {
-        FatalError
+        ErrorMsg
         (
             "    lenJonPot_.size() is not equal to species_.size()-1.\n"
             "    Some error occur.",
@@ -225,10 +210,7 @@ void AFC::TransportData::insertLenJonPot
 }
 
 
-void AFC::TransportData::insertLenJonCollDia
-(
-    const scalar& lenJonCollDia
-)
+void AFC::TransportData::insertLenJonCollDia(const scalar lenJonCollDia)
 {
     //- Species_ list must have one element more in this list 
     if (species_.size()-1 == lenJonCollDia_.size())
@@ -237,7 +219,7 @@ void AFC::TransportData::insertLenJonCollDia
     }
     else
     {
-        FatalError
+        ErrorMsg
         (
             "    lenJonCollDia_.size() is not equal to species_.size()-1.\n"
             "    Some error occur.",
@@ -248,10 +230,7 @@ void AFC::TransportData::insertLenJonCollDia
 }
 
 
-void AFC::TransportData::insertDipMom
-(
-    const scalar& dipMom
-)
+void AFC::TransportData::insertDipMom(const scalar dipMom)
 {
     //- Species_ list must have one element more in this list 
     if (species_.size()-1 == dipMom_.size())
@@ -260,7 +239,7 @@ void AFC::TransportData::insertDipMom
     }
     else
     {
-        FatalError
+        ErrorMsg
         (
             "    dipMom_.size() is not equal to species_.size()-1.\n"
             "    Some error occur.",
@@ -271,10 +250,7 @@ void AFC::TransportData::insertDipMom
 }
 
 
-void AFC::TransportData::insertAlpha
-(
-    const scalar& alpha
-)
+void AFC::TransportData::insertAlpha(const scalar alpha)
 {
     //- Species_ list must have one element more in this list 
     if (species_.size()-1 == alpha_.size())
@@ -283,7 +259,7 @@ void AFC::TransportData::insertAlpha
     }
     else
     {
-        FatalError
+        ErrorMsg
         (
             "    alpha_.size() is not equal to species_.size()-1.\n"
             "    Some error occur.",
@@ -294,10 +270,7 @@ void AFC::TransportData::insertAlpha
 }
 
 
-void AFC::TransportData::insertZRot298
-(
-    const scalar& ZRot298
-)
+void AFC::TransportData::insertZRot298(const scalar ZRot298)
 {
     //- Species_ list must have one element more in this list 
     if (species_.size()-1 == ZRot298_.size())
@@ -306,7 +279,7 @@ void AFC::TransportData::insertZRot298
     }
     else
     {
-        FatalError
+        ErrorMsg
         (
             "    ZRot298_.size() is not equal to species_.size()-1.\n"
             "    Some error occur.",
@@ -319,8 +292,8 @@ void AFC::TransportData::insertZRot298
 
 void AFC::TransportData::insertBinarySpeciesCombinations
 (
-    const word& parentSpecies,
-    const word& childSpecies 
+    const word parentSpecies,
+    const word childSpecies 
 )
 {
     binarySpeciesCombinations_[parentSpecies].push_back(childSpecies);
@@ -380,10 +353,7 @@ AFC::wordList AFC::TransportData::chemicalFormula() const
 }
 
 
-AFC::word AFC::TransportData::chemicalFormula
-(
-    const word& species
-) const
+AFC::word AFC::TransportData::chemicalFormula(const word species) const
 {
     //- TODO use map to speed up 
     int ID{0};
@@ -409,55 +379,37 @@ AFC::wordList AFC::TransportData::chemistrySpecies() const
 }
 
 
-int AFC::TransportData::geometricalConfig
-(
-    const word& species
-) const
+int AFC::TransportData::geometricalConfig(const word species) const
 {
     return geoConfig_.at(species);
 }
 
 
-AFC::scalar AFC::TransportData::LJCD
-(
-    const word& species
-) const
+AFC::scalar AFC::TransportData::LJCD(const word species) const
 {
     return lenJonCollDia_.at(species);
 }
 
 
-AFC::scalar AFC::TransportData::LJP
-(
-    const word& species
-) const
+AFC::scalar AFC::TransportData::LJP(const word species) const
 {
     return lenJonPot_.at(species);
 }
 
 
-AFC::scalar AFC::TransportData::muk
-(
-    const word& species
-) const
+AFC::scalar AFC::TransportData::muk(const word species) const
 {
     return dipMom_.at(species);
 }
 
 
-AFC::scalar AFC::TransportData::alpha
-(
-    const word& species
-) const
+AFC::scalar AFC::TransportData::alpha(const word species) const
 {
     return alpha_.at(species);
 }
 
 
-AFC::scalar AFC::TransportData::ZRot298
-(
-    const word& species
-) const
+AFC::scalar AFC::TransportData::ZRot298(const word species) const
 {
     return ZRot298_.at(species);
 }

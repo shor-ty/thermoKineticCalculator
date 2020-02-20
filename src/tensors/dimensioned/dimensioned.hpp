@@ -22,21 +22,23 @@ License
     along with AFC; if not, see <http://www.gnu.org/licenses/>
 
 Class
-    AFC::Dimensions
+    AFC::Dimensioned
     
 Description
-    Abstract AFC::Dimensions class for checking the dimensions of quantities
+    Abstract AFC::Dimensioned class for checking the dimensions of quantities
 
 
 SourceFiles
-    dimensions.cpp
+    dimensioned.cpp
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef Dimensions_hpp
-#define Dimensions_hpp
+#ifndef Dimensioned_hpp
+#define Dimensioned_hpp
 
-#include "typedef.hpp"
+#include "scalar.hpp"
+#include "vector.hpp"
+#include "matrix.hpp"
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -48,10 +50,11 @@ namespace AFC
 
 
 /*---------------------------------------------------------------------------*\
-                            Class Dimensions Declaration
+                            Class Dimensioned Declaration
 \*---------------------------------------------------------------------------*/
 
-class Dimensions
+template<typename Type>
+class Dimensioned
 {
     private:
 
@@ -64,22 +67,25 @@ class Dimensions
         //  2: [m]
         //  3: [s]
         //  4: [K]
-        const scalarField dimension_;
+        scalarField dimension_;
+
+        //- Data name
+        word name_;
+
+        //- Data value
+        Type value_;
 
 
     public:
-
-        //- Constructor with default dimensions [-] no unit
-        Dimensions();
+        
+        //- Constructor with dimensions
+        Dimensioned(size_t, size_t, size_t, size_t);   
 
         //- Constructor with dimensions
-        Dimensions
-        (
-            const scalarField&  
-        );
+        Dimensioned(const scalarField&);
 
         //- Destructor
-        ~Dimensions();
+        ~Dimensioned();
 
         // Operator Functions
 
@@ -95,6 +101,6 @@ class Dimensions
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-#endif // Dimensions_hpp included
+#endif // Dimensioned_hpp included
 
 // ************************************************************************* //

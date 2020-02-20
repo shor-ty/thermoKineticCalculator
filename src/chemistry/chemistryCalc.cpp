@@ -30,23 +30,13 @@ License
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 AFC::ChemistryCalc::ChemistryCalc()
-{
-    if (debug)
-    {
-        Info<< "Constructor ChemistryCalc\n" << endl;
-    }
-}
+{}
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
 AFC::ChemistryCalc::~ChemistryCalc()
-{
-    if (debug)
-    {
-        Info<< "Destructor ChemistryCalc\n" << endl;
-    }
-}
+{}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
@@ -57,7 +47,7 @@ AFC::ChemistryCalc::~ChemistryCalc()
 AFC::scalar AFC::ChemistryCalc::kf
 (
     const int r,
-    const scalar& T,
+    const scalar T,
     const ChemistryData& chemData,
     const bool LOW
 ) const
@@ -66,8 +56,6 @@ AFC::scalar AFC::ChemistryCalc::kf
     //  + unimolecular reaction [1/s]
     //  + bimolecular reaction [cm^3/mol/s]
     //  + trimolecular reaction [cm^6/mol^2/s]
-
-    //- TODO make faster with pointer or reference
     scalarField arrheniusCoeffs;
    
     if (LOW)
@@ -92,7 +80,7 @@ AFC::scalar AFC::ChemistryCalc::kf
 AFC::scalar AFC::ChemistryCalc::kb
 (
     const int r,
-    const scalar& T,
+    const scalar T,
     const ChemistryData& chemData,
     const Thermo& thermo,
     const bool LOW
@@ -106,7 +94,7 @@ AFC::scalar AFC::ChemistryCalc::kb
 AFC::scalar AFC::ChemistryCalc::keq
 (
     const int r,
-    const scalar& T,
+    const scalar T,
     const ChemistryData& chemData,
     const Thermo& thermo
 ) const
@@ -128,7 +116,7 @@ AFC::scalar AFC::ChemistryCalc::keq
     else
     {
         //- Get the pressure of the calculation
-        const scalar& p = thermo.p();
+        const scalar p = thermo.p();
 
 
         //- Calculate the equilibrium constant Keq and return it
@@ -143,10 +131,10 @@ AFC::scalar AFC::ChemistryCalc::keq
 
 AFC::scalar AFC::ChemistryCalc::arrhenius
 (
-    const scalar& A,
-    const scalar& beta,
-    const scalar& Ea,
-    const scalar& T
+    const scalar A,
+    const scalar beta,
+    const scalar Ea,
+    const scalar T
 ) const
 {
     //-TODO change R to RCalc again R -> must be [cal]
@@ -160,42 +148,45 @@ AFC::scalar AFC::ChemistryCalc::arrhenius
 AFC::scalar AFC::ChemistryCalc::Fcent
 (
     const int r,
-    const scalar& T,
+    const scalar T,
     const ChemistryData& chemData
 ) const
 {
-    //- TODO speedup
     //- TROE coefficients
     const scalarField& troeCoeffs = chemData.TROECoeffs(r);
 
     //- Alpha
-    const scalar& alpha = troeCoeffs[0];
+    const scalar alpha = troeCoeffs[0];
 
     //- T***
-    const scalar& Tsss = troeCoeffs[1];
+    const scalar Tsss = troeCoeffs[1];
 
     //- T*
-    const scalar& Ts = troeCoeffs[2];
+    const scalar Ts = troeCoeffs[2];
 
     //- T**
-    const scalar& Tss = troeCoeffs[3];
+    const scalar Tss = troeCoeffs[3];
     
     //- Return Fcent 
-    return ((1 - alpha) * exp(-1 * T / Tsss) +
-        alpha * exp(-1 * T / Ts) + exp(-1 * Tss / T));
+    return
+    (
+        (1 - alpha) * exp(-1 * T / Tsss)
+      + alpha * exp(-1 * T / Ts)
+      + exp(-1 * Tss / T)
+    );
 }
 
 
 AFC::scalar AFC::ChemistryCalc::Flog
 (
     const int r,
-    const scalar& T,
-    const scalar& M,
+    const scalar T,
+    const scalar M,
     const ChemistryData& chemData
 ) const
 {
     //- a) Calculate Fcent
-    const scalar& F_cent = Fcent(r, T, chemData);
+    const scalar F_cent = Fcent(r, T, chemData);
 
     //- b) Calculate constants
     const scalar N = 0.75 - 1.27 * log(F_cent);
@@ -203,16 +194,16 @@ AFC::scalar AFC::ChemistryCalc::Flog
 
     //- c) Calculate reduced pressure Pr
     //  + Here we need k for LOW and normal pressure
-    const scalar& kinf = kf(r, T, chemData);
-    const scalar& klow = kf(r, T, chemData, true);
+    const scalar kinf = kf(r, T, chemData);
+    const scalar klow = kf(r, T, chemData, true);
 
     const scalar Pr = klow * M / kinf;
 
     //- d) Calculate enumerator
-    const scalar& enumerator = log10(F_cent);
+    const scalar enumerator = log10(F_cent);
 
     //- e) Calculate denominator
-    const scalar& denominator = 1 +
+    const scalar denominator = 1 +
         pow((log10(Pr) + C)/(N - 0.14 * (log10(Pr) + C)),2);
 
     //- f) Return Flog
@@ -220,10 +211,126 @@ AFC::scalar AFC::ChemistryCalc::Flog
 }
 
 
+AFC::scalar AFC::ChemistryCalc::calculateOmega
+(
+    const word species,
+    const scalar T,
+    const map<word, scalar>& con,
+    const Thermo& thermo,
+    const ChemistryData& chemData
+) const
+{
+
+    //- Calculate Omega for species 
+    scalar omega{0};
+        
+    //- Get reaction no. where species is included
+    const List<int>& inReaction = chemData.reacNumbers(species); 
+
+    //Info<< "Species calculation " << species << "\n"
+    //    << "--------------------------------------\n";
+
+    for(size_t i = 0; i<inReaction.size(); ++i)
+    {
+        //- Elementar Reaction number
+        const size_t r = inReaction[i];
+
+        //- Calculate the forward and backward reaction rates
+        const scalar kf_ = kf(r, T, chemData);
+        const scalar kb_ = kb(r, T, chemData, thermo);
+
+        //- Get all species that are acting as products in reaction r
+        const List<word>& prodSpecies = chemData.speciesProducts(r);
+
+        //- Get all species that act as educts in reaction r
+        const List<word>& educSpecies = chemData.speciesEducts(r);
+
+        //- Stochiometric factors of products
+        map<word, int> nuProd = chemData.nuProducts(r);
+
+        //- Stochiometric factors of educts
+        map<word, int> nuEduc = chemData.nuEducts(r);
+
+        //- TMP fields
+        scalar prod{1};
+        scalar educ{1};
+
+        //- Product side, con is in [mol/cm^3]
+        forAll(prodSpecies, s)
+        {
+            prod *= pow(con.at(s), nuProd.at(s));
+        }
+
+        //- Educt side, con is in [mol/cm^3]
+        //  Note, abs needed
+        forAll(educSpecies, s)
+        {
+            educ *= pow(con.at(s), abs(nuEduc.at(s)));
+        }
+
+        //- Get pre-factor nu'' - nu' :: based on the fact that we already
+        //  know the right value, we just have to check if the species
+        //  is within the product or educt side
+        scalar nuSpecies{0};
+
+        if (nuEduc.count(species) && !nuProd.count(species))
+        {
+            nuSpecies = nuEduc.at(species);
+        }
+        else if (!nuEduc.count(species) && nuProd.count(species))
+        {
+            nuSpecies = nuProd.at(species);
+        }
+        else if (nuEduc.count(species) && nuProd.count(species))
+        {
+            nuSpecies = nuProd.at(species) + nuEduc.at(species);
+        }
+        else
+        {
+            NotImplemented 
+            (
+                __FILE__,
+                __LINE__
+            );
+        }
+
+        //Info<<std::setw(30) << chemData.elementarReaction(r)
+        //    <<std::setw(20) << nuSpecies * (kf_ * educ - kb_ * prod)
+        //    << "   "
+        //    << nuSpecies << " *( "
+        //    << kf_ << " * " 
+        //    << educ << " - " 
+        //    << kb_ << " * " 
+        //    << prod << ")\n" ;
+        omega += nuSpecies * (kf_ * educ - kb_ * prod);
+
+    }
+
+    return omega;
+}
+
+
+//bool AFC::ChemistryCalc::thirdBodyReaction
+//(
+//    const int r,    
+//    bool enhanced,
+//    const ChemistryData& data
+//)
+//{
+//    //- Get third body information
+//    const bool& TBR = data.TBR(r);
+//
+//    //- Get information about enhanced factors
+//    enhanced = data.ENHANCED(r);
+//
+//    return TBR;
+//}
+
+
 AFC::scalar AFC::ChemistryCalc::dH
 (
     const int r,
-    const scalar& T,
+    const scalar T,
     const ChemistryData& data,
     const Thermo& thermo
 ) const
@@ -251,7 +358,7 @@ AFC::scalar AFC::ChemistryCalc::dH
 AFC::scalar AFC::ChemistryCalc::dG
 (
     const int r,
-    const scalar& T,
+    const scalar T,
     const ChemistryData& data,
     const Thermo& thermo
 ) const
@@ -279,7 +386,7 @@ AFC::scalar AFC::ChemistryCalc::dG
 AFC::scalar AFC::ChemistryCalc::dS
 (
     const int r,
-    const scalar& T,
+    const scalar T,
     const ChemistryData& data,
     const Thermo& thermo
 ) const
@@ -615,108 +722,6 @@ AFC::scalar AFC::ChemistryCalc::kf
 */
 
 
-AFC::scalar AFC::ChemistryCalc::calculateOmega
-(
-    const word& species,
-    const scalar& T,
-    const map<word, scalar>& con,
-    const Thermo& thermo,
-    const ChemistryData& chemData
-) const
-{
-
-    //- Calculate Omega for species 
-    scalar omega{0};
-        
-    //- Get reaction no. where species is included
-    const List<int>& inReaction = chemData.reacNumbers(species); 
-
-    //Info<< "Species calculation " << species << "\n"
-    //    << "--------------------------------------\n";
-
-    for(size_t i = 0; i<inReaction.size(); ++i)
-    {
-        //- Elementar Reaction number
-        const size_t r = inReaction[i];
-
-        //- Calculate the forward and backward reaction rates
-        const scalar kf_ = kf(r, T, chemData);
-        const scalar kb_ = kb(r, T, chemData, thermo);
-
-        //- Get all species that are acting as products in reaction r
-        const List<word>& prodSpecies = chemData.speciesProducts(r);
-
-        //- Get all species that act as educts in reaction r
-        const List<word>& educSpecies = chemData.speciesEducts(r);
-
-        //- Stochiometric factors of products
-        map<word, int> nuProd = chemData.nuProducts(r);
-
-        //- Stochiometric factors of educts
-        map<word, int> nuEduc = chemData.nuEducts(r);
-
-        //- TMP fields
-        scalar prod{1};
-        scalar educ{1};
-
-        //- Product side, con is in [mol/cm^3]
-        forAll(prodSpecies, s)
-        {
-            prod *= pow(con.at(s), nuProd.at(s));
-        }
-
-        //- Educt side, con is in [mol/cm^3]
-        //  Note, abs needed
-        forAll(educSpecies, s)
-        {
-            educ *= pow(con.at(s), abs(nuEduc.at(s)));
-        }
-
-        //- Get pre-factor nu'' - nu' :: based on the fact that we already
-        //  know the right value, we just have to check if the species
-        //  is within the product or educt side
-        scalar nuSpecies{0};
-
-        if (nuEduc.count(species) && !nuProd.count(species))
-        {
-            nuSpecies = nuEduc.at(species);
-        }
-        else if (!nuEduc.count(species) && nuProd.count(species))
-        {
-            nuSpecies = nuProd.at(species);
-        }
-        else if (nuEduc.count(species) && nuProd.count(species))
-        {
-            nuSpecies = nuProd.at(species) + nuEduc.at(species);
-        }
-        else
-        {
-            FatalError
-            (
-                "Not implemented. Error.",
-                __FILE__,
-                __LINE__
-            );
-        }
-
-        //Info<<std::setw(30) << chemData.elementarReaction(r)
-        //    <<std::setw(20) << nuSpecies * (kf_ * educ - kb_ * prod)
-        //    << "   "
-        //    << nuSpecies << " *( "
-        //    << kf_ << " * " 
-        //    << educ << " - " 
-        //    << kb_ << " * " 
-        //    << prod << ")\n" ;
-
-
-        omega += nuSpecies * (kf_ * educ - kb_ * prod);
-
-    }
-
-    return omega;
-}
-
-
 /*
 void AFC::ChemistryCalc::calculateM
 (
@@ -782,20 +787,5 @@ void AFC::ChemistryCalc::calculateM
 }
 
 
-bool AFC::ChemistryCalc::thirdBodyReaction
-(
-    const int r,    
-    bool& enhanced,
-    const ChemistryData& data
-)
-{
-    //- Get third body information
-    const bool& TBR = data.TBR(r);
-
-    //- Get information about enhanced factors
-    enhanced = data.ENHANCED(r);
-
-    return TBR;
-}
 */
 

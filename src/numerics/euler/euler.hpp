@@ -56,61 +56,14 @@ class Euler
         // Debug switch
         bool debug_{false};
 
-        //- Pointer to Jacobian object
-        Jacobian* jac_;
-
-        //- Rate of concentration change
-        mutable map<word, scalar> dcdt_;
-
-        //- Jacobian Matrix
-        mutable Matrix dcdc_;
-
-        /*size_t n_{10};
-
-        //- Euler constants and variables
-        const size_t kMax_ = 12;
-        const size_t iMax_ = 13;
-        
-        size_t kTarget_;
-
-        List<size_t> pivotIndices_;
-        List<size_t> nSeq_;
-
-        scalar stepFactor_1;
-        scalar stepFactor_2;
-        scalar stepFactor_3;
-        scalar stepFactor_4;
-        scalar stepFactor_5;
-        scalar kFactor1_;
-        scalar kFactor2_;
-        mutable scalar jacRedo_;
-        mutable scalar theta_;
-
-        mutable scalarField dcdt_;
-        scalarField cpu_;
-        mutable scalarField dtOpt_;
-        mutable scalarField temp_;
-        scalarField cSequence_;
-        scalarField scale_;
-
-        scalarField dc_;
-        scalarField cTemp_;
-
-        Matrix coeff_;
-        mutable Matrix dcdc_;
-        Matrix table_;
-
-        mutable map<word, scalar> c0_;
-        */
+        //- Error of each species
+        mutable map<word, scalar> err_;
 
 
     public:
 
         //- Constructor 
-        Euler
-        (
-            const Chemistry&
-        );
+        Euler(const size_t);
 
         //- Destructor
         ~Euler();
@@ -119,37 +72,13 @@ class Euler
         // Member functions
 
             //- Solve using euler algorithm
-            void solve
+            scalar solve
             (
                 const scalar,
                 const scalar,
-                map<word, scalar>&,
-                scalar&,
-                StepStatus&
-            ) const;
-
-
-    private:
-
-        // Private member functions
-
-            //- Comutes the j-th line of the extrapolation table
-            bool seul
-            (
-                const scalar,
-                const scalarField&,
-                const scalar,
-                const size_t,
-                scalarField&,
-                const scalarField&
-            ) const;
-
-            //- Polynomial extrapolation
-            void extrapolate
-            (
-                const size_t,
-                Matrix&,
-                scalarField&
+                const map<word, scalar>&,
+                const map<word, scalar>&,
+                map<word, scalar>&
             ) const;
 };
 

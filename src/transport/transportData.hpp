@@ -56,39 +56,38 @@ class TransportData
             //- List of species of transport file
             wordList species_;
 
-            //- TODO map, reduces operations
             //- List of species used in the elementar reactions
             wordList chemicalFormula_;
 
             //- List of species used for elementar reactions
             wordList chemistrySpecies_;
 
-            //- Hashtable for geometrical configuration
+            //- List for geometrical configuration
             //  Definiton:
             //      + 0 molecule is single atom
             //      + 1 molecule is linear
             //      + 2 molecule is nonlinear
             map<word, int> geoConfig_;
 
-            //- Hashtable for Lennard-Jones potential well depth eps/kb [K]
+            //- List for Lennard-Jones potential well depth eps/kb [K]
             map<word, scalar> lenJonPot_;
 
-            //- Hashtable for Lennard-Jones collision dimater C in Angstroms
+            //- List for Lennard-Jones collision dimater C in Angstroms
             //  Also denoted by sigma 
             map<word, scalar> lenJonCollDia_;
 
-            //- Hashtable for dipole moment mu in debey
+            //- List for dipole moment mu in debey
             //  a debey is 10^-18 [cm^3/2]
             map<word, scalar> dipMom_;
 
-            //- Hashtable for polarizability alpha in cubic Angstroms
+            //- List for polarizability alpha in cubic Angstroms
             map<word, scalar> alpha_;
 
-            //- Hashtable for rotational relaxation collision number Zrot
+            //- List for rotational relaxation collision number Zrot
             //  at 298K
             map<word, scalar> ZRot298_;
 
-            //- Map of species binary combinations
+            //- List of species binary combinations
             map<word, List<word> > binarySpeciesCombinations_;
 
 
@@ -119,112 +118,67 @@ class TransportData
         // Member functions
 
             //- Fitting polynomials coefficients for the viscosity
-            void viscosityPolyCoeffs
-            (
-                const word&,
-                const Vector&
-            );
+            void viscosityPolyCoeffs(const word, const Vector&);
 
             //- Return the polynomial coefficients for the viscosity
-            scalarField viscosityPolyCoeffs
-            (
-                const word&
-            ) const;
+            scalarField viscosityPolyCoeffs(const word) const;
 
             //- Fitting polynomials coefficients for the thermal conductivity 
-            void thermalConductivityPolyCoeffs
-            (
-                const word&,
-                const Vector&
-            );
+            void thermalConductivityPolyCoeffs(const word, const Vector&);
 
             //- Return the polynomial coefficients for the thermal conductivity 
-            scalarField thermalConductivityPolyCoeffs
-            (
-                const word&
-            ) const;
+            scalarField thermalConductivityPolyCoeffs(const word) const;
 
             //- Fitting polynomials coefficients for the binary diffusivity 
             void binaryDiffusivityPolyCoeffs
             (
-                const word&,
-                const word&,
+                const word,
+                const word,
                 const Vector&
             );
 
             //- Return the polynomial coefficients for the binary diffusivity 
             scalarField binaryDiffusivityPolyCoeffs
             (
-                const word&,
-                const word&
+                const word,
+                const word
             ) const;
 
 
         // Insert functions, from TransportReader:: delegated 
 
             //- Insert species
-            void insertSpecies
-            (
-                const word&
-            );
+            void insertSpecies(const word);
 
             //- Insert species used in elementar reactions
-            void insertChemistrySpecies
-            (
-                const wordList&
-            );
+            void insertChemistrySpecies(const wordList&);
 
             //- Insert geometrical configuration
-            void insertGeoConfig
-            (
-                const int
-            );
+            void insertGeoConfig(const int);
 
             //- Insert Lennard-Jones potential
-            void insertLenJonPot
-            (
-                const scalar&
-            );
+            void insertLenJonPot(const scalar);
 
             //- Insert Lennard-Jones collision diameter
-            void insertLenJonCollDia
-            (
-                const scalar&
-            );
+            void insertLenJonCollDia(const scalar);
 
             //- Insert dipole momentum
-            void insertDipMom
-            (
-                const scalar&
-            );
+            void insertDipMom(const scalar);
 
             //- Insert polarizability alpha
-            void insertAlpha
-            (
-                const scalar&
-            );
+            void insertAlpha(const scalar);
 
             //- Insert rotational relaxation collision number
-            void insertZRot298
-            (
-                const scalar&
-            );
+            void insertZRot298(const scalar);
 
             //- Insert binary species combination
-            void insertBinarySpeciesCombinations
-            (
-                const word&,
-                const word&
-            );
+            void insertBinarySpeciesCombinations(const word, const word);
 
 
         // Insert function from afc.cpp
 
             //- Insert chemical species
-            void chemicalFormula
-            (
-                const wordList&
-            );
+            void chemicalFormula(const wordList&);
 
 
         // Update and Manipulation Functions
@@ -235,57 +189,36 @@ class TransportData
 
         // Return functions
         
-            //- Return species 
+            //- Return all species which are stored in the transport object
             wordList species() const;
 
-            //- Return chemical formula 
+            //- Return chemical formula of all stored species
             wordList chemicalFormula() const;
 
             //- Return chemical formula of species s
-            word chemicalFormula
-            (
-                const word&
-            ) const;
+            word chemicalFormula(const word) const;
 
-            //- Return species used in elementar reactions
+            //- Return all species which are used in elementar reactions
             wordList chemistrySpecies() const;
 
 
             //- Return the geometrical configuration
-            int geometricalConfig
-            (
-                const word&
-            ) const;
+            int geometricalConfig(const word) const;
 
             //- Return Lennard-Jones collision diameter [Angstroms]
-            scalar LJCD
-            (
-                const word&
-            ) const;
+            scalar LJCD(const word) const;
 
             //- Return Lennard-Jones potential well depth eps/kb [K]
-            scalar LJP
-            (
-                const word&
-            ) const;
+            scalar LJP(const word) const;
 
             //- Return the dipole moment [debey]
-            scalar muk
-            (
-                const word&
-            ) const;
+            scalar muk(const word) const;
 
             //- Return polarizability alpha [cubic Angstroms]
-            scalar alpha
-            (
-                const word&
-            ) const;
+            scalar alpha(const word) const;
 
             //- Return rotational relaxation collision number Zrot
-            scalar ZRot298
-            (
-                const word&
-            ) const;
+            scalar ZRot298(const word) const;
 };
 
 

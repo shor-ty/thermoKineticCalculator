@@ -68,11 +68,7 @@ class Transport
     public:
 
         //- Constructor
-        Transport
-        (
-            const string&,
-            const Thermo&
-        );
+        Transport(const string, const Thermo&);
 
         //- Destructor
         ~Transport();
@@ -81,10 +77,7 @@ class Transport
         // Calculation Functions
 
             //- Insert chemistry species to transportData
-            void insertChemistrySpecies
-            (
-                const wordList&  
-            );
+            void insertChemistrySpecies(const wordList&);
         
             //- Calculate fitting coefficients for polynomials
             void fitCurves();
@@ -92,26 +85,26 @@ class Transport
             //- Calculate viscosity of species s [Pa s]
             scalar viscosity 
             (
-                const word&,
-                const scalar&,
-                const word& method = "Hirschfelder"
+                const word,
+                const scalar,
+                const word method = "Hirschfelder"
             ) const;
 
             //- Calculate thermal conductivity of species s [W/m/K]
             scalar thermalConductivity 
             (
-                const word&,
-                const scalar&,
-                const word& method = "Warnatz"
+                const word,
+                const scalar,
+                const word method = "Warnatz"
             ) const;
 
             //- Calculate the binary diffusivity coefficient Dij of species ij
             scalar binaryDiffusivity
             (
-                const word&,
-                const word&,
-                const scalar&,
-                const word& method = "ChapmanAndEnskog"
+                const word,
+                const word,
+                const scalar,
+                const word method = "ChapmanAndEnskog"
             ) const;
 
         // Return functions
@@ -126,80 +119,47 @@ class Transport
             wordList chemicalFormula() const;
 
             //- Return chemical formula for species s
-            word chemicalFormula 
-            (
-                const word&
-            ) const;
+            word chemicalFormula(const word) const;
 
             //- Return geometrical configuration of species s
-            int geometricalConfig
-            (
-                const word&
-            ) const;
+            int geometricalConfig(const word) const;
 
             //- Return Lennard-Jones collision diameter [Angstroms]
-            scalar LJCD
-            (
-                const word&
-            ) const;
+            scalar LJCD(const word) const;
 
             //- Return Lennard-Jones potential well depth eps/kb [K]
-            scalar LJP
-            (
-                const word&
-            ) const;
+            scalar LJP(const word) const;
 
             //- Return the dipole moment [debey]
-            scalar muk
-            (
-                const word&
-            ) const;
+            scalar muk(const word) const;
 
             //- Return polarizability alpha [cubic Angstroms]
-            scalar alpha
-            (
-                const word&
-            ) const;
+            scalar alpha(const word) const;
 
             //- Return rotational relaxation collision number Zrot at 298 K
-            scalar ZRot298
-            (
-                const word&
-            ) const;
+            scalar ZRot298(const word) const;
 
             //- Return the viscosity polynomial coefficients
-            scalarField viscosityPolyCoeffs
-            (
-                const word&
-            ) const;
+            scalarField viscosityPolyCoeffs(const word) const;
 
             //- Return the thermal conductivity polynomial coefficients
-            scalarField thermalConductivityPolyCoeffs 
-            (
-                const word&
-            ) const;
+            scalarField thermalConductivityPolyCoeffs(const word) const;
 
             //- Return the binary diffusivity polynomial coefficients
-            scalarField binaryDiffusivityPolyCoeffs 
+            scalarField binaryDiffusivityPolyCoeffs
             (
-                const word&,
-                const word&
+                const word,
+                const word
             ) const;
 
 
         // Summary functions
 
             //- Build the summary
-            void summary
-            (
-                ostream&
-            ) const;
+            void summary(ostream&) const;
 
             //- Build the fitting procedure summary
-            void summaryFittingProcedure
-            (
-                ostream&
-            ) const;
+            void summaryFittingProcedure(ostream&) const;
 };
 
 

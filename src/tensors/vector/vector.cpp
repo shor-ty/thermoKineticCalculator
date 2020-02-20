@@ -32,12 +32,7 @@ License
 AFC::Vector::Vector()
 :
     Tensor(0, 0)
-{
-    if (debug_)
-    {
-        Info<< "Constructor Vector() \n" << endl;
-    }
-}
+{}
 
 
 AFC::Vector::Vector
@@ -46,12 +41,7 @@ AFC::Vector::Vector
 )
 :
     Tensor(vec.rows(), vec.cols(), vec.values())
-{
-    if (debug_)
-    {
-        Info<< "Constructor Vector(const Vector&) Copy Const\n" << endl;
-    }
-}
+{}
 
 
 AFC::Vector::Vector
@@ -61,12 +51,7 @@ AFC::Vector::Vector
 )
 :
     Tensor(row, 1, value)
-{
-    if (debug_)
-    {
-        Info<< "Constructor Vector (row, value)\n" << endl;
-    }
-}
+{}
 
 
 AFC::Vector::Vector
@@ -75,31 +60,18 @@ AFC::Vector::Vector
 )
 :
     Tensor(sF.size(), 1, sF)
-{
-    if (debug_)
-    {
-        Info<< "Constructor Vector (row, scalarField)\n" << endl;
-    }
-}
+{}
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
 AFC::Vector::~Vector()
-{
-    if (debug_)
-    {
-        Info<< "Destructor Vector \n" << endl;
-    }
-}
+{}
 
 
 // * * * * * * * * * * * * * * Operator Functions  * * * * * * * * * * * * * //
 
-AFC::Vector AFC::Vector::operator*
-(
-    const Matrix& T
-) const
+AFC::Vector AFC::Vector::operator*(const Matrix& T) const
 {
     //- Vector dot Matrix produces a new vector [Holzmann] (inner product)
     //  This operation is non-commutative
@@ -130,10 +102,7 @@ AFC::Vector AFC::Vector::operator*
 }
 
 
-void AFC::Vector::operator-=
-(
-    const Vector& b
-)
+void AFC::Vector::operator-=(const Vector& b)
 {
     //- The vector on the left is the object itself
     Vector& a = *this;
