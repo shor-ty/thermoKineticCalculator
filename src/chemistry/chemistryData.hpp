@@ -55,7 +55,7 @@ class ChemistryData
         // Private data
 
             //- Number of elementar reactions
-            int nReac_;
+            int nReac_{-1};
 
             //- List of elements
             List<word> elements_;
@@ -78,6 +78,9 @@ class ChemistryData
             //- Number of dublicated reactions
             int nDuplicated_{0};
 
+            //- Number of ignored reactions
+            int nIgnored_{0};
+
             //- Forward reaction order for all reactions
             List<scalar> forwardReactionOrder_;
 
@@ -98,6 +101,9 @@ class ChemistryData
 
             //- Elementar reaction
             List<string> elementarReaction_;
+
+            //- Ignored elementar reaction
+            List<string> ignoredElementarReaction_;
 
             //- Matrix that contains all species in reaction r
             List<wordList> speciesInReaction_;
@@ -197,6 +203,9 @@ class ChemistryData
             //- Insert elementar reaction
             void elementarReaction(const string);
 
+            //- Insert ignored elementar reaction
+            void ignoredElementarReaction(const string);
+
             //- Set arrhenius coeffs
             void arrheniusCoeffs(const scalar, const scalar, const scalar);
 
@@ -214,6 +223,9 @@ class ChemistryData
 
             //- Increment nDuplicated_
             void incrementDuplicated();
+
+            //- Increment nIgnored
+            void incrementIgnored();
 
             //- Increment nReac_
             void incrementReac();
@@ -329,8 +341,11 @@ class ChemistryData
             //- Return the product species of reaction r
             wordList products(const int) const;
 
-            //- Return amount of dublicated entries
+            //- Return amount of dublicated reactions 
             unsigned int nDublicated() const;
+
+            //- Return amount of ignored reactions
+            unsigned int nIgnored() const;
 
             //- Return no. of reaction
             int nReac() const;
@@ -340,6 +355,12 @@ class ChemistryData
 
             //- Return elementar reaction (as string)
             word elementarReaction(const int) const;
+
+            //- Return ignored elementar reaction
+            wordList ignoredElementarReaction() const;
+
+            //- Return ignored elementar reaction (as string)
+            word ignoredElementarReaction(const int) const;
 
             //- Return List of reaction no. of species
             List<int> reacNumbers(const word) const;

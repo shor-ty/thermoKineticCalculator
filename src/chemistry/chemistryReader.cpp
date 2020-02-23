@@ -276,17 +276,39 @@ void AFC::ChemistryReader::readReactionBlock
 
                 if (found != std::string::npos)
                 {
-                    data.incrementReac();
+                    //- If extended collision partner found that is not (+M)
+                    //  ignore it (get rid of issue 15)
+                    //  TODO - take care of these equations
+                    std::size_t found1 = tmp[0].find('(');
+                    std::size_t found2 = tmp[0].find(')');
 
-                    data.incrementMatrixesVectors();
-
-                    analyzeReaction(fileContent[line], data);
-
-                    found = fileContent[line].find("+M");
-
-                    if (found != std::string::npos)
+                    if
+                    (
+                        (found1 != std::string::npos)
+                     && (found2 != std::string::npos)
+                    )
                     {
-                        data.TBR(true);
+                        data.incrementIgnored();
+                        data.ignoredElementarReaction(tmp[0]);
+                        line++;
+                    }
+                    //- Supported reactions
+                    //  TH::22.02.2020
+                    else
+                    {
+
+                        data.incrementReac();
+
+                        data.incrementMatrixesVectors();
+
+                        analyzeReaction(fileContent[line], data);
+
+                        found = fileContent[line].find("+M");
+
+                        if (found != std::string::npos)
+                        {
+                            data.TBR(true);
+                        }
                     }
                 }
                 else

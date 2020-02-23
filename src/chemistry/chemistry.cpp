@@ -356,6 +356,7 @@ void AFC::Chemistry::summary(ostream& data) const
     const wordList& elements = chemData_.elements();
     const wordList& species = chemData_.species();
     const wordList& reactions = chemData_.elementarReaction();
+    const wordList& ignoredReactions = chemData_.ignoredElementarReaction();
 
     //- Get amount of LOW TROE SRI ENHANCED BR IR DUB reactions
     unsigned int BR{0};
@@ -367,6 +368,7 @@ void AFC::Chemistry::summary(ostream& data) const
     unsigned int TBR{0};
 
     unsigned int DUB = chemData_.nDublicated();
+    unsigned int IGN = chemData_.nIgnored();
 
     forEach(reactions, r)
     {
@@ -406,6 +408,7 @@ void AFC::Chemistry::summary(ostream& data) const
         << " Number of elements             " << elements.size()  << "\n"
         << " Number of species              " << species.size()   << "\n"
         << " Number of dublicated reaction  " << DUB  << "\n"
+        << " Number of ignored reaction     " << IGN  << "\n"
         << " Number of elementar reactions  " << reactions.size() << "\n"
         << "   |\n"
         << "   |--> Number of equilibrium reactions   " << BR   << "\n"
@@ -435,6 +438,13 @@ void AFC::Chemistry::summary(ostream& data) const
     forEach(reactions, r)
     {
         data<< "   |-->  (" << r+1 << ")  " << reactions[r] << "\n";
+    }
+
+    data<< "\n\n Reactions ignored: \n   | \n";
+
+    forEach(ignoredReactions, r)
+    {
+        data<< "   |-->  (" << r+1 << ")  " << ignoredReactions[r] << "\n";
     }
 
     data<< "\n\n More detailed kinetics for reactions\n\n";

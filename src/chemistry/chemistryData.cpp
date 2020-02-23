@@ -29,8 +29,6 @@ License
 
 AFC::ChemistryData::ChemistryData()
 :
-    nReac_{-1},
-
     thermo_{false}
 {}
 
@@ -120,6 +118,12 @@ void AFC::ChemistryData::elementarReaction(const string reaction)
 }
 
 
+void AFC::ChemistryData::ignoredElementarReaction(const string reaction)
+{
+    ignoredElementarReaction_[nIgnored_-1] = reaction;
+}
+
+
 void AFC::ChemistryData::arrheniusCoeffs
 (
     const scalar coeff_1,
@@ -177,6 +181,15 @@ void AFC::ChemistryData::ENHANCEDCoeffs
 void AFC::ChemistryData::incrementDuplicated()
 {
     nDuplicated_++;
+}
+
+
+void AFC::ChemistryData::incrementIgnored()
+{
+    nIgnored_++;
+
+    //- In this regard, we also increment the container
+    ignoredElementarReaction_.push_back("");
 }
 
 
@@ -490,6 +503,12 @@ unsigned int AFC::ChemistryData::nDublicated() const
 }
 
 
+unsigned int AFC::ChemistryData::nIgnored() const
+{
+    return nIgnored_;
+}
+
+
 int AFC::ChemistryData::nReac() const
 {
     return nReac_;
@@ -505,6 +524,18 @@ AFC::List<AFC::string> AFC::ChemistryData::elementarReaction() const
 AFC::string AFC::ChemistryData::elementarReaction(const int r) const
 {
     return elementarReaction_[r];
+}
+
+
+AFC::List<AFC::string> AFC::ChemistryData::ignoredElementarReaction() const
+{
+    return ignoredElementarReaction_;
+}
+
+
+AFC::string AFC::ChemistryData::ignoredElementarReaction(const int r) const
+{
+    return ignoredElementarReaction_[r];
 }
 
 
