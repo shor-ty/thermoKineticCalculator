@@ -27,8 +27,8 @@ License This file is part of Automatic Flamelet Constructor.
 
     //- Files pathes
     transport       ../files/fullTransport.tra
-    thermodynamic   ../files/fullThermo.tdc
-    chemistry       ../files/kineticsSimple.kin
+    thermodynamic   ../files/h2Thermo
+    chemistry       ../files/h2Kinetics
 
     //- Interprete the data
     interprete      yes
@@ -69,8 +69,8 @@ License This file is part of Automatic Flamelet Constructor.
          
 
     //- Temperature of fuel and oxidizer at inlets
-    temperatureOxidizer 300
-    temperatureFuel 300
+    temperatureOxidizer 320
+    temperatureFuel 320
 
     //- Enthalpy defects in [J/kJ]; 
     //  + negative, energy will be excluded

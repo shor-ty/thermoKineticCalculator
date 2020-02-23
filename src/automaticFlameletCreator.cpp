@@ -88,6 +88,9 @@ int main
         file_Thermo = tmp.path("thermodynamic");
         file_Transport = tmp.path("transport");
         file_Chemistry = tmp.path("chemistry");
+
+        //- Get information if interpreter should be executed
+        interpreter.analyze(tmp.interprete());
     }
 
     Thermo thermo(file_Thermo);

@@ -488,9 +488,9 @@ AFC::scalar AFC::TransportCalc::thermalConductivity
     {
         ErrorMsg
         (
-            "Method " + method + " is not available for calculation of\n"
-            "thermal conductivity. You have to implement it yourself\n"
-            "or ask for help",
+            "    Method " + method + " is not available for calculation of\n"
+            "    thermal conductivity. You have to implement it yourself\n"
+            "    or ask for help",
             __FILE__,
             __LINE__
         );
@@ -522,7 +522,7 @@ AFC::scalar AFC::TransportCalc::thermalConductivityWarnatz
     const scalar sigma = transData.LJCD(species) * scalar(1e-10);
 
     //- Dimensionless temperature T*
-    const scalar Ts =   T * pow(LJP, -1);
+    const scalar Ts = T * pow(LJP, -1);
 
     //- Valid for 0.3 <= Ts <= 100
     if (Ts < 0.3 || Ts > 100)
@@ -530,9 +530,10 @@ AFC::scalar AFC::TransportCalc::thermalConductivityWarnatz
         //- Output warning to file
         Warning
         (
-            "Calculation of thermal conductivity based on Warnatz is\n"
-            "not in the valid anymore. 0.3 < Ts < 100 while Ts = " + toStr(Ts) +
-            "\nGoing on in calculation...\n",
+            "      Calculation of thermal conductivity based on Warnatz is\n"
+            "      not in the valid range for species " + species + " anymore."
+            "\n      Valid range is:  0.3 < Ts < 100 while Ts = "
+            + toStr(Ts) + "\n      Going on in calculation...\n",
             __FILE__,
             __LINE__
         );

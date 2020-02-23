@@ -238,7 +238,7 @@ void AFC::ChemistryReader::readReactionBlock
     {
         stringList tmp = splitStrAtWS(fileContent[line]);
 
-        //- If line is not empty and no comment, proceed
+        //- If line is not empty and is not a comment, proceed
         if
         (
             !tmp.empty()
@@ -256,6 +256,21 @@ void AFC::ChemistryReader::readReactionBlock
             }
             else
             {
+                //- Check if another comment is somewhere in the line 
+                std::size_t foundExMark = fileContent[line].find('!');
+
+                if (foundExMark != std::string::npos)
+                {
+                    //- Search the entry of the comment
+                    forEach(tmp, i)
+                    {
+                        if (tmp[i][0] == '!')
+                        {
+                            tmp.resize(i);
+                        } 
+                    };
+                }
+
                 //- Check if '=' is in string (means reaction)
                 std::size_t found = fileContent[line].find('=');
 
@@ -423,13 +438,14 @@ void AFC::ChemistryReader::analyzeReaction
     //- STEP 1: manipulate string to get reaction
     stringList tmp = splitStrAtWS(reaction);
 
-    string tmp2;
+    const string& tmp2 = tmp[0];
 
     //- Re-arrange the string and remove arrhenius coeffs
-    for (unsigned int i=0; i<tmp.size()-3; i++)
+    /*for (unsigned int i=0; i<tmp.size()-3; i++)
     {
         tmp2 += tmp[i];
     }
+    */
 
     data.elementarReaction(tmp2);
     
@@ -504,9 +520,9 @@ void AFC::ChemistryReader::analyzeReaction
     // STEP 3: insert arrhenius coeffs
     data.arrheniusCoeffs
     (
-        stod(tmp[tmp.size()-3]),
-        stod(tmp[tmp.size()-2]),
-        stod(tmp[tmp.size()-1])
+        stod(tmp[1]),
+        stod(tmp[2]),
+        stod(tmp[3])
     );
 
     // STEP 4: get stochiometric values
