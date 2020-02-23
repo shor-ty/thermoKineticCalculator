@@ -98,7 +98,7 @@ AFC::Matrix AFC::Matrix::operator*(const Matrix& B) const
 }
 
 
-AFC::Vector AFC::Matrix::operator*(const Vector& b) const
+/*AFC::Vector AFC::Matrix::operator*(const Vector& b) const
 {
     //- Inner Product of Matrix and Vector
     
@@ -131,6 +131,7 @@ AFC::Vector AFC::Matrix::operator*(const Vector& b) const
 
     return c;
 }
+*/
 
 
 // * * * * * * * * * * * * * * * Member function * * * * * * * * * * * * * * //
