@@ -78,6 +78,11 @@ class PropertiesReader
             //- Read properties file and delegate data
             void read(Properties&);
 
+            //- Return the path to the thermo, transport and chemistry file 
+            string path(const string);
+            
+            //- Return if the data should be interpreted
+            bool interprete();
 
         // Helper functions
 

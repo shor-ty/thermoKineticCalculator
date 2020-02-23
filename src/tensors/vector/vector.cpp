@@ -102,6 +102,7 @@ AFC::Vector AFC::Vector::operator*(const Matrix& T) const
 }
 
 
+/*
 void AFC::Vector::operator-=(const Vector& b)
 {
     //- The vector on the left is the object itself
@@ -112,8 +113,9 @@ void AFC::Vector::operator-=(const Vector& b)
         a(i) = a(i) - b(i);
     }
 }
+*/
 
-/*AFC::scalar AFC::Vector::operator()
+AFC::scalar AFC::Vector::operator()
 (
     const size_t& i
 ) const
@@ -147,7 +149,7 @@ void AFC::Vector::operator()
     }
 }
 
-
+/*
 void AFC::Vector::operator()() const
 {
     AFC::Tensor::operator()();

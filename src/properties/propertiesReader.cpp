@@ -219,6 +219,80 @@ void AFC::PropertiesReader::read(Properties& data)
 }
 
 
+AFC::string AFC::PropertiesReader::path(const string key)
+{
+    const auto fileContent = readFile(file_);
+
+    //- Reading afcDict
+    for (unsigned int line=0; line < fileContent.size(); line++)
+    {
+        stringList tmp = splitStrAtWS(fileContent[line]);
+
+        //- If line is not empty and no comment, proceed
+        if
+        (
+            !tmp.empty()
+         && tmp[0][0] != '!'
+        )
+        {
+            if (tmp[0] == key)
+            {
+                if (tmp[1].empty())
+                {
+                    ErrorMsg
+                    (
+                        "No " + key + " path specified (" + file_ +")",
+                        __FILE__,
+                        __LINE__
+                    );
+                }
+
+                return tmp[1];
+            }
+        }
+    }
+
+    //- Suppressing compiler warning warning
+    return "";
+}
+
+
+bool AFC::PropertiesReader::interprete()
+{
+    const auto fileContent = readFile(file_);
+
+    //- Reading afcDict
+    for (unsigned int line=0; line < fileContent.size(); line++)
+    {
+        stringList tmp = splitStrAtWS(fileContent[line]);
+
+        //- If line is not empty and no comment, proceed
+        if
+        (
+            !tmp.empty()
+         && tmp[0][0] != '!'
+        )
+        {
+            if (tmp[0] == "interprete")
+            {
+                if (tmp[1].empty())
+                {
+                    ErrorMsg
+                    (
+                        "Keyword 'interprete' not specified (" + file_ +")",
+                        __FILE__,
+                        __LINE__
+                    );
+                }
+
+                if (tmp[1] == "true" || tmp[1] == "yes") { return true; }
+            }
+        }
+    }
+
+    return false;
+}
+
 // * * * * * * * * * * * * * * Helper functions  * * * * * * * * * * * * * * //
 
 void AFC::PropertiesReader::findKeyword

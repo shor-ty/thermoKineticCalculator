@@ -82,10 +82,10 @@ class Vector
             Vector operator*(const Matrix&) const;
 
             //- Subtract one vector to the actual one
-            void operator-=(const Vector&);
+            //void operator-=(const Vector&);
         
             //- Return the value at position
-            /*scalar operator()
+            scalar operator()
             (
                 const size_t&
             ) const;
@@ -95,7 +95,7 @@ class Vector
             (
                 const size_t,
                 const scalar
-            );*/
+            );
 
             //- Show the vector
             //void operator()() const;

@@ -79,7 +79,7 @@ class Thermo
         // Member functions
         
             //- Return species as word list
-            wordList species() const;
+            const wordList species() const;
 
 
             //- Moleculare weight [kg/mol]

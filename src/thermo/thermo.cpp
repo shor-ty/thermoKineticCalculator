@@ -67,7 +67,7 @@ AFC::scalar AFC::Thermo::p() const
 }
 
 
-AFC::wordList AFC::Thermo::species() const
+const AFC::wordList AFC::Thermo::species() const
 {
     return thermoData_.species();
 }

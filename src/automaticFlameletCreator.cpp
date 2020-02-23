@@ -66,68 +66,28 @@ int main
     Interpreter interpreter;
 
     //- Check if all arguments are correct 
-    if (argc != 9 && argc != 10)
+    if (argc != 3)
     {
         ErrorMsg
         (
-            "    Program needs one or eight arguments.\n\n"
+            "    Program needs two arguments.\n\n"
             "    For calculating flamelets you have to use\n"
-            "    ./automaticFlameletCreator\n"
-            "      -transport $pathToFile\n"
-            "      -thermodynamic $pathToFile\n"
-            "      -chemistry $pathToFile\n"
-            "      -AFCDict $pathToFile\n\n"
-            "    For interpreting the data you have to add\n"
-            "      -interprete\n",
+            "      ./automaticFlameletCreator -AFCDict $pathToFile\n\n",
             __FILE__,
             __LINE__
         ); 
     }
     else
     {
-        for (int i=0; i<argc; i++)
-        {
-            const string input = string(argv[i]);
+        file_AFC = string(argv[2]);
+    }
 
-            if (input == "-transport")
-            {
-                file_Transport = string(argv[i+1]);
-            }
-            else if (input == "-thermodynamic")
-            {
-                file_Thermo = string(argv[i+1]);
-            }
-            else if (input == "-chemistry")
-            {
-                file_Chemistry = string(argv[i+1]);
-            }
-            else if (input == "-AFCDict")
-            {
-                file_AFC = string(argv[i+1]);
-            }
-            else if (input == "-interprete")
-            {
-                interpreter.analyze();
-            }
-        }
-
-        if
-        (
-            file_Transport.empty()
-         || file_Thermo.empty()
-         || file_Chemistry.empty()
-         || file_AFC.empty()
-        )
-        {
-            ErrorMsg
-            (
-                "    Transport, Thermo, Chemistry or AFCDict is missing.\n"
-                "    Check the command that you use for running the "
-                "application.",
-                __FILE__,
-                __LINE__
-            );
-        }
+    //- Temporary Reader to get the file paths
+    {
+        PropertiesReader tmp (file_AFC);
+        file_Thermo = tmp.path("thermodynamic");
+        file_Transport = tmp.path("transport");
+        file_Chemistry = tmp.path("chemistry");
     }
 
     Thermo thermo(file_Thermo);
@@ -225,7 +185,8 @@ int main
             speciesAFC.push_back(i);
         }
 
-        wordList speciesCH = chemistry.species();
+        //- Check if species are in chemistry
+        const wordList& speciesCH = chemistry.species();
 
         forAll(speciesAFC, i)
         {
@@ -239,7 +200,7 @@ int main
                 }
             }
 
-            //- afc species not found in chemistryData 
+            //- afc species not found in chemistry, thermo or transport
             if (!found)
             {
                 ErrorMsg

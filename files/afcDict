@@ -25,6 +25,13 @@ License This file is part of Automatic Flamelet Constructor.
 
 // * * * * * * * * * * * * * AFC Control And Settings  * * * * * * * * * * * //
 
+    //- Files pathes
+    transport       ../files/fullTransport.tra
+    thermodynamic   ../files/fullThermo.tdc
+    chemistry       ../files/kineticsSimple.kin
+
+    //- Interprete the data
+    interprete      yes
 
     //- Stuff for adiabatic flame calculation 
     oxidizer O2
