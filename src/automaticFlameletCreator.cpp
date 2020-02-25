@@ -35,8 +35,8 @@ Description
 #include "thermo.hpp"
 #include "transport.hpp"
 #include "properties.hpp"
-//#include "mixtureFraction.hpp"
-//#include "numerics.hpp"
+#include "mixtureFraction.hpp"
+#include "numerics.hpp"
 //#include "LUDecompose.hpp"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -239,19 +239,20 @@ int main
 
 
 //- TH::200217 
-//
-//    //- Now we can proceed doing some other stuff after the check
-//    {
-//        //- Calculate adiabatic enthalpy of fuel and oxidizer
-//        properties.calcProperties();
-//
-//        //- Calculate adiabatic flame temperature (simple estimate)
-//        properties.calcAdiabaticTemperature();
-//
-//        transport.calcAtomComposition();
-//    }
-//
-//    //- Calculate first flamelet (initial - equilibrium)
+
+
+    //- Now we can proceed doing some other stuff after the check
+    {
+        //- Calculate adiabatic enthalpy of fuel and oxidizer
+        //properties.calcProperties();
+
+        //- Calculate adiabatic flame temperature (simple estimate)
+        //properties.calcAdiabaticTemperature();
+
+        //transport.calcAtomComposition();
+    }
+
+    //- Calculate first flamelet (initial - equilibrium)
 //    AdiabaticFlamelet adiabaticFlamelet;
 //
 //    //- First lookUpTable for first scalar dissipation rate
@@ -294,122 +295,123 @@ int main
 //        return 0;
 //    }*/
 //
-//    Info<< " c-o Overview of Look-Up-Tables ...\n" << endl;
+    Info<< " c-o Overview of Look-Up-Tables ...\n" << endl;
+
+    //- Definition
+    //  |
+    //  |-> scalarDissipationRate
+    //      |
+    //      |-> MixtureFraction point [0-1]
+    //          |
+    //          |-> Class of MixtureFraction
+    //map<word, map<unsigned int, MixtureFraction> > flame;
+
+    lookUpTable lookUpTables;
+
+    //- The first flamelet is always complete in equilibrium (sDR -> very low)
+    //  and has no enthalpy defect (adiabatic flamelet)
+    MixtureFraction adiabaticFlamelet
+    (
+        chemistry,
+        thermo,
+        transport,
+        properties,
+        scalar(1e-6),
+        scalar(0)
+    );
+
+    {
+        const scalarField defects = properties.defects();
+        const scalarField sDRs = properties.sDRs();
+
+        //- Adiabatic flamelet (always available)
+        {
+            Info<< "    ... for adiabatic condition\n\n";
+
+            lookUpTables.push_back(vector<MixtureFraction>());
+
+            forAll(sDRs, rate)
+            {
+                Info<< "        Create flamelets for scalar dissipation rate "
+                    << rate << " Hz\n";
+
+                lookUpTables[0].push_back
+                (
+                    MixtureFraction
+                    (
+                        chemistry,
+                        thermo,
+                        transport,
+                        properties,
+                        rate,
+                        scalar(0)
+                    )
+                );
+
+            //- sDR 
+            }
+            Info<< "\n";
+
+        //- adiabatic condition
+        }
+    
+        //- Counter (0 is for adiabatic)
+        unsigned int c{1};
+        
+        //- Non-adiabatic flamelets
+        forAll(defects, defect)
+        {
+            if (defect == 0)
+            {
+                break;
+            }
+
+            Info<< "    ... for enthalpy defect " << defect << " J/kg\n\n";
+
+            lookUpTables.push_back(vector<MixtureFraction>());
+
+            forAll(sDRs, rate)
+            {
+                Info<< "        Create flamelets for scalar dissipation rate "
+                    << rate << " Hz\n";
+
+                lookUpTables[c].push_back
+                (
+                    MixtureFraction
+                    (
+                        chemistry,
+                        thermo,
+                        transport,
+                        properties,
+                        rate,
+                        defect
+                    )
+                );
+
+            //- sDR 
+            }
+            Info<< "\n";
+
+        //- defect 
+        }
+        Info<< "\n";
+    }
+
+
+    //- Calculate initial solution
+    Numerics num(chemistry);
+
+    Info<< " c-o Calculate initial solution for adiabatic flamelet\n\n";
+    {
+        num.solveForInitialSolution(adiabaticFlamelet);
+
+        Info<< "\n";
+    }
 //
-//    //- Definition
-//    //  |
-//    //  |-> scalarDissipationRate
-//    //      |
-//    //      |-> MixtureFraction point [0-1]
-//    //          |
-//    //          |-> Class of MixtureFraction
-//    //map<word, map<unsigned int, MixtureFraction> > flame;
-//
-//    lookUpTable lookUpTables;
-//
-//    //- The first flamelet is always complete in equilibrium (sDR -> very low)
-//    //  and has no enthalpy defect (adiabatic flamelet)
-//    MixtureFraction adiabaticFlamelet
-//    (
-//        chemistry,
-//        thermo,
-//        transport,
-//        properties,
-//        scalar(1e-6),
-//        scalar(0)
-//    );
-//
-//    /*{
-//        const scalarField defects = properties.defects();
-//        const scalarField sDRs = properties.sDRs();
-//
-//        //- Adiabatic flamelet (always available)
-//        {
-//            Info<< "    ... for adiabatic condition\n\n";
-//
-//            lookUpTables.push_back(vector<MixtureFraction>());
-//
-//            forAll(sDRs, rate)
-//            {
-//                Info<< "        Create flamelets for scalar dissipation rate "
-//                    << rate << " Hz\n";
-//
-//                lookUpTables[0].push_back
-//                (
-//                    MixtureFraction
-//                    (
-//                        chemistry,
-//                        thermo,
-//                        transport,
-//                        properties,
-//                        rate,
-//                        scalar(0)
-//                    )
-//                );
-//
-//            //- sDR 
-//            }
-//            Info<< "\n";
-//
-//        //- adiabatic condition
-//        }
-//    
-//        //- Counter (0 is for adiabatic)
-//        unsigned int c{1};
-//        
-//        //- Non-adiabatic flamelets
-//        forAll(defects, defect)
-//        {
-//            if (defect == 0)
-//            {
-//                break;
-//            }
-//
-//            Info<< "    ... for enthalpy defect " << defect << " J/kg\n\n";
-//
-//            lookUpTables.push_back(vector<MixtureFraction>());
-//
-//            forAll(sDRs, rate)
-//            {
-//                Info<< "        Create flamelets for scalar dissipation rate "
-//                    << rate << " Hz\n";
-//
-//                lookUpTables[c].push_back
-//                (
-//                    MixtureFraction
-//                    (
-//                        chemistry,
-//                        thermo,
-//                        transport,
-//                        properties,
-//                        rate,
-//                        defect
-//                    )
-//                );
-//
-//            //- sDR 
-//            }
-//            Info<< "\n";
-//
-//        //- defect 
-//        }
-//        Info<< "\n";
-//    }*/
-//
-//    //- Calculate initial solution
-//    Numerics num(chemistry);
-//
-//    Info<< " c-o Calculate initial solution for adiabatic flamelet\n\n";
-//    {
-//        num.solveForInitialSolution(adiabaticFlamelet);
-//
-//        Info<< "\n";
-//    }
-//
-//    Info<< " c-o Get it burn - calculate adiabatic flamelet\n\n";
-//    {
-//        num.solveAdiabaticFlamelet(adiabaticFlamelet);
-//    }
+    Info<< " c-o Get it burn - calculate adiabatic flamelet\n\n";
+    {
+        num.solveAdiabaticFlamelet(adiabaticFlamelet);
+    }
 //
 //    //- Calculation start
 //    /*Info<< " c-o Start flamelet calculation\n" << endl;

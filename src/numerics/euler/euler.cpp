@@ -63,7 +63,7 @@ AFC::scalar AFC::Euler::solve
     }
 
     //- Normalize error
-    return normalizeError(c0, c, err_);
+    //return normalizeError(c0, c, err_);
 }
 
 

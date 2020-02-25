@@ -254,7 +254,7 @@ AFC::scalar AFC::Jacobian::derivationOfReaction
         }
         else
         {
-            FatalError
+            ErrorMsg
             (
                 "    The stochiometric factor of species "
                 + speciesOfDerivation + " is not 1 or 2.\n"
@@ -302,7 +302,7 @@ AFC::scalar AFC::Jacobian::derivationOfReaction
         }
         else
         {
-            FatalError
+            ErrorMsg 
             (
                 "    The stochiometric factor of species "
                 + speciesOfDerivation + " is not 1 or 2.\n"
@@ -346,7 +346,7 @@ AFC::scalar AFC::Jacobian::derivationOfReaction
     }
     else
     {
-        FatalError
+        ErrorMsg
         (
             "Not implemented. Error.",
             __FILE__,

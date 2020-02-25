@@ -159,8 +159,8 @@ class MixtureFraction
             const Thermo&,
             const Transport&,
             const Properties&,
-            const scalar&,
-            const scalar&
+            const scalar,
+            const scalar
         );
 
         //- Destructor
@@ -179,10 +179,10 @@ class MixtureFraction
             void calculateMeanCp(const scalar);
 
             //- Calculate the mean enthalpy
-            void calculateMeanH(const scalar)
+            void calculateMeanH(const scalar);
 
             //- Calculate the mean entropy
-            void calculateMeanS(const scalar)
+            void calculateMeanS(const scalar);
 
             //- Calculate the mean free gibs
             void calculateMeanG(const scalar);

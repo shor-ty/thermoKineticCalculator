@@ -577,7 +577,7 @@ void AFC::MixtureFraction::updateT(const scalarField& T)
 }
 
 
-void AFC::MixtureFraction::updateRho(const word& method)
+void AFC::MixtureFraction::updateRho(const word method)
 {
     if (updatedMeanRho())
     {

@@ -29,28 +29,25 @@ License
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-template<typename Type>
-AFC::ODE<Type>::ODE(const Chemistry& chem)
+AFC::ODE::ODE(const Chemistry& chem)
 :
     StepStatus(1),
 
     chem_(chem)
 {
-    solver_ = new Type(chem.species().size());
+    //solver_ = new Type(chem.species().size());
 }
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-template<typename Type>
-AFC::ODE<Type>::~ODE()
+AFC::ODE::~ODE()
 {}
 
 
 // * * * * * * * * * * * * * * * Member function * * * * * * * * * * * * * * //
 
-template<typename Type>
-void AFC::ODE<Type>::derivative
+void AFC::ODE::derivative
 (
     const scalar dt,
     const scalar T,
@@ -63,8 +60,7 @@ void AFC::ODE<Type>::derivative
 }
 
 
-template<typename Type>
-void AFC::ODE<Type>::solve
+void AFC::ODE::solve
 (
     const scalar T,
     const scalar p,
@@ -95,7 +91,7 @@ void AFC::ODE<Type>::solve
         do
         {
             //- Integration starts always from zero
-            solver_->solve(0, c0, dcdt_, dt, c_);
+            //solver_->solve(0, c0, dcdt_, dt, c_);
 
             //- Error is larger than one, reduce dt
             if (err > 1)
@@ -108,7 +104,7 @@ void AFC::ODE<Type>::solve
                 //- TODO small
                 if (dt < 1e-15)
                 {
-                    FatalError
+                    ErrorMsg
                     (
                         "Time step is going to zero",
                         __FILE__,
@@ -127,8 +123,8 @@ void AFC::ODE<Type>::solve
 }
 
 
-template<typename Type>
-AFC::scalar AFC::ODE<Type>::normalizeError
+/*
+AFC::scalar AFC::ODE::normalizeError
 (
     const map<word, scalar>& c0,
     const map<word, scalar>& c,
@@ -147,5 +143,7 @@ AFC::scalar AFC::ODE<Type>::normalizeError
 
     return maxErr;
 }
+*/
+
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

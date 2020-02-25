@@ -30,15 +30,16 @@ DIRECTORIES=typedef \
             properties \
             thermo \
             transport \
-			chemistry
-            #mixtureFraction \
-            #numerics \
-            #numerics/ODE \
-            #numerics/euler \
-            #numerics/jacobian \
-            #numerics/LUDecompose \
-            #numerics/seulex \
-            #numerics/stepStatus
+			chemistry \
+            mixtureFraction \
+            numerics \
+            numerics/jacobian \
+            numerics/euler \
+            numerics/stepStatus \
+            numerics/ODE \
+            numerics/LUDecompose \
+            numerics/seulex \
+			numerics/rosenbruck
 
 
 CPPFLAGS=-Wall \
@@ -72,6 +73,12 @@ pre:
 clean:
 	$(CLEAN_DIR) obj $(PROGRAM)
 
+rebuild:
+	$(CLEAN_DIR) obj $(PROGRAM)
+	$(MAKE_DIR) $(addprefix obj/,$(DIRECTORIES))
+	$(OBJECT_FILES)
+	$(COMPILER) $(CPPFLAGS) $(INCLUDE_DIR) -o $(PROGRAM) $(addsuffix .cpp, $(PROGRAM)) $^
+
 obj/%.o: %.cpp | obj
 	$(COMPILER) $(CPPFLAGS) $(INCLUDE_DIR) -c $< -o $@
 
@@ -80,5 +87,6 @@ help:
 	@echo "build        - build all libraries"
 	@echo "clean        - clean all libraries"
 	@echo "pre          - build directory tree for libraries"
+	@echo "rebuild      - execute clean, pre and build"
 
 

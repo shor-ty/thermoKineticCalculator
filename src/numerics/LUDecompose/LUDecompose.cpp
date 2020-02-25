@@ -42,9 +42,10 @@ AFC::LUDecompose::LUDecompose(Matrix& A)
     permut_(i_, 0)
 {
     //- Check for square matrix
+    /*
     if (i_ != j_)
     {
-        FatalError 
+        ErrorMsg 
         (
             "*** Error in LUDecompose::LUDecompose - Not a square matrix",
             __FILE__,
@@ -85,7 +86,7 @@ AFC::LUDecompose::LUDecompose(Matrix& A)
         //- If in one row we have only zeros
         if (large == scalar(0))
         {
-            FatalError 
+            ErrorMsg 
             (
                 "*** Error in LUDecompose::LUDecompose - Singular matrix",
                 __FILE__,
@@ -94,7 +95,7 @@ AFC::LUDecompose::LUDecompose(Matrix& A)
         }
 
         //- Set scale factor for ith col 
-        scale(i) = scalar(1)/large;
+        //scale(i) = scalar(1)/large;
     }
 
     //- Checkout where the pivot element is
@@ -165,6 +166,7 @@ AFC::LUDecompose::LUDecompose(Matrix& A)
             }
         }
     }
+    */
 }
 
 
@@ -178,6 +180,7 @@ AFC::LUDecompose::~LUDecompose()
 
 void AFC::LUDecompose::solve(Vector& b, Vector& x)
 {
+    /*
     //- Temporary variables
     size_t i{0}, ii{0}, ip{0}, j{0};
 
@@ -186,7 +189,7 @@ void AFC::LUDecompose::solve(Vector& b, Vector& x)
     //- First check size of vectors compared to matrix
     if (x.size() != n_)
     {
-        FatalError
+        ErrorMsg
         (
             "*** Error in LUDecompose::solve - Matrix size does not match"
             " with the vector x",
@@ -196,7 +199,7 @@ void AFC::LUDecompose::solve(Vector& b, Vector& x)
     }
     else if (b.size() != n_)
     {
-        FatalError
+        ErrorMsg
         (
             "Matrix size does not match with vector b",
             __FILE__,
@@ -247,11 +250,13 @@ void AFC::LUDecompose::solve(Vector& b, Vector& x)
         //- Store the component of the solution vector
         x(i) = sum / LU_(i,i);
     }
+    */
 }
 
 
 void AFC::LUDecompose::improveSolution(Vector& b, Vector& x)
 {
+    /*
     //- Solve the system Ax to get b* (x is the calculated solution)
     Vector bstar = A_ * x;
 
@@ -263,6 +268,7 @@ void AFC::LUDecompose::improveSolution(Vector& b, Vector& x)
     
     //- Substract the error from the solution
     x-= bstar;
+    */
 }
 
 

@@ -26,6 +26,8 @@ Class
     
 Description
     Abstract AFC::ODE class for numeric calculations for the ODE system
+    This class is the base and stores relevant numerical data used for 
+    the numerical integrator such as Euler, Rosenbrock or SEULEX
 
 SourceFiles
     ODE.cpp
@@ -38,7 +40,6 @@ SourceFiles
 #include "typedef.hpp"
 #include "stepStatus.hpp"
 #include "chemistry.hpp"
-#include "seulex.hpp"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -49,7 +50,6 @@ namespace AFC
                             Class ODE Declaration
 \*---------------------------------------------------------------------------*/
 
-template<typename Type>
 class ODE
 :
     public StepStatus
@@ -70,8 +70,11 @@ class ODE
         //- Relative tolerance 
         const scalar relativeTolerance_{1e-4};
         
-        //- Pointer to solve
-        Type* solver_;
+        //- Chemical time step 
+        scalar timeStep_{1e-7};
+
+        //- Pointer to solver
+        //Type* solver_;
 
         //- Time derivative 
         map<word, scalar> dcdt_;
@@ -110,8 +113,8 @@ class ODE
                 const map<word, scalar>& 
             );
 
-            //- Solve the chemistry using Seulex
-            void solve
+            //- Solve the chemistry used by the ODE in use
+            virtual void solve
             (
                 const scalar,
                 const scalar,

@@ -31,7 +31,7 @@ License This file is part of Automatic Flamelet Constructor.
     chemistry       ../files/h2Kinetics
 
     //- Interprete the data
-    interprete      yes
+    interprete      no 
 
     //- Stuff for adiabatic flame calculation 
     oxidizer O2
