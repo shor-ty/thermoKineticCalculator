@@ -2,7 +2,7 @@
   c-o-o-c-o-o-o             |
   |     |     A utomatic    | Open Source Flamelet
   c-o-o-c     F lamelet     | 
-  |     |     C onstructor  | Copyright (C) 2015 Holzmann-cfd
+  |     |     C onstructor  | Copyright (C) 2020 Holzmann CFD
   c     c-o-o-o             |
 ------------------------------------------------------------------------------
 License
@@ -140,7 +140,8 @@ AFC::scalar AFC::ChemistryCalc::arrhenius
     //-TODO change R to RCalc again R -> must be [cal]
     return
     (
-        A * pow(T, beta) * exp(-1*Ea / (AFC::Constants::R * T))
+        A * pow(T, beta) * exp(-1*Ea / (AFC::Constants::Rcal * T))
+    //    A*pow(T, beta) * exp(-Ea / T)
     );
 }
 

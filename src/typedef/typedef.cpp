@@ -2,7 +2,7 @@
   c-o-o-c-o-o-o             |
   |     |     A utomatic    | Open Source Flamelet
   c-o-o-c     F lamelet     | 
-  |     |     C onstructor  | Copyright (C) 2015 Holzmann-cfd
+  |     |     C onstructor  | Copyright (C) 2020 Holzmann CFD
   c     c-o-o-o             |
 -------------------------------------------------------------------------------
 License
@@ -44,7 +44,7 @@ void AFC::ErrorMsg
          << "    " << msg << "\n\n"
          << "    If there is a bug or a problem you can not solve,\n"
          << "    do not hesitate to write an email to "
-         << " Tobias.Holzmann@holzmann-cfd.de.\n" << endl;
+         << " Tobias.Holzmann@holzmann-cfd.com.\n" << endl;
 
     std::terminate();
 }
@@ -72,7 +72,7 @@ AFC::string AFC::Header()
 \n|  c-o-o-c-o-o-o             |                                             |\
 \n|  |     |     A utomatic    | AFC: The Open Source Flamelet Toolbox       |\
 \n|  c-o-o-c     F lamelet     | Version: 1.0.0                              |\
-\n|  |     |     C onstructor  | Web: www.Holzmann-cfd.de                    |\
+\n|  |     |     C onstructor  | Web: www.Holzmann-cfd.com                   |\
 \n|  c     c-o-o-o             |                                             |\
 \n\
 \\*------------------------------------------------------------------------*/\
@@ -91,7 +91,7 @@ void AFC::Footer(const scalar startTime)
 
     Info<< "\n\n c-o Execution: " << execTime  << " s\n\n" 
         << " ============================================================\n\n"
-        << " c-o Programmed by Tobias Holzmann (shor-ty)\n\n"
+        << " c-o Programmed by Tobias Holzmann\n\n"
         << " c-o Tobias.Holzmann@Holzmann-cfd.de\n" << endl;
 }
 
