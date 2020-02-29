@@ -22,10 +22,10 @@ License
     along with AFC; if not, see <http://www.gnu.org/licenses/>
 
 Class
-    AFC::Properties
+    AFC::PropertiesClass
     
 Description
-    Abstract AFC::Properties class for propertiesCalc data and calculation
+    Abstract AFC::Properties class for manipulation, calculation 
 
 SourceFiles
     propertiesCalc.cpp
@@ -43,6 +43,7 @@ SourceFiles
 
 namespace AFC
 {
+class Properties; 
 
 /*---------------------------------------------------------------------------*\
                             Class Properties Declaration
