@@ -2,7 +2,7 @@
   c-o-o-c-o-o-o             |
   |     |     A utomatic    | Open Source Flamelet
   c-o-o-c     F lamelet     | 
-  |     |     C onstructor  | Copyright (C) 2015 Holzmann-cfd
+  |     |     C onstructor  | Copyright (C) 2020 Holzmann CFD
   c     c-o-o-o             |
 -------------------------------------------------------------------------------
 License
@@ -24,6 +24,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "transportReader.hpp" 
+#include <algorithm>
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
@@ -56,28 +57,66 @@ void AFC::TransportReader::read
     //- Reading transport properties
     for (unsigned int line=0; line < fileContent.size(); line++)
     {
-        stringList tmp = splitStrAtWS(fileContent[line]);
+        string ttmp = fileContent[line];
 
-        //- If line is not empty and no comment, proceed
-        if
-        (
-            !tmp.empty()
-         && tmp[0][0] != '!'
-        )
+        //- Remove any comment
+        removeComment(ttmp);
+
+        stringList tmp = splitStrAtWS(ttmp);
+
+        bool duplicated{false};
+
+        //- If line is not empty, proceed
+        if (!tmp.empty())
         {
-            data.insertSpecies(tmp[0]);
+            //- Check if species already inserted (to avoid duplications)
+            {
+                const wordList& actualSpecies = data.species();
 
-            data.insertGeoConfig(stoi(tmp[1]));
+                if (actualSpecies.size() != 0)
+                {
 
-            data.insertLenJonPot(stod(tmp[2]));
+                    if
+                    (
+                        std::find
+                        (
+                            actualSpecies.begin(),
+                            actualSpecies.end(),
+                            tmp[0]
+                        )
+                     != actualSpecies.end()
+                    )
+                    {
+                        duplicated = true;
+                    }
+                    /*forAll(actualSpecies, s)
+                    {
+                        if (tmp[0] == s)
+                        {
+                            duplicated = true;
+                        }
+                    }
+                    */
+                }
+            }
 
-            data.insertLenJonCollDia(stod(tmp[3]));
+            //- Insert only if not a duplication
+            if (!duplicated)
+            {
+                data.insertSpecies(tmp[0]);
 
-            data.insertDipMom(stod(tmp[4]));
+                data.insertGeoConfig(stoi(tmp[1]));
 
-            data.insertAlpha(stod(tmp[5]));
+                data.insertLenJonPot(stod(tmp[2]));
 
-            data.insertZRot298(stod(tmp[6]));
+                data.insertLenJonCollDia(stod(tmp[3]));
+
+                data.insertDipMom(stod(tmp[4]));
+
+                data.insertAlpha(stod(tmp[5]));
+
+                data.insertZRot298(stod(tmp[6]));
+            }
         }
     }
 
@@ -87,7 +126,6 @@ void AFC::TransportReader::read
 
 
 // * * * * * * * * * * * * * * Helper functions  * * * * * * * * * * * * * * //
-
 
 
 // * * * * * * * * * * * * Data manipulation functions * * * * * * * * * * * //

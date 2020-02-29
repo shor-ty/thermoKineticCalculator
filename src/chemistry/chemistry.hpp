@@ -2,7 +2,7 @@
   c-o-o-c-o-o-o             |
   |     |     A utomatic    | Open Source Flamelet
   c-o-o-c     F lamelet     |
-  |     |     C onstructor  | Copyright (C) 2015 Holzmann-cfd
+  |     |     C onstructor  | Copyright (C) 2020 Holzmann CFD
   c     c-o-o-o             |
 -------------------------------------------------------------------------------
 License
@@ -61,7 +61,7 @@ class Chemistry
             //- ChemistryCalc obj
             const ChemistryCalc chemCalc_;
 
-            //- Thermo obj
+            //- Reference tp the thermo object
             const Thermo& thermo_;
 
 

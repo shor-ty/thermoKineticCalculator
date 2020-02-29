@@ -2,7 +2,7 @@
   c-o-o-c-o-o-o             |
   |     |     A utomatic    | Open Source Flamelet
   c-o-o-c     F lamelet     | 
-  |     |     C onstructor  | Copyright (C) 2015 Holzmann-cfd
+  |     |     C onstructor  | Copyright (C) 2020 Holzmann CFD
   c     c-o-o-o             |
 -------------------------------------------------------------------------------
 License
@@ -127,6 +127,19 @@ AFC::StringManipulator::removeAtEnd(const string str, const string str2)
 void AFC::StringManipulator::removeFirstChar(string& str)
 {
     str.replace(0,1,"");
+}
+
+
+void AFC::StringManipulator::removeComment(string& str, const string comment)
+{
+    //- Search comment position
+    if (!str.empty())
+    {
+        size_t pos = str.find(comment);
+
+
+        str = str.substr(0, pos);
+    }
 }
 
 

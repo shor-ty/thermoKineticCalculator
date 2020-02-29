@@ -2,7 +2,7 @@
   c-o-o-c-o-o-o             |
   |     |     A utomatic    | Open Source Flamelet
   c-o-o-c     F lamelet     | 
-  |     |     C onstructor  | Copyright (C) 2015 Holzmann-cfd
+  |     |     C onstructor  | Copyright (C) 2020 Holzmann CFD
   c     c-o-o-o             |
 -------------------------------------------------------------------------------
 License
@@ -63,6 +63,11 @@ void AFC::ChemistryReader::readElementBlock
     ChemistryData& data
 )
 {
+    if (debug_)
+    {
+        Info<< "Start reading the ELEMENT block\n" << endl;
+    }
+
     //- STEP 1: find line no. of wordList ELEMENTS and "END"
     int lineNoKeyword{-1};
     unsigned int lineNoEnd{0};
@@ -115,6 +120,11 @@ void AFC::ChemistryReader::readElementBlock
             }
         }
     }
+
+    if (debug_)
+    {
+        Info<< "End reading the ELEMENT block\n" << endl;
+    }
 }
 
 
@@ -124,6 +134,11 @@ void AFC::ChemistryReader::readSpeciesBlock
    ChemistryData& data
 )
 {
+    if (debug_)
+    {
+        Info<< "Start reading the SPECIES block\n" << endl;
+    }
+
     //- STEP 1: find line no. of wordList SPECIES and "END"
     int lineNoKeyword{-1};
     unsigned int lineNoEnd{0};
@@ -176,6 +191,11 @@ void AFC::ChemistryReader::readSpeciesBlock
             }
         }
     }
+
+    if (debug_)
+    {
+        Info<< "End reading the SPECIES block\n" << endl;
+    }
 }
 
 
@@ -185,6 +205,11 @@ void AFC::ChemistryReader::readThermoBlock
     ChemistryData& data
 )
 {
+    if (debug_)
+    {
+        Info<< "Start reading the THERMO block\n" << endl;
+    }
+
     //- STEP 1: find line no. of wordList THERMO and "END"
     int lineNoKeyword{-1};
     unsigned int lineNoEnd{0};
@@ -202,6 +227,11 @@ void AFC::ChemistryReader::readThermoBlock
     {
         data.setThermo();
     }
+
+    if (debug_)
+    {
+        Info<< "End reading the THERMO block\n" << endl;
+    }
 }
 
 void AFC::ChemistryReader::readReactionBlock
@@ -210,6 +240,11 @@ void AFC::ChemistryReader::readReactionBlock
     ChemistryData& data
 )
 {
+    if (debug_)
+    {
+        Info<< "Start reading the REACTION block\n" << endl;
+    }
+
     //- STEP 1: find line no. of wordList REACTIONS and "END"
     int lineNoKeyword{-1};
     unsigned int lineNoEnd{0};
@@ -349,6 +384,11 @@ void AFC::ChemistryReader::readReactionBlock
         }
     }
 
+    if (debug_)
+    {
+        Info<< "End reading the REACTION block\n" << endl;
+    }
+
     //- At the end we have to increase nReac because it is initialized as -1
     data.incrementReac();
 }
@@ -401,7 +441,7 @@ void AFC::ChemistryReader::findKeyword
         //- Search line no.
         forAll(searchPattern, i)
         {
-            if (tmp[0] == i)
+            if (!tmp.empty() && tmp[0] == i)
             {
                 start = lineNo; 
                 break;
@@ -409,7 +449,7 @@ void AFC::ChemistryReader::findKeyword
         }
 
         //- Search end after keyword found
-        if (tmp[0] == "END" && start != -1)
+        if (!tmp.empty() && tmp[0] == "END" && start != -1)
         {
             end = lineNo;
         }

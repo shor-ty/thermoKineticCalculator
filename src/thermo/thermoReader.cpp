@@ -2,7 +2,7 @@
   c-o-o-c-o-o-o             |
   |     |     A utomatic    | Open Source Flamelet
   c-o-o-c     F lamelet     | 
-  |     |     C onstructor  | Copyright (C) 2015 Holzmann-cfd
+  |     |     C onstructor  | Copyright (C) 2020 Holzmann CFD
   c     c-o-o-o             |
 -------------------------------------------------------------------------------
 License
@@ -56,14 +56,15 @@ void AFC::ThermoReader::read(ThermoData& data)
     //- Reading THERMO block
     for (unsigned int line = lineNoKeyword+2; line < lineNoEnd; line++)
     {
+        string ttmp = fileContent[line];
+
+        //- Remove any comment
+        removeComment(ttmp);
+
         stringList tmp = splitStrAtWS(fileContent[line]);
 
         //- If line is not empty and no comment, proceed
-        if
-        (
-            !tmp.empty()
-         && tmp[0][0] != '!'
-        )
+        if (!tmp.empty())
         {
             if (fileContent[line][79] == '1')
             {
@@ -96,7 +97,7 @@ void AFC::ThermoReader::findKeyword
         //- Search line no.
         forEach(searchPattern, i)
         {
-            if (tmp[0] == searchPattern[i])
+            if (!tmp.empty() && tmp[0] == searchPattern[i])
             {
                 start = line; 
                 break;
@@ -104,7 +105,7 @@ void AFC::ThermoReader::findKeyword
         }
 
         //- Search end after keyword found
-        if (tmp[0] == "END" && start != -1)
+        if (!tmp.empty() && tmp[0] == "END" && start != -1)
         {
             end = line;
         }
