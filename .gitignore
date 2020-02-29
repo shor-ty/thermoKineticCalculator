@@ -10,7 +10,6 @@
 *.png
 
 #documentation
-doc/doxygen
 doc/*pdf
 doc/UserGuide
 
@@ -19,9 +18,7 @@ obj/
 bin/
 
 #doxygen
-doxygen/
-latex/
-html/
+doc/doxygen/html/*
 
 #prog
 automaticFlameletCreator
