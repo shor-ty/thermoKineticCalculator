@@ -33,18 +33,17 @@ DIRECTORIES=typedef \
 			chemistry \
             mixtureFraction \
             numerics \
-            numerics/jacobian \
             numerics/euler \
             numerics/stepStatus \
             numerics/ODE \
             numerics/LUDecompose \
             numerics/seulex \
-			numerics/rosenbruck
+			numerics/rosenbrock
 
 
 CPPFLAGS=-Wall \
 		 -Wextra \
-         -std=c++11 \
+         -std=c++17 \
 		 -D_GLIBCXX_DEBUG \
          -g \
          -pedantic-errors \
