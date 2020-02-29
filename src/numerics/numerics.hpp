@@ -2,7 +2,7 @@
   c-o-o-c-o-o-o             |
   |     |     A utomatic    | Open Source Flamelet
   c-o-o-c     F lamelet     | 
-  |     |     C onstructor  | Copyright (C) 2015 Holzmann-cfd
+  |     |     C onstructor  | Copyright (C) 2020 Holzmann CFD
   c     c-o-o-o             |
 -------------------------------------------------------------------------------
 License
@@ -37,7 +37,7 @@ SourceFiles
 
 #include "typedef.hpp"
 #include "mixtureFraction.hpp"
-#include "ODE.hpp"
+#include "rosenbrock.hpp"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -48,6 +48,7 @@ namespace AFC
                             Class Numerics Declaration
 \*---------------------------------------------------------------------------*/
 
+template<class Type>
 class Numerics
 {
     private:
@@ -55,8 +56,8 @@ class Numerics
         // Debug switch
         bool debug_{true};
 
-        //- ODE pointer 
-        ODE* ode_;
+        //- Pointer to the ODE solver
+        Type* ode_;
 
         //- Initial chemistry time step for each discrete point Z 
         //  This time step will change during the calculation
@@ -68,8 +69,14 @@ class Numerics
         //- Constructor 
         Numerics
         (
-            const Chemistry&  
+            Chemistry&  
         );
+
+        //- Constructor usind make_unique with Type default
+        // Numerics : Type (std::make_unique<Type>()) {};
+
+
+
 
         //- Destructor
         ~Numerics();

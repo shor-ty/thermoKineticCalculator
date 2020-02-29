@@ -2,7 +2,7 @@
   c-o-o-c-o-o-o             |
   |     |     A utomatic    | Open Source Flamelet
   c-o-o-c     F lamelet     | 
-  |     |     C onstructor  | Copyright (C) 2015 Holzmann-cfd
+  |     |     C onstructor  | Copyright (C) 2020 Holzmann CFD
   c     c-o-o-o             |
 -------------------------------------------------------------------------------
 License
@@ -37,7 +37,6 @@ SourceFiles
 
 #include "typedef.hpp"
 #include "matrix.hpp"
-#include "jacobian.hpp"
 #include "stepStatus.hpp"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -54,7 +53,7 @@ class Seulex
     private:
 
         //- Pointer to Jacobian object
-        Jacobian* jac_;
+        //Jacobian* jac_;
 
         //- Rate of concentration change
         mutable map<word, scalar> dcdt_;
@@ -104,7 +103,8 @@ class Seulex
     public:
 
         //- Constructor 
-        Seulex(const Chemistry&);
+        //Seulex(const Chemistry&);
+        Seulex();
 
         //- Destructor
         ~Seulex();

@@ -2,7 +2,7 @@
   c-o-o-c-o-o-o             |
   |     |     A utomatic    | Open Source Flamelet
   c-o-o-c     F lamelet     | 
-  |     |     C onstructor  | Copyright (C) 2015 Holzmann-cfd
+  |     |     C onstructor  | Copyright (C) 2020 Holzmann CFD
   c     c-o-o-o             |
 -------------------------------------------------------------------------------
 License
@@ -27,7 +27,13 @@ Class
 Description
     Abstract AFC::ODE class for numeric calculations for the ODE system
     This class is the base and stores relevant numerical data used for 
-    the numerical integrator such as Euler, Rosenbrock or SEULEX
+    the numerical integrator such as Euler, Rosenbrock or SEULEX.
+
+    The ODE class holds a reference to the chemistry object which includes
+    all data regarding reactins, concentrations, mass fraction, and so on
+
+    Additionally, the base class includes the jacobian calculation that is
+    needed for different equations
 
 SourceFiles
     ODE.cpp
@@ -54,11 +60,13 @@ class ODE
 :
     public StepStatus
 {
+    public:
+
+        //- Reference to the chemistry object
+        Chemistry& chem_;
+
     private:
-
-        //- Chemistry obj
-        const Chemistry& chem_;
-
+        /*
         //  TODO make Readable
         //- Maximum allowed iterations that are used for the integration in
         //  the chemistry calculation
@@ -70,17 +78,15 @@ class ODE
         //- Relative tolerance 
         const scalar relativeTolerance_{1e-4};
         
-        //- Chemical time step 
+        //- Initial chemical time step 
         scalar timeStep_{1e-7};
-
-        //- Pointer to solver
-        //Type* solver_;
 
         //- Time derivative 
         map<word, scalar> dcdt_;
 
         //- Field for concentration
         map<word, scalar> c_;
+        */
 
         //- Jacobian
 
@@ -96,7 +102,7 @@ class ODE
         //- Constructor 
         ODE
         (
-            const Chemistry&
+            Chemistry&
         );
 
         //- Destructor
@@ -113,15 +119,30 @@ class ODE
                 const map<word, scalar>& 
             );
 
-            //- Solve the chemistry used by the ODE in use
-            virtual void solve
+            //- Calculate the Jacobian matrix
+            void jacobian 
             (
                 const scalar,
                 const scalar,
-                map<word, scalar>&,
-                const scalar,
-                scalar&
+                const map<word, scalar>& 
             );
+           
+            //- Derive the elementar reaction based on the species s and return
+            //  the value of the derivation
+            scalar derivationOfReaction
+            (
+                const word,
+                const word,
+                const wordList&,
+                const wordList&,
+                const map<word, int>&,
+                const map<word, int>&,
+                const scalar,
+                const scalar,
+                const map<word, scalar>&
+            ) const;
+
+
 };
 
 

@@ -2,7 +2,7 @@
   c-o-o-c-o-o-o             |
   |     |     A utomatic    | Open Source Flamelet
   c-o-o-c     F lamelet     | 
-  |     |     C onstructor  | Copyright (C) 2015 Holzmann-cfd
+  |     |     C onstructor  | Copyright (C) 2020 Holzmann CFD
   c     c-o-o-o             |
 -------------------------------------------------------------------------------
 License
@@ -29,17 +29,20 @@ License
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-AFC::Seulex::Seulex(const Chemistry& chem)
-:
+//AFC::Seulex::Seulex(const Chemistry& chem)
+AFC::Seulex::Seulex()
+//:
     //- Rate of concentration change
     //dcdt_("H2", 0),
 
     //- Square matrix for Jacobian
+    /*
     dcdc_
     (
         chem.species().size(),
         chem.species().size()
     )
+    */
 
     //- TODO relTol (min(1e-4, relTol_))
 
@@ -60,9 +63,10 @@ AFC::Seulex::Seulex(const Chemistry& chem)
 //    dfdc_(n_)
 {
     //- Make new object for Jacobion calculation
-    jac_ = new Jacobian(chem);
+//    jac_ = new Jacobian(chem);
 
     //- Init the dcdt field
+    /*
     {
         const wordList& species = chem.species();
 
@@ -71,6 +75,7 @@ AFC::Seulex::Seulex(const Chemistry& chem)
             dcdt_[s] = scalar(0);
         }
     }
+    */
 
     /*
     //- Quantities to evaluate the factors for the major parts of the algorithm
@@ -153,9 +158,9 @@ void AFC::Seulex::solve
 
     //if (theta_ > jacRedo_)
     //{
-        jac_->jacobian(T, p, t, c, dcdt_, dcdc_);
+        //jac_->jacobian(T, p, t, c, dcdt_, dcdc_);
     //}
-    //
+    /*
     forAll(dcdt_, t)
     {
         Info<< t.first << "  " << t.second << endl;
@@ -163,6 +168,7 @@ void AFC::Seulex::solve
 
     dcdc_();
     std::terminate();
+    */
 }
 
 

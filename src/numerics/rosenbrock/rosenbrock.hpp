@@ -2,7 +2,7 @@
   c-o-o-c-o-o-o             |
   |     |     A utomatic    | Open Source Flamelet
   c-o-o-c     F lamelet     | 
-  |     |     C onstructor  | Copyright (C) 2015 Holzmann-cfd
+  |     |     C onstructor  | Copyright (C) 2020 Holzmann CFD
   c     c-o-o-o             |
 -------------------------------------------------------------------------------
 License
@@ -22,22 +22,25 @@ License
     along with AFC; if not, see <http://www.gnu.org/licenses/>
 
 Class
-    AFC::Jacobian
+    AFC::Rosenbrock
     
 Description
-    Abstract AFC::Jacobian class for calculating the Jacobian matrix
+    Abstract AFC::Rosenbrock class. Numerical implementation based on 
+    W. H. Press, S. A. Teukolsky, W. T. Vetterling, B. P. Flannery
+    Numerical Recipes - The Art of Scientific Computing - Third Edition
 
 SourceFiles
-    jacobian.cpp
+    numerics.cpp
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef Jacobian_hpp
-#define Jacobian_hpp
+#ifndef Rosenbrock_hpp
+#define Rosenbrock_hpp
 
 #include "typedef.hpp"
 #include "matrix.hpp"
-#include "chemistry.hpp"
+#include "vector.hpp"
+#include "ODE.hpp"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -45,53 +48,47 @@ namespace AFC
 {
 
 /*---------------------------------------------------------------------------*\
-                            Class Jacobian Declaration
+                            Class Rosenbrock Declaration
 \*---------------------------------------------------------------------------*/
 
-class Jacobian
+class Rosenbrock
+:
+    public ODE
 {
     private:
 
-        // Reference to the chemistry object
-        const Chemistry& chem_;
+        // Debug switch
+        bool debug_{true};
 
+        //- Solutions Vectors 
+        //Vector dym_;
+        //Vector dyt_;
+        //Vector yt_;
+
+        //- Helper quantities
 
     public:
 
         //- Constructor 
-        Jacobian(const Chemistry&);
+        Rosenbrock
+        (
+            Chemistry& 
+        );
 
         //- Destructor
-        ~Jacobian();
+        ~Rosenbrock();
 
 
         // Member functions
 
-            //- Calculate the Jacobian matrix
-            void jacobian 
+            //- Solve the ODE
+            void solve
             (
                 const scalar,
-                const scalar,
-                const scalar,
-                const map<word, scalar>&,
-                map<word, scalar>&,
-                Matrix&
+                const wordList&,
+                const map<word, scalar>&
             );
 
-            //- Derive the elementar reaction based on the species s and return
-            //  the value of the derivation
-            scalar derivationOfReaction
-            (
-                const word,
-                const word,
-                const wordList&,
-                const wordList&,
-                const map<word, int>&,
-                const map<word, int>&,
-                const scalar,
-                const scalar,
-                const map<word, scalar>&
-            ) const;
 };
 
 
@@ -101,6 +98,6 @@ class Jacobian
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-#endif // Jacobian_hpp included
+#endif // Rosenbrock_hpp included
 
 // ************************************************************************* //

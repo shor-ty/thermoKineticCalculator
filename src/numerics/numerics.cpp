@@ -2,7 +2,7 @@
   c-o-o-c-o-o-o             |
   |     |     A utomatic    | Open Source Flamelet
   c-o-o-c     F lamelet     | 
-  |     |     C onstructor  | Copyright (C) 2015 Holzmann-cfd
+  |     |     C onstructor  | Copyright (C) 2020 Holzmann CFD
   c     c-o-o-o             |
 -------------------------------------------------------------------------------
 License
@@ -25,15 +25,17 @@ License
 
 #include "typedef.hpp"
 #include "numerics.hpp"
-#include "ODE.hpp"
+//#include "ODE.hpp"
+#include "rosenbrock.hpp"
 //#include "euler.hpp"
 #include <math.h>
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-AFC::Numerics::Numerics
+template<class Type>
+AFC::Numerics<Type>::Numerics
 (
-    const Chemistry& chem 
+    Chemistry& chem 
 )
 {
     if (debug_)
@@ -41,11 +43,10 @@ AFC::Numerics::Numerics
         Info<< "Constructor Numerics \n" << endl;
     }
 
-    //- TODO readabil and switchable
-    if (true)
-    {
-        //ode_ = new ODE<Euler>(chem);
-    }
+    //- Create new object
+    //    std::unique_ptr<Type> foo= std::make_unique<Type>(chem);
+    //ode_ = std::unique_ptr<Type>();
+    ode_ = new Type(chem);
 
     //- TODO readable
     deltaTChem_ = scalarField(11, 1e-7);
@@ -54,18 +55,24 @@ AFC::Numerics::Numerics
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-AFC::Numerics::~Numerics()
+template<class Type>
+AFC::Numerics<Type>::~Numerics()
 {
     if (debug_)
     {
         Info<< "Destructor Numerics \n" << endl;
     }
+
+    //- Delete the ode_ pointer to free the memory
+    delete ode_;
+
 }
 
 
 // * * * * * * * * * * * * * * * Member function * * * * * * * * * * * * * * //
 
-void AFC::Numerics::solveForInitialSolution
+template<class Type>
+void AFC::Numerics<Type>::solveForInitialSolution
 (
     MixtureFraction& flamelet
 )
@@ -162,7 +169,8 @@ void AFC::Numerics::solveForInitialSolution
 }
 
 
-void AFC::Numerics::solveAdiabaticFlamelet
+template<class Type>
+void AFC::Numerics<Type>::solveAdiabaticFlamelet
 (
     MixtureFraction& flamelet
 )
@@ -184,6 +192,14 @@ void AFC::Numerics::solveAdiabaticFlamelet
     scalar deltaTChem = 1e-8;
     scalar dt{0.5};
 
+    //- Test case
+    //  Use one point and use it as ideal reactor
+    const map<word, scalar>& c = flamelet.C(2);
+    const wordList& species = flamelet.species();
+    const scalar T = flamelet.T(2);
+
+    ode_->solve(T, species, c);
+
     //- Solve the flamelet equation. Therefore we split the calculation into
     //  chemistry solving with the chemistry delta till we reach the diffusion
     //  delta. After that we go on in time for the next time step
@@ -201,6 +217,7 @@ void AFC::Numerics::solveAdiabaticFlamelet
     //- TH::Solver chemistry.solve()
     //  {
     //- Run time (solve till we reach end time)
+    
     /*while (deltaTDiff < tEnd)
     {
         //- Store old chemistry time step
@@ -219,7 +236,8 @@ void AFC::Numerics::solveAdiabaticFlamelet
 }
 
 
-AFC::scalar AFC::Numerics::solveChemistry
+template<class Type>
+AFC::scalar AFC::Numerics<Type>::solveChemistry
 (
     const scalar dt,
     MixtureFraction& flamelet
@@ -254,7 +272,7 @@ AFC::scalar AFC::Numerics::solveChemistry
             //- New concentration field that is been updated
             map<word, scalar> ci = c0[Zi];
 
-            ode_->solve(Ti, p, ci, dt, deltaTChem_[Zi]);
+            //ode_->solve(Ti, p, ci, dt, deltaTChem_[Zi]);
 
         }
     }
@@ -265,7 +283,8 @@ AFC::scalar AFC::Numerics::solveChemistry
 }
 
 
-AFC::scalar AFC::Numerics::FDMLapacian2ndOrder
+template<class Type>
+AFC::scalar AFC::Numerics<Type>::FDMLapacian2ndOrder
 (
     const scalar& phi_l,
     const scalar& phi,
@@ -293,7 +312,8 @@ AFC::scalar AFC::Numerics::FDMLapacian2ndOrder
 }
 
 
-void AFC::Numerics::solveFlamelet
+template<class Type>
+void AFC::Numerics<Type>::solveFlamelet
 (
     MixtureFraction& flamelet,
     const scalar& chi,
@@ -412,14 +432,14 @@ void AFC::Numerics::solveFlamelet
 
 
 /*
-void AFC::Numerics::jacobian
+void AFC::Numerics<Type>::jacobian
 (
     MixtureFraction& mf
 )
 {
     if (debug)
     {
-        Info<< " --> AFC::Numerics::jacobian" << endl;
+        Info<< " --> AFC::Numerics<Type>::jacobian" << endl;
     }
 }
 */
@@ -492,7 +512,8 @@ void AFC::Numerics::jacobian
 }*/
 
 
-AFC::scalar AFC::Numerics::residual
+template<class Type>
+AFC::scalar AFC::Numerics<Type>::residual
 (
     const scalarField& oldField,
     const scalarField& newField
@@ -509,7 +530,8 @@ AFC::scalar AFC::Numerics::residual
 }
 
 
-AFC::scalar AFC::Numerics::max
+template<class Type>
+AFC::scalar AFC::Numerics<Type>::max
 (
     const scalarField& sF
 ) const
@@ -526,6 +548,12 @@ AFC::scalar AFC::Numerics::max
 
     return maxValue;
 }
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+template class AFC::Numerics<AFC::Rosenbrock>;
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 // ************************************************************************* //
 /*

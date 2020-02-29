@@ -24,46 +24,86 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "typedef.hpp"
-#include "euler.hpp"
+#include "rosenbrock.hpp"
 #include <math.h>
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-AFC::Euler::Euler(const size_t nSpecies)
-{}
+AFC::Rosenbrock::Rosenbrock
+(
+    Chemistry& chemistry_
+)
+:
+    ODE(chemistry_)
+{
+    if (debug_)
+    {
+        Info<< "Constructor for Rosenbrock\n" << endl;
+    }
+}
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-AFC::Euler::~Euler()
-{}
-
+AFC::Rosenbrock::~Rosenbrock()
+{
+    if (debug_)
+    {
+        Info<< "Destructor for Rosenbrock\n" << endl;
+    }
+}
 
 // * * * * * * * * * * * * * * * Member function * * * * * * * * * * * * * * //
 
-AFC::scalar AFC::Euler::solve
+void AFC::Rosenbrock::solve
 (
-    const scalar t0,
-    const scalar dt,
-    const map<word, scalar>& c0,
-    const map<word, scalar>& dcdt,
-    map<word, scalar>& c
-) const
+    const scalar Ta,
+    const wordList& species,
+    const map<word, scalar>& c1
+)
 {
-    //- TODO make everything consitent
-    //  Map<word, scalar> replace by vector or find some nice solution
-    size_t i{0};
 
-    //- Calculate error estimated by the change in the state
-    //  and update the state
-    forAll(c0, s)
+    scalar T = 1000;
+    map<word, scalar> c = c1;
+
+    Info<< std::setw(10) << "Iter.";
+    forAll(species, s)
     {
-        err_[s.first] = dt * dcdt.at(s.first);
-        c[s.first] = err_.at(s.first) * s.second;
+        Info<< std::setw(15) << s ;
     }
+    Info << endl
+        << "========================================================================================"
+        << "============================================================================" << endl;
 
-    //- Normalize error
-    //return normalizeError(c0, c, err_);
+
+    for (int i = 1; i<10000; i++)
+    {
+        Info<< std::setw(10) << i;
+        forAll(species, s)
+        {
+            Info<<  std::setw(15) << c.at(s);
+        }
+        /*Info<< endl;
+        Info<< std::setw(10) << i;
+        forAll(species, s)
+        {
+            Info<<  std::setw(15) << chem_.calculateOmega(s, T, c);
+        }
+        */
+        Info<< "\n";
+
+        scalar dt=1e-13;
+        //- Omega *dt is the change
+        forAll(species,s)
+        c[s] += chem_.calculateOmega(s, T, c)*dt; 
+
+        forAll(species, s)
+        {
+            if (c[s] < 0) c[s] = 0;
+        }
+
+    }
+    //- Start solving the ODE
 }
 
 
