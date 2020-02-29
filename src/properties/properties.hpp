@@ -2,7 +2,7 @@
   c-o-o-c-o-o-o             |
   |     |     A utomatic    | Open Source Flamelet
   c-o-o-c     F lamelet     | 
-  |     |     C onstructor  | Copyright (C) 2015 Holzmann-cfd
+  |     |     C onstructor  | Copyright (C) 2020 Holzmann CFD
   c     c-o-o-o             |
 -------------------------------------------------------------------------------
 License
@@ -36,6 +36,7 @@ SourceFiles
 #define Properties_hpp
 
 #include "propertiesReader.hpp"
+#include "propertiesCalc.hpp"
 #include "thermo.hpp"
 #include "chemistry.hpp"
 
@@ -84,8 +85,9 @@ class Properties
             //- Composition of oxidizer element mass fraction Zj [-]
             map<word, scalar> oxidizerZj_;
 
-            //- Atoms and amount in oxidizer
-            map<word, scalar> oxidizerA_;
+            //- Atoms of each species in oxidizer
+            //  Species | Atom | nAtoms
+            map<word, map<word, unsigned int>> oxidizerA_;
 
             //- Fuel species
             wordList speciesFuel_;
@@ -100,7 +102,8 @@ class Properties
             map<word, scalar> fuelZj_;
 
             //- Atoms and amount in fuel
-            map<word, scalar> fuelA_;
+            //  Species | Atom | nAtoms
+            map<word, map<word, unsigned int>> fuelA_;
 
             //- Temperature of oxidizer stream [K]
             scalar TOxidizer_{0};
@@ -359,6 +362,9 @@ class Properties
             //- Return species of oxidizer (Z = 0)
             wordList speciesOxidizer() const;
 
+            //- Return atomic numbers of oxidizer (Z = 0)
+            map<word, map<word, unsigned int>> oxidizerA() const;
+
             //- Return mol fraction of oxidizer (Z = 0)
             map<word, scalar> oxidizerX() const;
 
@@ -376,6 +382,9 @@ class Properties
 
             //- Return species of fuel (Z = 1)
             wordList speciesFuel() const;
+
+            //- Return atomic numbers of fuel (Z = 1)
+            map<word, map<word, unsigned int>> fuelA() const;
 
             //- Return mol fraction of fuel (Z = 1)
             map<word, scalar> fuelX() const;
@@ -432,15 +441,24 @@ class Properties
             scalar Zst() const;
 
             //- Return mass fraction at stochiometric mixture fraction Zst [-]
-            //  unburned state
+            //  unburned state of species
             scalar YatZstu(const word) const;
 
             //- Return mass fraction at stochiometric mixture fraction Zst [-]
-            //  burned state
+            //  burned state of species
             scalar YatZstb(const word) const;
 
+            //- Return mass fraction at stochiometric mixture fraction Zst [-]
+            //  unburned state
+            map<word, scalar> YatZstu() const;
+
+            //- Return mass fraction at stochiometric mixture fraction Zst [-]
+            //  burned state
+            map<word, scalar> YatZstb() const;
+
             //- Return adiabatic flame temperature [K]
-            scalar Tadiabatic() const;
+            scalar adiabateFlameTemperature() const;
+              
 };
 
 

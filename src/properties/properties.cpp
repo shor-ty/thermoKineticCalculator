@@ -2,7 +2,7 @@
   c-o-o-c-o-o-o             |
   |     |     A utomatic    | Open Source Flamelet
   c-o-o-c     F lamelet     |
-  |     |     C onstructor  | Copyright (C) 2015 Holzmann-cfd
+  |     |     C onstructor  | Copyright (C) 2020 Holzmann CFD
   c     c-o-o-o             |
 -------------------------------------------------------------------------------
 License
@@ -41,12 +41,26 @@ AFC::Properties::Properties
 
     chemistry_(chemistry)
 {
-    PropertiesReader mixFracReader(fileName);
+    PropertiesReader propertiesReader(fileName);
 
-    mixFracReader.read(*this);
+    propertiesReader.read(*this);
 
     //- Add pressure to thermoData for better handling
     thermo.p(this->p());
+
+    //- Extract the single atomic elements
+    oxidizerA_ =
+        PropertiesCalc::elementDecomposition(speciesOxidizer_, thermo_);
+
+
+    //fuelA_ = PropertiesCalc::elementDecomposition(speciesFuel_, thermo_);
+
+    //- Calc the element mass fraction
+    //oxidizerZj_ = PropertiesCalc::elementMassFraction(oxidizerA_, thermo_);
+
+    std::terminate();
+    //- Initialize 
+    //scalar a = PropertiesCalc::Zst(fuelY(), oxidizerY());
 }
 
 
@@ -575,6 +589,13 @@ AFC::wordList AFC::Properties::speciesOxidizer() const
 }
 
 
+AFC::map<AFC::word, AFC::map<AFC::word, unsigned int>>
+AFC::Properties::oxidizerA() const
+{
+    return oxidizerA_;
+}
+
+
 AFC::map<AFC::word, AFC::scalar> AFC::Properties::oxidizerX() const
 {
     return oxidizerX_;
@@ -608,6 +629,13 @@ AFC::scalar AFC::Properties::oxidizerY(const word species) const
 AFC::wordList AFC::Properties::speciesFuel() const
 {
     return speciesFuel_;
+}
+
+
+AFC::map<AFC::word, AFC::map<AFC::word, unsigned int>>
+AFC::Properties::fuelA() const
+{
+    return fuelA_;
 }
 
 
@@ -759,9 +787,25 @@ AFC::scalar AFC::Properties::YatZstb(const word species) const
 }
 
 
-AFC::scalar AFC::Properties::Tadiabatic() const
+AFC::map<AFC::word, AFC::scalar> AFC::Properties::YatZstu() const
 {
-    return Tadiabatic_;
+    return YatZstu_;
+}
+
+AFC::map<AFC::word, AFC::scalar> AFC::Properties::YatZstb() const
+{
+    return YatZstb_;
+}
+
+
+AFC::scalar AFC::Properties::adiabateFlameTemperature() const
+{
+    return PropertiesCalc::adiabateFlameTemperature
+        (
+            *this,
+            thermo_,
+            chemistry_  
+        );
 }
 
 
