@@ -37,7 +37,7 @@ DIR_INCLUDE=gcc/lnInclude
 #------------------------------------------------------------------------------
 
 COMPILER=g++
-COMPILE_MODE=OPT
+COMPILE_MODE=DEBUG
 
 
 #------------------------------------------------------------------------------
@@ -76,12 +76,9 @@ DIR_OBJECTS=$(shell find . -type d -not -path "./gcc*" | sed "s|\.||" | sed "s|^
 
 
 #------------------------------------------------------------------------------
-# Stuff for the thermoKinetics library
+# Stuff for the thermo library
 #------------------------------------------------------------------------------
 
-DIR_THERMOKINETICS=thermoKinetics
-
-#SOURCE_FILES_THERMO=$(shell find $(DIR_THERMOKINETICS) -name '*.cpp')
 SOURCE_FILES_THERMO=\
 	thermoKinetics/thermo/thermo.cpp \
 	thermoKinetics/thermo/thermoCalc.cpp \
@@ -90,20 +87,70 @@ SOURCE_FILES_THERMO=\
 	manipulation/stringManipulator/stringManipulator.cpp \
 	definitions/definitions.cpp
 
-HEADER_FILES_THERMOKINETICS=$(shell find $(DIR_THERMOKINETICS) -name '*.hpp') \
-	definitions/definitions.hpp \
-	manipulation/stringManipulator/stringManipulator.hpp
-
-OBJECT_FILES_THERMOKINETICS=$(addprefix gcc/obj/, $(addsuffix .o, $(basename $(SOURCE_FILES_THERMOKINETICS))))
-
 OBJECT_FILES_THERMO=$(addprefix gcc/obj/, $(addsuffix .o, $(basename $(SOURCE_FILES_THERMO))))
+
+
+#------------------------------------------------------------------------------
+# Stuff for the chemistry library
+#------------------------------------------------------------------------------
+
+SOURCE_FILES_CHEMISTRY=\
+	thermoKinetics/chemistry/chemistry.cpp \
+	thermoKinetics/chemistry/chemistryCalc.cpp \
+	thermoKinetics/chemistry/chemistryData.cpp \
+	thermoKinetics/chemistry/chemistryReader.cpp \
+	manipulation/stringManipulator/stringManipulator.cpp \
+	definitions/definitions.cpp
+
+OBJECT_FILES_CHEMISTRY=$(addprefix gcc/obj/, $(addsuffix .o, $(basename $(SOURCE_FILES_CHEMISTRY))))
+
+
+#------------------------------------------------------------------------------
+# Stuff for the transport library
+#------------------------------------------------------------------------------
+
+SOURCE_FILES_TRANSPORT=\
+	thermoKinetics/transport/transport.cpp \
+	thermoKinetics/transport/transportCalc.cpp \
+	thermoKinetics/transport/transportData.cpp \
+	thermoKinetics/transport/transportReader.cpp \
+	manipulation/stringManipulator/stringManipulator.cpp \
+	definitions/definitions.cpp
+
+OBJECT_FILES_TRANSPORT=$(addprefix gcc/obj/, $(addsuffix .o, $(basename $(SOURCE_FILES_TRANSPORT))))
+
+
+#------------------------------------------------------------------------------
+# Stuff for the thermoKinetics library
+#------------------------------------------------------------------------------
+
+SOURCE_FILES_KINETICS=\
+	thermoKinetics/thermo/thermo.cpp \
+	thermoKinetics/thermo/thermoCalc.cpp \
+	thermoKinetics/thermo/thermoData.cpp \
+	thermoKinetics/thermo/thermoReader.cpp \
+	thermoKinetics/chemistry/chemistry.cpp \
+	thermoKinetics/chemistry/chemistryCalc.cpp \
+	thermoKinetics/chemistry/chemistryData.cpp \
+	thermoKinetics/chemistry/chemistryReader.cpp \
+	thermoKinetics/transport/transport.cpp \
+	thermoKinetics/transport/transportCalc.cpp \
+	thermoKinetics/transport/transportData.cpp \
+	thermoKinetics/transport/transportReader.cpp \
+	manipulation/stringManipulator/stringManipulator.cpp \
+	definitions/definitions.cpp
+
+OBJECT_FILES_KINETICS=$(addprefix gcc/obj/, $(addsuffix .o, $(basename $(SOURCE_FILES_KINETICS))))
+
+
 
 
 #------------------------------------------------------------------------------
 # Make Commands | Probably could be done much nicer - I am not a makefile guru
 #------------------------------------------------------------------------------
 
-buildThermoKinetics: pre linkHeaders libthermo
+buildThermoKinetics: pre linkHeaders libthermo libchemistry libtransport libthermoKinetics
+	$(SPACE_MSG)
 
 
 #------------------------------------------------------------------------------
@@ -131,9 +178,30 @@ linkHeaders:
 
 #------------------------------------------------------------------------------
 libthermo: $(OBJECT_FILES_THERMO)
+	$(SPACE_MSG)
 	$(info Create thermo library...)
 	ar rvs $(DIR_LIB)/$(addsuffix .so, $(basename $@)) $(OBJECT_FILES_THERMO)
-	
+
+
+#------------------------------------------------------------------------------
+libchemistry: $(OBJECT_FILES_CHEMISTRY)
+	$(SPACE_MSG)
+	$(info Create chemistry library...)
+	ar rvs $(DIR_LIB)/$(addsuffix .so, $(basename $@)) $(OBJECT_FILES_CHEMISTRY)
+
+
+#------------------------------------------------------------------------------
+libtransport: $(OBJECT_FILES_TRANSPORT)
+	$(SPACE_MSG)
+	$(info Create transport library...)
+	ar rvs $(DIR_LIB)/$(addsuffix .so, $(basename $@)) $(OBJECT_FILES_TRANSPORT)
+
+
+#------------------------------------------------------------------------------
+libthermoKinetics: $(OBJECT_FILES_KINETICS)
+	$(SPACE_MSG)
+	$(info Create thermoKinetics library...)
+	ar rvs $(DIR_LIB)/$(addsuffix .so, $(basename $@)) $(OBJECT_FILES_KINETICS)
 
 
 #------------------------------------------------------------------------------
