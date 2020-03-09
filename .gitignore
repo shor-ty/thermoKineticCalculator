@@ -31,3 +31,6 @@ log
 
 #gedit
 *~
+
+#examples
+examples/thermoLibUsage/simpleThermoExample
