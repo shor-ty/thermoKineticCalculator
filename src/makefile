@@ -1,86 +1,163 @@
+#------------------------------------------------------------------------------
+# AFC -- MAKEFILE
+#------------------------------------------------------------------------------
 #
 # Tobias Holzmann
-# Februar 2017
+# March 2020
 #
 # Description
-#     This makefile compiles the libraries and the application for generating
-#     steady-state flamelets that can be used with the flameletHolzmannFoam
+#     This makefile compiles all source files and builds the libraries that 
+#     can be used for your personal program for individual usage
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+#------------------------------------------------------------------------------
+
+include .makefile
+
+#------------------------------------------------------------------------------
 
 PROGRAM=automaticFlameletCreator
-OBJECTDIR=obj
+
+
+#------------------------------------------------------------------------------
+# Linux commands
+#------------------------------------------------------------------------------
+
 MAKE_DIR=mkdir -p
+LINK=ln -sf
+CLEAR=clear
 CLEAN_DIR=rm -rfv
 WORK_DIR=$(PWD)
+DIR_OBJ=gcc/obj
+DIR_LIB=gcc/libs
+DIR_INCLUDE=gcc/lnInclude
+
+
+#------------------------------------------------------------------------------
+# Compiler and compiling mode: DEBUG | OPT
+#------------------------------------------------------------------------------
+
 COMPILER=g++
-
-# Compiling mode: DEBUG | OPT
-COMPILE_MODE=DEBUG
-
-DIRECTORIES=typedef \
-            constants \
-			tensors/tensor \
-			tensors/matrix \
-            tensors/vector \
-            tensors/scalar \
-            tensors/dimensioned \
-            stringManipulator \
-            interpreter \
-            properties \
-            thermo \
-            transport \
-			chemistry \
-            mixtureFraction \
-            numerics \
-            numerics/euler \
-            numerics/stepStatus \
-            numerics/ODE \
-            numerics/LUDecompose \
-            numerics/seulex \
-			numerics/rosenbrock
+COMPILE_MODE=OPT
 
 
-CPPFLAGS=-Wall \
-		 -Wextra \
-         -std=c++17 \
-		 -D_GLIBCXX_DEBUG \
-         -g \
-         -pedantic-errors \
-         -ggdb \
-         -Wno-unused-parameter \
-         -Wno-unused-variable
+#------------------------------------------------------------------------------
+# Compiling flags for DEBUG 
+#------------------------------------------------------------------------------
+
+CPPFLAGS_DEBUG=-Wall -Wextra -std=c++17 -g -pedantic-errors \
+	-ggdb -Wno-unused-parameter -Wno-unused-variable -D_GLIBCXX_DEBUG
 
 
-SOURCE_FILES=$(shell find $(DIRECTORIES) -name '*.cpp')
+#------------------------------------------------------------------------------
+# Compiling flags for OPT
+#------------------------------------------------------------------------------
 
-OBJECT_FILES=$(addprefix obj/, $(addsuffix .o, $(basename $(SOURCE_FILES))))
-
-INCLUDE_DIR=$(addprefix -I,$(DIRECTORIES))
-
-
-# Make
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+CPPFLAGS_OPT=-Wall -Wextra -std=c++17 -pedantic-errors -Wno-unused-parameter \
+	-Wno-unused-variable -O3
 
 
-build : $(OBJECT_FILES)
-	$(COMPILER) $(CPPFLAGS) $(INCLUDE_DIR) -o $(PROGRAM) $(addsuffix .cpp, $(PROGRAM)) $^
+#------------------------------------------------------------------------------
 
-pre:
-	$(MAKE_DIR) $(addprefix obj/,$(DIRECTORIES))
+ifeq ($(COMPILE_MODE), DEBUG)
+CPPFLAGS=$(CPPFLAGS_DEBUG)
+endif
 
-clean:
-	$(CLEAN_DIR) obj $(PROGRAM)
+ifeq ($(COMPILE_MODE), OPT)
+CPPFLAGS=$(CPPFLAGS_OPT)
+endif
 
-rebuild:
-	$(CLEAN_DIR) obj $(PROGRAM)
-	$(MAKE_DIR) $(addprefix obj/,$(DIRECTORIES))
-	$(OBJECT_FILES)
-	$(COMPILER) $(CPPFLAGS) $(INCLUDE_DIR) -o $(PROGRAM) $(addsuffix .cpp, $(PROGRAM)) $^
 
-obj/%.o: %.cpp | obj
-	$(COMPILER) $(CPPFLAGS) $(INCLUDE_DIR) -c $< -o $@
+#------------------------------------------------------------------------------
+# Stuff for symbolic links (all header files) and libraries (folder generation)
+#------------------------------------------------------------------------------
+HEADER_SYM_LINK=$(shell find . -type f -iname '*.hpp')
+DIR_OBJECTS=$(shell find . -type d -not -path "./gcc*" | sed "s|\.||" | sed "s|^/||")
 
+
+
+#------------------------------------------------------------------------------
+# Stuff for the thermoKinetics library
+#------------------------------------------------------------------------------
+
+DIR_THERMOKINETICS=thermoKinetics
+
+#SOURCE_FILES_THERMO=$(shell find $(DIR_THERMOKINETICS) -name '*.cpp')
+SOURCE_FILES_THERMO=\
+	thermoKinetics/thermo/thermo.cpp \
+	thermoKinetics/thermo/thermoCalc.cpp \
+	thermoKinetics/thermo/thermoData.cpp \
+	thermoKinetics/thermo/thermoReader.cpp \
+	manipulation/stringManipulator/stringManipulator.cpp \
+	definitions/definitions.cpp
+
+HEADER_FILES_THERMOKINETICS=$(shell find $(DIR_THERMOKINETICS) -name '*.hpp') \
+	definitions/definitions.hpp \
+	manipulation/stringManipulator/stringManipulator.hpp
+
+OBJECT_FILES_THERMOKINETICS=$(addprefix gcc/obj/, $(addsuffix .o, $(basename $(SOURCE_FILES_THERMOKINETICS))))
+
+OBJECT_FILES_THERMO=$(addprefix gcc/obj/, $(addsuffix .o, $(basename $(SOURCE_FILES_THERMO))))
+
+
+#------------------------------------------------------------------------------
+# Make Commands | Probably could be done much nicer - I am not a makefile guru
+#------------------------------------------------------------------------------
+
+buildThermoKinetics: pre linkHeaders libthermo
+
+
+#------------------------------------------------------------------------------
+pre: clear
+	$(info $(PRE_MSG))
+	$(info Creating directories...)
+	$(shell $(MAKE_DIR) $(DIR_OBJ) $(DIR_INCLUDE) $(DIR_LIB) $(addprefix gcc/obj/, $(DIR_OBJECTS)))
+	$(shell sleep 0.5)
+
+
+#------------------------------------------------------------------------------
+clear: 
+	$(CLEAR)
+
+
+#------------------------------------------------------------------------------
+linkHeaders:
+	$(info Linking header files...)
+	$(foreach file, $(HEADER_SYM_LINK), $(info $(file) ))
+	$(foreach file, $(HEADER_SYM_LINK), $(shell $(LINK) $(WORK_DIR)/$(file) $(WORK_DIR)/$(DIR_INCLUDE)))
+	$(info Linking done...)
+	$(info )
+	$(info )
+
+
+#------------------------------------------------------------------------------
+libthermo: $(OBJECT_FILES_THERMO)
+	$(info Create thermo library...)
+	ar rvs $(DIR_LIB)/$(addsuffix .so, $(basename $@)) $(OBJECT_FILES_THERMO)
+	
+
+
+#------------------------------------------------------------------------------
+gcc/obj/%.o : %.cpp
+	$(COMPILER) $(CPPFLAGS) -I$(DIR_INCLUDE) -c $< -o $@
+
+
+#------------------------------------------------------------------------------
+clean: clear
+	$(info $(CLEAN_MSG))
+	$(info )
+	$(CLEAN_DIR) gcc $(PROGRAM)
+
+
+#------------------------------------------------------------------------------
+rebuild: clean buildThermoKinetics
+
+
+#------------------------------------------------------------------------------
+post:
+	$(POST_MSG)
+
+
+#------------------------------------------------------------------------------
 help:
 	@echo "Targets:"
 	@echo "build        - build all libraries"
@@ -89,3 +166,4 @@ help:
 	@echo "rebuild      - execute clean, pre and build"
 
 
+#------------------------------------------------------------------------------
