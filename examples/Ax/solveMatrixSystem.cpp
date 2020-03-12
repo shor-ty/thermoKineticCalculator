@@ -27,7 +27,7 @@ Description
 
 \*---------------------------------------------------------------------------*/
 
-#include "typedef.hpp" 
+#include "definitions.hpp" 
 #include "matrix.hpp"
 #include "vector.hpp"
 #include "LUDecompose.hpp"
@@ -38,11 +38,7 @@ using namespace AFC;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-int main
-(
-    int argc,
-    char** argv
-)
+int main()
 {
 
     const std::clock_t startTime = clock();
@@ -75,12 +71,11 @@ int main
     b(2) = 0.285321;
 
     Info<< "The coefficient matrix A: \n";
-
     A();
 
     Info<< "The source vetor b: \n";
-    
     b();
+
 
     //- Solution vector
     Vector x(3);
@@ -88,20 +83,34 @@ int main
     //- Create a new object and decompose A into LU
     LUDecompose LUD(A);
 
+    Info<< "The matrix of the LU decomposition is:\n";
+    LUD();
+
+    Info<< "Solving Ax = b using the LU decomposition matrix:\n";
+ 
     //- Solve Ax = b using LU decomposition
     LUD.solve(b, x);
-
-    Info<< "The solution of the LU decomposition method:\n";
-
     x();
 
     //- Improve the solution
     LUD.improveSolution(b, x);
 
     Info<< "The solution of the LU decomposition with improved solution:\n";
-
     x();
 
+
+    //- Check the solution
+    const Vector bb = A * x;
+
+    Info<< "The solution of Ax is equal to (should be vector b):\n";
+    bb();
+
+
+    Info<< "The error of bb - b is:\n" << endl;
+
+    //- bb is a const vector so we 
+    const Vector residual = bb - b;
+    residual();
 
     Footer(startTime);
 
