@@ -8,13 +8,12 @@
 #
 #------------------------------------------------------------------------------ 
 
+include ../../src/.compilerFlags
+
 PROGRAM=simpleThermoExample
 COMPILER=g++
 SRC_PATH=../../src/gcc/lnInclude
 LIB_PATH=../../src/gcc/libs/
-
-CPPFLAGS=-std=c++17 \
-		 -O3
 
 
 #------------------------------------------------------------------------------ 
