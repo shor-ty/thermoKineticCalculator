@@ -76,7 +76,7 @@ class ChemistryData
             //- Stochiometric factors for products of reaction r
             mapList<word, int> nuProducts_;
 
-            //- Number of dublicated reactions
+            //- Number of duplicated reactions
             int nDuplicated_{0};
 
             //- Number of ignored reactions
@@ -103,14 +103,20 @@ class ChemistryData
             //- Elementar reaction
             List<string> elementarReaction_;
 
+            //- Duplicated elementar reaction
+            List<string> duplicatedElementarReaction_;
+
             //- Ignored elementar reaction
             List<string> ignoredElementarReaction_;
 
-            //- Matrix that contains all species in reaction r
+            //- List that contains all species in each reaction
             List<wordList> speciesInReaction_;
 
             //- Contains all reaction numbers where species i is included
             map<word, List<int>> reactionI_;
+
+            //- Collision partner such as +M, +H2, +O2 for each reaction
+            List<word> collisionPartner_;
 
             //- boolList for TBR
             //  + true if [M] is there
@@ -123,30 +129,37 @@ class ChemistryData
             List<bool> ENHANCE_;
 
             //- boolList for TBR LOW
-            //  + true if
+            //  + true if low pressure modifications using Lindemann formula
+            //  + false if common reaction
             List<bool> LOW_;
 
-            //- boolList for TBR TROE
+            //- boolList for TBR TROE (also need LOW coeffs)
+            //  + true if low pressure modifications using TROE formula
+            //  + false if common reaction
             List<bool> TROE_;
 
             //- boolList for TBR SRI
             List<bool> SRI_;
 
-            //- boolList for backward reaction (equilibrium)
+            //- boolList for forward reaction only =>
+            //  This list even contain the information of irreversible reac.
+            List<bool> forwardReaction_;
+
+            //- boolList for backward reactions only <=
             //  This list even contain the information of irreversible reac.
             List<bool> backwardReaction_;
 
             //- Matrix of Arrhenius coeffs
-            matrix arrheniusCoeffs_;
+            List<scalarField> arrheniusCoeffs_;
 
             //- Matrix of TROE coeffs
-            matrix TROECoeffs_;
+            List<scalarField> TROECoeffs_;
 
             //- Matrix of Arrhenius coeffs for high pressure
-            matrix LOWCoeffs_;
+            List<scalarField> LOWCoeffs_;
 
             //- Matrix of SRI coeffs
-            matrix SRICoeffs_;
+            List<scalarField> SRICoeffs_;
 
             //- Enhanced coeffs for adjustment
             mapList<word, scalar> ENHANCEDCoeffs_;
@@ -160,7 +173,7 @@ class ChemistryData
 
 
         //- Thermodynamic available in chemistry file
-        bool thermo_;
+        //bool thermo_;
 
 
     public:
@@ -171,14 +184,14 @@ class ChemistryData
         //- Destructor
         ~ChemistryData();
 
-
         // Member functions
 
-            //- Set thermo_ if available in chemistry file
-            void setThermo();
+            //- Set the thermo bool (if true the NASA polynomials are
+            //  inside the chemistry file)
+            //void setThermo();
 
-            //- Returnt thermo
-            bool thermo();
+            //- Return the thermo switch
+            //bool thermo() const;
 
 
         // Insert functions, from ChemistryReader:: delegated
@@ -204,11 +217,17 @@ class ChemistryData
             //- Insert elementar reaction
             void elementarReaction(const string);
 
+            //- Insert duplicated elementar reaction
+            void duplicatedElementarReaction(const string);
+
             //- Insert ignored elementar reaction
             void ignoredElementarReaction(const string);
 
             //- Set arrhenius coeffs
             void arrheniusCoeffs(const scalar, const scalar, const scalar);
+
+            //- Set collision partner
+            void collisionPartner(const word);
 
             //- Insert LOW coeffs
             void LOWCoeffs(const scalar, const unsigned int);
@@ -245,6 +264,9 @@ class ChemistryData
             (
                 const scalar&
             );
+
+            //- Set the forward reaction boolean
+            void FR(const bool);
 
             //- Set the backward reaction boolean
             void BR(const bool);
@@ -295,15 +317,18 @@ class ChemistryData
             void updateGlobalReactionOrder();
 
         // Return functions
-        
+
 
             //- Return bool
 
-                //- Backward reaction for const
-                bool BR(const int) const;
+                //- Forward reaction
+                bool FR(const int) const;
 
                 //- Backward reaction
-                bool BR(const int);
+                bool BR(const int) const;
+
+                //- Return true if elementar reaction is a TBR reaction
+                bool TBR(const int);
 
                 //- Return true if elementar reaction is a TBR reaction
                 bool TBR(const int) const;
@@ -342,8 +367,8 @@ class ChemistryData
             //- Return the product species of reaction r
             wordList products(const int) const;
 
-            //- Return amount of dublicated reactions 
-            unsigned int nDublicated() const;
+            //- Return amount of duplicated reactions
+            unsigned int nDuplicated() const;
 
             //- Return amount of ignored reactions
             unsigned int nIgnored() const;
@@ -351,11 +376,11 @@ class ChemistryData
             //- Return no. of reaction
             int nReac() const;
 
-            //- Return elementar reaction
-            wordList elementarReaction() const;
+            //- Return all elementar reactions in chemistry
+            stringList elementarReaction() const;
 
             //- Return elementar reaction (as string)
-            word elementarReaction(const int) const;
+            string elementarReaction(const int) const;
 
             //- Return ignored elementar reaction
             wordList ignoredElementarReaction() const;
@@ -366,17 +391,11 @@ class ChemistryData
             //- Return List of reaction no. of species
             List<int> reacNumbers(const word) const;
 
-            //- Return species matrix for reactions
-            wordMatrix speciesInReaction() const;
+            //- Return species list for reaction r
+            List<wordList> speciesInReaction() const;
 
             //- Return species list for reaction r
             wordList speciesInReaction(const int) const;
-
-            //- Return species list that act as product in reaction r
-            List<word> speciesProducts (const int) const;
-
-            //- Return species list that act as educt in reaction r
-            List<word> speciesEducts (const int) const;
 
             //- Return stochiometric factors of educts of reaction r
             map<word, int> nuEducts(const int) const;
@@ -387,11 +406,20 @@ class ChemistryData
             //- Return the exponent factor for Keq calculation
             scalar exponent(const int) const;
 
+            //- Return if forward reaction possible
+            bool forwardReaction(const int) const;
+
+            //- Return if backward reaction possible
+            bool backwardReaction(const int) const;
+
             //- Return arrhenius coeffs for reaction no.
             //  [0] -> pre-exponent [units depend on equation]
             //  [1] -> temperature exponent [-]
             //  [2] -> activation energy [cal/mol]
             scalarList arrheniusCoeffs(const int) const;
+
+            //- Return the collision number of reaction no.
+            word collisionPartner(const int) const;
 
             //- Return arrhenius coeffs for high pressure for reaction no.
             scalarList LOWCoeffs(const int) const;
@@ -428,9 +456,6 @@ class ChemistryData
 
             //- Return omega field
             scalarField omega() const;
-
-            //- Return stochiometric factors of products of reaction r
-            map<word, scalar> nuEduc(const int) const;
 
             //- Return forward reaction order of reaction r
             scalar forwardReactionOrder(const int) const;

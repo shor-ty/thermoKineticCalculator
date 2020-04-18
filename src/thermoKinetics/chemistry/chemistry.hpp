@@ -63,11 +63,9 @@ class Chemistry
 
         // Member Functions
 
-            //- Read chemistry file
-            void readChemistry();
-
-            //- Return chemistryData::thermo_
-            bool thermo();
+            //- Check if all species that are used in the chemistry are
+            //  available in the thermo object
+            void checkSpecies() const;
 
 
         // Calculation Functions
@@ -89,10 +87,10 @@ class Chemistry
         // Create Functions
 
             //- Create field that contains all reaction no. for each species
-            void createSpeciesInReaction();
+            void buildSpeciesInReactionTable();
 
             //- Insert reaction no. for species delegated to CHEMISTRYDATA
-            void insertReacNoForSpecies(const int, const int);
+            //void insertReacNoForSpecies(const int, const int);
 
 
         // Return Functions

@@ -60,7 +60,7 @@ class ThermoReader
         // Private data
 
             // Debug
-            bool debug_{true};
+            bool debug_{false};
 
             //- Thermo file
             const string file_;

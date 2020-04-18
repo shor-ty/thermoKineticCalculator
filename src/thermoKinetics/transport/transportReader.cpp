@@ -50,7 +50,8 @@ void AFC::TransportReader::read
     TransportData& data 
 )
 {
-    Info<< " c-o Reading transport data\n" << endl;
+    Info<< " c-o Reading transport data\n"
+        << "     >> " << file_ << "\n" << endl;
 
     const auto fileContent = readFile(file_);
 

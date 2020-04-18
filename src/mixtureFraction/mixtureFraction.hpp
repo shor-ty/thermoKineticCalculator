@@ -40,7 +40,7 @@ SourceFiles
 #include "transport.hpp"
 #include "chemistry.hpp"
 #include "properties.hpp"
-#include "typedef.hpp"
+#include "definitions.hpp"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

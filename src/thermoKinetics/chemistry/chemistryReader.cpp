@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   c-o-o-c-o-o-o             |
   |     |     A utomatic    | Open Source Flamelet
-  c-o-o-c     F lamelet     | 
+  c-o-o-c     F lamelet     |
   |     |     C onstructor  | Copyright (C) 2020 Holzmann CFD
   c     c-o-o-o             |
 -------------------------------------------------------------------------------
@@ -10,7 +10,7 @@ License
 
     AFC is free software; you can redistribute it and/or modify it under
     the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 3 of the License, or 
+    Free Software Foundation; either version 3 of the License, or
     (at your option) any later version.
 
     AFC is distributed in the hope that it will be useful, but
@@ -43,7 +43,8 @@ AFC::ChemistryReader::~ChemistryReader()
 
 void AFC::ChemistryReader::read(ChemistryData& data)
 {
-    Info<< " c-o Reading chemistry data\n" << endl;
+    Info<< " c-o Reading chemistry data\n"
+        << "     >> " << file_ << "\n" << endl;
 
     const auto fileContent = readFile(file_);
 
@@ -225,7 +226,8 @@ void AFC::ChemistryReader::readThermoBlock
     //- STEP 2: check if wordList THERMO found
     if (lineNoKeyword != -1)
     {
-        data.setThermo();
+        // TODO
+        //data.setThermo();
     }
 
     if (debug_)
@@ -268,54 +270,51 @@ void AFC::ChemistryReader::readReactionBlock
         );
     }
 
+    //- For duplicated entries
+    bool duplicate{false};
+
     //- Reading REACTION block
     for (unsigned int line = lineNoKeyword+1; line < lineNoEnd; line++)
     {
-        stringList tmp = splitStrAtWS(fileContent[line]);
+        string tString = fileContent[line];
 
-        //- If line is not empty and is not a comment, proceed
-        if
-        (
-            !tmp.empty()
-            && tmp[0][0] != '!'
-        )
+        //- Remove all comments (!)
+        removeComment(tString);
+        stringList tmp = splitStrAtWS(tString);
+
+        if (!tmp.empty())
         {
-            //- Check for duplicate entrys
-            if (tmp[0] == "DUPLICATE")
+            //- Check for duplicate entrys (not taken into consideration)
+            if (tmp[0] == "DUPLICATE" || tmp[0] == "DUP")
             {
-                //- Skip next two lines (third with for loop)
-                line+= 2;
-
-                //- Increment duplicate entry
-                data.incrementDuplicated();
-            }
-            else
-            {
-                //- Check if another comment is somewhere in the line 
-                std::size_t foundExMark = fileContent[line].find('!');
-
-                if (foundExMark != std::string::npos)
+                //- Found first duplicated key
+                if (!duplicate)
                 {
-                    //- Search the entry of the comment
-                    forEach(tmp, i)
-                    {
-                        if (tmp[i][0] == '!')
-                        {
-                            tmp.resize(i);
-                        } 
-                    };
-                }
+                    duplicate = true;
 
+                    //- Increment duplicate entry
+                    data.incrementDuplicated();
+                }
+                else
+                {
+                    duplicate = false;
+                }
+            }
+            else if (!duplicate)
+            {
                 //- Check if '=' is in string (means reaction)
                 std::size_t found = fileContent[line].find('=');
 
                 if (found != std::string::npos)
                 {
-                    //- If extended collision partner found that is not (+M)
-                    //  ignore it (get rid of issue 15)
-                    //  TODO - take care of these equations
+                    data.incrementReac();
+                    data.incrementMatrixesVectors();
+
+                    //- If collision partner found >> in backets (+M), (+H2)
+                    //  This donates a third body reaction (TBR)
                     std::size_t found1 = tmp[0].find('(');
                     std::size_t found2 = tmp[0].find(')');
+                    std::size_t found3 = fileContent[line].find("+M");
 
                     if
                     (
@@ -323,29 +322,26 @@ void AFC::ChemistryReader::readReactionBlock
                      && (found2 != std::string::npos)
                     )
                     {
-                        data.incrementIgnored();
-                        data.ignoredElementarReaction(tmp[0]);
-                        line++;
+                        //- Set reaction to be a TBR
+                        data.TBR(true);
+
+                        //- Extract collision partner
+                        data.collisionPartner
+                        (
+                            extractBetweenKeys(fileContent[line])
+                        );
                     }
-                    //- Supported reactions
-                    //  TH::22.02.2020
-                    else
+                    else if (found3 != std::string::npos)
                     {
-
-                        data.incrementReac();
-
-                        data.incrementMatrixesVectors();
-
-                        analyzeReaction(fileContent[line], data);
-
-                        found = fileContent[line].find("+M");
-
-                        if (found != std::string::npos)
-                        {
-                            data.TBR(true);
-                        }
+                        //- Set reaction to be a TBR
+                        data.TBR(true);
+                        data.collisionPartner("+M");
                     }
+
+                    //- Analyze the reaction
+                    analyzeReaction(tmp, data);
                 }
+                // No reaction, something different
                 else
                 {
                     std::size_t foundLOW;
@@ -430,12 +426,12 @@ void AFC::ChemistryReader::findKeyword
             searchPattern = REACTION;
         }
 
-    // Iterator due to new forAll() Range-for 
+    // Iterator due to new forAll() Range-for
     unsigned int lineNo{0};
 
     forAll(fileContent, line)
     {
-        //- Split string; delimiter ' ' 
+        //- Split string; delimiter ' '
         stringList tmp = splitStrAtWS(line);
 
         //- Search line no.
@@ -443,7 +439,7 @@ void AFC::ChemistryReader::findKeyword
         {
             if (!tmp.empty() && tmp[0] == i)
             {
-                start = lineNo; 
+                start = lineNo;
                 break;
             }
         }
@@ -471,7 +467,7 @@ void AFC::ChemistryReader::findKeyword
 
 AFC::stringList AFC::ChemistryReader::extractData(const string str)
 {
-    //- STEP 1: find first '/' 
+    //- STEP 1: find first '/'
     string delimiter="/";
 
     std::size_t found = str.find(delimiter);
@@ -493,25 +489,14 @@ AFC::stringList AFC::ChemistryReader::extractData(const string str)
 
 void AFC::ChemistryReader::analyzeReaction
 (
-    const string reaction,
+    const stringList& line,
     ChemistryData& data
 )
 {
-    //- STEP 1: manipulate string to get reaction
-    stringList tmp = splitStrAtWS(reaction);
+    const string& reaction = line[0];
+    data.elementarReaction(reaction);
 
-    const string& tmp2 = tmp[0];
-
-    //- Re-arrange the string and remove arrhenius coeffs
-    /*for (unsigned int i=0; i<tmp.size()-3; i++)
-    {
-        tmp2 += tmp[i];
-    }
-    */
-
-    data.elementarReaction(tmp2);
-    
-    //- STEP 2: analyze reaction
+    //- STEP 1: analyze reaction
     string delimiter1 = "=";
     string delimiter2 = "<";
     string delimiter3 = ">";
@@ -522,11 +507,10 @@ void AFC::ChemistryReader::analyzeReaction
     //  +  b)  A+A<=>B (forward and backward)
     //  +  c)  A+A=>B  (only forward reaction)
     //  +  d)  A+A<=B  (only backward reaction)
-    //  d) is not implemented
 
-    size_t found1 = tmp2.find(delimiter1);
-    size_t found2 = tmp2.find(delimiter2);
-    size_t found3 = tmp2.find(delimiter3);
+    size_t found1 = reaction.find(delimiter1);
+    size_t found2 = reaction.find(delimiter2);
+    size_t found3 = reaction.find(delimiter3);
 
     //- a)
     if
@@ -536,6 +520,7 @@ void AFC::ChemistryReader::analyzeReaction
      && found3 == std::string::npos
     )
     {
+        data.FR(true);
         data.BR(true);
     }
     //- b)
@@ -546,6 +531,7 @@ void AFC::ChemistryReader::analyzeReaction
      && found3 != std::string::npos
     )
     {
+        data.FR(true);
         data.BR(true);
     }
     //- c)
@@ -556,11 +542,9 @@ void AFC::ChemistryReader::analyzeReaction
      && found3 != std::string::npos
     )
     {
+        data.FR(true);
         data.BR(false);
     }
-    //- d)
-    //  Not implemented, normally not used
-    //  NOTE: 14.07.16, change product and educt and fine
     else if
     (
         found1 != std::string::npos
@@ -568,51 +552,43 @@ void AFC::ChemistryReader::analyzeReaction
      && found3 == std::string::npos
     )
     {
-        ErrorMsg
-        (
-            "Only backward reaction is not implemented. If for some reason\n   "
-            " you want to implement it, feel free to open a issue at\n    "
-            "www.bitbucket.org/shorty or implement it yourself and "
-            "make a pull request.",
-            __FILE__,
-            __LINE__
-        );
+        data.FR(false);
+        data.BR(true);
     }
 
-    // STEP 3: insert arrhenius coeffs
+    // STEP 2: insert arrhenius coeffs
     data.arrheniusCoeffs
     (
-        stod(tmp[1]),
-        stod(tmp[2]),
-        stod(tmp[3])
+        stod(line[1]),
+        stod(line[2]),
+        stod(line[3])
     );
 
-    // STEP 4: get stochiometric values
-    //  + product negativ
-    //  + reactants positiv
+    // STEP 3: get stochiometric values
+    //  + educts negativ
+    //  + products positiv
 
     // a) split into educts and products
-    stringList tmp3 = splitStrAtDelimiter(tmp2, '=');
+    const stringList sites = splitStrAtDelimiter(reaction, '=');
 
-    const string reac = tmp3[0];
-    const string prod = tmp3[1];
+    const string educ = sites[0];
+    const string prod = sites[1];
 
-    // b) Check if the first char is a number,
-    //    if not nu = 1
-    //    if its a number, check next letter for number
+    // b) Analyze the educt and product site according to the species
+    //    and its stochiometric numbers
     {
-        //- Reactant site
-        analyzeReacSite(reac, "e", data);
+        //- Educt site
+        analyzeReacSite(educ, "e", data);
 
         //- Product site
         analyzeReacSite(prod, "p", data);
     }
 
     //- All stochiometric coefficients for species stored. Hence we
-    //  are able to calculate the global reaction order and exponent
+    //  are able to calculate the global reaction order and exponents
     //  for calculation Kc
     data.updateGlobalReactionOrder();
-    
+
 }
 
 
@@ -640,7 +616,7 @@ void AFC::ChemistryReader::LOWCoeffs
         );
     }
 
-    //- STEP 3: update 
+    //- STEP 3: update
     unsigned int c{0};
 
     forAll(coeffs, i)
@@ -748,7 +724,7 @@ void AFC::ChemistryReader::enhanceFactors
         //- Species name
         if (c == 0)
         {
-            species = i; 
+            species = i;
             c++;
         }
         else if (c == 1)
@@ -762,22 +738,56 @@ void AFC::ChemistryReader::enhanceFactors
 
 void AFC::ChemistryReader::analyzeReacSite
 (
-    const string reactionSite,
+    string reactionSite,
     const word site,
     ChemistryData& data
 )
 {
-    //- First: remove (+M) if it is there
-    string removed1 = removeAtEnd(reactionSite, "(+M)");
+    //- First: check if actual reaction is a TBR, if yes remove the
+    //  third body reaction partner
 
-    //- Second: remove +M if it is there
-    string tmp = removeAtEnd(removed1, "+M");
-
-    //- Third: remove '>' if we have forward reaction
-    //  and have product site
-    if (site == "p" && !data.BR(data.nReac()))
+    if (data.TBR(data.nReac()))
     {
-        removeFirstChar(tmp); 
+        const word collPartner = data.collisionPartner(data.nReac());
+
+        //- Remove collision partner from reaction (partner is at the end)
+        //  TODO check if collision partner is not at the end to be more dynamic
+        //  However, not sure if the convention allows to set it somewhere else
+        reactionSite = removeAtEnd(reactionSite, collPartner);
+    }
+
+    //- Second: check if '<' or '>' is inside the reaction
+    //  a) for educt site we can have '<'
+    //  b) for product site we can have '>'
+    std::size_t found{false};
+
+    if (site == "e")
+    {
+        found = reactionSite.find('<');
+
+        if (found != std::string::npos)
+        {
+            removeLastChar(reactionSite);
+        }
+    }
+    else if (site == "p")
+    {
+        found = reactionSite.find('>');
+
+        if (found != std::string::npos)
+        {
+            removeFirstChar(reactionSite);
+        }
+    }
+    else
+    {
+        ErrorMsg
+        (
+            "    You only can call this function with 'e' or "
+            "'p' arguments.",
+            __FILE__,
+            __LINE__
+        );
     }
 
     word stochiometricFactor;
@@ -795,23 +805,21 @@ void AFC::ChemistryReader::analyzeReacSite
     bool extractSpecies{false};
 
     //- Reactant analyse
-    for(unsigned int i=0; i<tmp.size(); i++)
+    for(unsigned int i=0; i<reactionSite.size(); i++)
     {
         if (!firstChar)
         {
-            if
-            (
-                isdigit(tmp[i])
-             || tmp[i] == '.'
-            )
+            //- Already prepared for non-int (more complex) reactions
+            //  TODO complete implementation
+            if (isdigit(reactionSite[i]) || reactionSite[i] == '.')
             {
                 if (foundDigit)
                 {
-                    stochiometricFactor += tmp[i];
+                    stochiometricFactor += reactionSite[i];
                 }
                 else
                 {
-                    stochiometricFactor = tmp[i];
+                    stochiometricFactor = reactionSite[i];
                 }
 
                 foundDigit = true;
@@ -822,7 +830,7 @@ void AFC::ChemistryReader::analyzeReacSite
                 firstChar = true;
 
                 startPos = i;
-                
+
                 if (!foundDigit)
                 {
                     stochiometricFactor = "1";
@@ -836,13 +844,9 @@ void AFC::ChemistryReader::analyzeReacSite
 
         {
             //- Move on till + comes or end of string reached
-            if
-            (
-                tmp[i] == '+'
-             || i == tmp.size()-1    
-            )
+            if (reactionSite[i] == '+' || i == reactionSite.size()-1)
             {
-                if (i == tmp.size()-1)
+                if (i == reactionSite.size()-1)
                 {
                     endPos = i+1;
                 }
@@ -860,7 +864,7 @@ void AFC::ChemistryReader::analyzeReacSite
         //- Extract species
         if (extractSpecies)
         {
-            species = tmp.substr(startPos, (endPos-startPos));
+            species = reactionSite.substr(startPos, (endPos-startPos));
 
             extractSpecies = false;
 
@@ -876,23 +880,13 @@ void AFC::ChemistryReader::analyzeReacSite
             {
                 tmp = stod(stochiometricFactor) * -1;
             }
-            else
-            {
-                ErrorMsg
-                (
-                    "You only can call this function with 'e' or "
-                    "'p' arguments.",
-                    __FILE__,
-                    __LINE__
-                );
-            }
 
-            //- Check if value is integer, therefore we multiply the value
+            //- Check if value is an integer, therefore we multiply the value
             //  by 10 (0.1 -> 1 | 1 -> 10) and make % operation
-            const int modTmp = static_cast<int>(tmp * scalar(100));
+            const int modTmp = static_cast<int>(tmp * scalar(10));
 
             //- The modulo has to be zero if the input is an integer
-            //  Input integer  -> 1   -> 10 % 10 = 0 
+            //  Input integer  -> 1   -> 10 % 10 = 0
             //  Input integer  -> 2   -> 20 % 10 = 0
             //  Input !integer -> 1.2 -> 12 % 10 = 2
             //  Input !integer -> 0.4 -> 4  % 10 = 4

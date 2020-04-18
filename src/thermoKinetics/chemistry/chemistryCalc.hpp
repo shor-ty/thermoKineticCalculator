@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   c-o-o-c-o-o-o             |
   |     |     A utomatic    | Open Source Flamelet
-  c-o-o-c     F lamelet     | 
+  c-o-o-c     F lamelet     |
   |     |     C onstructor  | Copyright (C) 2020 Holzmann CFD
   c     c-o-o-o             |
 -------------------------------------------------------------------------------
@@ -10,7 +10,7 @@ License
 
     AFC is free software; you can redistribute it and/or modify it under
     the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 3 of the License, or 
+    Free Software Foundation; either version 3 of the License, or
     (at your option) any later version.
 
     AFC is distributed in the hope that it will be useful, but
@@ -23,7 +23,7 @@ License
 
 Class
     AFC::ChemistryCalc
-    
+
 Description
     Abstract AFC::ChemistryCalc class for chemistry calculation
 
@@ -79,7 +79,7 @@ class ChemistryCalc
         // Calculation Functions
 
             //- Calculate the reaction rates kf and kb [units depend]
-            void kfkb 
+            void kfkb
             (
                 const int,
                 const scalar,
@@ -87,10 +87,21 @@ class ChemistryCalc
             );
 
             //- Calculate reaction rate kf
-            scalar kf(const int, const scalar, const bool LOW = false) const;
+            scalar kf
+            (
+                const int,
+                const scalar,
+                const map<word, scalar>& = map<word, scalar>(),
+                const bool kb = false
+            ) const;
 
             //- Calculate reaction rate kb
-            scalar kb(const int, const scalar, const bool LOW = false) const;
+            scalar kb
+            (
+                const int,
+                const scalar,
+                const map<word, scalar>& = map<word, scalar>()
+            ) const;
 
             //- Calculate equilibrium reaction rate keq
             scalar keq(const int, const scalar) const;
@@ -102,6 +113,14 @@ class ChemistryCalc
                 const scalar,
                 const scalar,
                 const scalar
+            ) const;
+
+            //- Lindemann approach
+            scalar Lindemann
+            (
+                const int,
+                const scalar,
+                const map<word, scalar>&
             ) const;
 
             //- Calculate Fcent for TROE formulation
@@ -117,13 +136,9 @@ class ChemistryCalc
                 const scalar,
                 const map<word, scalar>&
             ) const;
-            
-            //- Calculate [M] partner [mol/m^3]
-            void M(const int, const map<word, scalar>&);
 
-            //- Get information about TBR (if [M] is included or not) and
-            //  if we have to use enhanced factors for calculating [M]
-            bool thirdBodyReaction(const int);
+            //- Calculate [M] partner [mol/m^3]
+            scalar M(const int, const map<word, scalar>&) const;
 
             //- Calculate dH for reaction r and given temperature
             scalar dh(const int, const scalar) const;

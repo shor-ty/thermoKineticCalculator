@@ -26,6 +26,7 @@ License
 #include "chemistry.hpp"
 #include "thermo.hpp"
 #include "constants.hpp"
+#include <algorithm>
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
@@ -33,8 +34,11 @@ AFC::Chemistry::Chemistry(const string fileName, const Thermo& thermo)
 :
     ChemistryCalc(fileName, thermo)
 {
-    //- Reactions that include species i
-    createSpeciesInReaction();
+    //- Check if all species are available
+    checkSpecies();
+
+    //- Build the table that contains in which reaction each species is included
+    buildSpeciesInReactionTable();
 }
 
 
@@ -46,10 +50,40 @@ AFC::Chemistry::~Chemistry()
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
+void AFC::Chemistry::checkSpecies() const
+{
+    Info<< " c-o Checking if chemistry species are available in the NASA"
+        << " database..." << endl;
+
+    const wordList& thermoSpecies = thermo().species();
+    const wordList& chemistrySpecies = species();
+    wordList::const_iterator it;
+
+    forAll(chemistrySpecies, cSpecies)
+    {
+
+        it = find(thermoSpecies.begin(), thermoSpecies.end(), cSpecies);
+
+        if (it == thermoSpecies.end())
+        {
+            ErrorMsg
+            (
+                "    Species '" + cSpecies + "' of the chemistry is not "
+                " available in the thermodynamic database (NASA Polynomials)",
+                __FILE__,
+                __LINE__
+            );
+        }
+    }
+
+    //- If passed everything is fine
+    Info<< "      >> Everything is fine. Proceed...\n" << endl;
+}
 
 
 // * * * * * * * * * * * * * Calculation Functions * * * * * * * * * * * * * //
 
+/*
 AFC::map<AFC::word, AFC::scalar> AFC::Chemistry::omega
 (
     const scalar T,
@@ -77,6 +111,7 @@ AFC::map<AFC::word, AFC::scalar> AFC::Chemistry::omega
     //- Return the rate field
     return dcdt;
 }
+*/
 
 
 // * * * * * * * * * * * * * * * Update Functions  * * * * * * * * * * * * * //
@@ -92,7 +127,7 @@ AFC::map<AFC::word, AFC::scalar> AFC::Chemistry::omega
 
 // * * * * * * * * * * * * * * * Create Functions  * * * * * * * * * * * * * //
 
-void AFC::Chemistry::createSpeciesInReaction()
+void AFC::Chemistry::buildSpeciesInReactionTable()
 {
     //- Species list
     const wordList& tspecies = species();
@@ -114,11 +149,7 @@ void AFC::Chemistry::createSpeciesInReaction()
             //- Loop through the species i in elementar reaction r
             for(unsigned int i=0; i<tspeciesInReaction[r].size(); i++)
             {
-                if
-                (
-                  ! found
-                 && tspeciesInReaction[r][i] == s
-                )
+                if (!found && (tspeciesInReaction[r][i] == s))
                 {
                     found = true;
 

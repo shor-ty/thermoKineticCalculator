@@ -68,7 +68,7 @@ class ChemistryReader
 
 
         // Private data
-        
+
             // Debug switch
             bool debug_{false};
 
@@ -123,7 +123,7 @@ class ChemistryReader
         // Data manipulation functions
 
             //- Manipulate elementar reaction string and analyze reaction
-            void analyzeReaction(const string, ChemistryData&);
+            void analyzeReaction(const stringList&, ChemistryData&);
 
             //- Manipulate LOW coeffs
             void LOWCoeffs(const string, const unsigned int, ChemistryData&);
@@ -138,7 +138,7 @@ class ChemistryReader
             void enhanceFactors(const string, ChemistryData&);
 
             //- Analyse reaction site (product or reactants)
-            void analyzeReacSite(const word, const word, ChemistryData&);
+            void analyzeReacSite(string, const word, ChemistryData&);
 };
 
 

@@ -43,7 +43,8 @@ AFC::PropertiesReader::~PropertiesReader()
 
 void AFC::PropertiesReader::read(PropertiesData& data)
 {
-    Info<< " c-o Reading AFCDict\n" << endl;
+    Info<< " c-o Reading AFCDict\n"
+        << "     >> " << file_ << "\n" << endl;
 
     const auto fileContent = readFile(file_);
 
