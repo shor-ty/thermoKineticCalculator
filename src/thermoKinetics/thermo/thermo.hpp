@@ -55,7 +55,7 @@ class Thermo
         // Private pointer data
             
             //- Debug switch
-            bool debug_{true};
+            bool debug_{false};
 
             //- ThermoData object
             //ThermoData thermoData_;

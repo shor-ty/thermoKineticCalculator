@@ -68,7 +68,7 @@ class ThermoCalc
         bool warnings_{false};
 
         // Debug
-        bool debug_{true};
+        bool debug_{false};
 
 
     public:

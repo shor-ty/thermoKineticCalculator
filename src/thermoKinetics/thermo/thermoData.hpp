@@ -54,7 +54,7 @@ class ThermoData
         // Private data
 
             //- Debug switch
-            bool debug_{true};
+            bool debug_{false};
 
             //- Thermodynamic is located in the chemistry file
             bool thermoInChemistry_;

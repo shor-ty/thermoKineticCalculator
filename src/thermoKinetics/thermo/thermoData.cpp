@@ -35,6 +35,7 @@ AFC::ThermoData::ThermoData
 )
 :
     thermoInChemistry_(thermoInChemistry),
+    // TODO
     p_(12)
 {
     if (debug_)
@@ -223,10 +224,8 @@ void AFC::ThermoData::updateElementsAndFactors()
     const wordList& elements = elementsInSpecies(species);
     const scalarList& factors = elementAtoms(species);
 
-    Info<< "Species: " << species << endl;
     forEach(elements, a)
     {
-        Info<< elements[a] << " : " << factors[a] << endl;
         tmp[elements[a]] = factors[a];
     }
 

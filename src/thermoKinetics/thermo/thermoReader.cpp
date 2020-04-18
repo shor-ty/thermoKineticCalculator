@@ -55,7 +55,8 @@ AFC::ThermoReader::~ThermoReader()
 
 void AFC::ThermoReader::read()
 {
-    Info<< " c-o Reading the thermodynamic data (NASA Polynomials)\n" << endl;
+    Info<< " c-o Reading the thermodynamic data (NASA Polynomials)\n"
+        << "     >> " << file_ << "\n" << endl;
 
     const auto fileContent = readFile(file_);
 
