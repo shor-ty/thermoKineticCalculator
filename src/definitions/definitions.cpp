@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   c-o-o-c-o-o-o             |
   |     |     A utomatic    | Open Source Flamelet
-  c-o-o-c     F lamelet     | 
+  c-o-o-c     F lamelet     |
   |     |     C onstructor  | Copyright (C) 2020 Holzmann CFD
   c     c-o-o-o             |
 -------------------------------------------------------------------------------
@@ -10,13 +10,13 @@ License
 
     AFC is free software; you can redistribute it and/or modify it under
     the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 3 of the License, or 
+    Free Software Foundation; either version 3 of the License, or
     (at your option) any later version.
 
     AFC is distributed in the hope that it will be useful, but
     WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-    See the GNU General Public License for more details.  
+    See the GNU General Public License for more details.
     You should have received a copy of the GNU General Public License
     along with AFC; if not, see <http://www.gnu.org/licenses/>
 
@@ -36,12 +36,12 @@ std::basic_ostream<char>& (& AFC::endl)(std::basic_ostream<char>&) = std::endl;
 void AFC::ErrorMsg
 (
     const string msg,
-    const char* file, 
+    const char* file,
     const unsigned long line
 )
 {
     Error<< "\n    *** Error in " << file << " line " << line << "\n"
-         << msg << "\n\n"
+         << "    " << msg << "\n\n"
          << "    If there is a bug or a problem that you can not solve,\n"
          << "    do not hesitate to write an email to "
          << "Tobias.Holzmann@Holzmann-cfd.de.\n" << endl;
@@ -87,9 +87,9 @@ AFC::string AFC::Header()
 
 void AFC::Footer(const scalar startTime)
 {
-    const scalar execTime = (clock()-startTime) / (scalar) CLOCKS_PER_SEC; 
+    const scalar execTime = (clock()-startTime) / (scalar) CLOCKS_PER_SEC;
 
-    Info<< "\n\n c-o Execution: " << execTime  << " s\n\n" 
+    Info<< "\n\n c-o Execution: " << execTime  << " s\n\n"
         << " ============================================================\n\n"
         << " c-o Programmed by Tobias Holzmann\n\n"
         << " c-o Tobias.Holzmann@Holzmann-cfd.de\n" << endl;

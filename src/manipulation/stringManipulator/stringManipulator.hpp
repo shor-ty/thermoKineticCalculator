@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   c-o-o-c-o-o-o             |
   |     |     A utomatic    | Open Source Flamelet
-  c-o-o-c     F lamelet     | 
+  c-o-o-c     F lamelet     |
   |     |     C onstructor  | Copyright (C) 2020 Holzmann CFD
   c     c-o-o-o             |
 -------------------------------------------------------------------------------
@@ -10,7 +10,7 @@ License
 
     AFC is free software; you can redistribute it and/or modify it under
     the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 3 of the License, or 
+    Free Software Foundation; either version 3 of the License, or
     (at your option) any later version.
 
     AFC is distributed in the hope that it will be useful, but
@@ -25,7 +25,7 @@ Class
     AFC::StringManipulator
 
 Description
-    Class for string manipulations and file operations 
+    Class for string manipulations and file operations
 
 SourceFiles
     stringManipulation.cpp
@@ -78,8 +78,19 @@ class StringManipulator
             //- Remove first character from string
             void removeFirstChar(string&);
 
+            //- Remove last character from string
+            void removeLastChar(string&);
+
             //- Remove the comment in the string
             void removeComment(string&, const string comment = "!");
+
+            //- Extract string between two keys
+            const string extractBetweenKeys
+            (
+                const string&,
+                const string key1 = "(",
+                const string key2 = ")"
+            );
 };
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

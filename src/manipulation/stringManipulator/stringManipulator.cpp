@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   c-o-o-c-o-o-o             |
   |     |     A utomatic    | Open Source Flamelet
-  c-o-o-c     F lamelet     | 
+  c-o-o-c     F lamelet     |
   |     |     C onstructor  | Copyright (C) 2020 Holzmann CFD
   c     c-o-o-o             |
 -------------------------------------------------------------------------------
@@ -10,7 +10,7 @@ License
 
     AFC is free software; you can redistribute it and/or modify it under
     the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 3 of the License, or 
+    Free Software Foundation; either version 3 of the License, or
     (at your option) any later version.
 
     AFC is distributed in the hope that it will be useful, but
@@ -120,13 +120,19 @@ AFC::StringManipulator::removeAtEnd(const string str, const string str2)
     size_t pos = str.find(str2);
 
     //- Return string von pos 0 to pos
-    return str.substr(0,pos);
+    return std::move(str.substr(0, pos));
 }
 
 
 void AFC::StringManipulator::removeFirstChar(string& str)
 {
-    str.replace(0,1,"");
+    str.replace(0, 1, "");
+}
+
+
+void AFC::StringManipulator::removeLastChar(string& str)
+{
+    str.replace(str.size()-1, 1, "");
 }
 
 
@@ -139,6 +145,20 @@ void AFC::StringManipulator::removeComment(string& str, const string comment)
 
         str = str.substr(0, pos);
     }
+}
+
+
+const AFC::string AFC::StringManipulator::extractBetweenKeys
+(
+    const string& str,
+    const string key1,
+    const string key2
+)
+{
+    std::size_t pos1 = str.find(key1);
+    std::size_t pos2 = str.find(key2);
+
+    return std::move(str.substr(pos1, pos2-pos1+1));
 }
 
 
