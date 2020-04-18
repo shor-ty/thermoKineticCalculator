@@ -190,6 +190,7 @@ AFC::MixtureFraction::~MixtureFraction()
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
 
+/*
 void AFC::MixtureFraction::updateMeanMW()
 {
     if (updatedMeanMW())
@@ -268,7 +269,7 @@ void AFC::MixtureFraction::updateMeanMW()
 }
 
 
-/*void AFC::MixtureFraction::calculateMeanCp
+void AFC::MixtureFraction::calculateMeanCp
 (
     const scalar& T 
 )
@@ -346,28 +347,27 @@ void AFC::MixtureFraction::calculateMeanG
     //- Calculate Gibbs energy with known values
     G_ = thermo_.G(H, S, T);
 }
-*/
 
 
 AFC::scalar
-AFC::MixtureFraction::calculateOmega(const word species, const int Z) const
+AFC::MixtureFraction::omega(const word species, const int Z) const
 {
     //- Concentration map at discrete point
     const map<word, scalar> con = C(Z); 
 
-    return chemistry_.calculateOmega(species, T_[Z], con);
+    return chemistry_.omega(species, T_[Z], con);
 }
 
 
 
-/*AFC::scalar AFC::MixtureFraction::calculateHf
+AFC::scalar AFC::MixtureFraction::calculateHf
 (
     const word& species,
     const scalar& T
 ) const
 {
     return thermo_.Hf(species, T);
-}*/
+}
 
 
 void AFC::MixtureFraction::conservation() const
@@ -611,6 +611,7 @@ void AFC::MixtureFraction::updateRho(const word method)
     //- Set to updated
     updatedMeanRho(true);
 }
+*/
 
 
 /*void AFC::MixtureFraction::updateCp()
@@ -634,6 +635,7 @@ void AFC::MixtureFraction::updateC()
 }*/
 
 
+/*
 void AFC::MixtureFraction::updateOmega()
 {
     //- Mixture fraction space (we do not need to calc the boundaries)
@@ -1405,6 +1407,7 @@ AFC::scalar AFC::MixtureFraction::MW(const word species) const
 {
     return thermo_.MW(species);
 }
+*/
 
 
 // ************************************************************************* //

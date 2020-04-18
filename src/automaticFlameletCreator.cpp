@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   c-o-o-c-o-o-o             |
   |     |     A utomatic    | Open Source Flamelet
-  c-o-o-c     F lamelet     | 
+  c-o-o-c     F lamelet     |
   |     |     C onstructor  | Copyright (C) 2015 Holzmann-cfd
   c     c-o-o-o             |
 -------------------------------------------------------------------------------
@@ -10,7 +10,7 @@ License
 
     AFC is free software; you can redistribute it and/or modify it under
     the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 3 of the License, or 
+    Free Software Foundation; either version 3 of the License, or
     (at your option) any later version.
 
     AFC is distributed in the hope that it will be useful, but
@@ -26,7 +26,7 @@ Description
 
 \*---------------------------------------------------------------------------*/
 
-#include "typedef.hpp" 
+#include "definitions.hpp"
 #include "interpreter.hpp"
 #include "scalar.hpp"
 #include "vector.hpp"
@@ -63,9 +63,10 @@ int main
 
     //- Build Interpreter object which makes a summary at the end if the switch
     //  is set on (-interprete)
+    /*
     Interpreter interpreter;
 
-    //- Check if all arguments are correct 
+    //- Check if all arguments are correct
     if (argc != 3)
     {
         ErrorMsg
@@ -75,7 +76,7 @@ int main
             "      ./automaticFlameletCreator -AFCDict $pathToFile\n\n",
             __FILE__,
             __LINE__
-        ); 
+        );
     }
     else
     {
@@ -219,14 +220,17 @@ int main
 
         Info<< " c-o Data O.K.\n" << endl;
     }
-    
-    //- Interprete data 
-    if (interpreter.analyze())
+
+    //- Interprete data
+    if (interpreter.analyze())   foobar
+
     {
         Info<< " c-o Interprete data ...\n" << endl;
 
-        transport.fitCurves();
+        transport.fitCurves();  a
+            id a
 
+            d fe s
         interpreter.summary(chemistry, thermo, transport);
 
         Footer(startTime);
@@ -238,7 +242,7 @@ int main
     transport.fitCurves();
 
 
-//- TH::200217 
+//- TH::200217
 
 
     //- Now we can proceed doing some other stuff after the check
@@ -251,6 +255,7 @@ int main
 
         //transport.calcAtomComposition();
     }
+    */
 
     //- Calculate first flamelet (initial - equilibrium)
 //    AdiabaticFlamelet adiabaticFlamelet;
@@ -295,6 +300,7 @@ int main
 //        return 0;
 //    }*/
 //
+/*
     Info<< " c-o Overview of Look-Up-Tables ...\n" << endl;
 
     //- Definition
@@ -348,16 +354,16 @@ int main
                     )
                 );
 
-            //- sDR 
+            //- sDR
             }
             Info<< "\n";
 
         //- adiabatic condition
         }
-    
+
         //- Counter (0 is for adiabatic)
         unsigned int c{1};
-        
+
         //- Non-adiabatic flamelets
         forAll(defects, defect)
         {
@@ -388,11 +394,11 @@ int main
                     )
                 );
 
-            //- sDR 
+            //- sDR
             }
             Info<< "\n";
 
-        //- defect 
+        //- defect
         }
         Info<< "\n";
     }
@@ -412,6 +418,7 @@ int main
     {
         num.solveAdiabaticFlamelet(adiabaticFlamelet);
     }
+    */
 //
 //    //- Calculation start
 //    /*Info<< " c-o Start flamelet calculation\n" << endl;
@@ -435,7 +442,7 @@ int main
 //                MixtureFraction& flamelet = lookUpTables[defect][rate];
 //
 //                scalar saveTime{0};
-//                
+//
 //                //- Time loop
 //                for
 //                (
@@ -443,7 +450,7 @@ int main
 //                    runTime < properties.runTime();
 //                )
 //                {
-//                    //- Write first 
+//                    //- Write first
 //                    if (runTime == 0)
 //                    {
 //                        flamelet.write();
