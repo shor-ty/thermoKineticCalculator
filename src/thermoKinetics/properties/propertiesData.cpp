@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   c-o-o-c-o-o-o             |
-  |     |     A utomatic    | Open Source Flamelet
-  c-o-o-c     F lamelet     |
+  |     |     T hermo       | Open Source Thermo-Kinetic Library
+  c-o-o-c     K iknetic     |
   |     |     C onstructor  | Copyright (C) 2020 Holzmann CFD
   c     c-o-o-o             |
 -------------------------------------------------------------------------------
 License
     This file is part of Automatic Flamelet Constructor.
 
-    AFC is free software; you can redistribute it and/or modify it under
+    TKC is free software; you can redistribute it and/or modify it under
     the terms of the GNU General Public License as published by the
     Free Software Foundation; either version 3 of the License, or
     (at your option) any later version.
 
-    AFC is distributed in the hope that it will be useful, but
+    TKC is distributed in the hope that it will be useful, but
     WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with AFC; if not, see <http://www.gnu.org/licenses/>
+    along with TKC; if not, see <http://www.gnu.org/licenses/>
 
 \*---------------------------------------------------------------------------*/
 
@@ -28,7 +28,7 @@ License
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-AFC::PropertiesData::PropertiesData
+TKC::PropertiesData::PropertiesData
 (
     const string fileName
 )
@@ -114,68 +114,68 @@ AFC::PropertiesData::PropertiesData
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-AFC::PropertiesData::~PropertiesData()
+TKC::PropertiesData::~PropertiesData()
 {}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
 /*
-void AFC::PropertiesData::fuelSpecies(const word fuel)
+void TKC::PropertiesData::fuelSpecies(const word fuel)
 {
     fuel_ = fuel;
 }
 
 
-void AFC::PropertiesData::oxidizerSpecies(const word oxidizer)
+void TKC::PropertiesData::oxidizerSpecies(const word oxidizer)
 {
     oxidizer_ = oxidizer;
 }
 
 
-void AFC::PropertiesData::inertSpecies(const word inert)
+void TKC::PropertiesData::inertSpecies(const word inert)
 {
     inert_ = inert;
 }
 
 
-void AFC::PropertiesData::insertMFPoints(const int nZPoints)
+void TKC::PropertiesData::insertMFPoints(const int nZPoints)
 {
     nZPoints_ = nZPoints;
 }
 
 
-void AFC::PropertiesData::insertVMFPoints(const int nZvarPoints)
+void TKC::PropertiesData::insertVMFPoints(const int nZvarPoints)
 {
     nZvarPoints_ = nZvarPoints;
 }
 
 
-void AFC::PropertiesData::insertEnthalpyDefects(const scalar defect)
+void TKC::PropertiesData::insertEnthalpyDefects(const scalar defect)
 {
     defects_.push_back(defect);
 }
 
 
-void AFC::PropertiesData::insertScalarDissipationRates(const scalar sDR)
+void TKC::PropertiesData::insertScalarDissipationRates(const scalar sDR)
 {
     sDRs_.push_back(sDR);
 }
 
 
-void AFC::PropertiesData::insertTemperatureOxidizer(const scalar TOxidizer)
+void TKC::PropertiesData::insertTemperatureOxidizer(const scalar TOxidizer)
 {
     TOxidizer_ = TOxidizer;
 }
 
 
-void AFC::PropertiesData::insertTemperatureFuel(const scalar TFuel)
+void TKC::PropertiesData::insertTemperatureFuel(const scalar TFuel)
 {
     TFuel_ = TFuel;
 }
 
 
-void AFC::PropertiesData::insertCompositionOxidizerMol
+void TKC::PropertiesData::insertCompositionOxidizerMol
 (
     const word species,
     const scalar molFraction
@@ -188,7 +188,7 @@ void AFC::PropertiesData::insertCompositionOxidizerMol
 }
 
 
-void AFC::PropertiesData::insertCompositionOxidizerMass
+void TKC::PropertiesData::insertCompositionOxidizerMass
 (
     const word species,
     const scalar massFraction
@@ -201,7 +201,7 @@ void AFC::PropertiesData::insertCompositionOxidizerMass
 }
 
 
-void AFC::PropertiesData::insertCompositionFuelMol
+void TKC::PropertiesData::insertCompositionFuelMol
 (
     const word species,
     const scalar molFraction
@@ -214,7 +214,7 @@ void AFC::PropertiesData::insertCompositionFuelMol
 }
 
 
-void AFC::PropertiesData::insertCompositionFuelMass
+void TKC::PropertiesData::insertCompositionFuelMass
 (
     const word species,
     const scalar massFraction
@@ -227,19 +227,19 @@ void AFC::PropertiesData::insertCompositionFuelMass
 }
 
 
-void AFC::PropertiesData::insertRunTime(const scalar runTime)
+void TKC::PropertiesData::insertRunTime(const scalar runTime)
 {
     runTime_ = runTime;
 }
 
 
-void AFC::PropertiesData::insertWriteControl(const word writeControl)
+void TKC::PropertiesData::insertWriteControl(const word writeControl)
 {
     writeControl_ = writeControl;
 }
 
 
-void AFC::PropertiesData::insertWriteControlInterval
+void TKC::PropertiesData::insertWriteControlInterval
 (
     const scalar writeControlInterval
 )
@@ -248,37 +248,37 @@ void AFC::PropertiesData::insertWriteControlInterval
 }
 
 
-void AFC::PropertiesData::insertWriteControlTime(const scalar writeControlTime)
+void TKC::PropertiesData::insertWriteControlTime(const scalar writeControlTime)
 {
     writeControlTime_ = writeControlTime;
 }
 
 
-void AFC::PropertiesData::insertDeltat(const scalar deltat)
+void TKC::PropertiesData::insertDeltat(const scalar deltat)
 {
     deltat_ = deltat;
 }
 
 
-void AFC::PropertiesData::insertPressure(const scalar pressure)
+void TKC::PropertiesData::insertPressure(const scalar pressure)
 {
     p_ = pressure;
 }
 
 
-void AFC::PropertiesData::inputMol()
+void TKC::PropertiesData::inputMol()
 {
     inputMol_ = true;
 }
 
 
-void AFC::PropertiesData::inputMass()
+void TKC::PropertiesData::inputMass()
 {
     inputMass_ = true;
 }
 
 
-void AFC::PropertiesData::insertInterpreter
+void TKC::PropertiesData::insertInterpreter
 (
     const word keyword
 )
@@ -289,31 +289,31 @@ void AFC::PropertiesData::insertInterpreter
 
 // * * * * * * * * * * * * * Time Related Functions  * * * * * * * * * * * * //
 
-void AFC::PropertiesData::updateCurrentTime(const scalar time)
+void TKC::PropertiesData::updateCurrentTime(const scalar time)
 {
     currentTime_ = time;
 }
 
 
-AFC::scalar AFC::PropertiesData::runTime() const
+TKC::scalar TKC::PropertiesData::runTime() const
 {
     return runTime_;
 }
 
 
-AFC::scalar AFC::PropertiesData::deltat() const
+TKC::scalar TKC::PropertiesData::deltat() const
 {
     return deltat_;
 }
 
 
-AFC::scalar AFC::PropertiesData::currentTime() const
+TKC::scalar TKC::PropertiesData::currentTime() const
 {
     return currentTime_;
 }
 
 
-AFC::scalar AFC::PropertiesData::write() const
+TKC::scalar TKC::PropertiesData::write() const
 {
     return writeControlTime_;
 }
@@ -321,7 +321,7 @@ AFC::scalar AFC::PropertiesData::write() const
 
 // * * * * * * * * * * * * * * * Other functions * * * * * * * * * * * * * * //
 
-void AFC::PropertiesData::initialBoundary()
+void TKC::PropertiesData::initialBoundary()
 {
     const wordList& species = chemistry_.species();
 
@@ -336,7 +336,7 @@ void AFC::PropertiesData::initialBoundary()
 }
 
 
-void AFC::PropertiesData::check()
+void TKC::PropertiesData::check()
 {
     if (nZPoints_ == 0)
     {
@@ -585,7 +585,7 @@ void AFC::PropertiesData::check()
 }
 
 
-void AFC::PropertiesData::convertFractions()
+void TKC::PropertiesData::convertFractions()
 {
     //- Convert to mass fraction
     if (inputMol_)
@@ -612,7 +612,7 @@ void AFC::PropertiesData::convertFractions()
     }
 }
 
-void AFC::PropertiesData::XtoY(const map<word, scalar>& X, map<word, scalar>& Y )
+void TKC::PropertiesData::XtoY(const map<word, scalar>& X, map<word, scalar>& Y )
 {
     scalar M{0};
 
@@ -630,7 +630,7 @@ void AFC::PropertiesData::XtoY(const map<word, scalar>& X, map<word, scalar>& Y 
 }
 
 
-void AFC::PropertiesData::YtoX(const map<word, scalar>& Y, map<word, scalar>& X)
+void TKC::PropertiesData::YtoX(const map<word, scalar>& Y, map<word, scalar>& X)
 {
     scalar M{0};
     scalar YbyM{0};
@@ -652,159 +652,159 @@ void AFC::PropertiesData::YtoX(const map<word, scalar>& Y, map<word, scalar>& X)
 
 // * * * * * * * * * * * * * * * Return Functions  * * * * * * * * * * * * * //
 
-AFC::word AFC::PropertiesData::fuel() const
+TKC::word TKC::PropertiesData::fuel() const
 {
     return fuel_;
 }
 
 
-AFC::word AFC::PropertiesData::oxidizer() const
+TKC::word TKC::PropertiesData::oxidizer() const
 {
     return oxidizer_;
 }
 
 
-AFC::word AFC::PropertiesData::inert() const
+TKC::word TKC::PropertiesData::inert() const
 {
     return inert_;
 }
 
 
-AFC::wordList AFC::PropertiesData::speciesOxidizer() const
+TKC::wordList TKC::PropertiesData::speciesOxidizer() const
 {
     return speciesOxidizer_;
 }
 
 
-AFC::map<AFC::word, AFC::map<AFC::word, unsigned int>>
-AFC::PropertiesData::oxidizerA() const
+TKC::map<TKC::word, TKC::map<TKC::word, unsigned int>>
+TKC::PropertiesData::oxidizerA() const
 {
     return oxidizerA_;
 }
 
 
-AFC::map<AFC::word, AFC::scalar> AFC::PropertiesData::oxidizerX() const
+TKC::map<TKC::word, TKC::scalar> TKC::PropertiesData::oxidizerX() const
 {
     return oxidizerX_;
 }
 
 
-AFC::map<AFC::word, AFC::scalar> AFC::PropertiesData::oxidizerY() const
+TKC::map<TKC::word, TKC::scalar> TKC::PropertiesData::oxidizerY() const
 {
     return oxidizerY_;
 }
 
 
-AFC::map<AFC::word, AFC::scalar> AFC::PropertiesData::oxidizerZj() const
+TKC::map<TKC::word, TKC::scalar> TKC::PropertiesData::oxidizerZj() const
 {
     return fuelZj_;
 }
 
 
-AFC::scalar AFC::PropertiesData::oxidizerX(const word species) const
+TKC::scalar TKC::PropertiesData::oxidizerX(const word species) const
 {
     return oxidizerX_.at(species);
 }
 
 
-AFC::scalar AFC::PropertiesData::oxidizerY(const word species) const
+TKC::scalar TKC::PropertiesData::oxidizerY(const word species) const
 {
     return oxidizerY_.at(species);
 }
 
 
-AFC::wordList AFC::PropertiesData::speciesFuel() const
+TKC::wordList TKC::PropertiesData::speciesFuel() const
 {
     return speciesFuel_;
 }
 
 
-AFC::map<AFC::word, AFC::map<AFC::word, unsigned int>>
-AFC::PropertiesData::fuelA() const
+TKC::map<TKC::word, TKC::map<TKC::word, unsigned int>>
+TKC::PropertiesData::fuelA() const
 {
     return fuelA_;
 }
 
 
-AFC::map<AFC::word, AFC::scalar> AFC::PropertiesData::fuelX() const
+TKC::map<TKC::word, TKC::scalar> TKC::PropertiesData::fuelX() const
 {
     return fuelX_;
 }
 
 
-AFC::map<AFC::word, AFC::scalar> AFC::PropertiesData::fuelY() const
+TKC::map<TKC::word, TKC::scalar> TKC::PropertiesData::fuelY() const
 {
     return fuelY_;
 }
 
 
-AFC::map<AFC::word, AFC::scalar> AFC::PropertiesData::fuelZj() const
+TKC::map<TKC::word, TKC::scalar> TKC::PropertiesData::fuelZj() const
 {
     return fuelZj_;
 }
 
 
-AFC::scalar AFC::PropertiesData::fuelX(const word species) const
+TKC::scalar TKC::PropertiesData::fuelX(const word species) const
 {
     return fuelX_.at(species);
 }
 
 
-AFC::scalar AFC::PropertiesData::fuelY(const word species) const
+TKC::scalar TKC::PropertiesData::fuelY(const word species) const
 {
     return fuelY_.at(species);
 }
 
 
-AFC::scalarField AFC::PropertiesData::defects() const
+TKC::scalarField TKC::PropertiesData::defects() const
 {
     return defects_;
 }
 
 
-AFC::scalar AFC::PropertiesData::sDRs(const int i) const
+TKC::scalar TKC::PropertiesData::sDRs(const int i) const
 {
     return sDRs_[i];
 }
 
 
-AFC::scalarField AFC::PropertiesData::sDRs() const
+TKC::scalarField TKC::PropertiesData::sDRs() const
 {
     return sDRs_;
 }
 
 
-int AFC::PropertiesData::nZPoints() const
+int TKC::PropertiesData::nZPoints() const
 {
     return nZPoints_;
 }
 
 
-int AFC::PropertiesData::nZvarPoints() const
+int TKC::PropertiesData::nZvarPoints() const
 {
     return nZvarPoints_;
 }
 
 
-AFC::scalar AFC::PropertiesData::oxidizerTemperature() const
+TKC::scalar TKC::PropertiesData::oxidizerTemperature() const
 {
     return TOxidizer_;
 }
 
 
-AFC::scalar AFC::PropertiesData::fuelTemperature() const
+TKC::scalar TKC::PropertiesData::fuelTemperature() const
 {
     return TFuel_;
 }
 
 
-unsigned int AFC::PropertiesData::nDefects() const
+unsigned int TKC::PropertiesData::nDefects() const
 {
     return defects_.size();
 }
 
 
-AFC::scalar AFC::PropertiesData::defect
+TKC::scalar TKC::PropertiesData::defect
 (
     const int defectNo
 ) const
@@ -813,13 +813,13 @@ AFC::scalar AFC::PropertiesData::defect
 }
 
 
-AFC::scalar AFC::PropertiesData::p() const
+TKC::scalar TKC::PropertiesData::p() const
 {
     return p_;
 }
 
 
-AFC::word AFC::PropertiesData::input() const
+TKC::word TKC::PropertiesData::input() const
 {
     if
     (
@@ -850,42 +850,42 @@ AFC::word AFC::PropertiesData::input() const
 }
 
 
-AFC::word AFC::PropertiesData::interpreter() const
+TKC::word TKC::PropertiesData::interpreter() const
 {
     return interpreter_;
 }
 
 
-AFC::scalar AFC::PropertiesData::Zst() const
+TKC::scalar TKC::PropertiesData::Zst() const
 {
     return Zst_;
 }
 
 
-AFC::scalar AFC::PropertiesData::YatZstu(const word species) const
+TKC::scalar TKC::PropertiesData::YatZstu(const word species) const
 {
     return YatZstu_.at(species);
 }
 
 
-AFC::scalar AFC::PropertiesData::YatZstb(const word species) const
+TKC::scalar TKC::PropertiesData::YatZstb(const word species) const
 {
     return YatZstb_.at(species);
 }
 
 
-AFC::map<AFC::word, AFC::scalar> AFC::PropertiesData::YatZstu() const
+TKC::map<TKC::word, TKC::scalar> TKC::PropertiesData::YatZstu() const
 {
     return YatZstu_;
 }
 
-AFC::map<AFC::word, AFC::scalar> AFC::PropertiesData::YatZstb() const
+TKC::map<TKC::word, TKC::scalar> TKC::PropertiesData::YatZstb() const
 {
     return YatZstb_;
 }
 
 
-AFC::scalar AFC::PropertiesData::adiabateFlameTemperature() const
+TKC::scalar TKC::PropertiesData::adiabateFlameTemperature() const
 {
     return PropertiesDataCalc::adiabateFlameTemperature
         (
@@ -898,7 +898,7 @@ AFC::scalar AFC::PropertiesData::adiabateFlameTemperature() const
 
 // * * * * * * * * * * * * * * Summary Function  * * * * * * * * * * * * * * //
 
-void AFC::PropertiesData::summary(ostream& data) const
+void TKC::PropertiesData::summary(ostream& data) const
 {
     //- Header
     data<< Header() << "\n"; 

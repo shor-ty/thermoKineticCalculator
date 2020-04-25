@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   c-o-o-c-o-o-o             |
-  |     |     A utomatic    | Open Source Flamelet
-  c-o-o-c     F lamelet     |
+  |     |     T hermo       | Open Source Thermo-Kinetic Library
+  c-o-o-c     K iknetic     |
   |     |     C onstructor  | Copyright (C) 2020 Holzmann CFD
   c     c-o-o-o             |
 ------------------------------------------------------------------------------
 License
     This file is part of Automatic Flamelet Constructor.
 
-    AFC is free software; you can redistribute it and/or modify it under
+    TKC is free software; you can redistribute it and/or modify it under
     the terms of the GNU General Public License as published by the
     Free Software Foundation; either version 3 of the License, or
     (at your option) any later version.
 
-    AFC is distributed in the hope that it will be useful, but
+    TKC is distributed in the hope that it will be useful, but
     WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with AFC; if not, see <http://www.gnu.org/licenses/>
+    along with TKC; if not, see <http://www.gnu.org/licenses/>
 
 \*---------------------------------------------------------------------------*/
 
@@ -29,7 +29,7 @@ License
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-AFC::ChemistryCalc::ChemistryCalc(const string fileName, const Thermo& thermo)
+TKC::ChemistryCalc::ChemistryCalc(const string fileName, const Thermo& thermo)
 :
     ChemistryData(fileName),
     thermo_(thermo)
@@ -38,13 +38,13 @@ AFC::ChemistryCalc::ChemistryCalc(const string fileName, const Thermo& thermo)
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-AFC::ChemistryCalc::~ChemistryCalc()
+TKC::ChemistryCalc::~ChemistryCalc()
 {}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-const AFC::Thermo AFC::ChemistryCalc::thermo() const
+const TKC::Thermo TKC::ChemistryCalc::thermo() const
 {
     return thermo_;
 }
@@ -52,7 +52,7 @@ const AFC::Thermo AFC::ChemistryCalc::thermo() const
 
 // * * * * * * * * * * * * * Calculation Functions * * * * * * * * * * * * * //
 
-AFC::scalar AFC::ChemistryCalc::kf
+TKC::scalar TKC::ChemistryCalc::kf
 (
     const int r,
     const scalar T,
@@ -118,7 +118,7 @@ AFC::scalar AFC::ChemistryCalc::kf
 }
 
 
-AFC::scalar AFC::ChemistryCalc::kb
+TKC::scalar TKC::ChemistryCalc::kb
 (
     const int r,
     const scalar T,
@@ -138,7 +138,7 @@ AFC::scalar AFC::ChemistryCalc::kb
 }
 
 
-AFC::scalar AFC::ChemistryCalc::keq
+TKC::scalar TKC::ChemistryCalc::keq
 (
     const int r,
     const scalar T
@@ -148,7 +148,7 @@ AFC::scalar AFC::ChemistryCalc::keq
     const scalar deltaG = dg(r, T);
 
     //- Calculate reaction rate constant kp
-    const scalar Kp = exp(-1 * deltaG / (AFC::Constants::R * T ));
+    const scalar Kp = exp(-1 * deltaG / (TKC::Constants::R * T ));
 
     //- Global reaction order == exponent
     const scalar exponent = globalReactionOrder(r);
@@ -168,12 +168,12 @@ AFC::scalar AFC::ChemistryCalc::keq
         //  [ergs/K/mol]. We use [Pa] and [J/K/mol] therefore the
         //  have to multiply R by 1000 | p/R for 1 bar ~ 12.1802
         //  TODO change R to Rcal
-        return (Kp / pow(AFC::Constants::Rcal * 1e3 / p * T, exponent));
+        return (Kp / pow(TKC::Constants::Rcal * 1e3 / p * T, exponent));
     }
 }
 
 
-AFC::scalar AFC::ChemistryCalc::arrhenius
+TKC::scalar TKC::ChemistryCalc::arrhenius
 (
     const scalar A,
     const scalar beta,
@@ -184,13 +184,13 @@ AFC::scalar AFC::ChemistryCalc::arrhenius
     //-TODO change R to RCalc again R -> must be [cal]
     return
     (
-        A * pow(T, beta) * exp(-1*Ea / (AFC::Constants::Rcal * T))
+        A * pow(T, beta) * exp(-1*Ea / (TKC::Constants::Rcal * T))
     //    A*pow(T, beta) * exp(-Ea / T)
     );
 }
 
 
-AFC::scalar AFC::ChemistryCalc::Lindemann
+TKC::scalar TKC::ChemistryCalc::Lindemann
 (
     const int r,
     const scalar T,
@@ -221,7 +221,7 @@ AFC::scalar AFC::ChemistryCalc::Lindemann
 }
 
 
-AFC::scalar AFC::ChemistryCalc::Fcent
+TKC::scalar TKC::ChemistryCalc::Fcent
 (
     const int r,
     const scalar T
@@ -252,7 +252,7 @@ AFC::scalar AFC::ChemistryCalc::Fcent
 }
 
 
-AFC::scalar AFC::ChemistryCalc::Flog
+TKC::scalar TKC::ChemistryCalc::Flog
 (
     const int r,
     const scalar T,
@@ -285,7 +285,7 @@ AFC::scalar AFC::ChemistryCalc::Flog
 }
 
 
-AFC::scalar AFC::ChemistryCalc::omega
+TKC::scalar TKC::ChemistryCalc::omega
 (
     const word species,
     const scalar T,
@@ -381,7 +381,7 @@ AFC::scalar AFC::ChemistryCalc::omega
 }
 
 
-AFC::scalar AFC::ChemistryCalc::M
+TKC::scalar TKC::ChemistryCalc::M
 (
     const int r,
     const map<word, scalar>& c
@@ -404,7 +404,7 @@ AFC::scalar AFC::ChemistryCalc::M
     return M;
 }
 
-AFC::scalar AFC::ChemistryCalc::dh
+TKC::scalar TKC::ChemistryCalc::dh
 (
     const int r,
     const scalar T
@@ -430,7 +430,7 @@ AFC::scalar AFC::ChemistryCalc::dh
 }
 
 
-AFC::scalar AFC::ChemistryCalc::dg
+TKC::scalar TKC::ChemistryCalc::dg
 (
     const int r,
     const scalar T
@@ -456,7 +456,7 @@ AFC::scalar AFC::ChemistryCalc::dg
 }
 
 
-AFC::scalar AFC::ChemistryCalc::ds
+TKC::scalar TKC::ChemistryCalc::ds
 (
     const int r,
     const scalar T
@@ -605,7 +605,7 @@ AFC::scalar AFC::ChemistryCalc::ds
     //  + tri-moleculare reaction: [cm^6/mol^2/s]
 
 }*/
-/*void AFC::ChemistryCalc::calculatekfkb
+/*void TKC::ChemistryCalc::calculatekfkb
 (
     const int r,
     const scalar& T,
@@ -645,7 +645,7 @@ AFC::scalar AFC::ChemistryCalc::ds
 }
 
 
-AFC::scalar AFC::ChemistryCalc::kf
+TKC::scalar TKC::ChemistryCalc::kf
 (
     const int r,
     const scalar& T,
@@ -794,7 +794,7 @@ AFC::scalar AFC::ChemistryCalc::kf
 
 
 /*
-void AFC::ChemistryCalc::calculateM
+void TKC::ChemistryCalc::calculateM
 (
     const int r,
     const map<word, scalar>& speciesCon,

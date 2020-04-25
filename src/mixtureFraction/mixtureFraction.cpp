@@ -1,24 +1,24 @@
 /*---------------------------------------------------------------------------*\
   c-o-o-c-o-o-o             |
-  |     |     A utomatic    | Open Source Flamelet
-  c-o-o-c     F lamelet     | 
-  |     |     C onstructor  | Copyright (C) 2015 Holzmann-cfd
+  |     |     T hermo       | Open Source Thermo-Kinetic Library
+  c-o-o-c     K iknetic     |
+  |     |     C onstructor  | Copyright (C) 2020 Holzmann CFD
   c     c-o-o-o             |
 -------------------------------------------------------------------------------
 License This file is part of Automatic Flamelet Constructor.
 
-    AFC is free software; you can redistribute it and/or modify it under
+    TKC is free software; you can redistribute it and/or modify it under
     the terms of the GNU General Public License as published by the
     Free Software Foundation; either version 3 of the License, or 
     (at your option) any later version.
 
-    AFC is distributed in the hope that it will be useful, but
+    TKC is distributed in the hope that it will be useful, but
     WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with AFC; if not, see <http://www.gnu.org/licenses/>
+    along with TKC; if not, see <http://www.gnu.org/licenses/>
 
 \*---------------------------------------------------------------------------*/
 
@@ -27,7 +27,7 @@ License This file is part of Automatic Flamelet Constructor.
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-AFC::MixtureFraction::MixtureFraction
+TKC::MixtureFraction::MixtureFraction
 (
     Chemistry& chem,
     const Thermo& therm,
@@ -183,7 +183,7 @@ AFC::MixtureFraction::MixtureFraction
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-AFC::MixtureFraction::~MixtureFraction()
+TKC::MixtureFraction::~MixtureFraction()
 {}
 
 
@@ -191,7 +191,7 @@ AFC::MixtureFraction::~MixtureFraction()
 
 
 /*
-void AFC::MixtureFraction::updateMeanMW()
+void TKC::MixtureFraction::updateMeanMW()
 {
     if (updatedMeanMW())
     {
@@ -269,7 +269,7 @@ void AFC::MixtureFraction::updateMeanMW()
 }
 
 
-void AFC::MixtureFraction::calculateMeanCp
+void TKC::MixtureFraction::calculateMeanCp
 (
     const scalar& T 
 )
@@ -286,7 +286,7 @@ void AFC::MixtureFraction::calculateMeanCp
 }
 
 
-void AFC::MixtureFraction::calculateMeanH
+void TKC::MixtureFraction::calculateMeanH
 (
     const scalar& T 
 )
@@ -303,7 +303,7 @@ void AFC::MixtureFraction::calculateMeanH
 }
 
 
-void AFC::MixtureFraction::calculateMeanS
+void TKC::MixtureFraction::calculateMeanS
 (
     const scalar& T 
 )
@@ -320,7 +320,7 @@ void AFC::MixtureFraction::calculateMeanS
 }
 
 
-void AFC::MixtureFraction::calculateMeanG
+void TKC::MixtureFraction::calculateMeanG
 (
     const scalar& T 
 )
@@ -337,7 +337,7 @@ void AFC::MixtureFraction::calculateMeanG
 }
 
 
-void AFC::MixtureFraction::calculateMeanG
+void TKC::MixtureFraction::calculateMeanG
 (
     const scalar& H,
     const scalar& S,
@@ -349,8 +349,8 @@ void AFC::MixtureFraction::calculateMeanG
 }
 
 
-AFC::scalar
-AFC::MixtureFraction::omega(const word species, const int Z) const
+TKC::scalar
+TKC::MixtureFraction::omega(const word species, const int Z) const
 {
     //- Concentration map at discrete point
     const map<word, scalar> con = C(Z); 
@@ -360,7 +360,7 @@ AFC::MixtureFraction::omega(const word species, const int Z) const
 
 
 
-AFC::scalar AFC::MixtureFraction::calculateHf
+TKC::scalar TKC::MixtureFraction::calculateHf
 (
     const word& species,
     const scalar& T
@@ -370,7 +370,7 @@ AFC::scalar AFC::MixtureFraction::calculateHf
 }
 
 
-void AFC::MixtureFraction::conservation() const
+void TKC::MixtureFraction::conservation() const
 {
     for (int Zi = 0; Zi < nZPoints(); ++Zi)
     {
@@ -381,7 +381,7 @@ void AFC::MixtureFraction::conservation() const
 }
 
 
-void AFC::MixtureFraction::conservation(const int Zi) const
+void TKC::MixtureFraction::conservation(const int Zi) const
 {
     //- Species
     const wordList& species_ = species();
@@ -400,7 +400,7 @@ void AFC::MixtureFraction::conservation(const int Zi) const
 }
 
 
-AFC::scalarField AFC::MixtureFraction::Yconservation() const
+TKC::scalarField TKC::MixtureFraction::Yconservation() const
 {
     scalarField Ysum(nZPoints(), 0);
 
@@ -413,7 +413,7 @@ AFC::scalarField AFC::MixtureFraction::Yconservation() const
 }
 
 
-AFC::scalar AFC::MixtureFraction::Yconservation(const int Zi) const
+TKC::scalar TKC::MixtureFraction::Yconservation(const int Zi) const
 {
     //- Species
     const wordList& species_ = species();
@@ -432,7 +432,7 @@ AFC::scalar AFC::MixtureFraction::Yconservation(const int Zi) const
 
 // * * * * * * * * * * * * * * * Update Functions  * * * * * * * * * * * * * //
 
-void AFC::MixtureFraction::updateY(const word species, const scalarField& Y)
+void TKC::MixtureFraction::updateY(const word species, const scalarField& Y)
 {
     //- Get field access and store new values
     size_t i{0};
@@ -452,7 +452,7 @@ void AFC::MixtureFraction::updateY(const word species, const scalarField& Y)
 }
 
 
-void AFC::MixtureFraction::updateY(const map<word, scalar>& Y_, const int Z)
+void TKC::MixtureFraction::updateY(const map<word, scalar>& Y_, const int Z)
 {
     speciesMass_[Z] = Y_;    
     
@@ -464,7 +464,7 @@ void AFC::MixtureFraction::updateY(const map<word, scalar>& Y_, const int Z)
 }
 
 
-void AFC::MixtureFraction::updateX(const map<word, scalar>& X_, const int Z)
+void TKC::MixtureFraction::updateX(const map<word, scalar>& X_, const int Z)
 {
     speciesMol_[Z] = X_;    
     
@@ -476,7 +476,7 @@ void AFC::MixtureFraction::updateX(const map<word, scalar>& X_, const int Z)
 }
 
 
-void AFC::MixtureFraction::updateC(const map<word, scalar>& C_, const int Z)
+void TKC::MixtureFraction::updateC(const map<word, scalar>& C_, const int Z)
 {
     forAll(C_, c)
     {
@@ -498,7 +498,7 @@ void AFC::MixtureFraction::updateC(const map<word, scalar>& C_, const int Z)
 }
 
 
-void AFC::MixtureFraction::updateY()
+void TKC::MixtureFraction::updateY()
 {
     if (actualField_ == "mass")
     {
@@ -519,7 +519,7 @@ void AFC::MixtureFraction::updateY()
 }
 
 
-void AFC::MixtureFraction::updateX()
+void TKC::MixtureFraction::updateX()
 {
     if (actualField_ == "mol")
     {
@@ -540,7 +540,7 @@ void AFC::MixtureFraction::updateX()
 }
 
 
-void AFC::MixtureFraction::updateC()
+void TKC::MixtureFraction::updateC()
 {
     if (actualField_ == "con")
     {
@@ -561,7 +561,7 @@ void AFC::MixtureFraction::updateC()
 }
 
 
-void AFC::MixtureFraction::updateFields()
+void TKC::MixtureFraction::updateFields()
 {
     updateY();
     updateX();
@@ -571,13 +571,13 @@ void AFC::MixtureFraction::updateFields()
 }
 
 
-void AFC::MixtureFraction::updateT(const scalarField& T)
+void TKC::MixtureFraction::updateT(const scalarField& T)
 {
     T_ = T;
 }
 
 
-void AFC::MixtureFraction::updateRho(const word method)
+void TKC::MixtureFraction::updateRho(const word method)
 {
     if (updatedMeanRho())
     {
@@ -614,7 +614,7 @@ void AFC::MixtureFraction::updateRho(const word method)
 */
 
 
-/*void AFC::MixtureFraction::updateCp()
+/*void TKC::MixtureFraction::updateCp()
 {
     //- Species
     const wordList species = chemistry_.species();
@@ -629,14 +629,14 @@ void AFC::MixtureFraction::updateRho(const word method)
     }
 }
 
-void AFC::MixtureFraction::updateC()
+void TKC::MixtureFraction::updateC()
 {
     YtoC();
 }*/
 
 
 /*
-void AFC::MixtureFraction::updateOmega()
+void TKC::MixtureFraction::updateOmega()
 {
     //- Mixture fraction space (we do not need to calc the boundaries)
     for (int Zi = 1; Zi < nZPoints()-1; ++Zi)
@@ -646,7 +646,7 @@ void AFC::MixtureFraction::updateOmega()
 }
 
 
-void AFC::MixtureFraction::updateOmega(const int Zi)
+void TKC::MixtureFraction::updateOmega(const int Zi)
 {
     //- Species that are used in combustion
     const wordList& speciesInCombustion = species();
@@ -659,7 +659,7 @@ void AFC::MixtureFraction::updateOmega(const int Zi)
 }
 
 
-void AFC::MixtureFraction::updateOmega(const int Zi, const word species)
+void TKC::MixtureFraction::updateOmega(const int Zi, const word species)
 {
     //- Calculate the source terms omega for each species and Z
     omega_[Zi][species] = calculateOmega(species, Zi);
@@ -668,31 +668,31 @@ void AFC::MixtureFraction::updateOmega(const int Zi, const word species)
 
 // * * * * * * * * * * * * * * * * Bool Switch * * * * * * * * * * * * * * * //
 
-bool AFC::MixtureFraction::updatedMeanMW() const
+bool TKC::MixtureFraction::updatedMeanMW() const
 {
     return updatedMeanMW_;
 }
 
 
-void AFC::MixtureFraction::updatedMeanMW(const bool status)
+void TKC::MixtureFraction::updatedMeanMW(const bool status)
 {
     updatedMeanMW_ = status;
 }
 
 
-bool AFC::MixtureFraction::updatedMeanRho() const
+bool TKC::MixtureFraction::updatedMeanRho() const
 {
     return updatedMeanRho_;
 }
 
 
-void AFC::MixtureFraction::updatedMeanRho(const bool status)
+void TKC::MixtureFraction::updatedMeanRho(const bool status)
 {
     updatedMeanRho_ = status;
 }
 
 
-void AFC::MixtureFraction::updatedFields(const bool status)
+void TKC::MixtureFraction::updatedFields(const bool status)
 {
     updatedMeanMW(status);
     updatedMeanRho(status);
@@ -701,7 +701,7 @@ void AFC::MixtureFraction::updatedFields(const bool status)
 
 // * * * * * * * * * * * * Conversation Functions  * * * * * * * * * * * * * //
 
-void AFC::MixtureFraction::YtoX()
+void TKC::MixtureFraction::YtoX()
 {
     //- Update mean molecular weight
     updateMeanMW();
@@ -721,7 +721,7 @@ void AFC::MixtureFraction::YtoX()
 }
 
 
-void AFC::MixtureFraction::XtoY()
+void TKC::MixtureFraction::XtoY()
 {
     // update mean molecular weight
     updateMeanMW();
@@ -741,7 +741,7 @@ void AFC::MixtureFraction::XtoY()
 }
 
 
-void AFC::MixtureFraction::YtoC()
+void TKC::MixtureFraction::YtoC()
 {
     // update mean molecular weight
     updateMeanMW();
@@ -766,13 +766,13 @@ void AFC::MixtureFraction::YtoC()
         {
             speciesCon_[Zi][s] =
                 (p * speciesMass_[Zi].at(s) / thermo_.MW(s))
-                / (AFC::Constants::R * YTbyMW);
+                / (TKC::Constants::R * YTbyMW);
         }
     }
 }
 
 
-void AFC::MixtureFraction::XtoC()
+void TKC::MixtureFraction::XtoC()
 {
     const wordList& species_ = species();
 
@@ -791,13 +791,13 @@ void AFC::MixtureFraction::XtoC()
         forAll(species_, s)
         {
             speciesCon_[Zi][s] =
-                speciesMol_[Zi].at(s) * p / (XT * AFC::Constants::R);
+                speciesMol_[Zi].at(s) * p / (XT * TKC::Constants::R);
         }
     }
 }
 
 
-void AFC::MixtureFraction::CtoY()
+void TKC::MixtureFraction::CtoY()
 {
     const wordList& species_ = species();
 
@@ -818,13 +818,13 @@ void AFC::MixtureFraction::CtoY()
 }
 
 
-void AFC::MixtureFraction::CtoX()
+void TKC::MixtureFraction::CtoX()
 {
     
 }
 
 
-void AFC::MixtureFraction::rhoX()
+void TKC::MixtureFraction::rhoX()
 {
     //- Update the mean molecular weight
     updateMeanMW();
@@ -834,12 +834,12 @@ void AFC::MixtureFraction::rhoX()
     for (int Zi = 0; Zi < nZPoints(); ++Zi)
     {
         //- MMW in [g/mol], hence we get [g/m^3], but we save in SI [kg/m^3]
-        rho_[Zi] = p * MMW_[Zi] / (AFC::Constants::R * T(Zi)) / scalar(1000);
+        rho_[Zi] = p * MMW_[Zi] / (TKC::Constants::R * T(Zi)) / scalar(1000);
     }
 }
 
 
-void AFC::MixtureFraction::rhoY()
+void TKC::MixtureFraction::rhoY()
 {
     //- Update the mean molecular weight
     updateMeanMW();
@@ -849,12 +849,12 @@ void AFC::MixtureFraction::rhoY()
     for (int Zi = 0; Zi < nZPoints(); ++Zi)
     {
         //- MMW in [g/mol], hence we get [g/m^3], but we save in SI [kg/m^3]
-        rho_[Zi] = p * MMW_[Zi] / (AFC::Constants::R * T(Zi)) / scalar(1000);
+        rho_[Zi] = p * MMW_[Zi] / (TKC::Constants::R * T(Zi)) / scalar(1000);
     }
 }
 
 
-void AFC::MixtureFraction::rhoC()
+void TKC::MixtureFraction::rhoC()
 {
     const wordList& species = chemistry_.species();
 
@@ -874,121 +874,121 @@ void AFC::MixtureFraction::rhoC()
 
 // * * * * * * * * * * * * * * * Return Functions  * * * * * * * * * * * * * //
 
-AFC::wordList AFC::MixtureFraction::species() const
+TKC::wordList TKC::MixtureFraction::species() const
 {
     return chemistry_.species();
 }
 
 
-AFC::wordList AFC::MixtureFraction::speciesOxidizer() const
+TKC::wordList TKC::MixtureFraction::speciesOxidizer() const
 {
     return properties_.speciesOxidizer();
 }
 
 
-AFC::wordList AFC::MixtureFraction::speciesFuel() const
+TKC::wordList TKC::MixtureFraction::speciesFuel() const
 {
     return properties_.speciesFuel();
 }
 
 
-int AFC::MixtureFraction::nZPoints() const
+int TKC::MixtureFraction::nZPoints() const
 {
     return properties_.nZPoints();
 }
 
 
-AFC::scalar AFC::MixtureFraction::Z(const int Z) const 
+TKC::scalar TKC::MixtureFraction::Z(const int Z) const 
 {
     return Z_[Z];
 }
 
 
-AFC::scalar AFC::MixtureFraction::T(const int Z) const 
+TKC::scalar TKC::MixtureFraction::T(const int Z) const 
 {
     return T_[Z];
 }
 
 
-AFC::map<AFC::word, AFC::scalar> AFC::MixtureFraction::X(const int Z) const
+TKC::map<TKC::word, TKC::scalar> TKC::MixtureFraction::X(const int Z) const
 {
     return speciesMol_[Z];
 }
 
 
-AFC::map<AFC::word, AFC::scalar> AFC::MixtureFraction::Y(const int Z) const
+TKC::map<TKC::word, TKC::scalar> TKC::MixtureFraction::Y(const int Z) const
 {
     return speciesMass_[Z];
 }
 
 
-AFC::map<AFC::word, AFC::scalar> AFC::MixtureFraction::C(const int Z) const
+TKC::map<TKC::word, TKC::scalar> TKC::MixtureFraction::C(const int Z) const
 {
     return speciesCon_[Z];
 }
 
 
-AFC::map<AFC::word, AFC::scalar> AFC::MixtureFraction::omega(const int Z) const
+TKC::map<TKC::word, TKC::scalar> TKC::MixtureFraction::omega(const int Z) const
 {
     return omega_[Z];
 }
 
 
-AFC::scalar AFC::MixtureFraction::sDR() const
+TKC::scalar TKC::MixtureFraction::sDR() const
 {
     return sDR_;
 }
 
 
-AFC::scalarField AFC::MixtureFraction::Z() const 
+TKC::scalarField TKC::MixtureFraction::Z() const 
 {
     return Z_;
 }
 
 
-AFC::scalarField AFC::MixtureFraction::rho() const
+TKC::scalarField TKC::MixtureFraction::rho() const
 {
     return rho_;
 }
 
 
-AFC::scalarField AFC::MixtureFraction::T() const
+TKC::scalarField TKC::MixtureFraction::T() const
 {
     return T_;
 }
 
 
-AFC::scalar AFC::MixtureFraction::p() const
+TKC::scalar TKC::MixtureFraction::p() const
 {
     return properties_.p();
 }
 
 
-AFC::List<AFC::map<AFC::word, AFC::scalar> > AFC::MixtureFraction::X() const
+TKC::List<TKC::map<TKC::word, TKC::scalar> > TKC::MixtureFraction::X() const
 {
     return speciesMol_;
 }
 
 
-AFC::List<AFC::map<AFC::word, AFC::scalar> > AFC::MixtureFraction::Y() const
+TKC::List<TKC::map<TKC::word, TKC::scalar> > TKC::MixtureFraction::Y() const
 {
     return speciesMass_;
 }
 
 
-AFC::List<AFC::map<AFC::word, AFC::scalar> > AFC::MixtureFraction::C() const
+TKC::List<TKC::map<TKC::word, TKC::scalar> > TKC::MixtureFraction::C() const
 {
     return speciesCon_;
 }
 
 
-AFC::List<AFC::map<AFC::word, AFC::scalar> > AFC::MixtureFraction::omega() const
+TKC::List<TKC::map<TKC::word, TKC::scalar> > TKC::MixtureFraction::omega() const
 {
     return omega_;
 }
 
 
-AFC::scalarField AFC::MixtureFraction::X(const word species) const
+TKC::scalarField TKC::MixtureFraction::X(const word species) const
 {
     //- Tmp field
     scalarField XforSpecies(nZPoints(), 0);
@@ -1006,7 +1006,7 @@ AFC::scalarField AFC::MixtureFraction::X(const word species) const
 }
 
 
-AFC::scalarField AFC::MixtureFraction::Y(const word species) const
+TKC::scalarField TKC::MixtureFraction::Y(const word species) const
 {
     //- Tmp field
     scalarField YforSpecies(nZPoints(), 0);
@@ -1024,7 +1024,7 @@ AFC::scalarField AFC::MixtureFraction::Y(const word species) const
 }
 
 
-AFC::scalarField AFC::MixtureFraction::C(const word species) const
+TKC::scalarField TKC::MixtureFraction::C(const word species) const
 {
     //- Tmp field
     scalarField CforSpecies(nZPoints(), 0);
@@ -1042,7 +1042,7 @@ AFC::scalarField AFC::MixtureFraction::C(const word species) const
 }
 
 
-AFC::scalarField AFC::MixtureFraction::omega(const word species) const
+TKC::scalarField TKC::MixtureFraction::omega(const word species) const
 {
     //- Tmp field
     scalarField omegaforSpecies(nZPoints(), 0);
@@ -1060,7 +1060,7 @@ AFC::scalarField AFC::MixtureFraction::omega(const word species) const
 }
 
 
-AFC::map<AFC::word, AFC::scalarField> AFC::MixtureFraction::YField() const
+TKC::map<TKC::word, TKC::scalarField> TKC::MixtureFraction::YField() const
 {
     //- Tmp map field
     map<word, scalarField> tmp;
@@ -1091,7 +1091,7 @@ AFC::map<AFC::word, AFC::scalarField> AFC::MixtureFraction::YField() const
 }
 
 
-AFC::map<AFC::word, AFC::scalarField> AFC::MixtureFraction::CField() const
+TKC::map<TKC::word, TKC::scalarField> TKC::MixtureFraction::CField() const
 {
     //- Tmp map field
     map<word, scalarField> tmp;
@@ -1122,7 +1122,7 @@ AFC::map<AFC::word, AFC::scalarField> AFC::MixtureFraction::CField() const
 }
 
 
-AFC::map<AFC::word, AFC::scalar> AFC::MixtureFraction::CField(const int Z) const
+TKC::map<TKC::word, TKC::scalar> TKC::MixtureFraction::CField(const int Z) const
 {
     //- Tmp map field
     map<word, scalarField> C_ = CField();
@@ -1139,7 +1139,7 @@ AFC::map<AFC::word, AFC::scalar> AFC::MixtureFraction::CField(const int Z) const
 }
 
 
-AFC::map<AFC::word, AFC::scalarField> AFC::MixtureFraction::omegaField() const
+TKC::map<TKC::word, TKC::scalarField> TKC::MixtureFraction::omegaField() const
 {
     //- Tmp map field
     map<word, scalarField> tmp;
@@ -1170,8 +1170,8 @@ AFC::map<AFC::word, AFC::scalarField> AFC::MixtureFraction::omegaField() const
 }
 
 
-AFC::map<AFC::word, AFC::scalar>
-AFC::MixtureFraction::omegaField(const int Z) const
+TKC::map<TKC::word, TKC::scalar>
+TKC::MixtureFraction::omegaField(const int Z) const
 {
     //- Tmp map field
     map<word, scalarField> omega_ = omegaField();
@@ -1188,67 +1188,67 @@ AFC::MixtureFraction::omegaField(const int Z) const
 }
 
 
-AFC::List<int> AFC::MixtureFraction::reacNumbers(const word species) const
+TKC::List<int> TKC::MixtureFraction::reacNumbers(const word species) const
 {
     return chemistry_.reacNumbers(species);
 }
 
 
-AFC::wordList AFC::MixtureFraction::speciesInReaction(const int r) const
+TKC::wordList TKC::MixtureFraction::speciesInReaction(const int r) const
 {
     return chemistry_.speciesInReaction(r);
 }
 
 
-AFC::wordList AFC::MixtureFraction::speciesProducts(const int r) const
+TKC::wordList TKC::MixtureFraction::speciesProducts(const int r) const
 {
     return chemistry_.speciesProducts(r);
 }
 
 
-AFC::wordList AFC::MixtureFraction::speciesEducts(const int r) const
+TKC::wordList TKC::MixtureFraction::speciesEducts(const int r) const
 {
     return chemistry_.speciesEducts(r);
 }
 
 
-AFC::map<AFC::word, int> AFC::MixtureFraction::nuProducts(const int r) const
+TKC::map<TKC::word, int> TKC::MixtureFraction::nuProducts(const int r) const
 {
     return chemistry_.nuProducts(r);
 }
 
 
-AFC::map<AFC::word, int> AFC::MixtureFraction::nuEducts(const int r) const
+TKC::map<TKC::word, int> TKC::MixtureFraction::nuEducts(const int r) const
 {
     return chemistry_.nuEducts(r);
 }
 
 
-AFC::string AFC::MixtureFraction::elementarReaction(const int r) const
+TKC::string TKC::MixtureFraction::elementarReaction(const int r) const
 {
     return chemistry_.elementarReaction(r);
 }
 
 
-AFC::Chemistry AFC::MixtureFraction::chemistry() const
+TKC::Chemistry TKC::MixtureFraction::chemistry() const
 {
     return chemistry_;
 }
 
 
-AFC::Thermo AFC::MixtureFraction::thermo() const
+TKC::Thermo TKC::MixtureFraction::thermo() const
 {
     return thermo_;
 }
 
 
-AFC::scalar AFC::MixtureFraction::kf(const int r, const int Z) const
+TKC::scalar TKC::MixtureFraction::kf(const int r, const int Z) const
 {
     return chemistry_.kf(r, T_[Z]);
 }
 
 
-AFC::scalar AFC::MixtureFraction::kb(const int r, const int Z) const
+TKC::scalar TKC::MixtureFraction::kb(const int r, const int Z) const
 {
     return chemistry_.kb(r, T_[Z]);
 }
@@ -1256,7 +1256,7 @@ AFC::scalar AFC::MixtureFraction::kb(const int r, const int Z) const
 
 // * * * * * * * * * * * * * * * Write output  * * * * * * * * * * * * * * * //
 
-void AFC::MixtureFraction::write() const
+void TKC::MixtureFraction::write() const
 {
     Info<< " c-o Save flamelets\n";
 
@@ -1403,7 +1403,7 @@ void AFC::MixtureFraction::write() const
 }
 
 
-AFC::scalar AFC::MixtureFraction::MW(const word species) const
+TKC::scalar TKC::MixtureFraction::MW(const word species) const
 {
     return thermo_.MW(species);
 }

@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   c-o-o-c-o-o-o             |
-  |     |     A utomatic    | Open Source Flamelet
-  c-o-o-c     F lamelet     |
+  |     |     T hermo       | Open Source Thermo-Kinetic Library
+  c-o-o-c     K iknetic     |
   |     |     C onstructor  | Copyright (C) 2020 Holzmann CFD
   c     c-o-o-o             |
 -------------------------------------------------------------------------------
 License
     This file is part of Automatic Flamelet Constructor.
 
-    AFC is free software; you can redistribute it and/or modify it under
+    TKC is free software; you can redistribute it and/or modify it under
     the terms of the GNU General Public License as published by the
     Free Software Foundation; either version 3 of the License, or
     (at your option) any later version.
 
-    AFC is distributed in the hope that it will be useful, but
+    TKC is distributed in the hope that it will be useful, but
     WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with AFC; if not, see <http://www.gnu.org/licenses/>
+    along with TKC; if not, see <http://www.gnu.org/licenses/>
 
 \*---------------------------------------------------------------------------*/
 
@@ -30,7 +30,7 @@ License
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-AFC::Chemistry::Chemistry(const string fileName, const Thermo& thermo)
+TKC::Chemistry::Chemistry(const string fileName, const Thermo& thermo)
 :
     ChemistryCalc(fileName, thermo)
 {
@@ -44,13 +44,13 @@ AFC::Chemistry::Chemistry(const string fileName, const Thermo& thermo)
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-AFC::Chemistry::~Chemistry()
+TKC::Chemistry::~Chemistry()
 {}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-void AFC::Chemistry::checkSpecies() const
+void TKC::Chemistry::checkSpecies() const
 {
     Info<< " c-o Checking if chemistry species are available in the NASA"
         << " database..." << endl;
@@ -84,7 +84,7 @@ void AFC::Chemistry::checkSpecies() const
 // * * * * * * * * * * * * * Calculation Functions * * * * * * * * * * * * * //
 
 /*
-AFC::map<AFC::word, AFC::scalar> AFC::Chemistry::omega
+TKC::map<TKC::word, TKC::scalar> TKC::Chemistry::omega
 (
     const scalar T,
     const map<word, scalar>& con
@@ -116,7 +116,7 @@ AFC::map<AFC::word, AFC::scalar> AFC::Chemistry::omega
 
 // * * * * * * * * * * * * * * * Update Functions  * * * * * * * * * * * * * //
 
-//void AFC::Chemistry::updateM
+//void TKC::Chemistry::updateM
 //(
 //    const scalar& M
 //)
@@ -127,7 +127,7 @@ AFC::map<AFC::word, AFC::scalar> AFC::Chemistry::omega
 
 // * * * * * * * * * * * * * * * Create Functions  * * * * * * * * * * * * * //
 
-void AFC::Chemistry::buildSpeciesInReactionTable()
+void TKC::Chemistry::buildSpeciesInReactionTable()
 {
     //- Species list
     const wordList& tspecies = species();
@@ -173,7 +173,7 @@ void AFC::Chemistry::buildSpeciesInReactionTable()
 // * * * * * * * * * * * * * * * Summary Functions * * * * * * * * * * * * * //
 
 /*
-void AFC::Chemistry::summary(ostream& data) const
+void TKC::Chemistry::summary(ostream& data) const
 {
 
     //- Header
@@ -280,7 +280,7 @@ void AFC::Chemistry::summary(ostream& data) const
 }
 
 
-void AFC::Chemistry::chemicalTable(ostream& data) const
+void TKC::Chemistry::chemicalTable(ostream& data) const
 {
     //- Build the chemical table
     const wordList& treactions = elementarReaction();
@@ -421,7 +421,7 @@ void AFC::Chemistry::chemicalTable(ostream& data) const
 }
 
 
-void AFC::Chemistry::buildTablekf
+void TKC::Chemistry::buildTablekf
 (
     const int r,
     ostream& data,
@@ -462,7 +462,7 @@ void AFC::Chemistry::buildTablekf
 }
 
 
-void AFC::Chemistry::buildTROETable(const int r, ostream& data) const
+void TKC::Chemistry::buildTROETable(const int r, ostream& data) const
 {
     data<< "  Table for TROE, [M] assumed to be 1 \n"
         << "--------------------------------------------------\n"

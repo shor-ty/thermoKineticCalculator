@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   c-o-o-c-o-o-o             |
-  |     |     A utomatic    | Open Source Flamelet
-  c-o-o-c     F lamelet     | 
+  |     |     T hermo       | Open Source Thermo-Kinetic Library
+  c-o-o-c     K iknetic     |
   |     |     C onstructor  | Copyright (C) 2020 Holzmann CFD
   c     c-o-o-o             |
 -------------------------------------------------------------------------------
 License
     This file is part of Automatic Flamelet Constructor.
 
-    AFC is free software; you can redistribute it and/or modify it under
+    TKC is free software; you can redistribute it and/or modify it under
     the terms of the GNU General Public License as published by the
     Free Software Foundation; either version 3 of the License, or 
     (at your option) any later version.
 
-    AFC is distributed in the hope that it will be useful, but
+    TKC is distributed in the hope that it will be useful, but
     WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with AFC; if not, see <http://www.gnu.org/licenses/>
+    along with TKC; if not, see <http://www.gnu.org/licenses/>
 
 \*---------------------------------------------------------------------------*/
 
@@ -33,7 +33,7 @@ License
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 template<class Type>
-AFC::Numerics<Type>::Numerics
+TKC::Numerics<Type>::Numerics
 (
     Chemistry& chem 
 )
@@ -56,7 +56,7 @@ AFC::Numerics<Type>::Numerics
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
 template<class Type>
-AFC::Numerics<Type>::~Numerics()
+TKC::Numerics<Type>::~Numerics()
 {
     if (debug_)
     {
@@ -72,7 +72,7 @@ AFC::Numerics<Type>::~Numerics()
 // * * * * * * * * * * * * * * * Member function * * * * * * * * * * * * * * //
 
 template<class Type>
-void AFC::Numerics<Type>::solveForInitialSolution
+void TKC::Numerics<Type>::solveForInitialSolution
 (
     MixtureFraction& flamelet
 )
@@ -170,7 +170,7 @@ void AFC::Numerics<Type>::solveForInitialSolution
 
 
 template<class Type>
-void AFC::Numerics<Type>::solveAdiabaticFlamelet
+void TKC::Numerics<Type>::solveAdiabaticFlamelet
 (
     MixtureFraction& flamelet
 )
@@ -237,7 +237,7 @@ void AFC::Numerics<Type>::solveAdiabaticFlamelet
 
 
 template<class Type>
-AFC::scalar AFC::Numerics<Type>::solveChemistry
+TKC::scalar TKC::Numerics<Type>::solveChemistry
 (
     const scalar dt,
     MixtureFraction& flamelet
@@ -284,7 +284,7 @@ AFC::scalar AFC::Numerics<Type>::solveChemistry
 
 
 template<class Type>
-AFC::scalar AFC::Numerics<Type>::FDMLapacian2ndOrder
+TKC::scalar TKC::Numerics<Type>::FDMLapacian2ndOrder
 (
     const scalar& phi_l,
     const scalar& phi,
@@ -313,7 +313,7 @@ AFC::scalar AFC::Numerics<Type>::FDMLapacian2ndOrder
 
 
 template<class Type>
-void AFC::Numerics<Type>::solveFlamelet
+void TKC::Numerics<Type>::solveFlamelet
 (
     MixtureFraction& flamelet,
     const scalar& chi,
@@ -432,14 +432,14 @@ void AFC::Numerics<Type>::solveFlamelet
 
 
 /*
-void AFC::Numerics<Type>::jacobian
+void TKC::Numerics<Type>::jacobian
 (
     MixtureFraction& mf
 )
 {
     if (debug)
     {
-        Info<< " --> AFC::Numerics<Type>::jacobian" << endl;
+        Info<< " --> TKC::Numerics<Type>::jacobian" << endl;
     }
 }
 */
@@ -513,7 +513,7 @@ void AFC::Numerics<Type>::jacobian
 
 
 template<class Type>
-AFC::scalar AFC::Numerics<Type>::residual
+TKC::scalar TKC::Numerics<Type>::residual
 (
     const scalarField& oldField,
     const scalarField& newField
@@ -531,7 +531,7 @@ AFC::scalar AFC::Numerics<Type>::residual
 
 
 template<class Type>
-AFC::scalar AFC::Numerics<Type>::max
+TKC::scalar TKC::Numerics<Type>::max
 (
     const scalarField& sF
 ) const
@@ -551,7 +551,7 @@ AFC::scalar AFC::Numerics<Type>::max
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-template class AFC::Numerics<AFC::Rosenbrock>;
+template class TKC::Numerics<TKC::Rosenbrock>;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   c-o-o-c-o-o-o             |
-  |     |     A utomatic    | Open Source Flamelet
-  c-o-o-c     F lamelet     | 
+  |     |     T hermo       | Open Source Thermo-Kinetic Library
+  c-o-o-c     K iknetic     |
   |     |     C onstructor  | Copyright (C) 2020 Holzmann CFD
   c     c-o-o-o             |
 -------------------------------------------------------------------------------
 License
     This file is part of Automatic Flamelet Constructor.
 
-    AFC is free software; you can redistribute it and/or modify it under
+    TKC is free software; you can redistribute it and/or modify it under
     the terms of the GNU General Public License as published by the
     Free Software Foundation; either version 3 of the License, or 
     (at your option) any later version.
 
-    AFC is distributed in the hope that it will be useful, but
+    TKC is distributed in the hope that it will be useful, but
     WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with AFC; if not, see <http://www.gnu.org/licenses/>
+    along with TKC; if not, see <http://www.gnu.org/licenses/>
 
 \*---------------------------------------------------------------------------*/
 
@@ -27,7 +27,7 @@ License
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-AFC::Transport::Transport(const string fileName, const Thermo& thermo)
+TKC::Transport::Transport(const string fileName, const Thermo& thermo)
 :
     TransportCalc(fileName, thermo)
 {}
@@ -35,13 +35,13 @@ AFC::Transport::Transport(const string fileName, const Thermo& thermo)
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-AFC::Transport::~Transport()
+TKC::Transport::~Transport()
 {}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-void AFC::Transport::fitCurves()
+void TKC::Transport::fitCurves()
 {
     Info<< " c-o Fit the transport properties to the polynomials\n" << endl;
 
@@ -58,7 +58,7 @@ void AFC::Transport::fitCurves()
 
 // * * * * * * * * * * * * * * * Summary Functions * * * * * * * * * * * * * //
 
-void AFC::Transport::summary(ostream& data) const
+void TKC::Transport::summary(ostream& data) const
 {
     data<< Header() << "\n";
 
@@ -202,7 +202,7 @@ void AFC::Transport::summary(ostream& data) const
 }
 
 
-void AFC::Transport::summaryFittingProcedure(ostream& data) const
+void TKC::Transport::summaryFittingProcedure(ostream& data) const
 {
     data<< Header() << "\n";
 

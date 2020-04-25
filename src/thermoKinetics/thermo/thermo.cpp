@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   c-o-o-c-o-o-o             |
-  |     |     A utomatic    | Open Source Flamelet
-  c-o-o-c     F lamelet     | 
+  |     |     T hermo       | Open Source Thermo-Kinetic Library
+  c-o-o-c     K iknetic     |
   |     |     C onstructor  | Copyright (C) 2020 Holzmann CFD
   c     c-o-o-o             |
 -------------------------------------------------------------------------------
 License
     This file is part of Automatic Flamelet Constructor.
 
-    AFC is free software; you can redistribute it and/or modify it under
+    TKC is free software; you can redistribute it and/or modify it under
     the terms of the GNU General Public License as published by the
     Free Software Foundation; either version 3 of the License, or 
     (at your option) any later version.
 
-    AFC is distributed in the hope that it will be useful, but
+    TKC is distributed in the hope that it will be useful, but
     WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with AFC; if not, see <http://www.gnu.org/licenses/>
+    along with TKC; if not, see <http://www.gnu.org/licenses/>
 
 \*---------------------------------------------------------------------------*/
 
@@ -28,7 +28,7 @@ License
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-AFC::Thermo::Thermo
+TKC::Thermo::Thermo
 (
     const string fileName,
     const bool thermo
@@ -45,7 +45,7 @@ AFC::Thermo::Thermo
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-AFC::Thermo::~Thermo()
+TKC::Thermo::~Thermo()
 {
     if (debug_)
     {
@@ -56,7 +56,7 @@ AFC::Thermo::~Thermo()
 
 // * * * * * * * * * * * * * * * Insert Functions  * * * * * * * * * * * * * //
 
-/*void AFC::Thermo::p
+/*void TKC::Thermo::p
 (
     const scalar pressure
 )
@@ -68,115 +68,115 @@ AFC::Thermo::~Thermo()
 
 // * * * * * * * * * * * * * * * Return Functions  * * * * * * * * * * * * * //
 
-/*AFC::scalar AFC::Thermo::p() const
+/*TKC::scalar TKC::Thermo::p() const
 {
     return thermoData_.p();
 }
 
 
-const AFC::wordList AFC::Thermo::species() const
+const TKC::wordList TKC::Thermo::species() const
 {
     return thermoData_.species();
 }
 
 
-AFC::map<AFC::word, AFC::scalar> AFC::Thermo::MW() const
+TKC::map<TKC::word, TKC::scalar> TKC::Thermo::MW() const
 {
     return thermoData_.MW();
 }
 
 
-AFC::scalar AFC::Thermo::MW(const word species) const
+TKC::scalar TKC::Thermo::MW(const word species) const
 {
     return thermoData_.MW(species);
 }
 
 
-AFC::scalar AFC::Thermo::MWmeanX(const map<word, scalar>& X) const
+TKC::scalar TKC::Thermo::MWmeanX(const map<word, scalar>& X) const
 {
     return thermoCalc_.MWmeanX(X, MW());    
 }
 
 
-AFC::scalar AFC::Thermo::cp(const word species, const scalar T) const
+TKC::scalar TKC::Thermo::cp(const word species, const scalar T) const
 {
     return thermoCalc_.cp(species, T, thermoData_);
 }
 
 
-AFC::scalar AFC::Thermo::cv(const word species, const scalar T) const
+TKC::scalar TKC::Thermo::cv(const word species, const scalar T) const
 {
     return thermoCalc_.cv(species, T, thermoData_);
 }
 
 
-AFC::scalar AFC::Thermo::H(const word species, const scalar T) const
+TKC::scalar TKC::Thermo::H(const word species, const scalar T) const
 {
     return thermoCalc_.H(species, T, thermoData_);
 }
 
 
-AFC::scalar AFC::Thermo::S(const word species, const scalar T) const
+TKC::scalar TKC::Thermo::S(const word species, const scalar T) const
 {
     return thermoCalc_.S(species, T, thermoData_);
 }
 
 
-AFC::scalar AFC::Thermo::G(const word species, const scalar T) const
+TKC::scalar TKC::Thermo::G(const word species, const scalar T) const
 {
     return thermoCalc_.G(species, T, thermoData_);
 }
 
 
-AFC::scalar AFC::Thermo::G(const scalar H, const scalar S, const scalar T) const
+TKC::scalar TKC::Thermo::G(const scalar H, const scalar S, const scalar T) const
 {
     return thermoCalc_.G(H, S, T);
 }
 
 
-AFC::scalar AFC::Thermo::Hf(const word species) const
+TKC::scalar TKC::Thermo::Hf(const word species) const
 {
     return thermoCalc_.Hf(species, thermoData_);
 }
 
 
-AFC::scalar AFC::Thermo::Gf(const word species) const
+TKC::scalar TKC::Thermo::Gf(const word species) const
 {
     return thermoCalc_.Gf(species, thermoData_);
 }
 
 
-AFC::scalar AFC::Thermo::dHf(const word species, const scalar T) const
+TKC::scalar TKC::Thermo::dHf(const word species, const scalar T) const
 {
     return thermoCalc_.dHf(species, T, thermoData_);
 }
 
 
-AFC::scalar AFC::Thermo::dGf(const word species, const scalar T) const
+TKC::scalar TKC::Thermo::dGf(const word species, const scalar T) const
 {
     return thermoCalc_.dGf(species, T, thermoData_);
 }
 
 
-AFC::scalar AFC::Thermo::H0(const word species, const scalar T) const
+TKC::scalar TKC::Thermo::H0(const word species, const scalar T) const
 {
     return thermoCalc_.H0(species, T, thermoData_);
 }
 
 
-AFC::scalar AFC::Thermo::C(const scalar T) const
+TKC::scalar TKC::Thermo::C(const scalar T) const
 {
     return thermoCalc_.C(p(), T);
 }
 
 
-AFC::scalar AFC::Thermo::rho(const word species, const scalar T) const
+TKC::scalar TKC::Thermo::rho(const word species, const scalar T) const
 {
     return thermoCalc_.rho(T, p(), MW(species));
 }
 
 
-AFC::word AFC::Thermo::phase(const word species) const
+TKC::word TKC::Thermo::phase(const word species) const
 {
     return thermoData_.phase(species);
 }
@@ -186,7 +186,7 @@ AFC::word AFC::Thermo::phase(const word species) const
 // * * * * * * * * * * * * * * Summary Function  * * * * * * * * * * * * * * //
 
 /*
-void AFC::Thermo::summary(ostream& data) const
+void TKC::Thermo::summary(ostream& data) const
 {
     //- Header
     data<< Header() << "\n"; 
@@ -218,7 +218,7 @@ void AFC::Thermo::summary(ostream& data) const
 }
 
 
-void AFC::Thermo::NASAPolynomials(ostream& data, const word coeff) const
+void TKC::Thermo::NASAPolynomials(ostream& data, const word coeff) const
 {
     word range;
 
@@ -289,7 +289,7 @@ void AFC::Thermo::NASAPolynomials(ostream& data, const word coeff) const
 }
 
 
-void AFC::Thermo::thermoTable(ostream& data) const
+void TKC::Thermo::thermoTable(ostream& data) const
 {
     //- Species of Thermodynamic Data
     const wordList& species = thermoData_.species();

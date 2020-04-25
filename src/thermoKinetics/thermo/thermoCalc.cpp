@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   c-o-o-c-o-o-o             |
-  |     |     A utomatic    | Open Source Flamelet
-  c-o-o-c     F lamelet     | 
+  |     |     T hermo       | Open Source Thermo-Kinetic Library
+  c-o-o-c     K iknetic     |
   |     |     C onstructor  | Copyright (C) 2020 Holzmann CFD
   c     c-o-o-o             |
 -------------------------------------------------------------------------------
 License
     This file is part of Automatic Flamelet Constructor.
 
-    AFC is free software; you can redistribute it and/or modify it under
+    TKC is free software; you can redistribute it and/or modify it under
     the terms of the GNU General Public License as published by the
     Free Software Foundation; either version 3 of the License, or 
     (at your option) any later version.
 
-    AFC is distributed in the hope that it will be useful, but
+    TKC is distributed in the hope that it will be useful, but
     WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with AFC; if not, see <http://www.gnu.org/licenses/>
+    along with TKC; if not, see <http://www.gnu.org/licenses/>
 
 \*---------------------------------------------------------------------------*/
 
@@ -29,7 +29,7 @@ License
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-AFC::ThermoCalc::ThermoCalc
+TKC::ThermoCalc::ThermoCalc
 (
     const string fileName,
     const bool thermoInChemistry
@@ -46,7 +46,7 @@ AFC::ThermoCalc::ThermoCalc
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-AFC::ThermoCalc::~ThermoCalc()
+TKC::ThermoCalc::~ThermoCalc()
 {
     if (debug_)
     {
@@ -57,7 +57,7 @@ AFC::ThermoCalc::~ThermoCalc()
 
 // * * * * * * * * * * * * * Calculation Functions * * * * * * * * * * * * * //
 
-AFC::scalar AFC::ThermoCalc::MWmeanX
+TKC::scalar TKC::ThermoCalc::MWmeanX
 (
     const map<word, scalar>& X,
     const map<word, scalar>& MW
@@ -74,7 +74,7 @@ AFC::scalar AFC::ThermoCalc::MWmeanX
 }
 
 
-AFC::scalar AFC::ThermoCalc::MWmeanY
+TKC::scalar TKC::ThermoCalc::MWmeanY
 (
     const map<word, scalar>& Y,
     const map<word, scalar>& MW
@@ -91,7 +91,7 @@ AFC::scalar AFC::ThermoCalc::MWmeanY
 }
 
 
-AFC::scalar AFC::ThermoCalc::MWmeanC
+TKC::scalar TKC::ThermoCalc::MWmeanC
 (
     const map<word, scalar>& C,
     const map<word, scalar>& MW
@@ -110,49 +110,31 @@ AFC::scalar AFC::ThermoCalc::MWmeanC
 }
 
 
-AFC::scalar
-AFC::ThermoCalc::rho(const scalar T, const scalar p, const scalar MW) const
+TKC::scalar
+TKC::ThermoCalc::rho(const scalar T, const scalar p, const scalar MW) const
 {
-    return (p * MW / AFC::Constants::R / T);
+    return (p * MW / TKC::Constants::R / T);
 }
 
 
-AFC::scalar AFC::ThermoCalc::rhoMean
+TKC::scalar TKC::ThermoCalc::rhoMean
 (
     const scalar Mmean,
     const scalar p,
     const scalar T
 ) const
 {
-    return (p * Mmean/ (AFC::Constants::R * T));
+    return (p * Mmean/ (TKC::Constants::R * T));
 }
 
 
-AFC::scalar AFC::ThermoCalc::C(const scalar p, const scalar T) const
+TKC::scalar TKC::ThermoCalc::C(const scalar p, const scalar T) const
 {
-    return (p / (AFC::Constants::R * T));
+    return (p / (TKC::Constants::R * T));
 }
 
 
-AFC::scalar AFC::ThermoCalc::cp(const word species, const scalar T) const
-{
-    const scalarField& coeffs = getCoeffs(species, T);
-
-    //- calculate and return [J/mol/K]
-    return
-    (
-        (
-            coeffs[0]
-          + coeffs[1] * T
-          + coeffs[2] * pow(T, 2)
-          + coeffs[3] * pow(T, 3)
-          + coeffs[4] * pow(T, 4)
-        ) * AFC::Constants::R
-    );
-}
-
-
-AFC::scalar AFC::ThermoCalc::cv(const word species, const scalar T) const
+TKC::scalar TKC::ThermoCalc::cp(const word species, const scalar T) const
 {
     const scalarField& coeffs = getCoeffs(species, T);
 
@@ -165,13 +147,31 @@ AFC::scalar AFC::ThermoCalc::cv(const word species, const scalar T) const
           + coeffs[2] * pow(T, 2)
           + coeffs[3] * pow(T, 3)
           + coeffs[4] * pow(T, 4)
-        ) * AFC::Constants::R
-        - AFC::Constants::R
+        ) * TKC::Constants::R
     );
 }
 
 
-AFC::scalar AFC::ThermoCalc::h(const word species, const scalar T) const
+TKC::scalar TKC::ThermoCalc::cv(const word species, const scalar T) const
+{
+    const scalarField& coeffs = getCoeffs(species, T);
+
+    //- calculate and return [J/mol/K]
+    return
+    (
+        (
+            coeffs[0]
+          + coeffs[1] * T
+          + coeffs[2] * pow(T, 2)
+          + coeffs[3] * pow(T, 3)
+          + coeffs[4] * pow(T, 4)
+        ) * TKC::Constants::R
+        - TKC::Constants::R
+    );
+}
+
+
+TKC::scalar TKC::ThermoCalc::h(const word species, const scalar T) const
 {
     const scalarField& coeffs = getCoeffs(species, T);
 
@@ -185,18 +185,18 @@ AFC::scalar AFC::ThermoCalc::h(const word species, const scalar T) const
           + coeffs[3] * pow(T, 3) / 4
           + coeffs[4] * pow(T, 4) / 5
           + coeffs[5] / T
-        ) * AFC::Constants::R * T
+        ) * TKC::Constants::R * T
     );
 }
 
 
-AFC::scalar AFC::ThermoCalc::dhf(const word species, const scalar T) const
+TKC::scalar TKC::ThermoCalc::dhf(const word species, const scalar T) const
 {
     return (h(species, T) - hf(species));
 }
 
 
-AFC::scalar AFC::ThermoCalc::s(const word species, const scalar T) const
+TKC::scalar TKC::ThermoCalc::s(const word species, const scalar T) const
 {
     const scalarField& coeffs = getCoeffs(species, T);
 
@@ -210,13 +210,13 @@ AFC::scalar AFC::ThermoCalc::s(const word species, const scalar T) const
           + coeffs[3] * pow(T, 3) / 3
           + coeffs[4] * pow(T, 4) / 4
           + coeffs[6]
-          + log(p()/AFC::Constants::p0)
-        ) * AFC::Constants::R
+          + log(p()/TKC::Constants::p0)
+        ) * TKC::Constants::R
     );
 }
 
 
-AFC::scalar AFC::ThermoCalc::g(const word species, const scalar T) const
+TKC::scalar TKC::ThermoCalc::g(const word species, const scalar T) const
 {
     //- Enthalpy
     const scalar th = h(species, T);
@@ -229,47 +229,47 @@ AFC::scalar AFC::ThermoCalc::g(const word species, const scalar T) const
 }
 
 
-AFC::scalar AFC::ThermoCalc::dgf(const word species, const scalar T) const
+TKC::scalar TKC::ThermoCalc::dgf(const word species, const scalar T) const
 {
     return (g(species, T) - gf(species));
 }
 
 
-AFC::scalar
-AFC::ThermoCalc::g(const scalar h, const scalar s, const scalar T) const
+TKC::scalar
+TKC::ThermoCalc::g(const scalar h, const scalar s, const scalar T) const
 {
     //- calculate mean free Gibbs energy
     return ( h - s * T);
 }
 
 
-AFC::scalar AFC::ThermoCalc::hf(const word species) const
+TKC::scalar TKC::ThermoCalc::hf(const word species) const
 {
     return h(species, 298);
 }
 
 
-AFC::scalar AFC::ThermoCalc::gf(const word species) const
+TKC::scalar TKC::ThermoCalc::gf(const word species) const
 {
     return g(species, 298);
 }
 
 
-AFC::scalar AFC::ThermoCalc::h0(const word species, const scalar T) const
+TKC::scalar TKC::ThermoCalc::h0(const word species, const scalar T) const
 {
     const scalarField& coeffs = getCoeffs(species, T);
 
     //- calculate and return [J/mol/K]
     return
     (
-        coeffs[6] * AFC::Constants::R
+        coeffs[6] * TKC::Constants::R
     );
 }
 
 
 // * * * * * * * * * * * * * * *  Return Functions * * * * * * * * * * * * * //
 
-AFC::scalarField AFC::ThermoCalc::getCoeffs
+TKC::scalarField TKC::ThermoCalc::getCoeffs
 (
     const word species,
     const scalar T
@@ -291,7 +291,7 @@ AFC::scalarField AFC::ThermoCalc::getCoeffs
 }
 
 
-bool AFC::ThermoCalc::whichTempRange(const word species, const scalar T) const
+bool TKC::ThermoCalc::whichTempRange(const word species, const scalar T) const
 {
     //- Low temperature 
     const scalar TL = LT(species);

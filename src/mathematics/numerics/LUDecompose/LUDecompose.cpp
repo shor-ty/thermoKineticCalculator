@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   c-o-o-c-o-o-o             |
-  |     |     A utomatic    | Open Source Flamelet
-  c-o-o-c     F lamelet     | 
+  |     |     T hermo       | Open Source Thermo-Kinetic Library
+  c-o-o-c     K iknetic     |
   |     |     C onstructor  | Copyright (C) 2020 Holzmann CFD
   c     c-o-o-o             |
 -------------------------------------------------------------------------------
 License
     This file is part of Automatic Flamelet Constructor.
 
-    AFC is free software; you can redistribute it and/or modify it under
+    TKC is free software; you can redistribute it and/or modify it under
     the terms of the GNU General Public License as published by the
     Free Software Foundation; either version 3 of the License, or 
     (at your option) any later version.
 
-    AFC is distributed in the hope that it will be useful, but
+    TKC is distributed in the hope that it will be useful, but
     WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with AFC; if not, see <http://www.gnu.org/licenses/>
+    along with TKC; if not, see <http://www.gnu.org/licenses/>
 
 \*---------------------------------------------------------------------------*/
 
@@ -29,7 +29,7 @@ License
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-AFC::LUDecompose::LUDecompose(Matrix& A)
+TKC::LUDecompose::LUDecompose(Matrix& A)
 :
     i_(A.rows()),
 
@@ -170,20 +170,20 @@ AFC::LUDecompose::LUDecompose(Matrix& A)
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-AFC::LUDecompose::~LUDecompose()
+TKC::LUDecompose::~LUDecompose()
 {}
 
 
 // * * * * * * * * * * * * * * Operator function * * * * * * * * * * * * * * //
 
-void AFC::LUDecompose::operator()() const
+void TKC::LUDecompose::operator()() const
 {
     LU_();
 }
 
 // * * * * * * * * * * * * * * * Member function * * * * * * * * * * * * * * //
 
-void AFC::LUDecompose::solve(Vector& b, Vector& x)
+void TKC::LUDecompose::solve(Vector& b, Vector& x)
 {
     //- Temporary variables
     size_t i{0}, ii{0}, ip{0}, j{0};
@@ -257,7 +257,7 @@ void AFC::LUDecompose::solve(Vector& b, Vector& x)
 }
 
 
-void AFC::LUDecompose::improveSolution(const Vector& b, const Vector& x)
+void TKC::LUDecompose::improveSolution(const Vector& b, const Vector& x)
 {
     // TODO check for correctness
     //- Solve the system Ax to get b* (x is the calculated solution)

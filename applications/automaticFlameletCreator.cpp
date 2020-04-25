@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   c-o-o-c-o-o-o             |
-  |     |     A utomatic    | Open Source Flamelet
-  c-o-o-c     F lamelet     |
-  |     |     C onstructor  | Copyright (C) 2015 Holzmann-cfd
+  |     |     T hermo       | Open Source Thermo-Kinetic Library
+  c-o-o-c     K iknetic     |
+  |     |     C onstructor  | Copyright (C) 2020 Holzmann CFD
   c     c-o-o-o             |
 -------------------------------------------------------------------------------
 License
     This file is part of Automatic Flamelet Creator.
 
-    AFC is free software; you can redistribute it and/or modify it under
+    TKC is free software; you can redistribute it and/or modify it under
     the terms of the GNU General Public License as published by the
     Free Software Foundation; either version 3 of the License, or
     (at your option) any later version.
 
-    AFC is distributed in the hope that it will be useful, but
+    TKC is distributed in the hope that it will be useful, but
     WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with AFC; if not, see <http://www.gnu.org/licenses/>
+    along with TKC; if not, see <http://www.gnu.org/licenses/>
 
 Description
 
@@ -41,7 +41,7 @@ Description
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-using namespace AFC;
+using namespace TKC;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -56,7 +56,7 @@ int main
 
     Info<< Header() << endl;
 
-    string file_AFC;
+    string file_TKC;
     string file_Thermo;
     string file_Transport;
     string file_Chemistry;
@@ -73,19 +73,19 @@ int main
         (
             "    Program needs two arguments.\n\n"
             "    For calculating flamelets you have to use\n"
-            "      ./automaticFlameletCreator -AFCDict $pathToFile\n\n",
+            "      ./automaticFlameletCreator -TKCDict $pathToFile\n\n",
             __FILE__,
             __LINE__
         );
     }
     else
     {
-        file_AFC = string(argv[2]);
+        file_TKC = string(argv[2]);
     }
 
     //- Temporary Reader to get the file paths
     {
-        PropertiesReader tmp (file_AFC);
+        PropertiesReader tmp (file_TKC);
         file_Thermo = tmp.path("thermodynamic");
         file_Transport = tmp.path("transport");
         file_Chemistry = tmp.path("chemistry");
@@ -100,7 +100,7 @@ int main
 
     Chemistry chemistry(file_Chemistry, thermo);
 
-    Properties properties(file_AFC, thermo, chemistry);
+    Properties properties(file_TKC, thermo, chemistry);
 
     Info<< " c-o All data read successfully\n" << endl;
 
@@ -179,20 +179,20 @@ int main
 
     //- Proof if all species in afcDict are in chemistryData
     {
-        wordList speciesOAFC = properties.speciesOxidizer();
-        wordList speciesFAFC = properties.speciesFuel();
-        wordList speciesAFC = speciesOAFC;
+        wordList speciesOTKC = properties.speciesOxidizer();
+        wordList speciesFTKC = properties.speciesFuel();
+        wordList speciesTKC = speciesOTKC;
 
         //- Add fuel species
-        forAll(speciesFAFC, i)
+        forAll(speciesFTKC, i)
         {
-            speciesAFC.push_back(i);
+            speciesTKC.push_back(i);
         }
 
         //- Check if species are in chemistry
         const wordList& speciesCH = chemistry.species();
 
-        forAll(speciesAFC, i)
+        forAll(speciesTKC, i)
         {
             bool found{false};
 

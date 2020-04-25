@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   c-o-o-c-o-o-o             |
-  |     |     A utomatic    | Open Source Flamelet
-  c-o-o-c     F lamelet     | 
+  |     |     T hermo       | Open Source Thermo-Kinetic Library
+  c-o-o-c     K iknetic     |
   |     |     C onstructor  | Copyright (C) 2020 Holzmann CFD
   c     c-o-o-o             |
 -------------------------------------------------------------------------------
 License
     This file is part of Automatic Flamelet Constructor.
 
-    AFC is free software; you can redistribute it and/or modify it under
+    TKC is free software; you can redistribute it and/or modify it under
     the terms of the GNU General Public License as published by the
     Free Software Foundation; either version 3 of the License, or 
     (at your option) any later version.
 
-    AFC is distributed in the hope that it will be useful, but
+    TKC is distributed in the hope that it will be useful, but
     WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with AFC; if not, see <http://www.gnu.org/licenses/>
+    along with TKC; if not, see <http://www.gnu.org/licenses/>
 
 \*---------------------------------------------------------------------------*/
 
@@ -29,25 +29,25 @@ License
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-AFC::Vector::Vector()
+TKC::Vector::Vector()
 :
     Tensor(0, 0)
 {}
 
 
-AFC::Vector::Vector(const Vector& vec)
+TKC::Vector::Vector(const Vector& vec)
 :
     Tensor(vec.rows(), vec.cols(), vec.values())
 {}
 
 
-AFC::Vector::Vector(const size_t row, const scalar value)
+TKC::Vector::Vector(const size_t row, const scalar value)
 :
     Tensor(row, 1, value)
 {}
 
 
-AFC::Vector::Vector(const scalarField& sF)
+TKC::Vector::Vector(const scalarField& sF)
 :
     Tensor(sF.size(), 1, sF)
 {}
@@ -55,13 +55,13 @@ AFC::Vector::Vector(const scalarField& sF)
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-AFC::Vector::~Vector()
+TKC::Vector::~Vector()
 {}
 
 
 // * * * * * * * * * * * * * Arithemtic Functions  * * * * * * * * * * * * * //
 
-AFC::Vector AFC::Vector::operator*(const Matrix& T) const
+TKC::Vector TKC::Vector::operator*(const Matrix& T) const
 {
     //- Vector dot Matrix produces a new vector [Holzmann] (inner product)
     //  This operation is non-commutative
@@ -92,7 +92,7 @@ AFC::Vector AFC::Vector::operator*(const Matrix& T) const
 }
 
 
-void AFC::Vector::operator-=(const Vector& b)
+void TKC::Vector::operator-=(const Vector& b)
 {
     //- The vector on the left is the object itself
     Vector& a = *this;
@@ -116,7 +116,7 @@ void AFC::Vector::operator-=(const Vector& b)
 }
 
 
-const AFC::Vector AFC::Vector::operator-(const Vector& b) const
+const TKC::Vector TKC::Vector::operator-(const Vector& b) const
 {
     //- The vector on the left is the object itself
     const Vector& a = *this;
@@ -145,57 +145,57 @@ const AFC::Vector AFC::Vector::operator-(const Vector& b) const
 
 // * * * * * * * * * * * * * * Operator Functions  * * * * * * * * * * * * * //
 
-AFC::scalar AFC::Vector::operator()(const size_t i) const
+TKC::scalar TKC::Vector::operator()(const size_t i) const
 {
     //- Row or col vector
     if (rows() > cols())
     {
-        return AFC::Tensor::operator()(i, 0);
+        return TKC::Tensor::operator()(i, 0);
     }
     else
     {
-        return AFC::Tensor::operator()(0, i);
+        return TKC::Tensor::operator()(0, i);
     }
 }
 
 
-AFC::scalar& AFC::Vector::operator()(const size_t i)
+TKC::scalar& TKC::Vector::operator()(const size_t i)
 {
     //- Row or col vector
     if (rows() > cols())
     {
-        return AFC::Tensor::operator()(i, 0);
+        return TKC::Tensor::operator()(i, 0);
     }
     else
     {
-        return AFC::Tensor::operator()(0, i);
+        return TKC::Tensor::operator()(0, i);
     }
 }
 
 
-void AFC::Vector::operator()(const size_t i, const scalar value)
+void TKC::Vector::operator()(const size_t i, const scalar value)
 {
     //- Row or col vector
     if (rows() > cols())
     {
-        AFC::Tensor::operator()(i, 0, value);
+        TKC::Tensor::operator()(i, 0, value);
     }
     else
     {
-        AFC::Tensor::operator()(0, i, value);
+        TKC::Tensor::operator()(0, i, value);
     }
 }
 
 
-void AFC::Vector::operator()() const
+void TKC::Vector::operator()() const
 {
-    AFC::Tensor::operator()();
+    TKC::Tensor::operator()();
 }
 
 
 // * * * * * * * * * * * * * * * Member function * * * * * * * * * * * * * * //
 
-size_t AFC::Vector::size() const
+size_t TKC::Vector::size() const
 {
     //- Distinguish between row and col vector
     if (rows() > 1)
@@ -209,13 +209,13 @@ size_t AFC::Vector::size() const
 }
 
 
-AFC::scalarField AFC::Vector::values() const
+TKC::scalarField TKC::Vector::values() const
 {
-    return AFC::Tensor::values();
+    return TKC::Tensor::values();
 }
 
 
-/*AFC::Vector AFC::Vector::T() const
+/*TKC::Vector TKC::Vector::T() const
 {
     //- Rows and cols of the vector
     const size_t& row = this.rows();
@@ -259,6 +259,6 @@ AFC::scalarField AFC::Vector::values() const
 
 // * * * * * * * * * * * * * * Calculation Functions * * * * * * * * * * * * //
 
-//AFC::Vector AFC::Vector
+//TKC::Vector TKC::Vector
 
 // ************************************************************************* //

@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   c-o-o-c-o-o-o             |
-  |     |     A utomatic    | Open Source Flamelet
-  c-o-o-c     F lamelet     |
+  |     |     T hermo       | Open Source Thermo-Kinetic Library
+  c-o-o-c     K iknetic     |
   |     |     C onstructor  | Copyright (C) 2020 Holzmann CFD
   c     c-o-o-o             |
 -------------------------------------------------------------------------------
 License
     This file is part of Automatic Flamelet Constructor.
 
-    AFC is free software; you can redistribute it and/or modify it under
+    TKC is free software; you can redistribute it and/or modify it under
     the terms of the GNU General Public License as published by the
     Free Software Foundation; either version 3 of the License, or
     (at your option) any later version.
 
-    AFC is distributed in the hope that it will be useful, but
+    TKC is distributed in the hope that it will be useful, but
     WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with AFC; if not, see <http://www.gnu.org/licenses/>
+    along with TKC; if not, see <http://www.gnu.org/licenses/>
 
 \*---------------------------------------------------------------------------*/
 
@@ -27,7 +27,7 @@ License
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-AFC::PropertiesCalc::PropertiesCalc
+TKC::PropertiesCalc::PropertiesCalc
 (
     const string fileName,
     const Thermo& thermo,
@@ -44,14 +44,14 @@ AFC::PropertiesCalc::PropertiesCalc
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-AFC::PropertiesCalc::~PropertiesCalc()
+TKC::PropertiesCalc::~PropertiesCalc()
 {}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
 /*
-AFC::scalar AFC::PropertiesCalc::Omin
+TKC::scalar TKC::PropertiesCalc::Omin
 (
     const map<word, scalar>& fuelZj,
     const Thermo& thermo
@@ -83,7 +83,7 @@ AFC::scalar AFC::PropertiesCalc::Omin
 }
 
 
-AFC::scalar AFC::PropertiesCalc::Zst
+TKC::scalar TKC::PropertiesCalc::Zst
 (
     const map<word, scalar>& fuelZj,
     const scalar Yf,
@@ -100,7 +100,7 @@ AFC::scalar AFC::PropertiesCalc::Zst
 }
 
 
-AFC::scalar AFC::PropertiesCalc::adiabateFlameTemperature
+TKC::scalar TKC::PropertiesCalc::adiabateFlameTemperature
 (
     const PropertiesCalc& prop,
     const Thermo& thermo,
@@ -112,8 +112,8 @@ AFC::scalar AFC::PropertiesCalc::adiabateFlameTemperature
 }
 
 
-AFC::map<AFC::word, AFC::map<AFC::word, unsigned int>>
-AFC::PropertiesCalc::elementDecomposition
+TKC::map<TKC::word, TKC::map<TKC::word, unsigned int>>
+TKC::PropertiesCalc::elementDecomposition
 (
     const wordList& species,
     const Thermo& thermo 
@@ -213,7 +213,7 @@ AFC::PropertiesCalc::elementDecomposition
 }
 
 
-AFC::map<AFC::word, AFC::scalar> AFC::PropertiesCalc::elementMassFraction
+TKC::map<TKC::word, TKC::scalar> TKC::PropertiesCalc::elementMassFraction
 (
     const map<word, map<word, unsigned int>>& speciesComposition,
     const map<word, scalar>& Y,
@@ -288,7 +288,7 @@ AFC::map<AFC::word, AFC::scalar> AFC::PropertiesCalc::elementMassFraction
 }
 
 
-AFC::map<AFC::word, AFC::scalar> AFC::PropertiesCalc::elementMolFraction
+TKC::map<TKC::word, TKC::scalar> TKC::PropertiesCalc::elementMolFraction
 (
     const map<word, scalar>& Zj,
     const Thermo& thermo

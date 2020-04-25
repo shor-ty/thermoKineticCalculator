@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   c-o-o-c-o-o-o             |
-  |     |     A utomatic    | Open Source Flamelet
-  c-o-o-c     F lamelet     | 
+  |     |     T hermo       | Open Source Thermo-Kinetic Library
+  c-o-o-c     K iknetic     |
   |     |     C onstructor  | Copyright (C) 2020 Holzmann CFD
   c     c-o-o-o             |
 -------------------------------------------------------------------------------
 License
     This file is part of Automatic Flamelet Constructor.
 
-    AFC is free software; you can redistribute it and/or modify it under
+    TKC is free software; you can redistribute it and/or modify it under
     the terms of the GNU General Public License as published by the
     Free Software Foundation; either version 3 of the License, or 
     (at your option) any later version.
 
-    AFC is distributed in the hope that it will be useful, but
+    TKC is distributed in the hope that it will be useful, but
     WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with AFC; if not, see <http://www.gnu.org/licenses/>
+    along with TKC; if not, see <http://www.gnu.org/licenses/>
 
 \*---------------------------------------------------------------------------*/
 
@@ -28,7 +28,7 @@ License
 
 // * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * * //
 
-AFC::TransportData::TransportData(const string fileName)
+TKC::TransportData::TransportData(const string fileName)
 {
     TransportReader transReader(fileName);
     
@@ -38,7 +38,7 @@ AFC::TransportData::TransportData(const string fileName)
 
 // * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * * //
 
-AFC::TransportData::~TransportData()
+TKC::TransportData::~TransportData()
 {}
 
 
@@ -47,7 +47,7 @@ AFC::TransportData::~TransportData()
 
 // * * * * * * * * * * * Fitting polynomials coefficients  * * * * * * * * * //
 
-void AFC::TransportData::viscosityPolyCoeffs
+void TKC::TransportData::viscosityPolyCoeffs
 (
     const word species,
     const Vector& x
@@ -58,14 +58,14 @@ void AFC::TransportData::viscosityPolyCoeffs
 }
 
 
-AFC::scalarField
-AFC::TransportData::viscosityPolyCoeffs(const word species) const
+TKC::scalarField
+TKC::TransportData::viscosityPolyCoeffs(const word species) const
 {
     return viscosity_.at(species);
 }
 
 
-void AFC::TransportData::thermalConductivityPolyCoeffs
+void TKC::TransportData::thermalConductivityPolyCoeffs
 (
     const word species,
     const Vector& x
@@ -76,14 +76,14 @@ void AFC::TransportData::thermalConductivityPolyCoeffs
 }
 
 
-AFC::scalarField
-AFC::TransportData::thermalConductivityPolyCoeffs(const word species) const
+TKC::scalarField
+TKC::TransportData::thermalConductivityPolyCoeffs(const word species) const
 {
     return thermalConductivity_.at(species);
 }
 
 
-void AFC::TransportData::binaryDiffusivityPolyCoeffs
+void TKC::TransportData::binaryDiffusivityPolyCoeffs
 (
     const word species1,
     const word species2,
@@ -132,7 +132,7 @@ void AFC::TransportData::binaryDiffusivityPolyCoeffs
 }
 
 
-AFC::scalarField AFC::TransportData::binaryDiffusivityPolyCoeffs
+TKC::scalarField TKC::TransportData::binaryDiffusivityPolyCoeffs
 (
     const word species1,
     const word species2
@@ -160,13 +160,13 @@ AFC::scalarField AFC::TransportData::binaryDiffusivityPolyCoeffs
 
 // * * * * * * * * * Insert functions from TransportReader:: * * * * * * * * //
 
-void AFC::TransportData::insertSpecies(const word species)
+void TKC::TransportData::insertSpecies(const word species)
 {
     species_.push_back(species);
 }
 
 
-void AFC::TransportData::insertChemistrySpecies
+void TKC::TransportData::insertChemistrySpecies
 (
     const wordList& chemistrySpecies
 )
@@ -175,7 +175,7 @@ void AFC::TransportData::insertChemistrySpecies
 }
 
 
-void AFC::TransportData::insertGeoConfig(const int geoConfig)
+void TKC::TransportData::insertGeoConfig(const int geoConfig)
 {
     //- Species_ list must have one element more in this list 
     if (species_.size()-1 == geoConfig_.size())
@@ -195,7 +195,7 @@ void AFC::TransportData::insertGeoConfig(const int geoConfig)
 }
 
 
-void AFC::TransportData::insertLenJonPot(const scalar lenJonPot)
+void TKC::TransportData::insertLenJonPot(const scalar lenJonPot)
 {
     //- Species_ list must have one element more in this list 
     if (species_.size()-1 == lenJonPot_.size())
@@ -215,7 +215,7 @@ void AFC::TransportData::insertLenJonPot(const scalar lenJonPot)
 }
 
 
-void AFC::TransportData::insertLenJonCollDia(const scalar lenJonCollDia)
+void TKC::TransportData::insertLenJonCollDia(const scalar lenJonCollDia)
 {
     //- Species_ list must have one element more in this list 
     if (species_.size()-1 == lenJonCollDia_.size())
@@ -235,7 +235,7 @@ void AFC::TransportData::insertLenJonCollDia(const scalar lenJonCollDia)
 }
 
 
-void AFC::TransportData::insertDipMom(const scalar dipMom)
+void TKC::TransportData::insertDipMom(const scalar dipMom)
 {
     //- Species_ list must have one element more in this list 
     if (species_.size()-1 == dipMom_.size())
@@ -255,7 +255,7 @@ void AFC::TransportData::insertDipMom(const scalar dipMom)
 }
 
 
-void AFC::TransportData::insertAlpha(const scalar alpha)
+void TKC::TransportData::insertAlpha(const scalar alpha)
 {
     //- Species_ list must have one element more in this list 
     if (species_.size()-1 == alpha_.size())
@@ -275,7 +275,7 @@ void AFC::TransportData::insertAlpha(const scalar alpha)
 }
 
 
-void AFC::TransportData::insertZRot298(const scalar ZRot298)
+void TKC::TransportData::insertZRot298(const scalar ZRot298)
 {
     //- Species_ list must have one element more in this list 
     if (species_.size()-1 == ZRot298_.size())
@@ -295,7 +295,7 @@ void AFC::TransportData::insertZRot298(const scalar ZRot298)
 }
 
 
-void AFC::TransportData::insertBinarySpeciesCombinations
+void TKC::TransportData::insertBinarySpeciesCombinations
 (
     const word parentSpecies,
     const word childSpecies 
@@ -307,7 +307,7 @@ void AFC::TransportData::insertBinarySpeciesCombinations
 
 // * * * * * * * * * * * * Insert functions from afc.cpp * * * * * * * * * * //
 
-void AFC::TransportData::chemicalFormula
+void TKC::TransportData::chemicalFormula
 (
     const wordList& chemicalFormula
 )
@@ -318,7 +318,7 @@ void AFC::TransportData::chemicalFormula
 
 // * * * * * * * * * * * Update and Manipulation Functions * * * * * * * * * //
 
-void AFC::TransportData::binarySpeciesCombinations()
+void TKC::TransportData::binarySpeciesCombinations()
 {
     const wordList& species_ = species();
 
@@ -346,19 +346,19 @@ void AFC::TransportData::binarySpeciesCombinations()
 
 // * * * * * * * * * * * * * * Return functions  * * * * * * * * * * * * * * //
 
-AFC::wordList AFC::TransportData::species() const
+TKC::wordList TKC::TransportData::species() const
 {
     return species_;
 }
 
 
-AFC::wordList AFC::TransportData::chemicalFormula() const
+TKC::wordList TKC::TransportData::chemicalFormula() const
 {
     return chemicalFormula_;
 }
 
 
-AFC::word AFC::TransportData::chemicalFormula(const word species) const
+TKC::word TKC::TransportData::chemicalFormula(const word species) const
 {
     //- TODO use map to speed up 
     int ID{0};
@@ -378,43 +378,43 @@ AFC::word AFC::TransportData::chemicalFormula(const word species) const
 }
 
 
-AFC::wordList AFC::TransportData::chemistrySpecies() const
+TKC::wordList TKC::TransportData::chemistrySpecies() const
 {
     return chemistrySpecies_;
 }
 
 
-int AFC::TransportData::geometricalConfig(const word species) const
+int TKC::TransportData::geometricalConfig(const word species) const
 {
     return geoConfig_.at(species);
 }
 
 
-AFC::scalar AFC::TransportData::LJCD(const word species) const
+TKC::scalar TKC::TransportData::LJCD(const word species) const
 {
     return lenJonCollDia_.at(species);
 }
 
 
-AFC::scalar AFC::TransportData::LJP(const word species) const
+TKC::scalar TKC::TransportData::LJP(const word species) const
 {
     return lenJonPot_.at(species);
 }
 
 
-AFC::scalar AFC::TransportData::muk(const word species) const
+TKC::scalar TKC::TransportData::muk(const word species) const
 {
     return dipMom_.at(species);
 }
 
 
-AFC::scalar AFC::TransportData::alpha(const word species) const
+TKC::scalar TKC::TransportData::alpha(const word species) const
 {
     return alpha_.at(species);
 }
 
 
-AFC::scalar AFC::TransportData::ZRot298(const word species) const
+TKC::scalar TKC::TransportData::ZRot298(const word species) const
 {
     return ZRot298_.at(species);
 }

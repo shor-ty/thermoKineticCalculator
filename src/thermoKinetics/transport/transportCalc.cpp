@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   c-o-o-c-o-o-o             |
-  |     |     A utomatic    | Open Source Flamelet
-  c-o-o-c     F lamelet     | 
+  |     |     T hermo       | Open Source Thermo-Kinetic Library
+  c-o-o-c     K iknetic     |
   |     |     C onstructor  | Copyright (C) 2020 Holzmann CFD
   c     c-o-o-o             |
 -------------------------------------------------------------------------------
 License
     This file is part of Automatic Flamelet Constructor.
 
-    AFC is free software; you can redistribute it and/or modify it under
+    TKC is free software; you can redistribute it and/or modify it under
     the terms of the GNU General Public License as published by the
     Free Software Foundation; either version 3 of the License, or 
     (at your option) any later version.
 
-    AFC is distributed in the hope that it will be useful, but
+    TKC is distributed in the hope that it will be useful, but
     WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with AFC; if not, see <http://www.gnu.org/licenses/>
+    along with TKC; if not, see <http://www.gnu.org/licenses/>
 
 \*---------------------------------------------------------------------------*/
 
@@ -31,7 +31,7 @@ License
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-AFC::TransportCalc::TransportCalc(const string fileName, const Thermo& thermo)
+TKC::TransportCalc::TransportCalc(const string fileName, const Thermo& thermo)
 :
     TransportData(fileName),
     thermo_(thermo)
@@ -41,14 +41,14 @@ AFC::TransportCalc::TransportCalc(const string fileName, const Thermo& thermo)
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-AFC::TransportCalc::~TransportCalc()
+TKC::TransportCalc::~TransportCalc()
 {}
 
 
 // * * * * * * * * * * * * Reduced collision integrals * * * * * * * * * * * //
 
-AFC::scalar
-AFC::TransportCalc::reducedCollisionIntegralOmega22(const scalar Ts) const
+TKC::scalar
+TKC::TransportCalc::reducedCollisionIntegralOmega22(const scalar Ts) const
 {
     //- Constants
     const scalar A = 1.16145;
@@ -63,8 +63,8 @@ AFC::TransportCalc::reducedCollisionIntegralOmega22(const scalar Ts) const
 }
 
 
-AFC::scalar
-AFC::TransportCalc::reducedCollisionIntegralOmega11(const scalar Ts) const
+TKC::scalar
+TKC::TransportCalc::reducedCollisionIntegralOmega11(const scalar Ts) const
 {
     //- Constants
     const scalar A = 1.06036;
@@ -81,17 +81,17 @@ AFC::TransportCalc::reducedCollisionIntegralOmega11(const scalar Ts) const
 }
 
 
-AFC::scalar
-AFC::TransportCalc::rho(const scalar MW, const scalar T, const scalar p) const
+TKC::scalar
+TKC::TransportCalc::rho(const scalar MW, const scalar T, const scalar p) const
 {
     //- Return density [kg/m^3]
-    return (p * MW / AFC::Constants::R / T); 
+    return (p * MW / TKC::Constants::R / T); 
 }
 
 
 // * * * * * * * * Calculation Functions For Viscosity  * * * * * * * * * * *//
 
-AFC::scalar AFC::TransportCalc::viscosity
+TKC::scalar TKC::TransportCalc::viscosity
 (
     const word species,
     const scalar T,
@@ -147,7 +147,7 @@ AFC::scalar AFC::TransportCalc::viscosity
 }
 
 
-AFC::scalar AFC::TransportCalc::viscosityHirschfelder
+TKC::scalar TKC::TransportCalc::viscosityHirschfelder
 (
     const word species,
     const scalar T,
@@ -180,7 +180,7 @@ AFC::scalar AFC::TransportCalc::viscosityHirschfelder
 }
 
 
-/*AFC::scalar AFC::TransportCalc::viscosityChung
+/*TKC::scalar TKC::TransportCalc::viscosityChung
 (
     const word& species,
     const scalar& T,
@@ -191,7 +191,7 @@ AFC::scalar AFC::TransportCalc::viscosityHirschfelder
     // Constants
 
     //- Stefan Boltzmann constant [J/m^2/K^4]
-    const scalar& kB = AFC::Constants::kB;
+    const scalar& kB = TKC::Constants::kB;
 
     //- Lennard-Jones collision diameter [Angstroms]
     const scalar& LJCD = LJCD(species);
@@ -223,7 +223,7 @@ AFC::scalar AFC::TransportCalc::viscosityHirschfelder
         //- Lambda [erg/cm/K/s]
         const scalar lambda = 
             viscosity(species, T, thermo, transData)
-          / MW * scalar(15)/scalar(4) * AFC::Constants::Rerg;
+          / MW * scalar(15)/scalar(4) * TKC::Constants::Rerg;
 
         //- Return lambda
         return lambda;
@@ -237,21 +237,21 @@ AFC::scalar AFC::TransportCalc::viscosityHirschfelder
         //- Linear atomic
         if (geometricConfig == scalar(1))
         {
-            Cvtrans = scalar(3)/scalar(2) * AFC::Constants::Rerg;
+            Cvtrans = scalar(3)/scalar(2) * TKC::Constants::Rerg;
 
-            Cvrot = AFC::Constants::Rerg;
+            Cvrot = TKC::Constants::Rerg;
 
             Cvvib = 
                 thermo.cv(species, T)
-              - scalar(5)/scalar(2) * AFC::Constants::Rerg;
+              - scalar(5)/scalar(2) * TKC::Constants::Rerg;
         }
         else if (geometricConfig == scalar(2))
         {
-            Cvtrans = scalar(3)/scalar(2) * AFC::Constants::Rerg;
+            Cvtrans = scalar(3)/scalar(2) * TKC::Constants::Rerg;
 
             Cvrot = Cvtrans;
 
-            Cvvib = thermo.cv(species, T) - 3 * AFC::Constants::Rerg;
+            Cvvib = thermo.cv(species, T) - 3 * TKC::Constants::Rerg;
         }
 
         //- TODO units
@@ -264,7 +264,7 @@ AFC::scalar AFC::TransportCalc::viscosityHirschfelder
         //const scalar& A = scalar(5)/scalar(2) - rho * Dii / nu;
         //const scalar& B =
         //    Zrot298 + scalar(2) / pi
-        // * (scalar(5)/scalar(3) * Cvrot / AFC::Constants::Rerg + rho * Dii / nu );
+        // * (scalar(5)/scalar(3) * Cvrot / TKC::Constants::Rerg + rho * Dii / nu );
 
         //const scalar ftrans =
         //    scalar(5)/scalar(2) * (1 - 2/pi * Cvrot * A / Cvtrans / B);
@@ -277,7 +277,7 @@ AFC::scalar AFC::TransportCalc::viscosityHirschfelder
 }*/
 
 
-AFC::scalar AFC::TransportCalc::viscosityPolynomial
+TKC::scalar TKC::TransportCalc::viscosityPolynomial
 (
     const scalar T,
     const scalarField& polyCoeffs 
@@ -296,7 +296,7 @@ AFC::scalar AFC::TransportCalc::viscosityPolynomial
 }
 
 
-void AFC::TransportCalc::fitViscosity()
+void TKC::TransportCalc::fitViscosity()
 {
     //- TODO use one function instead of 3
     //- Species from chemistry
@@ -444,7 +444,7 @@ void AFC::TransportCalc::fitViscosity()
 
 // * * * * * * * * Calculation Functions For Conducitvity  * * * * * * * * * //
 
-AFC::scalar AFC::TransportCalc::thermalConductivity
+TKC::scalar TKC::TransportCalc::thermalConductivity
 (
     const word species,
     const scalar T,
@@ -492,7 +492,7 @@ AFC::scalar AFC::TransportCalc::thermalConductivity
 }
 
 
-AFC::scalar AFC::TransportCalc::thermalConductivityWarnatz
+TKC::scalar TKC::TransportCalc::thermalConductivityWarnatz
 (
     const word species,
     const scalar T
@@ -549,7 +549,7 @@ AFC::scalar AFC::TransportCalc::thermalConductivityWarnatz
 }
 
 
-/*AFC::scalar AFC::TransportCalc::thermalConductivityWarnatzCC
+/*TKC::scalar TKC::TransportCalc::thermalConductivityWarnatzCC
 (
     const word& species,
     const scalar& T,
@@ -563,7 +563,7 @@ AFC::scalar AFC::TransportCalc::thermalConductivityWarnatz
     const scalar& MW = thermo.MW(species);
 
     //- Universal gas constant [J/mol/K]
-    const scalar& R = AFC::Constants::R;
+    const scalar& R = TKC::Constants::R;
 
     //- Lennard-Jones potential well depth eps/kb [K]
     const scalar& LJP = LJP(species);
@@ -652,7 +652,7 @@ AFC::scalar AFC::TransportCalc::thermalConductivityWarnatz
 }*/
 
 
-AFC::scalar AFC::TransportCalc::thermalConductivityPolynomial
+TKC::scalar TKC::TransportCalc::thermalConductivityPolynomial
 (
     const scalar T,
     const scalarField& polyCoeffs
@@ -671,7 +671,7 @@ AFC::scalar AFC::TransportCalc::thermalConductivityPolynomial
 }
 
 
-void AFC::TransportCalc::fitThermalConductivity() 
+void TKC::TransportCalc::fitThermalConductivity() 
 {
     //- Species from chemistry
     const wordList& species = chemistrySpecies();
@@ -820,7 +820,7 @@ void AFC::TransportCalc::fitThermalConductivity()
 
 // * * * * * * * Calculation Functions For Binary Diffusivity * * * * * * * *//
 
-AFC::scalar AFC::TransportCalc::binaryDiffusivity
+TKC::scalar TKC::TransportCalc::binaryDiffusivity
 (
     const word species1,
     const word species2,
@@ -857,7 +857,7 @@ AFC::scalar AFC::TransportCalc::binaryDiffusivity
 }
 
 
-AFC::scalar AFC::TransportCalc::binaryDiffusivityChapmanAndEnskog
+TKC::scalar TKC::TransportCalc::binaryDiffusivityChapmanAndEnskog
 (
     const word species1,
     const word species2,
@@ -903,7 +903,7 @@ AFC::scalar AFC::TransportCalc::binaryDiffusivityChapmanAndEnskog
 }
 
 
-/*AFC::scalar AFC::TransportCalc::binaryDiffusivityWarnatz
+/*TKC::scalar TKC::TransportCalc::binaryDiffusivityWarnatz
 (
     const word species1,
     const word species2,
@@ -948,7 +948,7 @@ AFC::scalar AFC::TransportCalc::binaryDiffusivityChapmanAndEnskog
 }*/
 
 
-/*AFC::scalar AFC::TransportCalc::binaryDiffusivityCC
+/*TKC::scalar TKC::TransportCalc::binaryDiffusivityCC
 (
     const word species1,
     const word species2,
@@ -958,7 +958,7 @@ AFC::scalar AFC::TransportCalc::binaryDiffusivityChapmanAndEnskog
 ) const
 {
     //- Stefan Boltzmann constant [J/m^2/K^4]
-    const scalar& kB = AFC::Constants::kB;
+    const scalar& kB = TKC::Constants::kB;
     
     //- Pressure
     const scalar& p = thermo.p();
@@ -990,7 +990,7 @@ AFC::scalar AFC::TransportCalc::binaryDiffusivityChapmanAndEnskog
 }*/
 
 
-AFC::scalar AFC::TransportCalc::binaryDiffusivityPolynomial
+TKC::scalar TKC::TransportCalc::binaryDiffusivityPolynomial
 (
     const scalar T,
     const scalarField& pC
@@ -1009,7 +1009,7 @@ AFC::scalar AFC::TransportCalc::binaryDiffusivityPolynomial
 }
 
 
-void AFC::TransportCalc::fitBinaryDiffusivity()
+void TKC::TransportCalc::fitBinaryDiffusivity()
 {
     //- Species from chemistry
     const wordList& species = chemistrySpecies();
@@ -1166,7 +1166,7 @@ void AFC::TransportCalc::fitBinaryDiffusivity()
 
 // * * * * * * * * * * * * Additional Functions * * * * * * * * * * * * * * *//
 
-AFC::scalar AFC::TransportCalc::F(const scalar T, const scalar LJP) const
+TKC::scalar TKC::TransportCalc::F(const scalar T, const scalar LJP) const
 {
     //- LJP Lennard-Jones potential well depth epsilon/kB [K]
     //- Return the temperature modifier

@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   c-o-o-c-o-o-o             |
-  |     |     A utomatic    | Open Source Flamelet
-  c-o-o-c     F lamelet     | 
+  |     |     T hermo       | Open Source Thermo-Kinetic Library
+  c-o-o-c     K iknetic     |
   |     |     C onstructor  | Copyright (C) 2020 Holzmann CFD
   c     c-o-o-o             |
 -------------------------------------------------------------------------------
 License
     This file is part of Automatic Flamelet Constructor.
 
-    AFC is free software; you can redistribute it and/or modify it under
+    TKC is free software; you can redistribute it and/or modify it under
     the terms of the GNU General Public License as published by the
     Free Software Foundation; either version 3 of the License, or 
     (at your option) any later version.
 
-    AFC is distributed in the hope that it will be useful, but
+    TKC is distributed in the hope that it will be useful, but
     WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with AFC; if not, see <http://www.gnu.org/licenses/>
+    along with TKC; if not, see <http://www.gnu.org/licenses/>
 
 \*---------------------------------------------------------------------------*/
 
@@ -29,13 +29,13 @@ License
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-AFC::Matrix::Matrix()
+TKC::Matrix::Matrix()
 :
     Tensor(0, 0)
 {}
 
 
-AFC::Matrix::Matrix
+TKC::Matrix::Matrix
 (
     const size_t rows,
     const size_t cols,
@@ -48,14 +48,14 @@ AFC::Matrix::Matrix
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-AFC::Matrix::~Matrix()
+TKC::Matrix::~Matrix()
 {}
 
 
 // * * * * * * * * * * * * * * Operator Functions  * * * * * * * * * * * * * //
 
 
-AFC::Matrix AFC::Matrix::operator*(const Matrix& B) const
+TKC::Matrix TKC::Matrix::operator*(const Matrix& B) const
 {
     //- Calculation of the inner product of two matrices 
     //  The result is a matrix again C_ij = A_ik * B_kj
@@ -98,7 +98,7 @@ AFC::Matrix AFC::Matrix::operator*(const Matrix& B) const
 }
 
 
-AFC::Vector AFC::Matrix::operator*(const Vector& b) const
+TKC::Vector TKC::Matrix::operator*(const Vector& b) const
 {
     //- Inner Product of Matrix and Vector
     
@@ -139,7 +139,7 @@ AFC::Vector AFC::Matrix::operator*(const Vector& b) const
 
 // * * * * * * * * * * * * * * Calculation Functions * * * * * * * * * * * * //
 
-AFC::Matrix AFC::Matrix::T() const
+TKC::Matrix TKC::Matrix::T() const
 {
     //- Cols and rows of actual matrix
     const size_t& row = this->rows();
@@ -164,7 +164,7 @@ AFC::Matrix AFC::Matrix::T() const
 }
 
 
-AFC::Matrix AFC::Matrix::inverse() const
+TKC::Matrix TKC::Matrix::inverse() const
 {
     //- rows and cols of actual matrix
     const size_t row = rows();
@@ -258,7 +258,7 @@ AFC::Matrix AFC::Matrix::inverse() const
 
 
 
-AFC::Matrix AFC::Matrix::I() const
+TKC::Matrix TKC::Matrix::I() const
 {
     size_t n{0};
 
@@ -283,7 +283,7 @@ AFC::Matrix AFC::Matrix::I() const
 }
 
 
-AFC::Matrix AFC::Matrix::I(const size_t n) const
+TKC::Matrix TKC::Matrix::I(const size_t n) const
 {
     //- Build n x n matrix with zero
     Matrix tmp(n, n);
@@ -297,7 +297,7 @@ AFC::Matrix AFC::Matrix::I(const size_t n) const
 }
 
 
-AFC::Matrix AFC::Matrix::LT() const
+TKC::Matrix TKC::Matrix::LT() const
 {
     if (this->rows() != this->cols())
     {
@@ -326,7 +326,7 @@ AFC::Matrix AFC::Matrix::LT() const
 }
 
 
-AFC::Matrix AFC::Matrix::UT() const
+TKC::Matrix TKC::Matrix::UT() const
 {
     if (this->rows() != this->cols())
     {
@@ -355,7 +355,7 @@ AFC::Matrix AFC::Matrix::UT() const
 }
 
 
-void AFC::Matrix::LU() const
+void TKC::Matrix::LU() const
 {
     //- Temporary matrix U0
     Matrix U0 = *this;
@@ -371,7 +371,7 @@ void AFC::Matrix::LU() const
 
 // * * * * * * * * * * * * Special Matrix Functions  * * * * * * * * * * * * //
 
-/*void AFC::Matrix::polynomCoefficients
+/*void TKC::Matrix::polynomCoefficients
 (
     const scalarField& x,
     const scalarField& y,

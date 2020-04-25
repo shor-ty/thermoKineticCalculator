@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   c-o-o-c-o-o-o             |
-  |     |     A utomatic    | Open Source Flamelet
-  c-o-o-c     F lamelet     | 
+  |     |     T hermo       | Open Source Thermo-Kinetic Library
+  c-o-o-c     K iknetic     |
   |     |     C onstructor  | Copyright (C) 2020 Holzmann CFD
   c     c-o-o-o             |
 -------------------------------------------------------------------------------
 License
     This file is part of Automatic Flamelet Constructor.
 
-    AFC is free software; you can redistribute it and/or modify it under
+    TKC is free software; you can redistribute it and/or modify it under
     the terms of the GNU General Public License as published by the
     Free Software Foundation; either version 3 of the License, or 
     (at your option) any later version.
 
-    AFC is distributed in the hope that it will be useful, but
+    TKC is distributed in the hope that it will be useful, but
     WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with AFC; if not, see <http://www.gnu.org/licenses/>
+    along with TKC; if not, see <http://www.gnu.org/licenses/>
 
 \*---------------------------------------------------------------------------*/
 
@@ -27,7 +27,7 @@ License
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-AFC::PropertiesReader::PropertiesReader(const string file)
+TKC::PropertiesReader::PropertiesReader(const string file)
 :
     file_(file)
 {}
@@ -35,15 +35,15 @@ AFC::PropertiesReader::PropertiesReader(const string file)
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-AFC::PropertiesReader::~PropertiesReader()
+TKC::PropertiesReader::~PropertiesReader()
 {}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-void AFC::PropertiesReader::read(PropertiesData& data)
+void TKC::PropertiesReader::read(PropertiesData& data)
 {
-    Info<< " c-o Reading AFCDict\n"
+    Info<< " c-o Reading TKCDict\n"
         << "     >> " << file_ << "\n" << endl;
 
     const auto fileContent = readFile(file_);
@@ -220,7 +220,7 @@ void AFC::PropertiesReader::read(PropertiesData& data)
 }
 
 
-AFC::string AFC::PropertiesReader::path(const string key)
+TKC::string TKC::PropertiesReader::path(const string key)
 {
     const auto fileContent = readFile(file_);
 
@@ -258,7 +258,7 @@ AFC::string AFC::PropertiesReader::path(const string key)
 }
 
 
-bool AFC::PropertiesReader::interprete()
+bool TKC::PropertiesReader::interprete()
 {
     const auto fileContent = readFile(file_);
 
@@ -296,7 +296,7 @@ bool AFC::PropertiesReader::interprete()
 
 // * * * * * * * * * * * * * * Helper functions  * * * * * * * * * * * * * * //
 
-void AFC::PropertiesReader::findKeyword
+void TKC::PropertiesReader::findKeyword
 (
     int& start,
     unsigned int& end,
@@ -343,7 +343,7 @@ void AFC::PropertiesReader::findKeyword
 
 // * * * * * * * * * * * * Data manipulation functions * * * * * * * * * * * //
 
-void AFC::PropertiesReader::enthalpyDefects
+void TKC::PropertiesReader::enthalpyDefects
 (
     const stringList& fileContent,
     unsigned int line,
@@ -386,7 +386,7 @@ void AFC::PropertiesReader::enthalpyDefects
 }
 
 
-void AFC::PropertiesReader::scalarDissipationRates
+void TKC::PropertiesReader::scalarDissipationRates
 (
     const stringList& fileContent,
     unsigned int line,
@@ -429,7 +429,7 @@ void AFC::PropertiesReader::scalarDissipationRates
 }
 
 
-void AFC::PropertiesReader::molFractionOxidizer
+void TKC::PropertiesReader::molFractionOxidizer
 (
     const stringList& fileContent,
     unsigned int line,
@@ -507,7 +507,7 @@ void AFC::PropertiesReader::molFractionOxidizer
 }
 
 
-void AFC::PropertiesReader::massFractionOxidizer
+void TKC::PropertiesReader::massFractionOxidizer
 (
     const stringList& fileContent,
     unsigned int line,
@@ -585,7 +585,7 @@ void AFC::PropertiesReader::massFractionOxidizer
 }
 
 
-void AFC::PropertiesReader::molFractionFuel
+void TKC::PropertiesReader::molFractionFuel
 (
     const stringList& fileContent,
     unsigned int line,
@@ -663,7 +663,7 @@ void AFC::PropertiesReader::molFractionFuel
 }
 
 
-void AFC::PropertiesReader::massFractionFuel
+void TKC::PropertiesReader::massFractionFuel
 (
     const stringList& fileContent,
     unsigned int line,
@@ -741,7 +741,7 @@ void AFC::PropertiesReader::massFractionFuel
 }
 
 
-void AFC::PropertiesReader::control
+void TKC::PropertiesReader::control
 (
     const stringList& fileContent,
     unsigned int line,
@@ -863,7 +863,7 @@ void AFC::PropertiesReader::control
 }
 
 
-void AFC::PropertiesReader::input(const word inp, PropertiesData& data)
+void TKC::PropertiesReader::input(const word inp, PropertiesData& data)
 {
     //- TODO - check if already set and if yes, check if is same
     if (inp == "mol")
@@ -887,7 +887,7 @@ void AFC::PropertiesReader::input(const word inp, PropertiesData& data)
 }
 
 
-void AFC::PropertiesReader::interpreter
+void TKC::PropertiesReader::interpreter
 (
     const stringList& fileContent,
     unsigned int line,

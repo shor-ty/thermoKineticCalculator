@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   c-o-o-c-o-o-o             |
-  |     |     A utomatic    | Open Source Flamelet
-  c-o-o-c     F lamelet     |
+  |     |     T hermo       | Open Source Thermo-Kinetic Library
+  c-o-o-c     K iknetic     |
   |     |     C onstructor  | Copyright (C) 2020 Holzmann CFD
   c     c-o-o-o             |
 -------------------------------------------------------------------------------
 License
     This file is part of Automatic Flamelet Constructor.
 
-    AFC is free software; you can redistribute it and/or modify it under
+    TKC is free software; you can redistribute it and/or modify it under
     the terms of the GNU General Public License as published by the
     Free Software Foundation; either version 3 of the License, or
     (at your option) any later version.
 
-    AFC is distributed in the hope that it will be useful, but
+    TKC is distributed in the hope that it will be useful, but
     WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with AFC; if not, see <http://www.gnu.org/licenses/>
+    along with TKC; if not, see <http://www.gnu.org/licenses/>
 
 \*---------------------------------------------------------------------------*/
 
@@ -27,7 +27,7 @@ License
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-AFC::ChemistryReader::ChemistryReader(const string file)
+TKC::ChemistryReader::ChemistryReader(const string file)
 :
     file_(file)
 {}
@@ -35,13 +35,13 @@ AFC::ChemistryReader::ChemistryReader(const string file)
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-AFC::ChemistryReader::~ChemistryReader()
+TKC::ChemistryReader::~ChemistryReader()
 {}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-void AFC::ChemistryReader::read(ChemistryData& data)
+void TKC::ChemistryReader::read(ChemistryData& data)
 {
     Info<< " c-o Reading chemistry data\n"
         << "     >> " << file_ << "\n" << endl;
@@ -58,7 +58,7 @@ void AFC::ChemistryReader::read(ChemistryData& data)
 }
 
 
-void AFC::ChemistryReader::readElementBlock
+void TKC::ChemistryReader::readElementBlock
 (
     const stringList& fileContent,
     ChemistryData& data
@@ -129,7 +129,7 @@ void AFC::ChemistryReader::readElementBlock
 }
 
 
-void AFC::ChemistryReader::readSpeciesBlock
+void TKC::ChemistryReader::readSpeciesBlock
 (
    const stringList& fileContent,
    ChemistryData& data
@@ -200,7 +200,7 @@ void AFC::ChemistryReader::readSpeciesBlock
 }
 
 
-void AFC::ChemistryReader::readThermoBlock
+void TKC::ChemistryReader::readThermoBlock
 (
     const stringList& fileContent,
     ChemistryData& data
@@ -236,7 +236,7 @@ void AFC::ChemistryReader::readThermoBlock
     }
 }
 
-void AFC::ChemistryReader::readReactionBlock
+void TKC::ChemistryReader::readReactionBlock
 (
     const stringList& fileContent,
     ChemistryData& data
@@ -392,7 +392,7 @@ void AFC::ChemistryReader::readReactionBlock
 
 // * * * * * * * * * * * * * * Helper functions  * * * * * * * * * * * * * * //
 
-void AFC::ChemistryReader::findKeyword
+void TKC::ChemistryReader::findKeyword
 (
     int& start,
     unsigned int& end,
@@ -465,7 +465,7 @@ void AFC::ChemistryReader::findKeyword
 }
 
 
-AFC::stringList AFC::ChemistryReader::extractData(const string str)
+TKC::stringList TKC::ChemistryReader::extractData(const string str)
 {
     //- STEP 1: find first '/'
     string delimiter="/";
@@ -487,7 +487,7 @@ AFC::stringList AFC::ChemistryReader::extractData(const string str)
 
 // * * * * * * * * * * * * Data manipulation functions * * * * * * * * * * * //
 
-void AFC::ChemistryReader::analyzeReaction
+void TKC::ChemistryReader::analyzeReaction
 (
     const stringList& line,
     ChemistryData& data
@@ -592,7 +592,7 @@ void AFC::ChemistryReader::analyzeReaction
 }
 
 
-void AFC::ChemistryReader::LOWCoeffs
+void TKC::ChemistryReader::LOWCoeffs
 (
     const string coeffStr,
     const unsigned int lineNo,
@@ -627,7 +627,7 @@ void AFC::ChemistryReader::LOWCoeffs
 }
 
 
-void AFC::ChemistryReader::TROECoeffs
+void TKC::ChemistryReader::TROECoeffs
 (
     const string coeffStr,
     const unsigned int lineNo,
@@ -662,7 +662,7 @@ void AFC::ChemistryReader::TROECoeffs
 }
 
 
-void AFC::ChemistryReader::SRICoeffs
+void TKC::ChemistryReader::SRICoeffs
 (
     const string coeffStr,
     const unsigned int lineNo,
@@ -696,7 +696,7 @@ void AFC::ChemistryReader::SRICoeffs
 }
 
 
-void AFC::ChemistryReader::enhanceFactors
+void TKC::ChemistryReader::enhanceFactors
 (
     const string enhanceFactors,
     ChemistryData& data
@@ -736,7 +736,7 @@ void AFC::ChemistryReader::enhanceFactors
 }
 
 
-void AFC::ChemistryReader::analyzeReacSite
+void TKC::ChemistryReader::analyzeReacSite
 (
     string reactionSite,
     const word site,

@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   c-o-o-c-o-o-o             |
-  |     |     A utomatic    | Open Source Flamelet
-  c-o-o-c     F lamelet     | 
+  |     |     T hermo       | Open Source Thermo-Kinetic Library
+  c-o-o-c     K iknetic     |
   |     |     C onstructor  | Copyright (C) 2020 Holzmann CFD
   c     c-o-o-o             |
 -------------------------------------------------------------------------------
 License
     This file is part of Automatic Flamelet Constructor.
 
-    AFC is free software; you can redistribute it and/or modify it under
+    TKC is free software; you can redistribute it and/or modify it under
     the terms of the GNU General Public License as published by the
     Free Software Foundation; either version 3 of the License, or 
     (at your option) any later version.
 
-    AFC is distributed in the hope that it will be useful, but
+    TKC is distributed in the hope that it will be useful, but
     WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with AFC; if not, see <http://www.gnu.org/licenses/>
+    along with TKC; if not, see <http://www.gnu.org/licenses/>
 
 \*---------------------------------------------------------------------------*/
 
@@ -28,7 +28,7 @@ License
 
 // * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * * //
 
-AFC::ThermoData::ThermoData
+TKC::ThermoData::ThermoData
 (
     const string fileName,
     const bool thermoInChemistry
@@ -54,7 +54,7 @@ AFC::ThermoData::ThermoData
 
 // * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * * //
 
-AFC::ThermoData::~ThermoData()
+TKC::ThermoData::~ThermoData()
 {
     if (debug_)
     {
@@ -69,19 +69,19 @@ AFC::ThermoData::~ThermoData()
 
 // * * * * * * * * * Insert functions from ThermoReader:: * * * * * * * * //
 
-void AFC::ThermoData::setSpecies(const word species)
+void TKC::ThermoData::setSpecies(const word species)
 {
     species_.push_back(species);
 }
 
 
-void AFC::ThermoData::setChemicalFormula(const word chemFormula)
+void TKC::ThermoData::setChemicalFormula(const word chemFormula)
 {
     formula_.push_back(chemFormula);
 }
 
 
-void AFC::ThermoData::setElementAndAtoms
+void TKC::ThermoData::setElementAndAtoms
 (
     const word atom,
     const unsigned int factor
@@ -98,7 +98,7 @@ void AFC::ThermoData::setElementAndAtoms
 }
 
 
-void AFC::ThermoData::setMolecularWeight(const scalar MW) 
+void TKC::ThermoData::setMolecularWeight(const scalar MW) 
 {
     //- Species_ list must have one element more in list than MW_
     if (species_.size()-1 == MW_.size())
@@ -118,7 +118,7 @@ void AFC::ThermoData::setMolecularWeight(const scalar MW)
 }
 
 
-void AFC::ThermoData::setPhase(const word phase)
+void TKC::ThermoData::setPhase(const word phase)
 {
     //- Species_ list must have one element more in list than phase_
     if (species_.size()-1 == phase_.size())
@@ -138,7 +138,7 @@ void AFC::ThermoData::setPhase(const word phase)
 }
 
 
-void AFC::ThermoData::setLT(const scalar LT)
+void TKC::ThermoData::setLT(const scalar LT)
 {
     //- Species_ list must have one element more in this list 
     if (species_.size()-1 == LT_.size())
@@ -158,7 +158,7 @@ void AFC::ThermoData::setLT(const scalar LT)
 }
 
 
-void AFC::ThermoData::setHT(const scalar HT)
+void TKC::ThermoData::setHT(const scalar HT)
 {
     //- Species_ list must have one element more in this list 
     if (species_.size()-1 == HT_.size())
@@ -178,7 +178,7 @@ void AFC::ThermoData::setHT(const scalar HT)
 }
 
 
-void AFC::ThermoData::setCT(const scalar CT)
+void TKC::ThermoData::setCT(const scalar CT)
 {
     //- Species_ list must have one element more in this list 
     if (species_.size()-1 == CT_.size())
@@ -198,21 +198,21 @@ void AFC::ThermoData::setCT(const scalar CT)
 }
 
 
-void AFC::ThermoData::setNASACoeffsHT(const scalar coeff)
+void TKC::ThermoData::setNASACoeffsHT(const scalar coeff)
 {
     //- Insert value
     NASACoeffsHT_[species_[species_.size()-1]].push_back(coeff);
 }
 
 
-void AFC::ThermoData::setNASACoeffsLT(const scalar coeff)
+void TKC::ThermoData::setNASACoeffsLT(const scalar coeff)
 {
     //- Insert value
     NASACoeffsLT_[species_[species_.size()-1]].push_back(coeff);
 }
 
 
-void AFC::ThermoData::updateElementsAndFactors()
+void TKC::ThermoData::updateElementsAndFactors()
 {
     //- Temporary map that contains all elements and factors of
     //  the actual species
@@ -235,7 +235,7 @@ void AFC::ThermoData::updateElementsAndFactors()
 
 // * * * * * * * * * * * Insert functions from Thermo::  * * * * * * * * * * //
 
-void AFC::ThermoData::p(const scalar pressure) 
+void TKC::ThermoData::p(const scalar pressure) 
 {
     p_ = pressure;
 }
@@ -246,33 +246,33 @@ void AFC::ThermoData::p(const scalar pressure)
 
 // * * * * * * * * * * * * * * Return functions  * * * * * * * * * * * * * * //
 
-AFC::scalar AFC::ThermoData::p() const
+TKC::scalar TKC::ThermoData::p() const
 {
     return p_;
 }
 
 
-const AFC::wordList AFC::ThermoData::species() const
+const TKC::wordList TKC::ThermoData::species() const
 {
     return species_;
 }
 
 
-const AFC::wordList AFC::ThermoData::formula() const
+const TKC::wordList TKC::ThermoData::formula() const
 {
     return formula_;
 }
 
 
-const AFC::wordList
-AFC::ThermoData::elementsInSpecies(const word species) const
+const TKC::wordList
+TKC::ThermoData::elementsInSpecies(const word species) const
 {
     return elementsInSpecies_.at(species);
 }
 
 
-const AFC::wordList
-AFC::ThermoData::elementsInSpeciesChem(const word species) const
+const TKC::wordList
+TKC::ThermoData::elementsInSpeciesChem(const word species) const
 {
     NotImplemented(__FILE__, __LINE__);
 
@@ -280,21 +280,21 @@ AFC::ThermoData::elementsInSpeciesChem(const word species) const
 }
 
 
-const AFC::scalarList AFC::ThermoData::elementAtoms(const word species) const
+const TKC::scalarList TKC::ThermoData::elementAtoms(const word species) const
 {
     return elementAtoms_.at(species);
 }
 
 
-const AFC::map<AFC::word, AFC::scalar>
-AFC::ThermoData::elementAtomsMap(const word species) const
+const TKC::map<TKC::word, TKC::scalar>
+TKC::ThermoData::elementAtomsMap(const word species) const
 {
     return elements_.at(species);
 }
 
 
-const AFC::map<AFC::word, AFC::scalar>
-AFC::ThermoData::elementAtomsChem(const word species) const
+const TKC::map<TKC::word, TKC::scalar>
+TKC::ThermoData::elementAtomsChem(const word species) const
 {
     NotImplemented(__FILE__, __LINE__);
 
@@ -305,55 +305,55 @@ AFC::ThermoData::elementAtomsChem(const word species) const
 }
 
 
-const AFC::map<AFC::word, AFC::scalar> AFC::ThermoData::MW() const
+const TKC::map<TKC::word, TKC::scalar> TKC::ThermoData::MW() const
 {
     return MW_;
 }
 
 
-AFC::scalar AFC::ThermoData::MW(const word species) const
+TKC::scalar TKC::ThermoData::MW(const word species) const
 {
     return MW_.at(species);
 }
 
 
-const AFC::map<AFC::word, AFC::word> AFC::ThermoData::phase() const
+const TKC::map<TKC::word, TKC::word> TKC::ThermoData::phase() const
 {
     return phase_;
 }
 
 
-const AFC::word AFC::ThermoData::phase(const word species) const
+const TKC::word TKC::ThermoData::phase(const word species) const
 {
     return phase_.at(species);
 }
 
 
-AFC::scalar AFC::ThermoData::LT(const word species) const
+TKC::scalar TKC::ThermoData::LT(const word species) const
 {
     return LT_.at(species);
 }
 
 
-AFC::scalar AFC::ThermoData::CT(const word species) const
+TKC::scalar TKC::ThermoData::CT(const word species) const
 {
     return CT_.at(species);
 }
 
 
-AFC::scalar AFC::ThermoData::HT(const word species) const
+TKC::scalar TKC::ThermoData::HT(const word species) const
 {
     return HT_.at(species);
 }
 
 
-const AFC::scalarField AFC::ThermoData::NASACoeffsLT(const word species) const
+const TKC::scalarField TKC::ThermoData::NASACoeffsLT(const word species) const
 {
     return NASACoeffsLT_.at(species); 
 }
 
 
-const AFC::scalarField AFC::ThermoData::NASACoeffsHT(const word species) const
+const TKC::scalarField TKC::ThermoData::NASACoeffsHT(const word species) const
 {
     return NASACoeffsHT_.at(species); 
 }

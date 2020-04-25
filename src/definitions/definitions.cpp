@@ -1,24 +1,24 @@
 /*---------------------------------------------------------------------------*\
   c-o-o-c-o-o-o             |
-  |     |     A utomatic    | Open Source Flamelet
-  c-o-o-c     F lamelet     |
+  |     |     T hermo       | Open Source Thermo-Kinetic Library
+  c-o-o-c     K iknetic     |
   |     |     C onstructor  | Copyright (C) 2020 Holzmann CFD
   c     c-o-o-o             |
 -------------------------------------------------------------------------------
 License
     This file is part of Automatic Flamelet Constructor.
 
-    AFC is free software; you can redistribute it and/or modify it under
+    TKC is free software; you can redistribute it and/or modify it under
     the terms of the GNU General Public License as published by the
     Free Software Foundation; either version 3 of the License, or
     (at your option) any later version.
 
-    AFC is distributed in the hope that it will be useful, but
+    TKC is distributed in the hope that it will be useful, but
     WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
     See the GNU General Public License for more details.
     You should have received a copy of the GNU General Public License
-    along with AFC; if not, see <http://www.gnu.org/licenses/>
+    along with TKC; if not, see <http://www.gnu.org/licenses/>
 
 \*---------------------------------------------------------------------------*/
 
@@ -26,14 +26,14 @@ License
 
 // * * * * * * * * * * * * * * * * Definitions * * * * * * * * * * * * * * * //
 
-std::ostream& AFC::Info = std::cout;
+std::ostream& TKC::Info = std::cout;
 
-std::ostream& AFC::Error = std::cerr;
+std::ostream& TKC::Error = std::cerr;
 
-std::basic_ostream<char>& (& AFC::endl)(std::basic_ostream<char>&) = std::endl;
+std::basic_ostream<char>& (& TKC::endl)(std::basic_ostream<char>&) = std::endl;
 
 
-void AFC::ErrorMsg
+void TKC::ErrorMsg
 (
     const string msg,
     const char* file,
@@ -50,29 +50,29 @@ void AFC::ErrorMsg
 }
 
 
-void AFC::Warning(const string msg, const char* file, const unsigned long line)
+void TKC::Warning(const string msg, const char* file, const unsigned long line)
 {
     Error<< "\n    * Warning in " << file << " line " << line << "\n" << msg
          << "\n" << endl;
 }
 
 
-void AFC::NotImplemented(const char* file, const size_t line)
+void TKC::NotImplemented(const char* file, const size_t line)
 {
     Error<< "\n"
          << "    * The functionality is not implemented.\n" << endl;
 }
 
 
-AFC::string AFC::Header()
+TKC::string TKC::Header()
 {
     string header = \
 "\
 /*------------------------------------------------------------------------*\\\
 \n|  c-o-o-c-o-o-o             |                                             |\
-\n|  |     |     A utomatic    | AFC: The Open Source Flamelet Toolbox       |\
-\n|  c-o-o-c     F lamelet     | Version: 1.0.0                              |\
-\n|  |     |     C onstructor  | Web: www.Holzmann-cfd.com                   |\
+\n|  |     |     T hermo       | TKC: The Open Source Thermo-Kinetic Library |\
+\n|  c-o-o-c     K inetic      | Version: 1.0.0                              |\
+\n|  |     |     C alculator   | Web: www.Holzmann-cfd.com                   |\
 \n|  c     c-o-o-o             |                                             |\
 \n\
 \\*------------------------------------------------------------------------*/\
@@ -85,7 +85,7 @@ AFC::string AFC::Header()
 
 
 
-void AFC::Footer(const scalar startTime)
+void TKC::Footer(const scalar startTime)
 {
     const scalar execTime = (clock()-startTime) / (scalar) CLOCKS_PER_SEC;
 

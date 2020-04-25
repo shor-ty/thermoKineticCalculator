@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   c-o-o-c-o-o-o             |
-  |     |     A utomatic    | Open Source Flamelet
-  c-o-o-c     F lamelet     | 
+  |     |     T hermo       | Open Source Thermo-Kinetic Library
+  c-o-o-c     K iknetic     |
   |     |     C onstructor  | Copyright (C) 2020 Holzmann CFD
   c     c-o-o-o             |
 -------------------------------------------------------------------------------
 License
     This file is part of Automatic Flamelet Constructor.
 
-    AFC is free software; you can redistribute it and/or modify it under
+    TKC is free software; you can redistribute it and/or modify it under
     the terms of the GNU General Public License as published by the
     Free Software Foundation; either version 3 of the License, or 
     (at your option) any later version.
 
-    AFC is distributed in the hope that it will be useful, but
+    TKC is distributed in the hope that it will be useful, but
     WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with AFC; if not, see <http://www.gnu.org/licenses/>
+    along with TKC; if not, see <http://www.gnu.org/licenses/>
 
 \*---------------------------------------------------------------------------*/
 
@@ -28,7 +28,7 @@ License
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-AFC::ThermoReader::ThermoReader(const string file, ThermoData& data)
+TKC::ThermoReader::ThermoReader(const string file, ThermoData& data)
 :
     file_(file),
     data_(data)
@@ -42,7 +42,7 @@ AFC::ThermoReader::ThermoReader(const string file, ThermoData& data)
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-AFC::ThermoReader::~ThermoReader()
+TKC::ThermoReader::~ThermoReader()
 {
     if (debug_)
     {
@@ -53,7 +53,7 @@ AFC::ThermoReader::~ThermoReader()
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-void AFC::ThermoReader::read()
+void TKC::ThermoReader::read()
 {
     Info<< " c-o Reading the thermodynamic data (NASA Polynomials)\n"
         << "     >> " << file_ << "\n" << endl;
@@ -92,7 +92,7 @@ void AFC::ThermoReader::read()
 
 // * * * * * * * * * * * * * * Helper functions  * * * * * * * * * * * * * * //
 
-void AFC::ThermoReader::findKeyword
+void TKC::ThermoReader::findKeyword
 (
     int& start,
     unsigned int& end,
@@ -135,14 +135,14 @@ void AFC::ThermoReader::findKeyword
 }
 
 
-AFC::scalar AFC::ThermoReader::calcWeight
+TKC::scalar TKC::ThermoReader::calcWeight
 (
     const word element,
     const scalar multiplicator,
     const word species 
 )
 {
-    if (!(AFC::Constants::AW.find(element) != AFC::Constants::AW.end()))
+    if (!(TKC::Constants::AW.find(element) != TKC::Constants::AW.end()))
     {
         ErrorMsg
         (
@@ -167,11 +167,11 @@ AFC::scalar AFC::ThermoReader::calcWeight
     }
 
     //- Element (atom) weight is in [g/mol]
-    return AFC::Constants::AW.at(element)/scalar(1000) * multiplicator;
+    return TKC::Constants::AW.at(element)/scalar(1000) * multiplicator;
 }
 
 
-AFC::word AFC::ThermoReader::constructFormula(const string composition)
+TKC::word TKC::ThermoReader::constructFormula(const string composition)
 {
     //- Remove whitespaces
     wordList tmp = splitStrAtWS(composition);
@@ -190,7 +190,7 @@ AFC::word AFC::ThermoReader::constructFormula(const string composition)
 
 // * * * * * * * * * * * * Data manipulation functions * * * * * * * * * * * //
 
-void AFC::ThermoReader::setNASAPolynomialCoeffsNo1
+void TKC::ThermoReader::setNASAPolynomialCoeffsNo1
 (
     const string lineContent,
     const unsigned int& line
@@ -256,7 +256,7 @@ void AFC::ThermoReader::setNASAPolynomialCoeffsNo1
 }
 
 
-void AFC::ThermoReader::setNASAPolynomialCoeffsNo2
+void TKC::ThermoReader::setNASAPolynomialCoeffsNo2
 (
     const string lineContent,
     const unsigned int& line
@@ -291,7 +291,7 @@ void AFC::ThermoReader::setNASAPolynomialCoeffsNo2
 }
 
 
-void AFC::ThermoReader::setNASAPolynomialCoeffsNo3
+void TKC::ThermoReader::setNASAPolynomialCoeffsNo3
 (
     const string lineContent,
     const unsigned int& line
@@ -326,7 +326,7 @@ void AFC::ThermoReader::setNASAPolynomialCoeffsNo3
 }
 
 
-void AFC::ThermoReader::setNASAPolynomialCoeffsNo4
+void TKC::ThermoReader::setNASAPolynomialCoeffsNo4
 (
     const string lineContent,
     const unsigned int& line
@@ -358,7 +358,7 @@ void AFC::ThermoReader::setNASAPolynomialCoeffsNo4
 }
 
 
-void AFC::ThermoReader::calcMolecularWeight(const word species)
+void TKC::ThermoReader::calcMolecularWeight(const word species)
 {
     //- Elements of species
     const wordList& elements = data_.elementsInSpecies(species);
@@ -379,7 +379,7 @@ void AFC::ThermoReader::calcMolecularWeight(const word species)
 }
 
 
-void AFC::ThermoReader::elementsAndFactors(const word formula)
+void TKC::ThermoReader::elementsAndFactors(const word formula)
 {
     bool foundLetter{false};
     bool foundNumber{false};

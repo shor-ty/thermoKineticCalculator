@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   c-o-o-c-o-o-o             |
-  |     |     A utomatic    | Open Source Flamelet
-  c-o-o-c     F lamelet     |
+  |     |     T hermo       | Open Source Thermo-Kinetic Library
+  c-o-o-c     K iknetic     |
   |     |     C onstructor  | Copyright (C) 2020 Holzmann CFD
   c     c-o-o-o             |
 -------------------------------------------------------------------------------
 License
     This file is part of Automatic Flamelet Constructor.
 
-    AFC is free software; you can redistribute it and/or modify it under
+    TKC is free software; you can redistribute it and/or modify it under
     the terms of the GNU General Public License as published by the
     Free Software Foundation; either version 3 of the License, or
     (at your option) any later version.
 
-    AFC is distributed in the hope that it will be useful, but
+    TKC is distributed in the hope that it will be useful, but
     WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with AFC; if not, see <http://www.gnu.org/licenses/>
+    along with TKC; if not, see <http://www.gnu.org/licenses/>
 
 \*---------------------------------------------------------------------------*/
 
@@ -28,7 +28,7 @@ License
 
 // * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * * //
 
-AFC::ChemistryData::ChemistryData(const string fileName)
+TKC::ChemistryData::ChemistryData(const string fileName)
 //:
     //thermo_{false}
 {
@@ -41,19 +41,19 @@ AFC::ChemistryData::ChemistryData(const string fileName)
 
 // * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * * //
 
-AFC::ChemistryData::~ChemistryData()
+TKC::ChemistryData::~ChemistryData()
 {}
 
 
 // * * * * * * * * * * * * * * * Member functions  * * * * * * * * * * * * * //
 
-/*void AFC::ChemistryData::setThermo()
+/*void TKC::ChemistryData::setThermo()
 {
     thermo_ = true;
 }
 
 
-bool AFC::ChemistryData::thermo() const
+bool TKC::ChemistryData::thermo() const
 {
     return thermo_;
 }
@@ -62,13 +62,13 @@ bool AFC::ChemistryData::thermo() const
 
 // * * * * * * * * * Insert functions from ChemistryReader:: * * * * * * * * //
 
-void AFC::ChemistryData::elements(const word element)
+void TKC::ChemistryData::elements(const word element)
 {
     elements_.push_back(element);
 }
 
 
-void AFC::ChemistryData::species(const word species)
+void TKC::ChemistryData::species(const word species)
 {
     species_.push_back(species);
 
@@ -80,19 +80,19 @@ void AFC::ChemistryData::species(const word species)
 }
 
 
-void AFC::ChemistryData::educt(const word species)
+void TKC::ChemistryData::educt(const word species)
 {
     educts_[educts_.size()-1].push_back(species);
 }
 
 
-void AFC::ChemistryData::product(const word species)
+void TKC::ChemistryData::product(const word species)
 {
     products_[products_.size()-1].push_back(species);
 }
 
 
-void AFC::ChemistryData::nuEducts(const word species, const int nu)
+void TKC::ChemistryData::nuEducts(const word species, const int nu)
 {
     //- Check if species already there, if yes, increment nu
     if (nuEducts_[nReac_].find(species) != nuEducts_[nReac_].end())
@@ -106,7 +106,7 @@ void AFC::ChemistryData::nuEducts(const word species, const int nu)
 }
 
 
-void AFC::ChemistryData::nuProducts(const word species, const int nu)
+void TKC::ChemistryData::nuProducts(const word species, const int nu)
 {
     //- Check if species already there, if yes, increment nu
     if (nuProducts_[nReac_].find(species) != nuProducts_[nReac_].end())
@@ -120,25 +120,25 @@ void AFC::ChemistryData::nuProducts(const word species, const int nu)
 }
 
 
-void AFC::ChemistryData::elementarReaction(const string reaction)
+void TKC::ChemistryData::elementarReaction(const string reaction)
 {
     elementarReaction_[nReac_] = reaction;
 }
 
 
-void AFC::ChemistryData::duplicatedElementarReaction(const string reaction)
+void TKC::ChemistryData::duplicatedElementarReaction(const string reaction)
 {
     duplicatedElementarReaction_[nReac_] = reaction;
 }
 
 
-void AFC::ChemistryData::ignoredElementarReaction(const string reaction)
+void TKC::ChemistryData::ignoredElementarReaction(const string reaction)
 {
     ignoredElementarReaction_[nIgnored_-1] = reaction;
 }
 
 
-void AFC::ChemistryData::arrheniusCoeffs
+void TKC::ChemistryData::arrheniusCoeffs
 (
     const scalar coeff_1,
     const scalar coeff_2,
@@ -151,13 +151,13 @@ void AFC::ChemistryData::arrheniusCoeffs
 }
 
 
-void AFC::ChemistryData::collisionPartner(const word collisionPartner)
+void TKC::ChemistryData::collisionPartner(const word collisionPartner)
 {
     collisionPartner_[nReac_] = collisionPartner;
 }
 
 
-void AFC::ChemistryData::LOWCoeffs
+void TKC::ChemistryData::LOWCoeffs
 (
     const scalar coeff,
     const unsigned int coeffNo
@@ -168,7 +168,7 @@ void AFC::ChemistryData::LOWCoeffs
 }
 
 
-void AFC::ChemistryData::TROECoeffs
+void TKC::ChemistryData::TROECoeffs
 (
     const scalar coeff,
     const unsigned int coeffNo
@@ -178,7 +178,7 @@ void AFC::ChemistryData::TROECoeffs
 }
 
 
-void AFC::ChemistryData::SRICoeffs
+void TKC::ChemistryData::SRICoeffs
 (
     const scalar coeff,
     const unsigned int coeffNo
@@ -188,7 +188,7 @@ void AFC::ChemistryData::SRICoeffs
 }
 
 
-void AFC::ChemistryData::ENHANCEDCoeffs
+void TKC::ChemistryData::ENHANCEDCoeffs
 (
     const word species,
     const scalar factor
@@ -198,33 +198,33 @@ void AFC::ChemistryData::ENHANCEDCoeffs
 }
 
 
-void AFC::ChemistryData::incrementDuplicated()
+void TKC::ChemistryData::incrementDuplicated()
 {
     nDuplicated_++;
     duplicatedElementarReaction_.push_back("");
 }
 
 
-void AFC::ChemistryData::incrementIgnored()
+void TKC::ChemistryData::incrementIgnored()
 {
     nIgnored_++;
     ignoredElementarReaction_.push_back("");
 }
 
 
-void AFC::ChemistryData::incrementReac()
+void TKC::ChemistryData::incrementReac()
 {
     nReac_++;
 }
 
 
-void AFC::ChemistryData::speciesInReaction(const word species)
+void TKC::ChemistryData::speciesInReaction(const word species)
 {
     speciesInReaction_[nReac_].push_back(species);
 }
 
 
-void AFC::ChemistryData::incrementMatrixesVectors()
+void TKC::ChemistryData::incrementMatrixesVectors()
 {
     //- stringList for saving reactions
     elementarReaction_.push_back("");
@@ -322,55 +322,55 @@ void AFC::ChemistryData::incrementMatrixesVectors()
 
 // * * * * * * * * * * * * * Setter bool functions * * * * * * * * * * * * * //
 
-void AFC::ChemistryData::FR(const bool set)
+void TKC::ChemistryData::FR(const bool set)
 {
     forwardReaction_[nReac_] = set;
 }
 
 
-void AFC::ChemistryData::BR(const bool set)
+void TKC::ChemistryData::BR(const bool set)
 {
     backwardReaction_[nReac_] = set;
 }
 
 
-void AFC::ChemistryData::TBR(const bool set)
+void TKC::ChemistryData::TBR(const bool set)
 {
     TBR_[nReac_] = set;
 }
 
 
-void AFC::ChemistryData::LOW(const bool set)
+void TKC::ChemistryData::LOW(const bool set)
 {
     LOW_[nReac_] = set;
 }
 
 
-void AFC::ChemistryData::TROE(const bool set)
+void TKC::ChemistryData::TROE(const bool set)
 {
     TROE_[nReac_] = set;
 }
 
 
-void AFC::ChemistryData::SRI(const bool set)
+void TKC::ChemistryData::SRI(const bool set)
 {
     SRI_[nReac_] = set;
 }
 
 
-void AFC::ChemistryData::ENHANCE(const bool set)
+void TKC::ChemistryData::ENHANCE(const bool set)
 {
     ENHANCE_[nReac_] = set;
 }
 
 
-void AFC::ChemistryData::setReacNumbers(const word species, const int r)
+void TKC::ChemistryData::setReacNumbers(const word species, const int r)
 {
     reactionI_.at(species).push_back(r);
 }
 
 
-void AFC::ChemistryData::forwardReactionOrder()
+void TKC::ChemistryData::forwardReactionOrder()
 {
     //- Stochiometric coefficients of educt species
     const map<word, int>& educt = nuEducts(nReac_);
@@ -387,7 +387,7 @@ void AFC::ChemistryData::forwardReactionOrder()
 }
 
 
-void AFC::ChemistryData::backwardReactionOrder()
+void TKC::ChemistryData::backwardReactionOrder()
 {
     //- Stochiometric coefficients of product species
     const map<word, int>& product = nuProducts(nReac_);
@@ -405,37 +405,37 @@ void AFC::ChemistryData::backwardReactionOrder()
 
 // * * * * * * * * * * * * * * * Update functions  * * * * * * * * * * * * * //
 
-void AFC::ChemistryData::updateKf(const int r, const scalar kf)
+void TKC::ChemistryData::updateKf(const int r, const scalar kf)
 {
     kf_[r] = kf;
 }
 
 
-void AFC::ChemistryData::updateKb(const int r, const scalar kb)
+void TKC::ChemistryData::updateKb(const int r, const scalar kb)
 {
     kb_[r] = kb;
 }
 
 
-void AFC::ChemistryData::updateKc(const int r, const scalar Kc)
+void TKC::ChemistryData::updateKc(const int r, const scalar Kc)
 {
     Kc_[r] = Kc;
 }
 
 
-void AFC::ChemistryData::calculateOmega(const int s, const scalar omega)
+void TKC::ChemistryData::calculateOmega(const int s, const scalar omega)
 {
     omega_[s] = omega;
 }
 
 
-void AFC::ChemistryData::calculateOmega(const scalarField& omega)
+void TKC::ChemistryData::calculateOmega(const scalarField& omega)
 {
     omega_ = omega;
 }
 
 
-void AFC::ChemistryData::updateGlobalReactionOrder()
+void TKC::ChemistryData::updateGlobalReactionOrder()
 {
     //- Forward reaction order
     const scalar& fRO = forwardReactionOrder(nReac_);
@@ -450,273 +450,273 @@ void AFC::ChemistryData::updateGlobalReactionOrder()
 
 // * * * * * * * * * * * * * * * Return functions  * * * * * * * * * * * * * //
 
-bool AFC::ChemistryData::FR(const int reacNo) const
+bool TKC::ChemistryData::FR(const int reacNo) const
 {
     return forwardReaction_[reacNo];
 }
 
 
-bool AFC::ChemistryData::BR(const int reacNo) const
+bool TKC::ChemistryData::BR(const int reacNo) const
 {
     return backwardReaction_[reacNo];
 }
 
 
-bool AFC::ChemistryData::TBR(const int reacNo)
+bool TKC::ChemistryData::TBR(const int reacNo)
 {
     return TBR_[reacNo];
 }
 
 
-bool AFC::ChemistryData::TBR(const int reacNo) const
+bool TKC::ChemistryData::TBR(const int reacNo) const
 {
     return TBR_[reacNo];
 }
 
 
-bool AFC::ChemistryData::LOW(const int reacNo) const
+bool TKC::ChemistryData::LOW(const int reacNo) const
 {
     return LOW_[reacNo];
 }
 
 
-bool AFC::ChemistryData::TROE(const int reacNo) const
+bool TKC::ChemistryData::TROE(const int reacNo) const
 {
     return TROE_[reacNo];
 }
 
 
-bool AFC::ChemistryData::SRI(const int reacNo) const
+bool TKC::ChemistryData::SRI(const int reacNo) const
 {
     return SRI_[reacNo];
 }
 
 
-bool AFC::ChemistryData::ENHANCED(const int reacNo) const
+bool TKC::ChemistryData::ENHANCED(const int reacNo) const
 {
     return ENHANCE_[reacNo];
 }
 
 
-AFC::scalar AFC::ChemistryData::dS() const
+TKC::scalar TKC::ChemistryData::dS() const
 {
     return dS_;
 }
 
 
-AFC::scalar AFC::ChemistryData::dG() const
+TKC::scalar TKC::ChemistryData::dG() const
 {
     return dG_;
 }
 
 
-AFC::wordList AFC::ChemistryData::elements() const
+TKC::wordList TKC::ChemistryData::elements() const
 {
     return elements_;
 }
 
 
-AFC::wordList AFC::ChemistryData::species() const
+TKC::wordList TKC::ChemistryData::species() const
 {
     return species_;
 }
 
 
-AFC::wordList AFC::ChemistryData::educts(const int r) const
+TKC::wordList TKC::ChemistryData::educts(const int r) const
 {
     return educts_[r];
 }
 
 
 
-AFC::wordList AFC::ChemistryData::products(const int r) const
+TKC::wordList TKC::ChemistryData::products(const int r) const
 {
     return products_[r];
 }
 
 
-AFC::map<AFC::word, int> AFC::ChemistryData::nuEducts(const int r) const
+TKC::map<TKC::word, int> TKC::ChemistryData::nuEducts(const int r) const
 {
     return nuEducts_[r];
 }
 
 
-AFC::map<AFC::word, int> AFC::ChemistryData::nuProducts(const int r) const
+TKC::map<TKC::word, int> TKC::ChemistryData::nuProducts(const int r) const
 {
     return nuProducts_[r];
 }
 
 
-unsigned int AFC::ChemistryData::nDuplicated() const
+unsigned int TKC::ChemistryData::nDuplicated() const
 {
     return nDuplicated_;
 }
 
 
-unsigned int AFC::ChemistryData::nIgnored() const
+unsigned int TKC::ChemistryData::nIgnored() const
 {
     return nIgnored_;
 }
 
 
-int AFC::ChemistryData::nReac() const
+int TKC::ChemistryData::nReac() const
 {
     return nReac_;
 }
 
 
-AFC::stringList AFC::ChemistryData::elementarReaction() const
+TKC::stringList TKC::ChemistryData::elementarReaction() const
 {
     return elementarReaction_;
 }
 
 
-AFC::string AFC::ChemistryData::elementarReaction(const int r) const
+TKC::string TKC::ChemistryData::elementarReaction(const int r) const
 {
     return elementarReaction_[r];
 }
 
 
-AFC::List<AFC::string> AFC::ChemistryData::ignoredElementarReaction() const
+TKC::List<TKC::string> TKC::ChemistryData::ignoredElementarReaction() const
 {
     return ignoredElementarReaction_;
 }
 
 
-AFC::string AFC::ChemistryData::ignoredElementarReaction(const int r) const
+TKC::string TKC::ChemistryData::ignoredElementarReaction(const int r) const
 {
     return ignoredElementarReaction_[r];
 }
 
 
-AFC::List<int> AFC::ChemistryData::reacNumbers(const word species) const
+TKC::List<int> TKC::ChemistryData::reacNumbers(const word species) const
 {
     return reactionI_.at(species);
 }
 
 
-AFC::List<AFC::wordList> AFC::ChemistryData::speciesInReaction() const
+TKC::List<TKC::wordList> TKC::ChemistryData::speciesInReaction() const
 {
     return speciesInReaction_;
 }
 
 
-AFC::wordList AFC::ChemistryData::speciesInReaction(const int r) const
+TKC::wordList TKC::ChemistryData::speciesInReaction(const int r) const
 {
     return speciesInReaction_[r];
 }
 
 
-bool AFC::ChemistryData::forwardReaction(const int r) const
+bool TKC::ChemistryData::forwardReaction(const int r) const
 {
     return forwardReaction_[r];
 }
 
 
-bool AFC::ChemistryData::backwardReaction(const int r) const
+bool TKC::ChemistryData::backwardReaction(const int r) const
 {
     return backwardReaction_[r];
 }
 
 
-AFC::scalarList AFC::ChemistryData::arrheniusCoeffs(const int reacNo) const
+TKC::scalarList TKC::ChemistryData::arrheniusCoeffs(const int reacNo) const
 {
     return arrheniusCoeffs_[reacNo];
 }
 
 
-AFC::word AFC::ChemistryData::collisionPartner(const int reacNo) const
+TKC::word TKC::ChemistryData::collisionPartner(const int reacNo) const
 {
     return collisionPartner_[reacNo];
 }
 
 
-AFC::scalarList AFC::ChemistryData::LOWCoeffs(const int reacNo) const
+TKC::scalarList TKC::ChemistryData::LOWCoeffs(const int reacNo) const
 {
     return LOWCoeffs_[reacNo];
 }
 
 
-AFC::scalarList AFC::ChemistryData::TROECoeffs(const int reacNo) const
+TKC::scalarList TKC::ChemistryData::TROECoeffs(const int reacNo) const
 {
     return TROECoeffs_[reacNo];
 }
 
 
-AFC::scalarList AFC::ChemistryData::SRICoeffs(const int reacNo) const
+TKC::scalarList TKC::ChemistryData::SRICoeffs(const int reacNo) const
 {
     return SRICoeffs_[reacNo];
 }
 
 
-AFC::map<AFC::word, AFC::scalar>
-AFC::ChemistryData::ENHANCEDCoeffs(const int reacNo) const
+TKC::map<TKC::word, TKC::scalar>
+TKC::ChemistryData::ENHANCEDCoeffs(const int reacNo) const
 {
     return ENHANCEDCoeffs_[reacNo];
 }
 
 
-AFC::scalar AFC::ChemistryData::kf(const int reacNo) const
+TKC::scalar TKC::ChemistryData::kf(const int reacNo) const
 {
     return kf_[reacNo];
 }
 
 
-AFC::scalarList AFC::ChemistryData::kf() const
+TKC::scalarList TKC::ChemistryData::kf() const
 {
     return kf_;
 }
 
 
-AFC::scalar AFC::ChemistryData::kb(const int reacNo) const
+TKC::scalar TKC::ChemistryData::kb(const int reacNo) const
 {
     return kb_[reacNo];
 }
 
 
-AFC::scalarList AFC::ChemistryData::kb() const
+TKC::scalarList TKC::ChemistryData::kb() const
 {
     return kb_;
 }
 
 
-AFC::scalar AFC::ChemistryData::Kc(const int reacNo) const
+TKC::scalar TKC::ChemistryData::Kc(const int reacNo) const
 {
     return Kc_[reacNo];
 }
 
 
-AFC::scalarList AFC::ChemistryData::Kc() const
+TKC::scalarList TKC::ChemistryData::Kc() const
 {
     return Kc_;
 }
 
 
-AFC::scalar AFC::ChemistryData::omega(const int s) const
+TKC::scalar TKC::ChemistryData::omega(const int s) const
 {
     return omega_[s];
 }
 
 
-AFC::scalarField AFC::ChemistryData::omega() const
+TKC::scalarField TKC::ChemistryData::omega() const
 {
     return omega_;
 }
 
 
-AFC::scalar AFC::ChemistryData::forwardReactionOrder(const int r) const
+TKC::scalar TKC::ChemistryData::forwardReactionOrder(const int r) const
 {
     return forwardReactionOrder_[r];
 }
 
 
-AFC::scalar AFC::ChemistryData::backwardReactionOrder(const int r) const
+TKC::scalar TKC::ChemistryData::backwardReactionOrder(const int r) const
 {
     return backwardReactionOrder_[r];
 }
 
 
-AFC::scalar AFC::ChemistryData::globalReactionOrder(const int r) const
+TKC::scalar TKC::ChemistryData::globalReactionOrder(const int r) const
 {
     return globalReactionOrder_[r];
 }
