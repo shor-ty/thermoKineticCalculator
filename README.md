@@ -1,36 +1,64 @@
-# README #
+The open source thermo-kinetic calculator (TKC) initiated by Tobias Holzmann.
 
-This README  includes the steps which are necessary to get this application up and running.
+### Author ###
+* Tobias Holzmann (inventor and main developer)
 
-### OpenFOAM Versions ###
-* Generated for all versions (not a OpenFOAM utility)
+### Contributors ###
+* None
 
-### What is this repository for? ###
-* This application calculate the laminar flamelets for your individual chemistry
-* You can use either the laminar flamelets or extend this to the turbulent flamelets with distribution functions
-* It is the pre-processing step when using the flamelet model that I update (build by Alberto Cuoci)
-* Version 1.0
-* Developed by [Holzmann-cfd](https://holzmann-cfd.de)
+### The open source thermo-kinetic calculator library###
+This open source projects is directed to all people who want to deal with detailed chemical reactions. The repository gives one the freedom to use detailed chemistry in any appliation. The application consists of different libraries which handles *thermodynamics* and *chemistry* data while using *gas kinetic* theory.
 
-### Prerequisists ###
-* The following utilitys are necessary for successful compiling
+Additionally, the repository shares ready to use applications for:
+* Transient ideal-homogeneous reactors calculations
+* Steady-State flamelet calculator
+* Others will follow based on the interested
 
-### How do I get set up? ###
+### Why a new library? ###
+If one wants to use thermo-kinetic calculations, there are already a wide range of applications and libraries available such as the *Cantera* and *FlameMaster* projects. However, in the year 2014, Tobias was investigating a lot into the flamelet model using OpenFOAM. For that purpose, only the binary flamelet generator built by the CRECK-Modeling group from Milano were available and Tobias was too lazy to investigate into *Cantera* or *FlameMaster*. However, the main driving force was that Tobias wanted to get more familiar with implementing theory into c++ and also wanted to increase his c++ knowledge during his Ph.D.
+
+
+### History ###
+Since 2014, Tobias was working a lot on the code only during his spare time. Since 2017, the project was not further investigated as time was limited and other things were more important. In 2020, Tobias reinvestigated into the code, changed and re-organized a lot of stuff as well as made a huge simplification.
+
+### Status Quo ###
+The thermo-kinetic library consists of different classes that are of up to date and old (depreciated). Right now the only classes are of interest:
+* src/definitions
+* src/manipulation
+* src/thermoKinetics
+* src/mathematics/tensors
+All other classes will be used and updated in future or removed.
+
+### Next steps ###
+Adding the homogeneouse reactor calculator and all relevant classes
+
+### How to get the repository and work with it ###
 * Feel free to compile it where ever you want, but normally its nice to have a fixed folder for _user compiled stuff_
 * Make a new folder
-> mkdir -p $FOAM_RUN/../OpenFOAM_extensions
+        ```bash
+        mkdir -p $HOME/yourLocation
+        ```
 * Switch to the new folder
-> cd $FOAM_RUN/../OpenFOAM_extensions
+        ```bash
+        cd $HOME/yourLocation
+        ```
 * Clone the repository to the new folder
-> git clone https://shor-ty@bitbucket.org/shor-ty/flameletcreator.git
+        ```bash
+        git clone https://github.com/shor-ty/thermoKineticCalculator.git thermoKineticCalculator
+        ```
 * Switch to the repository directory
-> cd flameletcreator
-* Compile the application
-> g++
-* Finished
+        ```bash
+        cd thermoKineticCalculator
+        ```
+* Compile the libraries
+        ```bash
+        cd src
+        make
+        ```
+* Try some examples (XY has to be replaced by the folder and application name)
+        ```bash
+        cd ../examples/XY
+        make
+        ./XY
+        ```
 
-### Contribution guidelines ###
-* If you have questions, hints or any suggestions please email me to Tobias.Holzmann@Holzmann-cfd.de
-
-### Other stuff ###
-* Thanks to Oliver Borm for some hints
