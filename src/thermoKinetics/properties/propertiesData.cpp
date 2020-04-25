@@ -37,9 +37,6 @@ TKC::PropertiesData::PropertiesData
 
     reader.read(*this);
 
-    //- Add pressure to thermoData for better handling
-    //thermo.p(this->p());
-
     //- Convert Y to X or X to Y
     /*convertFractions();
 
@@ -106,7 +103,7 @@ TKC::PropertiesData::PropertiesData
 
     std::terminate();
 
-    //- Initialize 
+    //- Initialize
     //scalar a = PropertiesDataCalc::Zst(fuelY(), oxidizerY());
     */
 }
@@ -120,301 +117,70 @@ TKC::PropertiesData::~PropertiesData()
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-/*
-void TKC::PropertiesData::fuelSpecies(const word fuel)
-{
-    fuel_ = fuel;
-}
-
-
-void TKC::PropertiesData::oxidizerSpecies(const word oxidizer)
-{
-    oxidizer_ = oxidizer;
-}
-
-
-void TKC::PropertiesData::inertSpecies(const word inert)
+void TKC::PropertiesData::insertInertSpecies(const word inert)
 {
     inert_ = inert;
 }
 
 
-void TKC::PropertiesData::insertMFPoints(const int nZPoints)
-{
-    nZPoints_ = nZPoints;
-}
-
-
-void TKC::PropertiesData::insertVMFPoints(const int nZvarPoints)
-{
-    nZvarPoints_ = nZvarPoints;
-}
-
-
-void TKC::PropertiesData::insertEnthalpyDefects(const scalar defect)
-{
-    defects_.push_back(defect);
-}
-
-
-void TKC::PropertiesData::insertScalarDissipationRates(const scalar sDR)
-{
-    sDRs_.push_back(sDR);
-}
-
-
-void TKC::PropertiesData::insertTemperatureOxidizer(const scalar TOxidizer)
-{
-    TOxidizer_ = TOxidizer;
-}
-
-
-void TKC::PropertiesData::insertTemperatureFuel(const scalar TFuel)
-{
-    TFuel_ = TFuel;
-}
-
-
-void TKC::PropertiesData::insertCompositionOxidizerMol
+void TKC::PropertiesData::insertC
 (
     const word species,
-    const scalar molFraction
+    const scalar concentration
 )
 {
-    speciesOxidizer_.push_back(species);
-
-    oxidizerX_[species] = molFraction;
-    oxidizerY_[species] = 0;
+    n_[species] = concentration;
+    X_[species] = 0;
+    Y_[species] = 0;
 }
 
 
-void TKC::PropertiesData::insertCompositionOxidizerMass
+void TKC::PropertiesData::insertX
 (
     const word species,
-    const scalar massFraction
+    const scalar mole
 )
 {
-    speciesOxidizer_.push_back(species);
-
-    oxidizerY_[species] = massFraction;
-    oxidizerX_[species] = 0;
+    n_[species] = 0;
+    X_[species] = mole;
+    Y_[species] = 0;
 }
 
 
-void TKC::PropertiesData::insertCompositionFuelMol
+void TKC::PropertiesData::insertY
 (
     const word species,
-    const scalar molFraction
+    const scalar mass
 )
 {
-    speciesFuel_.push_back(species);
-
-    fuelX_[species] = molFraction;
-    fuelY_[species] = 0;
+    n_[species] = 0;
+    X_[species] = 0;
+    Y_[species] = mass;
 }
 
 
-void TKC::PropertiesData::insertCompositionFuelMass
-(
-    const word species,
-    const scalar massFraction
-)
+void TKC::PropertiesData::inputMode(const word mode)
 {
-    speciesFuel_.push_back(species);
-
-    fuelY_[species] = massFraction;
-    fuelX_[species] = 0;
-}
-
-
-void TKC::PropertiesData::insertRunTime(const scalar runTime)
-{
-    runTime_ = runTime;
-}
-
-
-void TKC::PropertiesData::insertWriteControl(const word writeControl)
-{
-    writeControl_ = writeControl;
-}
-
-
-void TKC::PropertiesData::insertWriteControlInterval
-(
-    const scalar writeControlInterval
-)
-{
-    writeControlInterval_ = writeControlInterval;
-}
-
-
-void TKC::PropertiesData::insertWriteControlTime(const scalar writeControlTime)
-{
-    writeControlTime_ = writeControlTime;
-}
-
-
-void TKC::PropertiesData::insertDeltat(const scalar deltat)
-{
-    deltat_ = deltat;
-}
-
-
-void TKC::PropertiesData::insertPressure(const scalar pressure)
-{
-    p_ = pressure;
-}
-
-
-void TKC::PropertiesData::inputMol()
-{
-    inputMol_ = true;
-}
-
-
-void TKC::PropertiesData::inputMass()
-{
-    inputMass_ = true;
-}
-
-
-void TKC::PropertiesData::insertInterpreter
-(
-    const word keyword
-)
-{
-    interpreter_ = keyword;
-}
-
-
-// * * * * * * * * * * * * * Time Related Functions  * * * * * * * * * * * * //
-
-void TKC::PropertiesData::updateCurrentTime(const scalar time)
-{
-    currentTime_ = time;
-}
-
-
-TKC::scalar TKC::PropertiesData::runTime() const
-{
-    return runTime_;
-}
-
-
-TKC::scalar TKC::PropertiesData::deltat() const
-{
-    return deltat_;
-}
-
-
-TKC::scalar TKC::PropertiesData::currentTime() const
-{
-    return currentTime_;
-}
-
-
-TKC::scalar TKC::PropertiesData::write() const
-{
-    return writeControlTime_;
+    if (mode == "concentration")
+    {
+        inputConcentration_ = true;
+    }
+    else if (mode == "mole")
+    {
+        inputMole_ = true;
+    }
+    else if (mode == "mass")
+    {
+        inputMass_ = true;
+    }
 }
 
 
 // * * * * * * * * * * * * * * * Other functions * * * * * * * * * * * * * * //
 
-void TKC::PropertiesData::initialBoundary()
+
+/*void TKC::PropertiesData::check()
 {
-    const wordList& species = chemistry_.species();
-
-    forAll(species, s)
-    {
-        oxidizerX_[s] = 0.;
-        oxidizerY_[s] = 0.;
-
-        fuelX_[s] = 0.;
-        fuelY_[s] = 0.;
-    }
-}
-
-
-void TKC::PropertiesData::check()
-{
-    if (nZPoints_ == 0)
-    {
-        ErrorMsg
-        (
-            "No mixtureFractionPoints defined in the afcDict.",
-            __FILE__,
-            __LINE__
-        );
-    }
-
-    if (nZvarPoints_ == 0)
-    {
-        ErrorMsg
-        (
-            "No varianzOfMixtureFractionPoints defined in the afcDict.",
-            __FILE__,
-            __LINE__
-        );
-    }
-
-    if (TOxidizer_ == 0)
-    {
-        ErrorMsg
-        (
-            "No temperature for oxidizer defined in the afcDict.",
-            __FILE__,
-            __LINE__
-        );
-    }
-
-    if (TFuel_ == 0)
-    {
-        ErrorMsg
-        (
-            "No temperature for fuel defined in the afcDict.",
-            __FILE__,
-            __LINE__
-        );
-    }
-
-    if (sDRs_.empty())
-    {
-        ErrorMsg
-        (
-            "No scalar dissipation rates defined in the afcDict.",
-            __FILE__,
-            __LINE__
-        );
-    }
-
-    if
-    (
-        oxidizerX_.empty()
-     && oxidizerY_.empty()
-    )
-    {
-        ErrorMsg
-        (
-            "No oxidizer species defined in the afcDict.",
-            __FILE__,
-            __LINE__
-        );
-    }
-
-    if
-    (
-        fuelX_.empty()
-     && fuelY_.empty()
-    )
-    {
-        ErrorMsg
-        (
-            "No fuel species defined in the afcDict.",
-            __FILE__,
-            __LINE__
-        );
-    }
 
     scalar sum{0};
 
@@ -556,7 +322,7 @@ void TKC::PropertiesData::check()
             );
         }
     }
-    
+
     //- Check if fuel is set and inside the fuel species list
     {
         if (fuel_.empty())
@@ -583,6 +349,7 @@ void TKC::PropertiesData::check()
         }
     }
 }
+*/
 
 
 void TKC::PropertiesData::convertFractions()
@@ -619,7 +386,7 @@ void TKC::PropertiesData::XtoY(const map<word, scalar>& X, map<word, scalar>& Y 
     //- Calculate M
     loopMap(species, value, X)
     {
-       M += value * thermo_.MW(species); 
+       M += value * thermo_.MW(species);
     }
 
     //- Calculate Y
@@ -638,7 +405,7 @@ void TKC::PropertiesData::YtoX(const map<word, scalar>& Y, map<word, scalar>& X)
     //- Calculate YbyM
     loopMap(species, value, Y)
     {
-        YbyM += value / thermo_.MW(species);    
+        YbyM += value / thermo_.MW(species);
     }
 
     M = pow(YbyM, -1);
@@ -652,184 +419,49 @@ void TKC::PropertiesData::YtoX(const map<word, scalar>& Y, map<word, scalar>& X)
 
 // * * * * * * * * * * * * * * * Return Functions  * * * * * * * * * * * * * //
 
-TKC::word TKC::PropertiesData::fuel() const
+const TKC::word TKC::PropertiesData::inertSpecies() const
 {
-    return fuel_;
+    return inertSpecies_;
 }
 
 
-TKC::word TKC::PropertiesData::oxidizer() const
+const TKC::map<TKC::word, TKC::scalar> TKC::PropertiesData::C() const
 {
-    return oxidizer_;
+    return C_;
 }
 
 
-TKC::word TKC::PropertiesData::inert() const
+const TKC::map<TKC::word, TKC::scalar> TKC::PropertiesData::X() const
 {
-    return inert_;
+    return X_;
 }
 
 
-TKC::wordList TKC::PropertiesData::speciesOxidizer() const
+const TKC::map<TKC::word, TKC::scalar> TKC::PropertiesData::Y() const
 {
-    return speciesOxidizer_;
+    return Y_;
 }
 
 
-TKC::map<TKC::word, TKC::map<TKC::word, unsigned int>>
-TKC::PropertiesData::oxidizerA() const
+const TKC::scalar TKC::PropertiesData::T() const
 {
-    return oxidizerA_;
+    return T_;
 }
 
 
-TKC::map<TKC::word, TKC::scalar> TKC::PropertiesData::oxidizerX() const
-{
-    return oxidizerX_;
-}
-
-
-TKC::map<TKC::word, TKC::scalar> TKC::PropertiesData::oxidizerY() const
-{
-    return oxidizerY_;
-}
-
-
-TKC::map<TKC::word, TKC::scalar> TKC::PropertiesData::oxidizerZj() const
-{
-    return fuelZj_;
-}
-
-
-TKC::scalar TKC::PropertiesData::oxidizerX(const word species) const
-{
-    return oxidizerX_.at(species);
-}
-
-
-TKC::scalar TKC::PropertiesData::oxidizerY(const word species) const
-{
-    return oxidizerY_.at(species);
-}
-
-
-TKC::wordList TKC::PropertiesData::speciesFuel() const
-{
-    return speciesFuel_;
-}
-
-
-TKC::map<TKC::word, TKC::map<TKC::word, unsigned int>>
-TKC::PropertiesData::fuelA() const
-{
-    return fuelA_;
-}
-
-
-TKC::map<TKC::word, TKC::scalar> TKC::PropertiesData::fuelX() const
-{
-    return fuelX_;
-}
-
-
-TKC::map<TKC::word, TKC::scalar> TKC::PropertiesData::fuelY() const
-{
-    return fuelY_;
-}
-
-
-TKC::map<TKC::word, TKC::scalar> TKC::PropertiesData::fuelZj() const
-{
-    return fuelZj_;
-}
-
-
-TKC::scalar TKC::PropertiesData::fuelX(const word species) const
-{
-    return fuelX_.at(species);
-}
-
-
-TKC::scalar TKC::PropertiesData::fuelY(const word species) const
-{
-    return fuelY_.at(species);
-}
-
-
-TKC::scalarField TKC::PropertiesData::defects() const
-{
-    return defects_;
-}
-
-
-TKC::scalar TKC::PropertiesData::sDRs(const int i) const
-{
-    return sDRs_[i];
-}
-
-
-TKC::scalarField TKC::PropertiesData::sDRs() const
-{
-    return sDRs_;
-}
-
-
-int TKC::PropertiesData::nZPoints() const
-{
-    return nZPoints_;
-}
-
-
-int TKC::PropertiesData::nZvarPoints() const
-{
-    return nZvarPoints_;
-}
-
-
-TKC::scalar TKC::PropertiesData::oxidizerTemperature() const
-{
-    return TOxidizer_;
-}
-
-
-TKC::scalar TKC::PropertiesData::fuelTemperature() const
-{
-    return TFuel_;
-}
-
-
-unsigned int TKC::PropertiesData::nDefects() const
-{
-    return defects_.size();
-}
-
-
-TKC::scalar TKC::PropertiesData::defect
-(
-    const int defectNo
-) const
-{
-    return defects_[defectNo];
-}
-
-
-TKC::scalar TKC::PropertiesData::p() const
+const TKC::scalar TKC::PropertiesData::p() const
 {
     return p_;
 }
 
 
-TKC::word TKC::PropertiesData::input() const
+const TKC::word TKC::PropertiesData::inputMode() const
 {
-    if
-    (
-        !inputMol_
-     && !inputMass_
-    )
+    if (!inputMol_ && !inputMass_ && !inputConcentration_)
     {
         ErrorMsg
         (
-            "Input problems for mass or mol fraction",
+            "Input mode problems. Nor mass, mole or concentration input...",
             __FILE__,
             __LINE__
         );
@@ -845,181 +477,13 @@ TKC::word TKC::PropertiesData::input() const
     {
         input = "mass";
     }
+    else if (inputConcentration_)
+    {
+        input = "concentration";
+    }
 
     return input;
 }
 
-
-TKC::word TKC::PropertiesData::interpreter() const
-{
-    return interpreter_;
-}
-
-
-TKC::scalar TKC::PropertiesData::Zst() const
-{
-    return Zst_;
-}
-
-
-TKC::scalar TKC::PropertiesData::YatZstu(const word species) const
-{
-    return YatZstu_.at(species);
-}
-
-
-TKC::scalar TKC::PropertiesData::YatZstb(const word species) const
-{
-    return YatZstb_.at(species);
-}
-
-
-TKC::map<TKC::word, TKC::scalar> TKC::PropertiesData::YatZstu() const
-{
-    return YatZstu_;
-}
-
-TKC::map<TKC::word, TKC::scalar> TKC::PropertiesData::YatZstb() const
-{
-    return YatZstb_;
-}
-
-
-TKC::scalar TKC::PropertiesData::adiabateFlameTemperature() const
-{
-    return PropertiesDataCalc::adiabateFlameTemperature
-        (
-            *this,
-            thermo_,
-            chemistry_  
-        );
-}
-
-
-// * * * * * * * * * * * * * * Summary Function  * * * * * * * * * * * * * * //
-
-void TKC::PropertiesData::summary(ostream& data) const
-{
-    //- Header
-    data<< Header() << "\n"; 
-
-    data<< " c-o PropertiesData summary (analysis of afcDict):\n"
-        << " =============================================\n\n\n"
-        << " =============================================================="
-        << "===============\n"
-        << " c-o Oxidizer information\n"
-        << " =============================================================="
-        << "===============\n"
-        << "  |\n"
-        << "  |--> Number of species:    " << speciesOxidizer_.size() << "\n"
-        << "  |--> Oxidizer set to be:   " << oxidizer_ << "\n"
-        << "  | \n"
-        << "  | "
-        << std::setw(15) << "Species"
-        << std::setw(20) << "Mass Fraction"
-        << std::setw(20) << "Mole Fraction"
-        << std::setw(20) << "Concentration\n"
-        << "  | " 
-        << std::setw(35) << " Y [-]"
-        << std::setw(20) << " X [-]"
-        << std::setw(20) << " C [g/mol]\n" 
-        << "  |------------------------------------------------------------"
-        << "---------------\n";
-
-    scalar sumY{0};
-    scalar sumX{0};
-    forAll(speciesOxidizer_, species)
-    {
-        data<< "  | " << std::right << std::setw(15) << species; 
-        data<< std::setw(20) << oxidizerY_.at(species);
-        data<< std::setw(20) << oxidizerX_.at(species);
-        //data<< std::setw(20) << oxidizerN_.at(species);
-        data<< "\n";
-
-        sumY += oxidizerY_.at(species);
-        sumX += oxidizerX_.at(species);
-    }
-
-    data<< "  |------------------------------------------------------------"
-        << "---------------\n"
-        << "  | "<< std::setw(15) << "Sum"
-        << std::setw(20) << sumY
-        << std::setw(20) << sumX
-        << std::setw(20) << "\n"
-        << "  |------------------------------------------------------------"
-        << "---------------\n";
-
-    loopMap(element, value, oxidizerZj_)
-    {
-        data<< "  | " << std::right << std::setw(15) << element; 
-        data<< std::setw(20) << value;
-        data<< std::setw(20) << oxidizerWj_.at(element);
-        //data<< std::setw(20) << oxidizerN_.at(species);
-        data<< "\n";
-    }
-
-    data<< "  |------------------------------------------------------------"
-        << "---------------\n";
-
-    data<< "\n\n"
-        << " =============================================================="
-        << "===============\n"
-        << " c-o Fuel information\n"
-        << " =============================================================="
-        << "===============\n"
-        << "  |\n"
-        << "  |--> Number of species:    " << speciesFuel_.size() << "\n"
-        << "  |--> Fuel set to be:       " << fuel_ << "\n"
-        << "  | \n"
-        << "  |------------------------------------------------------------"
-        << "---------------\n"
-        << "  | "
-        << std::setw(15) << "Species"
-        << std::setw(20) << "Mass Fraction"
-        << std::setw(20) << "Mole Fraction"
-        << std::setw(20) << "Concentration\n"
-        << "  | " 
-        << std::setw(35) << " Y [-]"
-        << std::setw(20) << " X [-]"
-        << std::setw(20) << " C [g/mol]\n" 
-        << "  |------------------------------------------------------------"
-        << "---------------\n";
-
-    sumY = 0;
-    sumX = 0;
-    forAll(speciesFuel_, species)
-    {
-        data<< "  | " << std::right << std::setw(15) << species; 
-        data<< std::setw(20) << fuelY_.at(species);
-        data<< std::setw(20) << fuelX_.at(species);
-        //data<< std::setw(20) << oxidizerN_.at(species);
-        data<< "\n";
-
-        sumY += fuelY_.at(species);
-        sumX += fuelX_.at(species);
-    }
-
-    data<< "  |------------------------------------------------------------"
-        << "---------------\n"
-        << "  | "<< std::setw(15) << "Sum"
-        << std::setw(20) << sumY
-        << std::setw(20) << sumX
-        << std::setw(20) << "\n"
-        << "  |------------------------------------------------------------"
-        << "---------------\n";
-
-    loopMap(element, value, fuelZj_)
-    {
-        data<< "  | " << std::right << std::setw(15) << element; 
-        data<< std::setw(20) << value;
-        data<< std::setw(20) << fuelWj_.at(element);
-        //data<< std::setw(20) << oxidizerN_.at(species);
-        data<< "\n";
-    }
-
-    data<< "  |------------------------------------------------------------"
-        << "---------------\n";
-}
-*/
 
 // ************************************************************************* //
