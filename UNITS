@@ -58,16 +58,16 @@ R       --> J/(molK)
 
 The first 16 columns in each line of the database are reserved for the species name.   (Presently C
 HEMKIN
-is programmed to allow no more than 16-character names.)  Columns 17 through 80 are free-format, and 
-they contain the molecular parameters for each species.  They are, in order: 
+is programmed to allow no more than 16-character names.)  Columns 17 through 80 are free-format, and
+they contain the molecular parameters for each species.  They are, in order:
 
-1.   An index indicating whether the molecule has a monatomic, linear or nonlinear geometrical 
-configuration.  If the index is 0, the molecule is a single atom.  If the index is 1 the molecule is 
-linear, and if it is 2, the molecule is nonlinear. 
+1.   An index indicating whether the molecule has a monatomic, linear or nonlinear geometrical
+configuration.  If the index is 0, the molecule is a single atom.  If the index is 1 the molecule is
+linear, and if it is 2, the molecule is nonlinear.
 
-2.    The Lennard-Jones potential well depth ε/k B  in Kelvins. 
-3.    The Lennard-Jones collision diameter σ in Angstroms. 
-4.    The dipole moment μ in Debye.  Note: a Debye is 10-18cm3/2erg1/2. 
-5.    The polarizability α in cubic Angstroms. 
-6.    The rotational relaxation collision number Zrot at 298K. 
-7.    After the last number, a comment field can be enclosed in parenthesis. 
+2.    The Lennard-Jones potential well depth ε/k B  in Kelvins.
+3.    The Lennard-Jones collision diameter σ in Angstroms.
+4.    The dipole moment μ in Debye.  Note: a Debye is 10-18cm3/2erg1/2.
+5.    The polarizability α in cubic Angstroms.
+6.    The rotational relaxation collision number Zrot at 298K.
+7.    After the last number, a comment field can be enclosed in parenthesis.

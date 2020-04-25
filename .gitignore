@@ -13,7 +13,7 @@
 doc/*pdf
 doc/UserGuide
 
-#gcc 
+#gcc
 obj/
 bin/
 
@@ -29,6 +29,7 @@ files/
 src/flamelet/
 log
 src/gcc
+src/mathematics/numerics
 
 #gedit
 *~
