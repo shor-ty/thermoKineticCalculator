@@ -10,7 +10,7 @@ License
 
     TKC is free software; you can redistribute it and/or modify it under
     the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 3 of the License, or 
+    Free Software Foundation; either version 3 of the License, or
     (at your option) any later version.
 
     TKC is distributed in the hope that it will be useful, but
@@ -22,25 +22,21 @@ License
     along with TKC; if not, see <http://www.gnu.org/licenses/>
 
 Class
-    TKC::Interpreter
-    
+    TKC::IdealReactorPropertiesReader
+
 Description
-    Abstract TKC::Interpreter class that interpretes all data. The class
-    inherits just one function which is building the output string and calles
-    the summary functions of the classes
+    Reading the TKCDict file
 
 SourceFiles
-    interpreter.cpp
+    propertiesReader.cpp
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef Interpreter_hpp 
-#define Interpreter_hpp 
+#ifndef IdealReactorPropertiesReader_hpp
+#define IdealReactorPropertiesReader_hpp
 
-#include "chemistry.hpp"
-#include "thermo.hpp"
-#include "transport.hpp"
-#include "properties.hpp"
+#include "stringManipulator.hpp"
+#include "idealReactorProperties.hpp"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -48,42 +44,59 @@ namespace TKC
 {
 
 /*---------------------------------------------------------------------------*\
-                            Class Numerics Declaration
+                      Class IdealReactorPropertiesReader Declaration
 \*---------------------------------------------------------------------------*/
 
-class Interpreter 
+class IdealReactorPropertiesReader
+:
+    public StringManipulator
 {
     private:
 
-        //- Switch if interpreter is used or not
-        bool interprete_{false};
+        // Private data
 
+            //- File name of ideal reactor parameter/setup
+            string file_{"homogeneousReactorDict"};
 
     public:
 
-        //- Constructor 
-        Interpreter();
+        // Constructor and Destructor
 
-        //- Destructor
-        ~Interpreter();
+            //- Constructor with file path
+            IdealReactorPropertiesReader(const string);
+
+            //- Destructor
+            ~IdealReactorPropertiesReader();
 
 
         // Member functions
 
-            bool analyze() const;
+            //- Read properties file and delegate data
+            void read(IdealReactorProperties&);
 
-            void analyze(const bool&);
 
-            //- Create a summary of the loaded data
-            void summary 
+        // Helper functions
+
+            //- Find line number of keyword
+            void findKeyword
             (
-                const Chemistry&,
-                const Thermo&,
-                const Transport&,
-                const Properties&
+                int&,
+                unsigned int&,
+                const stringList&,
+                unsigned int&
+            );
+
+
+        // Data manipulation functions
+
+            //- Reading concentration dictionary
+            void initialSpeciesData
+            (
+                const stringList&,
+                unsigned int,
+                IdealReactorProperties&
             );
 };
-
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -91,6 +104,6 @@ class Interpreter
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-#endif // Interpreter_hpp included
+#endif
 
 // ************************************************************************* //

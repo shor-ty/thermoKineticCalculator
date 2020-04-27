@@ -23,149 +23,44 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "propertiesData.hpp"
-#include "propertiesReader.hpp"
+#include "idealReactorProperties.hpp"
+#include "idealReactorPropertiesReader.hpp"
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-TKC::PropertiesData::PropertiesData
-(
-    const string fileName
-)
+TKC::IdealReactorProperties::IdealReactorProperties(const string fileName)
+:
+    DiscretePoint()
 {
-    PropertiesReader reader(fileName);
+    IdealReactorPropertiesReader reader(fileName);
 
     reader.read(*this);
-
-    //- Convert Y to X or X to Y
-    /*convertFractions();
-
-    //- Extract the single atomic elements
-    {
-        oxidizerA_ =
-            PropertiesDataCalc::elementDecomposition(speciesOxidizer_, thermo_);
-
-
-        fuelA_ = PropertiesDataCalc::elementDecomposition(speciesFuel_, thermo_);
-    }
-
-    //- Calc the element mass fraction
-    {
-        oxidizerZj_ =
-            PropertiesDataCalc::elementMassFraction
-            (
-                oxidizerA_,
-                oxidizerY_,
-                thermo_
-            );
-
-        fuelZj_ =
-            PropertiesDataCalc::elementMassFraction
-            (
-                fuelA_,
-                fuelY_,
-                thermo_
-            );
-
-
-        //- Assign the element mass fractions of the fuel and oxidizer species
-        //  Used for the stochiometric calculation
-
-    }
-
-    //- Calc the element mole fraction
-    {
-        oxidizerWj_ =
-            PropertiesDataCalc::elementMolFraction(oxidizerZj_, thermo_);
-
-        fuelWj_ =
-            PropertiesDataCalc::elementMolFraction(fuelZj_, thermo_);
-    }
-
-    //- Calc the stochiometric fraction Zst
-    scalar oxidizer, fuel;
-
-        oxidizer = oxidizerY_.at(oxidizer_);
-        fuel = fuelY_.at(fuel_);
-
-        Info<< oxidizer << ":" << fuel << endl;
-
-    Zst_ = PropertiesDataCalc::Zst
-        (
-            fuelZj_,
-            fuelY_.at(fuel_),
-            oxidizerY_.at(oxidizer_),
-            thermo_
-         );
-
-    Info << "Zst = " << Zst_ << endl;
-
-
-    std::terminate();
-
-    //- Initialize
-    //scalar a = PropertiesDataCalc::Zst(fuelY(), oxidizerY());
-    */
 }
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-TKC::PropertiesData::~PropertiesData()
+TKC::IdealReactorProperties::~IdealReactorProperties()
 {}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-void TKC::PropertiesData::insertInertSpecies(const word inert)
+void TKC::IdealReactorProperties::inertSpecies(const word species)
 {
-    inert_ = inert;
+    inertSpecies_ = species;
 }
 
 
-void TKC::PropertiesData::insertC
-(
-    const word species,
-    const scalar concentration
-)
+void TKC::IdealReactorProperties::p(const scalar p)
 {
-    n_[species] = concentration;
-    X_[species] = 0;
-    Y_[species] = 0;
+    p_ = p;
 }
 
 
-void TKC::PropertiesData::insertX
-(
-    const word species,
-    const scalar mole
-)
+void TKC::IdealReactorProperties::inputMode(const word mode)
 {
-    n_[species] = 0;
-    X_[species] = mole;
-    Y_[species] = 0;
-}
-
-
-void TKC::PropertiesData::insertY
-(
-    const word species,
-    const scalar mass
-)
-{
-    n_[species] = 0;
-    X_[species] = 0;
-    Y_[species] = mass;
-}
-
-
-void TKC::PropertiesData::inputMode(const word mode)
-{
-    if (mode == "concentration")
-    {
-        inputConcentration_ = true;
-    }
-    else if (mode == "mole")
+    if (mode == "mole")
     {
         inputMole_ = true;
     }
@@ -173,13 +68,35 @@ void TKC::PropertiesData::inputMode(const word mode)
     {
         inputMass_ = true;
     }
+    else if (mode == "concentration")
+    {
+        inputConcentration_ = true;
+    }
+}
+
+
+void TKC::IdealReactorProperties::thermo(const word filePath)
+{
+    fileThermo_ = filePath;
+}
+
+
+void TKC::IdealReactorProperties::chemistry(const word filePath)
+{
+    fileChemistry_ = filePath;
+}
+
+
+void TKC::IdealReactorProperties::transport(const word filePath)
+{
+    fileTransport_ = filePath;
 }
 
 
 // * * * * * * * * * * * * * * * Other functions * * * * * * * * * * * * * * //
 
 
-/*void TKC::PropertiesData::check()
+/*void TKC::IdealReactorProperties::check()
 {
 
     scalar sum{0};
@@ -349,10 +266,9 @@ void TKC::PropertiesData::inputMode(const word mode)
         }
     }
 }
-*/
 
 
-void TKC::PropertiesData::convertFractions()
+void TKC::IdealReactorProperties::convertFractions()
 {
     //- Convert to mass fraction
     if (inputMol_)
@@ -379,7 +295,7 @@ void TKC::PropertiesData::convertFractions()
     }
 }
 
-void TKC::PropertiesData::XtoY(const map<word, scalar>& X, map<word, scalar>& Y )
+void TKC::IdealReactorProperties::XtoY(const map<word, scalar>& X, map<word, scalar>& Y )
 {
     scalar M{0};
 
@@ -397,7 +313,7 @@ void TKC::PropertiesData::XtoY(const map<word, scalar>& X, map<word, scalar>& Y 
 }
 
 
-void TKC::PropertiesData::YtoX(const map<word, scalar>& Y, map<word, scalar>& X)
+void TKC::IdealReactorProperties::YtoX(const map<word, scalar>& Y, map<word, scalar>& X)
 {
     scalar M{0};
     scalar YbyM{0};
@@ -415,63 +331,30 @@ void TKC::PropertiesData::YtoX(const map<word, scalar>& Y, map<word, scalar>& X)
         X.at(species) = M * value / thermo_.MW(species);
     }
 }
+*/
 
 
 // * * * * * * * * * * * * * * * Return Functions  * * * * * * * * * * * * * //
 
-const TKC::word TKC::PropertiesData::inertSpecies() const
+const TKC::word TKC::IdealReactorProperties::inertSpecies() const
 {
     return inertSpecies_;
 }
 
 
-const TKC::map<TKC::word, TKC::scalar> TKC::PropertiesData::C() const
-{
-    return C_;
-}
-
-
-const TKC::map<TKC::word, TKC::scalar> TKC::PropertiesData::X() const
-{
-    return X_;
-}
-
-
-const TKC::map<TKC::word, TKC::scalar> TKC::PropertiesData::Y() const
-{
-    return Y_;
-}
-
-
-const TKC::scalar TKC::PropertiesData::T() const
-{
-    return T_;
-}
-
-
-const TKC::scalar TKC::PropertiesData::p() const
+const TKC::scalar TKC::IdealReactorProperties::p() const
 {
     return p_;
 }
 
 
-const TKC::word TKC::PropertiesData::inputMode() const
+const TKC::word TKC::IdealReactorProperties::inputMode() const
 {
-    if (!inputMol_ && !inputMass_ && !inputConcentration_)
-    {
-        ErrorMsg
-        (
-            "Input mode problems. Nor mass, mole or concentration input...",
-            __FILE__,
-            __LINE__
-        );
-    }
-
     word input{"none"};
 
-    if (inputMol_)
+    if (inputMole_)
     {
-        input = "mol";
+        input = "mole";
     }
     else if (inputMass_)
     {
@@ -483,6 +366,24 @@ const TKC::word TKC::PropertiesData::inputMode() const
     }
 
     return input;
+}
+
+
+const TKC::word TKC::IdealReactorProperties::thermo() const
+{
+    return fileThermo_;
+}
+
+
+const TKC::word TKC::IdealReactorProperties::chemistry() const
+{
+    return fileChemistry_;
+}
+
+
+const TKC::word TKC::IdealReactorProperties::transport() const
+{
+    return fileTransport_;
 }
 
 
