@@ -93,6 +93,12 @@ void TKC::IdealReactorProperties::transport(const word filePath)
 }
 
 
+void TKC::IdealReactorProperties::interprete(const bool value)
+{
+    interprete_ = value;
+}
+
+
 // * * * * * * * * * * * * * * * Other functions * * * * * * * * * * * * * * //
 
 
@@ -384,6 +390,12 @@ const TKC::word TKC::IdealReactorProperties::chemistry() const
 const TKC::word TKC::IdealReactorProperties::transport() const
 {
     return fileTransport_;
+}
+
+
+const bool TKC::IdealReactorProperties::interprete() const
+{
+    return interprete_;
 }
 
 

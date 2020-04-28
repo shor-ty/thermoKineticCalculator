@@ -131,6 +131,13 @@ void TKC::IdealReactorPropertiesReader::read(IdealReactorProperties& data)
             {
                 data.transport(tmp[1]);
             }
+            else if (tmp[0] == "interprete")
+            {
+                if (tmp[1] == "true" || tmp[1] == "yes")
+                {
+                    data.interprete(true);
+                }
+            }
         }
     }
 }

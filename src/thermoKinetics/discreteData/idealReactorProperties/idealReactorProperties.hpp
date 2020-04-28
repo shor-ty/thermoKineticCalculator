@@ -80,6 +80,7 @@ class IdealReactorProperties
             bool inputMole_{false};
             bool inputMass_{false};
             bool inputConcentration_{false};
+            bool interprete_{false};
 
 
     public:
@@ -111,6 +112,9 @@ class IdealReactorProperties
             //- Insert file (path) for transport file
             void transport(const word);
 
+            //- Insert interprete boolean
+            void interprete(const bool);
+
 
         // Return Functions
 
@@ -131,6 +135,9 @@ class IdealReactorProperties
 
             //- Return file (path) for transport file
             const word transport() const;
+
+            //- Return if the data should be interpreted
+            const bool interprete() const;
 
 };
 
