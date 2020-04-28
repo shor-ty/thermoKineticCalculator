@@ -10,7 +10,7 @@ License
 
     TKC is free software; you can redistribute it and/or modify it under
     the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 3 of the License, or 
+    Free Software Foundation; either version 3 of the License, or
     (at your option) any later version.
 
     TKC is distributed in the hope that it will be useful, but
@@ -24,13 +24,16 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "transport.hpp"
+#include <algorithm>
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 TKC::Transport::Transport(const string fileName, const Thermo& thermo)
 :
     TransportCalc(fileName, thermo)
-{}
+{
+    checkData();
+}
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
@@ -50,9 +53,39 @@ void TKC::Transport::fitCurves()
 
     //- Calculate thermal conductivity using gas kinetics
     fitThermalConductivity();
-    
+
     //- Calculate binary diffusivity using gas kinetics
     fitBinaryDiffusivity();
+}
+
+
+void TKC::Transport::checkData() const
+{
+    Info<< " c-o Checking if transport file includes all species used in the"
+        << " thermodynamic file..." << endl;
+
+    const wordList& thermoSpecies = thermo().species();
+    const wordList& transportSpecies = species();
+    wordList::const_iterator it;
+
+    forAll(thermoSpecies, species)
+    {
+        it = find(transportSpecies.begin(), transportSpecies.end(), species);
+
+        if (it == transportSpecies.end())
+        {
+            ErrorMsg
+            (
+                "    Species '" + species + "' of the thermodynamic is not "
+                " available in the transport database",
+                __FILE__,
+                __LINE__
+            );
+        }
+    }
+
+    //- If passed everything is fine
+    Info<< "     >> Everything is fine. Proceed...\n" << endl;
 }
 
 
@@ -170,8 +203,8 @@ void TKC::Transport::summary(ostream& data) const
 
         for(int i=300; i<=3000; i+=100)
         {
-            data<< "  " << std::setw(6) << i << "   |" 
-                << "  " << std::setw(13) << viscosity(s, i) 
+            data<< "  " << std::setw(6) << i << "   |"
+                << "  " << std::setw(13) << viscosity(s, i)
                 << "  " << std::setw(13) << thermalConductivity(s, i);
 
             //- Species binary diffusion ss := second species
@@ -228,7 +261,7 @@ void TKC::Transport::summaryFittingProcedure(ostream& data) const
         << "               D             mu(298K)        mu(1000K)   |\n"
         << "------------------------------------------------------------"
         << "------------------------------------------------------------\n";
-    
+
     const wordList& species = chemistrySpecies();
 
     forAll(species, s)
@@ -242,7 +275,7 @@ void TKC::Transport::summaryFittingProcedure(ostream& data) const
             << std::setw(16) << pC[1]
             << std::setw(16) << pC[0]
             << std::setw(16) << viscosity(s, 298, "Polynomial")
-            << std::setw(16) << viscosity(s, 1000, "Polynomial") 
+            << std::setw(16) << viscosity(s, 1000, "Polynomial")
             << "  |\n";
     }
 
@@ -259,7 +292,7 @@ void TKC::Transport::summaryFittingProcedure(ostream& data) const
         << "               D           lambda(298K)    lambda(1000K) |\n"
         << "------------------------------------------------------------"
         << "------------------------------------------------------------\n";
-    
+
     forAll(species, s)
     {
         //- Polynomial Coefficients
@@ -271,7 +304,7 @@ void TKC::Transport::summaryFittingProcedure(ostream& data) const
             << std::setw(16) << pC[1]
             << std::setw(16) << pC[0]
             << std::setw(16) << thermalConductivity(s, 298, "Polynomial")
-            << std::setw(16) << thermalConductivity(s, 1000, "Polynomial") 
+            << std::setw(16) << thermalConductivity(s, 1000, "Polynomial")
             << "  |\n";
     }
 
@@ -291,7 +324,7 @@ void TKC::Transport::summaryFittingProcedure(ostream& data) const
         << "------------------------------------------------------------"
         << "------------------------------------------------------------"
         << "---------------------\n";
-    
+
     //- First species
     forAll(species, s1)
     {
@@ -310,7 +343,7 @@ void TKC::Transport::summaryFittingProcedure(ostream& data) const
                 << std::setw(16)
                 << binaryDiffusivity(s1, s2, 298, "Polynomial")
                 << std::setw(16)
-                << binaryDiffusivity(s1, s2, 1000, "Polynomial") 
+                << binaryDiffusivity(s1, s2, 1000, "Polynomial")
                 << "  |\n";
         }
         data<< "------------------------------------------------------------"

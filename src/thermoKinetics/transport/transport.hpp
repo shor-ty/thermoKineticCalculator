@@ -70,6 +70,9 @@ class Transport
             //- Calculate fitting coefficients for polynomials
             void fitCurves();
 
+            //- Check function regarding availablity of species
+            void checkData() const;
+
 
         // Summary functions
 
