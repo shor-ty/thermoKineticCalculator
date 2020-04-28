@@ -10,7 +10,7 @@ License
 
     TKC is free software; you can redistribute it and/or modify it under
     the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 3 of the License, or 
+    Free Software Foundation; either version 3 of the License, or
     (at your option) any later version.
 
     TKC is distributed in the hope that it will be useful, but
@@ -28,11 +28,7 @@ License
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-TKC::Thermo::Thermo
-(
-    const string fileName,
-    const bool thermo
-)
+TKC::Thermo::Thermo(const string fileName, const bool thermo)
 :
     ThermoCalc(fileName)
 {
@@ -54,133 +50,8 @@ TKC::Thermo::~Thermo()
 }
 
 
-// * * * * * * * * * * * * * * * Insert Functions  * * * * * * * * * * * * * //
+// * * * * * * * * * * * * * * * Check Function  * * * * * * * * * * * * * * //
 
-/*void TKC::Thermo::p
-(
-    const scalar pressure
-)
-{
-    thermoData_.p(pressure);
-}
-*/
-
-
-// * * * * * * * * * * * * * * * Return Functions  * * * * * * * * * * * * * //
-
-/*TKC::scalar TKC::Thermo::p() const
-{
-    return thermoData_.p();
-}
-
-
-const TKC::wordList TKC::Thermo::species() const
-{
-    return thermoData_.species();
-}
-
-
-TKC::map<TKC::word, TKC::scalar> TKC::Thermo::MW() const
-{
-    return thermoData_.MW();
-}
-
-
-TKC::scalar TKC::Thermo::MW(const word species) const
-{
-    return thermoData_.MW(species);
-}
-
-
-TKC::scalar TKC::Thermo::MWmeanX(const map<word, scalar>& X) const
-{
-    return thermoCalc_.MWmeanX(X, MW());    
-}
-
-
-TKC::scalar TKC::Thermo::cp(const word species, const scalar T) const
-{
-    return thermoCalc_.cp(species, T, thermoData_);
-}
-
-
-TKC::scalar TKC::Thermo::cv(const word species, const scalar T) const
-{
-    return thermoCalc_.cv(species, T, thermoData_);
-}
-
-
-TKC::scalar TKC::Thermo::H(const word species, const scalar T) const
-{
-    return thermoCalc_.H(species, T, thermoData_);
-}
-
-
-TKC::scalar TKC::Thermo::S(const word species, const scalar T) const
-{
-    return thermoCalc_.S(species, T, thermoData_);
-}
-
-
-TKC::scalar TKC::Thermo::G(const word species, const scalar T) const
-{
-    return thermoCalc_.G(species, T, thermoData_);
-}
-
-
-TKC::scalar TKC::Thermo::G(const scalar H, const scalar S, const scalar T) const
-{
-    return thermoCalc_.G(H, S, T);
-}
-
-
-TKC::scalar TKC::Thermo::Hf(const word species) const
-{
-    return thermoCalc_.Hf(species, thermoData_);
-}
-
-
-TKC::scalar TKC::Thermo::Gf(const word species) const
-{
-    return thermoCalc_.Gf(species, thermoData_);
-}
-
-
-TKC::scalar TKC::Thermo::dHf(const word species, const scalar T) const
-{
-    return thermoCalc_.dHf(species, T, thermoData_);
-}
-
-
-TKC::scalar TKC::Thermo::dGf(const word species, const scalar T) const
-{
-    return thermoCalc_.dGf(species, T, thermoData_);
-}
-
-
-TKC::scalar TKC::Thermo::H0(const word species, const scalar T) const
-{
-    return thermoCalc_.H0(species, T, thermoData_);
-}
-
-
-TKC::scalar TKC::Thermo::C(const scalar T) const
-{
-    return thermoCalc_.C(p(), T);
-}
-
-
-TKC::scalar TKC::Thermo::rho(const word species, const scalar T) const
-{
-    return thermoCalc_.rho(T, p(), MW(species));
-}
-
-
-TKC::word TKC::Thermo::phase(const word species) const
-{
-    return thermoData_.phase(species);
-}
-*/
 
 
 // * * * * * * * * * * * * * * Summary Function  * * * * * * * * * * * * * * //
@@ -189,7 +60,7 @@ TKC::word TKC::Thermo::phase(const word species) const
 void TKC::Thermo::summary(ostream& data) const
 {
     //- Header
-    data<< Header() << "\n"; 
+    data<< Header() << "\n";
 
     const wordList& species = thermoData_.species();
     const wordList& formula = thermoData_.formula();
@@ -256,7 +127,7 @@ void TKC::Thermo::NASAPolynomials(ostream& data, const word coeff) const
     {
 
         List<scalar> NASA(7, 0);
-        
+
         if (coeff == "LOW")
         {
             NASA = thermoData_.NASACoeffsLT(species[s]);
@@ -270,7 +141,7 @@ void TKC::Thermo::NASAPolynomials(ostream& data, const word coeff) const
         std::ostringstream oss;
 
         oss << " (" << toStr(s+1) << ") " << species[s];
-        
+
         data<< std::left << std::setw(22) << oss.str()
             << "  |" << std::right
             << std::setw(17) << NASA[0]
@@ -278,7 +149,7 @@ void TKC::Thermo::NASAPolynomials(ostream& data, const word coeff) const
             << std::setw(17) << NASA[2]
             << std::setw(17) << NASA[3]
             << std::setw(17) << NASA[4]
-            << std::setw(17) << NASA[5] 
+            << std::setw(17) << NASA[5]
             << std::setw(17) << NASA[6]
             << "  |\n";
     }
@@ -345,13 +216,13 @@ void TKC::Thermo::thermoTable(ostream& data) const
 
         for(int i=300; i<=3000; i+=100)
         {
-            data<< "  " << std::setw(6) << i << "   |" 
-                << "  " << std::setw(13) << cp(species[s], i) 
-                << "  " << std::setw(14) << H(species[s], i) 
+            data<< "  " << std::setw(6) << i << "   |"
+                << "  " << std::setw(13) << cp(species[s], i)
+                << "  " << std::setw(14) << H(species[s], i)
                 << "  " << std::setw(14) << S(species[s], i)
                 << "  " << std::setw(14) << G(species[s], i)
-                << "  " << std::setw(14) << dHf(species[s], i) 
-                << "  " << std::setw(14) << dGf(species[s], i) 
+                << "  " << std::setw(14) << dHf(species[s], i)
+                << "  " << std::setw(14) << dGf(species[s], i)
                 << "     |\n";
         }
 
