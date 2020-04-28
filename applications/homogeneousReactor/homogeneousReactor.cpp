@@ -28,6 +28,12 @@ Description
 
 \*---------------------------------------------------------------------------*/
 
+#include "definitions.hpp"
+#include "idealReactorProperties.hpp"
+#include "transport.hpp"
+#include "thermo.hpp"
+#include "chemistry.hpp"
+#include "interpreter.hpp"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -42,10 +48,26 @@ int main(int argc, char** argv)
 
     Info<< Header() << endl;
 
-    //- Read the properties of the analysis
-    Properties properties;
-
     //- Create Objects for calculation
+    IdealReactorProperties properties("");
+
+    Thermo thermo(properties.thermo());
+
+    Transport transport(properties.transport(), thermo);
+
+    Chemistry chemistry(properties.chemistry(), thermo);
+
+    //- Interprete data and store for analysis in files
+    if (properties.interprete())
+    {
+        Interpreter interpreter;
+
+        interpreter.summary(transport, thermo, chemistry);
+
+        Footer(startTime);
+        return 0;
+    }
+
 
 
     //- Initialize 0D calculation

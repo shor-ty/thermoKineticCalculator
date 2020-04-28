@@ -1,0 +1,54 @@
+/*---------------------------------------------------------------------------*\
+  c-o-o-c-o-o-o             |
+  |     |     T hermo       | Open Source Flamelet
+  c-o-o-c     K ikinetic    |
+  |     |     C alculator   | Copyright (C) 2020 Holzmann CFD
+  c     c-o-o-o             |
+-------------------------------------------------------------------------------
+License This file is part of Automatic Flamelet Constructor.
+
+    AFC is free software; you can redistribute it and/or modify it under
+    the terms of the GNU General Public License as published by the
+    Free Software Foundation; either version 3 of the License, or
+    (at your option) any later version.
+
+    AFC is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with AFC; if not, see <http://www.gnu.org/licenses/>
+
+\*---------------------------------------------------------------------------*/
+
+
+// * * * * * * * * * * * * * AFC Control And Settings  * * * * * * * * * * * //
+
+    //- Files pathes
+    transport       ../../files/fullTransport.tra
+    thermodynamic   files/thermo
+    chemistry       files/kinetics
+
+    inertGas N2
+
+    //- Initial condition for homogeneouse reactor
+    //  Either use concentration, mass or mole fraction
+    moleFraction
+    {
+        H2 1
+        N2 3.76
+        O2 1
+    }
+
+    //- Pressure
+    pressure 202650
+
+    //- Initial temperature
+    temperature 1000
+
+    //- Interprete data
+    interprete true
+
+
+//***************************************************************************//
