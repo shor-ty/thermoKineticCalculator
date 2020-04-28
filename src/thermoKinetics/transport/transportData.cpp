@@ -10,7 +10,7 @@ License
 
     TKC is free software; you can redistribute it and/or modify it under
     the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 3 of the License, or 
+    Free Software Foundation; either version 3 of the License, or
     (at your option) any later version.
 
     TKC is distributed in the hope that it will be useful, but
@@ -28,10 +28,12 @@ License
 
 // * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * * //
 
-TKC::TransportData::TransportData(const string fileName)
+TKC::TransportData::TransportData(const string fileName, const Thermo& thermo)
+:
+    thermo_(thermo)
 {
     TransportReader transReader(fileName);
-    
+
     transReader.read(*this);
 }
 
@@ -152,7 +154,7 @@ TKC::scalarField TKC::TransportData::binaryDiffusivityPolyCoeffs
 
         ++ID;
     }
-    
+
     //- Return the coefficients
     return binaryDiffusivity_[ID].at(species2);
 }
@@ -177,7 +179,7 @@ void TKC::TransportData::insertChemistrySpecies
 
 void TKC::TransportData::insertGeoConfig(const int geoConfig)
 {
-    //- Species_ list must have one element more in this list 
+    //- Species_ list must have one element more in this list
     if (species_.size()-1 == geoConfig_.size())
     {
         geoConfig_[species_[species_.size()-1]] = geoConfig;
@@ -197,7 +199,7 @@ void TKC::TransportData::insertGeoConfig(const int geoConfig)
 
 void TKC::TransportData::insertLenJonPot(const scalar lenJonPot)
 {
-    //- Species_ list must have one element more in this list 
+    //- Species_ list must have one element more in this list
     if (species_.size()-1 == lenJonPot_.size())
     {
         lenJonPot_[species_[species_.size()-1]] = lenJonPot;
@@ -217,7 +219,7 @@ void TKC::TransportData::insertLenJonPot(const scalar lenJonPot)
 
 void TKC::TransportData::insertLenJonCollDia(const scalar lenJonCollDia)
 {
-    //- Species_ list must have one element more in this list 
+    //- Species_ list must have one element more in this list
     if (species_.size()-1 == lenJonCollDia_.size())
     {
         lenJonCollDia_[species_[species_.size()-1]] = lenJonCollDia;
@@ -237,7 +239,7 @@ void TKC::TransportData::insertLenJonCollDia(const scalar lenJonCollDia)
 
 void TKC::TransportData::insertDipMom(const scalar dipMom)
 {
-    //- Species_ list must have one element more in this list 
+    //- Species_ list must have one element more in this list
     if (species_.size()-1 == dipMom_.size())
     {
         dipMom_[species_[species_.size()-1]] = dipMom;
@@ -257,7 +259,7 @@ void TKC::TransportData::insertDipMom(const scalar dipMom)
 
 void TKC::TransportData::insertAlpha(const scalar alpha)
 {
-    //- Species_ list must have one element more in this list 
+    //- Species_ list must have one element more in this list
     if (species_.size()-1 == alpha_.size())
     {
         alpha_[species_[species_.size()-1]] = alpha;
@@ -277,7 +279,7 @@ void TKC::TransportData::insertAlpha(const scalar alpha)
 
 void TKC::TransportData::insertZRot298(const scalar ZRot298)
 {
-    //- Species_ list must have one element more in this list 
+    //- Species_ list must have one element more in this list
     if (species_.size()-1 == ZRot298_.size())
     {
         ZRot298_[species_[species_.size()-1]] = ZRot298;
@@ -298,7 +300,7 @@ void TKC::TransportData::insertZRot298(const scalar ZRot298)
 void TKC::TransportData::insertBinarySpeciesCombinations
 (
     const word parentSpecies,
-    const word childSpecies 
+    const word childSpecies
 )
 {
     binarySpeciesCombinations_[parentSpecies].push_back(childSpecies);
@@ -346,6 +348,12 @@ void TKC::TransportData::binarySpeciesCombinations()
 
 // * * * * * * * * * * * * * * Return functions  * * * * * * * * * * * * * * //
 
+const TKC::Thermo& TKC::TransportData::thermo() const
+{
+    return thermo_;
+}
+
+
 TKC::wordList TKC::TransportData::species() const
 {
     return species_;
@@ -360,9 +368,9 @@ TKC::wordList TKC::TransportData::chemicalFormula() const
 
 TKC::word TKC::TransportData::chemicalFormula(const word species) const
 {
-    //- TODO use map to speed up 
+    //- TODO use map to speed up
     int ID{0};
-    
+
     //- Search id
     forAll(species_, s)
     {

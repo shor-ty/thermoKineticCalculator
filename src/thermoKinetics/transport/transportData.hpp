@@ -10,7 +10,7 @@ License
 
     TKC is free software; you can redistribute it and/or modify it under
     the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 3 of the License, or 
+    Free Software Foundation; either version 3 of the License, or
     (at your option) any later version.
 
     TKC is distributed in the hope that it will be useful, but
@@ -23,9 +23,9 @@ License
 
 Class
    TKC::TransportData
-   
+
 Description
-    This class contains all transport data 
+    This class contains all transport data
 
 SourceFiles
     transportData.cpp
@@ -36,6 +36,7 @@ SourceFiles
 #define TransportData_hpp
 
 #include "definitions.hpp"
+#include "thermo.hpp"
 #include "vector.hpp"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -52,6 +53,9 @@ class TransportData
     private:
 
         // Private data
+
+            //- Reference to thermo class
+            const Thermo& thermo_;
 
             //- List of species of transport file
             wordList species_;
@@ -73,7 +77,7 @@ class TransportData
             map<word, scalar> lenJonPot_;
 
             //- List for Lennard-Jones collision dimater C in Angstroms
-            //  Also denoted by sigma 
+            //  Also denoted by sigma
             map<word, scalar> lenJonCollDia_;
 
             //- List for dipole moment mu in debey
@@ -91,13 +95,13 @@ class TransportData
             map<word, List<word> > binarySpeciesCombinations_;
 
 
-        // Transport data for fitting procedure 
+        // Transport data for fitting procedure
 
             //- Pure species viscosity
             //  Species, Coeffs A-D, Value
             map<word, scalarField> viscosity_;
 
-            //- Pure species thermal conductivity 
+            //- Pure species thermal conductivity
             //  Species, Coeffs A-D, Value
             map<word, scalarField> thermalConductivity_;
 
@@ -108,8 +112,8 @@ class TransportData
 
     public:
 
-        //- Constructor 
-        TransportData(const string);
+        //- Constructor
+        TransportData(const string, const Thermo&);
 
         //- Destructor
         ~TransportData();
@@ -123,13 +127,13 @@ class TransportData
             //- Return the polynomial coefficients for the viscosity
             scalarField viscosityPolyCoeffs(const word) const;
 
-            //- Fitting polynomials coefficients for the thermal conductivity 
+            //- Fitting polynomials coefficients for the thermal conductivity
             void thermalConductivityPolyCoeffs(const word, const Vector&);
 
-            //- Return the polynomial coefficients for the thermal conductivity 
+            //- Return the polynomial coefficients for the thermal conductivity
             scalarField thermalConductivityPolyCoeffs(const word) const;
 
-            //- Fitting polynomials coefficients for the binary diffusivity 
+            //- Fitting polynomials coefficients for the binary diffusivity
             void binaryDiffusivityPolyCoeffs
             (
                 const word,
@@ -137,7 +141,7 @@ class TransportData
                 const Vector&
             );
 
-            //- Return the polynomial coefficients for the binary diffusivity 
+            //- Return the polynomial coefficients for the binary diffusivity
             scalarField binaryDiffusivityPolyCoeffs
             (
                 const word,
@@ -145,7 +149,7 @@ class TransportData
             ) const;
 
 
-        // Insert functions, from TransportReader:: delegated 
+        // Insert functions, from TransportReader:: delegated
 
             //- Insert species
             void insertSpecies(const word);
@@ -188,7 +192,10 @@ class TransportData
 
 
         // Return functions
-        
+
+            //- Return reference to the thermo object
+            const Thermo& thermo() const;
+
             //- Return all species which are stored in the transport object
             wordList species() const;
 
@@ -200,7 +207,6 @@ class TransportData
 
             //- Return all species which are used in elementar reactions
             wordList chemistrySpecies() const;
-
 
             //- Return the geometrical configuration
             int geometricalConfig(const word) const;

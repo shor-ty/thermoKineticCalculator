@@ -10,7 +10,7 @@ License
 
     TKC is free software; you can redistribute it and/or modify it under
     the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 3 of the License, or 
+    Free Software Foundation; either version 3 of the License, or
     (at your option) any later version.
 
     TKC is distributed in the hope that it will be useful, but
@@ -23,10 +23,10 @@ License
 
 Class
     TKC::TransportCalcCalc
-    
+
 Description
     Abstract TKC::TransportCalcCalc class for transport calculation
-    Mostly gas-kinetics are implemented and a fitting procedure    
+    Mostly gas-kinetics are implemented and a fitting procedure
 
 SourceFiles
     transportCalc.cpp
@@ -37,7 +37,6 @@ SourceFiles
 #define TransportCalc_hpp
 
 #include "transportData.hpp"
-#include "thermo.hpp"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -52,11 +51,6 @@ class TransportCalc
 :
     public TransportData
 {
-    private:
-
-        // Reference to thermo class
-        const Thermo& thermo_;
-
 
     public:
 
@@ -81,7 +75,7 @@ class TransportCalc
 
 
         // Calculation functions for viscosity
-        
+
             //- Kinetic calculation, pure species viscosity
             scalar viscosity
             (
@@ -120,7 +114,7 @@ class TransportCalc
             (
                 const word,
                 const scalar,
-                const word method = "Warnatz" 
+                const word method = "Warnatz"
             ) const;
 
             //- Return the thermal conductivity suggested by Warnatz in the
@@ -134,7 +128,7 @@ class TransportCalc
             //  [W/m/K]
             scalar thermalConductivityWarnatzCC(const word, const scalar) const;
 
-            //- Return the thermal conductivity using the polynomial 
+            //- Return the thermal conductivity using the polynomial
             scalar thermalConductivityPolynomial
             (
                 const scalar,
@@ -191,7 +185,7 @@ class TransportCalc
                 const scalarField&
             ) const;
 
-            //- Fitting function for binary diffusivity 
+            //- Fitting function for binary diffusivity
             void fitBinaryDiffusivity();
 
 

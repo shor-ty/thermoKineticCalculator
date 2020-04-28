@@ -10,7 +10,7 @@ License
 
     TKC is free software; you can redistribute it and/or modify it under
     the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 3 of the License, or 
+    Free Software Foundation; either version 3 of the License, or
     (at your option) any later version.
 
     TKC is distributed in the hope that it will be useful, but
@@ -33,10 +33,8 @@ License
 
 TKC::TransportCalc::TransportCalc(const string fileName, const Thermo& thermo)
 :
-    TransportData(fileName),
-    thermo_(thermo)
-{
-}
+    TransportData(fileName, thermo)
+{}
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
@@ -85,7 +83,7 @@ TKC::scalar
 TKC::TransportCalc::rho(const scalar MW, const scalar T, const scalar p) const
 {
     //- Return density [kg/m^3]
-    return (p * MW / TKC::Constants::R / T); 
+    return (p * MW / TKC::Constants::R / T);
 }
 
 
@@ -99,7 +97,7 @@ TKC::scalar TKC::TransportCalc::viscosity
 ) const
 {
     //- Molecular weight [kg/mol]
-    const scalar MW = thermo_.MW(species);
+    const scalar MW = thermo().MW(species);
 
     //- Lennard-Jones potential well depth eps/kb [K]
     const scalar LennardJP = LJP(species);
@@ -122,12 +120,12 @@ TKC::scalar TKC::TransportCalc::viscosity
         );
 
         //- For compiler
-        return -1; 
+        return -1;
     }
     //- Polynomial fit
     else if (method == "Polynomial")
     {
-        const scalarField& polyCoeffs = viscosityPolyCoeffs(species); 
+        const scalarField& polyCoeffs = viscosityPolyCoeffs(species);
 
         return viscosityPolynomial(T, polyCoeffs);
     }
@@ -221,7 +219,7 @@ TKC::scalar TKC::TransportCalc::viscosityHirschfelder
     if (geometricConfig == scalar(0))
     {
         //- Lambda [erg/cm/K/s]
-        const scalar lambda = 
+        const scalar lambda =
             viscosity(species, T, thermo, transData)
           / MW * scalar(15)/scalar(4) * TKC::Constants::Rerg;
 
@@ -241,7 +239,7 @@ TKC::scalar TKC::TransportCalc::viscosityHirschfelder
 
             Cvrot = TKC::Constants::Rerg;
 
-            Cvvib = 
+            Cvvib =
                 thermo.cv(species, T)
               - scalar(5)/scalar(2) * TKC::Constants::Rerg;
         }
@@ -260,7 +258,7 @@ TKC::scalar TKC::TransportCalc::viscosityHirschfelder
 
         //- Denisty in [g/m^3]
         //const scalar& rho = thermo.rho(species, T);
-        
+
         //const scalar& A = scalar(5)/scalar(2) - rho * Dii / nu;
         //const scalar& B =
         //    Zrot298 + scalar(2) / pi
@@ -280,7 +278,7 @@ TKC::scalar TKC::TransportCalc::viscosityHirschfelder
 TKC::scalar TKC::TransportCalc::viscosityPolynomial
 (
     const scalar T,
-    const scalarField& polyCoeffs 
+    const scalarField& polyCoeffs
 ) const
 {
     return
@@ -305,7 +303,7 @@ void TKC::TransportCalc::fitViscosity()
     //- Fit for all species
     forAll(species, s)
     {
-        //- Temperature field 
+        //- Temperature field
         scalarField T;
 
         //- Mu field
@@ -330,16 +328,16 @@ void TKC::TransportCalc::fitViscosity()
             mu.push_back(log(viscosity(s, Tv)));
         }
 
-        //- Fitting 
+        //- Fitting
         //  This could be done more beatuiful with objects
         //
-        //  Polynom: ln(mu) = D ln(T)^3 + C ln(T)^2  + B ln(T) + A 
+        //  Polynom: ln(mu) = D ln(T)^3 + C ln(T)^2  + B ln(T) + A
         //  f1(T) = ln(T)^3
         //  f2(T) = ln(T)^2
         //  f3(T) = ln(T)
         //  f4(T) = 1
 
-        //- Now we need to build a matrix A that looks like 
+        //- Now we need to build a matrix A that looks like
         //          1             2             3             4          5
         //1 | [f1(T)f1(T)]  [f1(T)f2(T)]  [f1(T)f3(T)]  [f1(T)f4(T)] [yf1(T)] |
         //2 | [f2(T)f1(T)]  [f2(T)f2(T)]  [f2(T)f3(T)]  [f2(T)f4(T)] [yf1(T)] |
@@ -501,7 +499,7 @@ TKC::scalar TKC::TransportCalc::thermalConductivityWarnatz
     //- Calculation of thermal conductivity by Warnatz
 
     //  Molecular weight [kg/mol]
-    const scalar MW = thermo_.MW(species);
+    const scalar MW = thermo().MW(species);
 
     //- Lennard-Jones potential well depth eps/kb [K]
     const scalar LennardJP = LJP(species);
@@ -532,13 +530,13 @@ TKC::scalar TKC::TransportCalc::thermalConductivityWarnatz
     const scalar omegaColl = reducedCollisionIntegralOmega22(Ts);
 
     //- Calculate thermal conductivity in [J/cm/K/s]
-    //const scalar lambda = 
+    //const scalar lambda =
     //    8.323e-6 * sqrt(T/MW) / (pow(sigma, 2) * omegaColl);
 
     //- Calculate thermal conductivity in [J/cm/K/s]
     //const scalar lambda =
     //    8.323e-6 * sqrt(T / MW) / (pow(sigma * 0.1, 2) * omegaColl);
-    
+
     //- Calculate thermal conductivity in [W/m/K]
     //  [Poling]
     const scalar lambda =
@@ -576,7 +574,7 @@ TKC::scalar TKC::TransportCalc::thermalConductivityWarnatz
 
     //- Constant heat capacity at constant volume
     const scalar Cv = thermo.cv(species, T);
-    
+
     //- Geometric configuration
     const int geometricConfig = geometricalConfig(species);
 
@@ -586,8 +584,8 @@ TKC::scalar TKC::TransportCalc::thermalConductivityWarnatz
 
     if (geometricConfig == 0)
     {
-        CvTrans = 3./2. * R; 
-    } 
+        CvTrans = 3./2. * R;
+    }
     //- Linear molecule
     else if (geometricConfig == 1)
     {
@@ -616,7 +614,7 @@ TKC::scalar TKC::TransportCalc::thermalConductivityWarnatz
     //- Binary Diffusivity Dkk [m^2/s]
     const scalar Dkk =
         binaryDiffusivity(species, species, T, thermo, transData);
-    
+
     //- Viscosity mu [kg/m/s]
     const scalar mu = viscosity(species, T, thermo, transData);
 
@@ -644,10 +642,10 @@ TKC::scalar TKC::TransportCalc::thermalConductivityWarnatz
     //- Calculate fRot
     const scalar fRot = fVib * ( 1 + (2 * A) / (M_PI * B));
 
-    //- Calculate thermal conductivity 
+    //- Calculate thermal conductivity
     const scalar thermalConductivity =
         mu/MW * (fTrans * CvTrans + fRot * CvRot + fVib * CvVib);
-    
+
     return 0;
 }*/
 
@@ -671,7 +669,7 @@ TKC::scalar TKC::TransportCalc::thermalConductivityPolynomial
 }
 
 
-void TKC::TransportCalc::fitThermalConductivity() 
+void TKC::TransportCalc::fitThermalConductivity()
 {
     //- Species from chemistry
     const wordList& species = chemistrySpecies();
@@ -679,7 +677,7 @@ void TKC::TransportCalc::fitThermalConductivity()
     //- Fit for all species
     forAll(species, s)
     {
-        //- Temperature field 
+        //- Temperature field
         scalarField T;
 
         //- Lambda field
@@ -706,16 +704,16 @@ void TKC::TransportCalc::fitThermalConductivity()
             );
         }
 
-        //- Fitting 
+        //- Fitting
         //  This could be done more beatuiful with objects
         //
-        //  Polynom: ln(lambda) = D ln(T)^3 + C ln(T)^2  + B ln(T) + A 
+        //  Polynom: ln(lambda) = D ln(T)^3 + C ln(T)^2  + B ln(T) + A
         //  f1(T) = ln(T)^3
         //  f2(T) = ln(T)^2
         //  f3(T) = ln(T)
         //  f4(T) = 1
 
-        //- Now we need to build a matrix A that looks like 
+        //- Now we need to build a matrix A that looks like
         //          1             2             3             4          5
         //1 | [f1(T)f1(T)]  [f1(T)f2(T)]  [f1(T)f3(T)]  [f1(T)f4(T)] [yf1(T)] |
         //2 | [f2(T)f1(T)]  [f2(T)f2(T)]  [f2(T)f3(T)]  [f2(T)f4(T)] [yf1(T)] |
@@ -816,7 +814,7 @@ void TKC::TransportCalc::fitThermalConductivity()
         thermalConductivityPolyCoeffs(s, x);
     }
 }
-    
+
 
 // * * * * * * * Calculation Functions For Binary Diffusivity * * * * * * * *//
 
@@ -865,11 +863,11 @@ TKC::scalar TKC::TransportCalc::binaryDiffusivityChapmanAndEnskog
 ) const
 {
     //- Pressure [bar]
-    const scalar& p = thermo_.p()/1e5;
+    const scalar& p = thermo().p()/1e5;
 
     //- Molecular weight [g/mol]
-    const scalar& MW1 = thermo_.MW(species1);
-    const scalar& MW2 = thermo_.MW(species2);
+    const scalar& MW1 = thermo().MW(species1);
+    const scalar& MW2 = thermo().MW(species2);
 
     //- Lennard-Jones potential well depth eps/kb [K]
     const scalar& LJP1 = LJP(species1);
@@ -879,7 +877,7 @@ TKC::scalar TKC::TransportCalc::binaryDiffusivityChapmanAndEnskog
     const scalar& sigma1 = LJCD(species1);
     const scalar& sigma2 = LJCD(species2);
 
-    //- Combined parameters 
+    //- Combined parameters
     const scalar MW12 = 2 * pow((1/MW1 + 1/MW2), -1);
     const scalar LJP12 = sqrt(LJP1 * LJP2);
     const scalar sigma12 = (sigma1 + sigma2) / 2;
@@ -895,7 +893,7 @@ TKC::scalar TKC::TransportCalc::binaryDiffusivityChapmanAndEnskog
         0.002662 * pow(T, scalar(1.5))
       / (p * sqrt(MW12) * pow(sigma12, 2) * omegaColl);
 
-    //- Return the binary diffusivity Dij [m^2/s] 
+    //- Return the binary diffusivity Dij [m^2/s]
     //  Factor 1m^2 = 100cm * 100cm = 10000
     //  D is in cm^2/s so it means that it diffuse in 1 s for a special
     //  area - hence we have to divide by 10000 to get [m^2/s]
@@ -930,7 +928,7 @@ TKC::scalar TKC::TransportCalc::binaryDiffusivityChapmanAndEnskog
     const scalar& sigma1 = LJCD(species1);
     const scalar& sigma2 = LJCD(species2);
 
-    //- Combined parameters 
+    //- Combined parameters
     const scalar& MW12 = 2 * pow((1/MW1 + 1/MW2), -1);
     const scalar& LJP12 = sqrt(LJP1 * LJP2);
     const scalar& sigma12 = (sigma1 + sigma2) / 2;
@@ -943,7 +941,7 @@ TKC::scalar TKC::TransportCalc::binaryDiffusivityChapmanAndEnskog
 
     //- Calculate binary diffusivity [cm^2/s]
     //const scalar Dij =
-    //     2.662e-5 * sqrt(pow(T, 3) * 333; 
+    //     2.662e-5 * sqrt(pow(T, 3) * 333;
 
 }*/
 
@@ -959,7 +957,7 @@ TKC::scalar TKC::TransportCalc::binaryDiffusivityChapmanAndEnskog
 {
     //- Stefan Boltzmann constant [J/m^2/K^4]
     const scalar& kB = TKC::Constants::kB;
-    
+
     //- Pressure
     const scalar& p = thermo.p();
 
@@ -975,7 +973,7 @@ TKC::scalar TKC::TransportCalc::binaryDiffusivityChapmanAndEnskog
     const scalar& sigma1 = LJCD(species1);
     const scalar& sigma2 = LJCD(species2);
 
-    //- Combined parameters 
+    //- Combined parameters
     const scalar& MW12 = 2 * pow((1/MW1 + 1/MW2), -1);
     const scalar& LJP12 = sqrt(LJP1 * LJP2);
     const scalar& sigma12 = (sigma1 + sigma2) / 2;
@@ -1017,11 +1015,11 @@ void TKC::TransportCalc::fitBinaryDiffusivity()
     //- Fit for all species (first binary species)
     forAll(species, s1)
     {
-        //- Second binary species 
+        //- Second binary species
         //  TODO (do not use all species // multpile components) ij = ji
         forAll(species, s2)
         {
-            //- Temperature field 
+            //- Temperature field
             scalarField T;
 
             //- Binary diffusivity field Dij
@@ -1033,7 +1031,7 @@ void TKC::TransportCalc::fitBinaryDiffusivity()
             const scalar dT = scalar(4000)/n;
 
             //- Pressure
-            const scalar& p = thermo_.p();
+            const scalar& p = thermo().p();
 
             //- Fill the fields with necessary data
             for (size_t i = 0; i < n; ++i)
@@ -1051,16 +1049,16 @@ void TKC::TransportCalc::fitBinaryDiffusivity()
                 );
             }
 
-            //- Fitting 
+            //- Fitting
             //  This could be done more beatuiful with objects
             //
-            //  Polynom: ln(Dij*p) = D ln(T)^3 + C ln(T)^2  + B ln(T) + A 
+            //  Polynom: ln(Dij*p) = D ln(T)^3 + C ln(T)^2  + B ln(T) + A
             //  f1(T) = ln(T)^3
             //  f2(T) = ln(T)^2
             //  f3(T) = ln(T)
             //  f4(T) = 1
 
-            //- Now we need to build a matrix A that looks like 
+            //- Now we need to build a matrix A that looks like
             //          1             2             3             4          5
             //1 | [f1(T)f1(T)]  [f1(T)f2(T)]  [f1(T)f3(T)]  [f1(T)f4(T)] [yf1(T)] |
             //2 | [f2(T)f1(T)]  [f2(T)f2(T)]  [f2(T)f3(T)]  [f2(T)f4(T)] [yf1(T)] |
@@ -1162,7 +1160,7 @@ void TKC::TransportCalc::fitBinaryDiffusivity()
         }
     }
 }
-    
+
 
 // * * * * * * * * * * * * Additional Functions * * * * * * * * * * * * * * *//
 
