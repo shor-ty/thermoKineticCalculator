@@ -58,17 +58,34 @@ git clone https://github.com/shor-ty/thermoKineticCalculator.git thermoKineticCa
 cd thermoKineticCalculator
 ```
 
+* Load the environment variables
+
+```bash
+source environment/bash
+```
+
+* The environment should be loaded everytime you want to use the applications. Thus, an alias is recommended or your simply load it each time a terminal is opened.
+
+```bash
+echo "alias tkc="source $HOME/yourLocation/thermoKineticCalculator/environment/bashrc" >> $HOME/.bash_aliases
+```
+
 * Compile the libraries
 
 ```bash
-cd src
+cd $TKC_PROJECT_DIR/src
 make
 ```
 
-* Try some examples (XY has to be replaced by the folder and application name)
+* Compile the applications
 
 ```bash
-cd ../examples/XY
+cd $TKC_PROJECT_DIR/application/homogeneousReactor
 make
-./XY
+```
+
+* You are ready to start with the tutorials
+
+```bash
+cd $TKC_PROJECT_DIR/tutorials
 ```
