@@ -1,38 +1,30 @@
+# Thermo-Kinetic Library
+# 29.04.2020
+# Tobias Holzmann
+#
 #.gitignore
 #
-# codeBlocks (old)
-*.cbp
-*.layout
-*.depend
-*.swp
-*.pdf
+#------------------------------------------------------------------------------
+
+
+#------------------------------------------------------------------------------
+# Documentation, pictures and Doxygen
 *.eps
 *.png
-
-#documentation
 doc/*pdf
 doc/UserGuide
-
-#gcc
-obj/
-bin/
-
-#doxygen
 doc/doxygen/html/*
 
-#prog
-automaticFlameletCreator
-solveMatrixSystem
-src/thirdParty
-summary
-files/
-src/flamelet/
-log
+
+#------------------------------------------------------------------------------
+# Compiler related files (libraries, applications and so on)
+platforms
 src/gcc
-src/mathematics/numerics
 
-#gedit
-*~
 
-#examples
-examples/thermoLibUsage/simpleThermoExample
+#------------------------------------------------------------------------------
+# Tutorials and test cases
+tutorials
+
+
+#------------------------------------------------------------------------------

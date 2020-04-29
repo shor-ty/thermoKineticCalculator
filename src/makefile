@@ -6,7 +6,7 @@
 # March 2020
 #
 # Description
-#     This makefile compiles all source files and builds the libraries that 
+#     This makefile compiles all source files and builds the libraries that
 #     can be used for your personal program for individual usage
 #
 #------------------------------------------------------------------------------
@@ -29,7 +29,7 @@ CLEAR=clear
 CLEAN_DIR=rm -rfv
 WORK_DIR=$(PWD)
 DIR_OBJ=gcc/obj
-DIR_LIB=gcc/libs
+DIR_LIB=../platforms/libs
 DIR_INCLUDE=gcc/lnInclude
 
 
@@ -65,7 +65,7 @@ pre: clear
 
 
 #------------------------------------------------------------------------------
-clear: 
+clear:
 	$(CLEAR)
 
 
