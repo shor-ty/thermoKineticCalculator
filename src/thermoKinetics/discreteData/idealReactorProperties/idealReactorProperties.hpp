@@ -64,6 +64,9 @@ class IdealReactorProperties
             //- Pressure at which the calculation takes place [Pa]
             scalar p_{0};
 
+            //- File for settings and properties
+            word file_;
+
             //- File for thermo data
             word fileThermo_;
 
@@ -93,6 +96,9 @@ class IdealReactorProperties
 
 
         // Insert functions
+
+            //- Insert file path
+            void insertFile(const string);
 
             //- Set inert species
             void inertSpecies(const word);
@@ -126,6 +132,9 @@ class IdealReactorProperties
 
             //- Return word of input mode (mole, mass or concentration)
             const word inputMode() const;
+
+            //- Return file (path) for properties file
+            const word dict() const;
 
             //- Return file (path) for thermo file
             const word thermo() const;

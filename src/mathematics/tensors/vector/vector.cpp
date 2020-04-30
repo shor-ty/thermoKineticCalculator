@@ -140,7 +140,7 @@ const TKC::Vector TKC::Vector::operator-(const Vector& b) const
         tmp(i) = a(i) - b(i);
     }
 
-    return std::move(tmp);
+    return tmp;
 }
 
 // * * * * * * * * * * * * * * Operator Functions  * * * * * * * * * * * * * //

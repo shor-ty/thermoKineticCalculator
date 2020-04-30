@@ -34,6 +34,7 @@ Description
 #include "thermo.hpp"
 #include "chemistry.hpp"
 #include "interpreter.hpp"
+#include "time.hpp"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -43,21 +44,22 @@ using namespace TKC;
 
 int main(int argc, char** argv)
 {
-
     const std::clock_t startTime = clock();
+
     Info<< Header() << endl;
 
     #include "createThermoKinetic.hpp"
 
+    Info<< time.endTime() << endl;
+    Info<< time.dTKinetic() << endl;
+    //- Solve kinetics until the end time is reached
+    while (time.loop())
+    {
+        Info<< "Time = " << time.runTime() << endl;
 
-
-
-    //- Initialize 0D calculation
-
-
-    //- Solve chemistry and save data regarding the use input
-
-
+        //- Increment time based on kinetic time step
+        time += time.dTKinetic();
+    }
 
     Footer(startTime);
 

@@ -43,7 +43,7 @@ TKC::Interpreter::~Interpreter()
 
 void TKC::Interpreter::summary
 (
-    const Transport& transport,
+    Transport& transport,
     const Thermo& thermo,
     const Chemistry& chemistry
 )
@@ -115,6 +115,9 @@ void TKC::Interpreter::summary
 
         //- Set scientific notation
         data.setf(std::ios::scientific, std::ios::floatfield);
+
+        //- Make sure the fitting is done
+        transport.fitCurves();
 
         //- Build transport summary
         transport.summaryFittingProcedure(data);

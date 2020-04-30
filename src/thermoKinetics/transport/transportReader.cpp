@@ -10,7 +10,7 @@ License
 
     TKC is free software; you can redistribute it and/or modify it under
     the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 3 of the License, or 
+    Free Software Foundation; either version 3 of the License, or
     (at your option) any later version.
 
     TKC is distributed in the hope that it will be useful, but
@@ -23,15 +23,12 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "transportReader.hpp" 
+#include "transportReader.hpp"
 #include <algorithm>
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-TKC::TransportReader::TransportReader
-(
-    const string& file
-)
+TKC::TransportReader::TransportReader(const string& file)
 :
     file_(file)
 {}
@@ -45,10 +42,7 @@ TKC::TransportReader::~TransportReader()
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-void TKC::TransportReader::read
-(
-    TransportData& data 
-)
+void TKC::TransportReader::read(TransportData& data)
 {
     Info<< " c-o Reading transport data\n"
         << "     >> " << file_ << "\n" << endl;

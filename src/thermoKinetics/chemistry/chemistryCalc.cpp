@@ -115,6 +115,9 @@ TKC::scalar TKC::ChemistryCalc::kf
     {
         return 0;
     }
+
+    //- Compress compiler warning
+    return 0;
 }
 
 
@@ -218,6 +221,9 @@ TKC::scalar TKC::ChemistryCalc::Lindemann
 
     //- Calculate the concentration of the third body partner
     const scalar conM = M(r, c);
+
+    //- TODO finish function
+    return 0;
 }
 
 

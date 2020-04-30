@@ -65,12 +65,7 @@ class Interpreter
         // Member functions
 
             //- Create a summary of the loaded data
-            void summary
-            (
-                const Transport&,
-                const Thermo&,
-                const Chemistry&
-            );
+            void summary(Transport&, const Thermo&, const Chemistry&);
 };
 
 

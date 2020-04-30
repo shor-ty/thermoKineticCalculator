@@ -56,7 +56,7 @@ class IdealReactorPropertiesReader
         // Private data
 
             //- File name of ideal reactor parameter/setup
-            string file_{"homogeneousReactorDict"};
+            string file_{"idealHomogeneousReactorDict"};
 
     public:
 

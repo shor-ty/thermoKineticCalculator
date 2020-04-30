@@ -275,9 +275,9 @@ void TKC::Transport::summaryFittingProcedure(ostream& data) const
         << "------------------------------------------------------------"
         << "------------------------------------------------------------\n";
 
-    const wordList& species = chemistrySpecies();
+    const wordList& species_ = chemistrySpecies();
 
-    forAll(species, s)
+    forAll(species_, s)
     {
         //- Polynomial Coefficients
         const scalarField& pC = viscosityPolyCoeffs(s);
@@ -291,6 +291,7 @@ void TKC::Transport::summaryFittingProcedure(ostream& data) const
             << std::setw(16) << viscosity(s, 1000, "Polynomial")
             << "  |\n";
     }
+
 
     data<< "------------------------------------------------------------"
         << "------------------------------------------------------------\n\n"
@@ -306,7 +307,7 @@ void TKC::Transport::summaryFittingProcedure(ostream& data) const
         << "------------------------------------------------------------"
         << "------------------------------------------------------------\n";
 
-    forAll(species, s)
+    forAll(species_, s)
     {
         //- Polynomial Coefficients
         const scalarField& pC = thermalConductivityPolyCoeffs(s);
@@ -339,10 +340,10 @@ void TKC::Transport::summaryFittingProcedure(ostream& data) const
         << "---------------------\n";
 
     //- First species
-    forAll(species, s1)
+    forAll(species_, s1)
     {
         //- Second species
-        forAll(species, s2)
+        forAll(species_, s2)
         {
             //- Polynomial Coefficients
             const scalarField& pC = binaryDiffusivityPolyCoeffs(s1, s2);
@@ -363,11 +364,6 @@ void TKC::Transport::summaryFittingProcedure(ostream& data) const
             << "------------------------------------------------------------"
             << "---------------------\n";
     }
-
-    data<< "-------------------------------------------------------------"
-        << "-------------------------------------------------------------\n";
-
-
 }
 
 

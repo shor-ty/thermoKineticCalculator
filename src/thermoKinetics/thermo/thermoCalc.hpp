@@ -10,7 +10,7 @@ License
 
     TKC is free software; you can redistribute it and/or modify it under
     the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 3 of the License, or 
+    Free Software Foundation; either version 3 of the License, or
     (at your option) any later version.
 
     TKC is distributed in the hope that it will be useful, but
@@ -23,9 +23,9 @@ License
 
 Class
     TKC::ThermoCalc
-    
+
 Description
-    TKC::ThermoCalc class for thermo calculation. This class provides all 
+    TKC::ThermoCalc class for thermo calculation. This class provides all
     thermo calculations that are necessary in the TKC project. All calculation
     functions are given below (ideal gas assumption):
 
@@ -36,7 +36,7 @@ Description
     \f[ \rho = \sum_s^n\left(\frac{X_s p}{R M_s \sum_r^n X_r} \right)\f]
 
     \f[ \rho = \frac{p}{RT \sum_{i=1}^n \frac{Y_i}{M_i}} \f]
-     
+
     \f[ c = \frac{p}{RT} \f]
 
 SourceFiles
@@ -79,7 +79,7 @@ class ThermoCalc
         //- Destructor
         ~ThermoCalc();
 
-        
+
         // Calculation functions
 
             //- Calculate mean molecular weight out of the mol fraction
@@ -89,7 +89,7 @@ class ThermoCalc
                 const map<word, scalar>&,
                 const map<word, scalar>&
             ) const;
-            
+
             //- Calculate mean molecular weight out of the mass fraction
             //  [kg/mol]
             scalar MWmeanY
@@ -97,7 +97,7 @@ class ThermoCalc
                 const map<word, scalar>&,
                 const map<word, scalar>&
             ) const;
-            
+
             //- Calculate mean molecular weight out of the concentration
             //  [kg/mol]
             scalar MWmeanC
@@ -116,19 +116,19 @@ class ThermoCalc
 
             //- Calculate complete concentration C [mol/m^3]
             scalar C(const scalar, const scalar) const;
-            
+
 
             //- Calculate temperature depended specific heat capacity via
             //  NASA polynomials of species s for constant pressure
-            //  [J/mol/K] 
+            //  [J/mol/K]
             scalar cp(const word, const scalar) const;
 
             //- Calculate temperature depended specific heat capcity via
             //  NASA polynomials of species s for constant volume
-            //  [J/mol/K] 
+            //  [J/mol/K]
             scalar cv(const word, const scalar) const;
 
-            //- Calculate temperature dependend enthalpy via 
+            //- Calculate temperature dependend enthalpy via
             //  NASA polynomials of species s
             //  [J/mol]
             scalar h(const word, const scalar) const;
@@ -140,12 +140,12 @@ class ThermoCalc
 
             //- Calculate temperature dependend entropy via
             //  NASA polynomials for species s
-            //  [J/mol/K] 
+            //  [J/mol/K]
             scalar s(const word, const scalar) const;
 
             //- Calculate temperature dependend free GIBBS energy via
             //  NASA polynomials for species s
-            //  [J/mol/K] 
+            //  [J/mol/K]
             scalar g(const word, const scalar) const;
 
             //- Calculate the free GIBBS energy difference from G and g(298)
@@ -154,7 +154,7 @@ class ThermoCalc
 
             //- Calculate temperature dependend free GIBBS energy via
             //  NASA polynomials of the mixture (mean value)
-            //  [J/mol] 
+            //  [J/mol]
             scalar g(const scalar, const scalar, const scalar) const;
 
             //- Calculate formation enthalpy Hf == h(298) of species s
@@ -165,14 +165,14 @@ class ThermoCalc
             //  [J/mol]
             scalar gf(const word) const;
 
-            //- Return H0(298.15) enthalpy of species s via 
+            //- Return H0(298.15) enthalpy of species s via
             //  NASA polynomials
             //  [J/mol]
             scalar h0(const word, const scalar) const;
 
 
         // Return functions
-        
+
             //- Get correct NASA coeffs
             scalarField getCoeffs(const word, const scalar) const;
 

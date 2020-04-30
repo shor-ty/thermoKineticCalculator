@@ -22,21 +22,22 @@ License
     along with TKC; if not, see <http://www.gnu.org/licenses/>
 
 Class
-    TKC::TransportReader
+    TKC::TimeReader
 
 Description
-    Reading the chemkin III file
+    Abstract TKC::TimeReader class for building and calculating matrices
 
 SourceFiles
-    transportReader.cpp
+    numerics.cpp
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef TransportReader_hpp
-#define TransportReader_hpp
+#ifndef TimeReader_hpp
+#define TimeReader_hpp
 
+#include "definitions.hpp"
+#include "time.hpp"
 #include "stringManipulator.hpp"
-#include "transportData.hpp"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -44,18 +45,18 @@ namespace TKC
 {
 
 /*---------------------------------------------------------------------------*\
-                      Class TransportReader Declaration
+                            Class TimeReader Declaration
 \*---------------------------------------------------------------------------*/
 
-class TransportReader
+class TimeReader
 :
     public StringManipulator
 {
     private:
 
-        // Private data
+        // Private Data
 
-            //- Transport file
+            //- File in which the data are stored
             string file_;
 
 
@@ -63,19 +64,19 @@ class TransportReader
 
         // Constructor and Destructor
 
-            //- Constructor with file string and Transport:: obj adress
-            TransportReader(const string&);
+            //- Constructor
+            TimeReader(const string&);
 
             //- Destructor
-            ~TransportReader();
+            ~TimeReader();
 
 
-        // Member functions
+        // Member Functions
 
-            //- Read transport file and return pointer to TransportData:: obj
-            void read(TransportData&);
-
+            //- Read corresponding file and insert data to the Time class
+            void read(Time&);
 };
+
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -83,6 +84,6 @@ class TransportReader
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-#endif
+#endif // TimeReader_hpp included
 
 // ************************************************************************* //

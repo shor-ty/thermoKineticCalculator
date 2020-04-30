@@ -74,7 +74,7 @@ const TKC::stringList TKC::StringManipulator::readFile(const string filePath)
     //- Close file
     file.close();
 
-    return std::move(fileContent);
+    return fileContent;
 }
 
 

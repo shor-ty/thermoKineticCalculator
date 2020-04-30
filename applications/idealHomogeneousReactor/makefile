@@ -10,22 +10,29 @@
 
 include ../../src/.compilerFlags
 
-PROGRAM=homogeneousReactor
+PROGRAM=idealHomogeneousReactor
 COMPILER=g++
 MAKE_DIR=mkdir -p
+RM_DIR=rm -rf
 SRC_PATH=../../src/gcc/lnInclude
 LIB_PATH=../../platforms/libs/
 DIR_APP=../../platforms/bin/
 
 #------------------------------------------------------------------------------
 
-build : pre
+build: pre
 	$(shell echo $(APP_PATH))
-	$(COMPILER) $(CPPFLAGS) -I$(SRC_PATH) -L$(LIB_PATH) homogeneousReactor.cpp -lthermoKinetics -o $(addprefix $(DIR_APP), $(PROGRAM))
+	$(COMPILER) $(CPPFLAGS) -I$(SRC_PATH) -L$(LIB_PATH) $(addsuffix .cpp, $(PROGRAM)) -lthermoKinetics -o $(addprefix $(DIR_APP), $(PROGRAM))
 
 
 pre:
 	$(shell $(MAKE_DIR) $(DIR_APP))
+
+
+rebuild: clean build
+
+clean:
+	$(shell $(RM_DIR) $(DIR_APP))
 
 
 #------------------------------------------------------------------------------

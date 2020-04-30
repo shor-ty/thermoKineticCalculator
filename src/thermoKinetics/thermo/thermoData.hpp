@@ -10,7 +10,7 @@ License
 
     TKC is free software; you can redistribute it and/or modify it under
     the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 3 of the License, or 
+    Free Software Foundation; either version 3 of the License, or
     (at your option) any later version.
 
     TKC is distributed in the hope that it will be useful, but
@@ -23,7 +23,7 @@ License
 
 Class
    TKC::ThermoData
-   
+
 Description
     This class contains all thermo data e.g. coeffs of NASA polynomials,
     the pressure, species names (nick-names and chemical formula),...
@@ -59,13 +59,13 @@ class ThermoData
             //- Thermodynamic is located in the chemistry file
             bool thermoInChemistry_;
 
-            
+
             //- Pressure [Pa]
             scalar p_;
 
 
             //- Data related to species
-            
+
                 //- List of species names -> ACETOL
                 wordList species_;
 
@@ -111,7 +111,7 @@ class ThermoData
 
         //- Constructor that take the path to the file one wants to read
         //  The second argument is related to cases where the thermodynamic
-        //  is located inside the chemistry (kinetic) file        
+        //  is located inside the chemistry (kinetic) file
         ThermoData(const string, const bool thermoInChemistry = false);
 
         //- Destructor
@@ -124,7 +124,7 @@ class ThermoData
             void p(const scalar);
 
 
-        // Insert functions, from ThermoReader:: delegated 
+        // Insert functions, from ThermoReader:: delegated
 
             //- Insert species
             void setSpecies(const word);
@@ -173,8 +173,8 @@ class ThermoData
 
             //- Return the elements of species s
             const wordList elementsInSpecies(const word) const;
-            
-            //- Return the elements of species (chemical form) s 
+
+            //- Return the elements of species (chemical form) s
             const wordList elementsInSpeciesChem(const word) const;
 
             //- Return the factor of elements in species s
@@ -183,9 +183,9 @@ class ThermoData
             //- Return the factor of elements as map of species s
             const map<word, scalar> elementAtomsMap(const word) const;
 
-            //- Return the factor of elements in species (chemical form) s 
+            //- Return the factor of elements in species (chemical form) s
             const map<word, scalar> elementAtomsChem(const word) const;
-            
+
             //- Return moleculare weight as map [g/mol]
             const map<word, scalar> MW() const;
 
@@ -197,7 +197,7 @@ class ThermoData
 
             //- Return the phase of species s
             const word phase(const word) const;
-            
+
             //- Return LOW temperature of polynomials of species s
             scalar LT(const word) const;
 

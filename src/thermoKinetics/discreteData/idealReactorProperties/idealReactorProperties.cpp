@@ -44,7 +44,12 @@ TKC::IdealReactorProperties::~IdealReactorProperties()
 {}
 
 
-// * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
+// * * * * * * * * * * * * * * * Insert Functions  * * * * * * * * * * * * * //
+
+void TKC::IdealReactorProperties::insertFile(const word file)
+{
+    file_ = file;
+}
 
 void TKC::IdealReactorProperties::inertSpecies(const word species)
 {
@@ -390,6 +395,12 @@ const TKC::word TKC::IdealReactorProperties::chemistry() const
 const TKC::word TKC::IdealReactorProperties::transport() const
 {
     return fileTransport_;
+}
+
+
+const TKC::word TKC::IdealReactorProperties::dict() const
+{
+    return file_;
 }
 
 

@@ -49,12 +49,15 @@ TKC::IdealReactorPropertiesReader::~IdealReactorPropertiesReader()
 
 void TKC::IdealReactorPropertiesReader::read(IdealReactorProperties& data)
 {
+    //- First add the file
+    data.insertFile(file_);
+
     Info<< " c-o Reading dictonary\n"
         << "     >> " << file_ << "\n" << endl;
 
     const auto fileContent = readFile(file_);
 
-    //- Reading afcDict
+    //- Reading file
     for (unsigned int line=0; line < fileContent.size(); line++)
     {
         stringList tmp = splitStrAtWS(fileContent[line]);
