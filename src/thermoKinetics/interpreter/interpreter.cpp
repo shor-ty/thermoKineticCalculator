@@ -57,7 +57,7 @@ void TKC::Interpreter::summary
     {
         Info<< " c-o Interprete transport data\n" << endl;
 
-        file.open("summary/transport.afc", std::ios::out);
+        file.open("summary/transport.tkc", std::ios::out);
 
         ostream data(&file);
 
@@ -71,12 +71,11 @@ void TKC::Interpreter::summary
     }
 
 
-    /*
     //- Thermodynamic summary
     {
         Info<< " c-o Interprete thermodynamic data\n" << endl;
 
-        file.open("summary/thermodynamic.afc", std::ios::out);
+        file.open("summary/thermodynamic.tkc", std::ios::out);
 
         ostream data(&file);
 
@@ -93,7 +92,7 @@ void TKC::Interpreter::summary
     {
         Info<< " c-o Interprete chemistry data\n" << endl;
 
-        file.open("summary/chemistry.afc", std::ios::out);
+        file.open("summary/chemistry.tkc", std::ios::out);
 
         std::ostream data(&file);
 
@@ -110,7 +109,7 @@ void TKC::Interpreter::summary
     {
         Info<< " c-o Interprete polynomial fit\n" << endl;
 
-        file.open("summary/fittingProcedure.afc", std::ios::out);
+        file.open("summary/fittingProcedure.tkc", std::ios::out);
 
         ostream data(&file);
 
@@ -124,10 +123,11 @@ void TKC::Interpreter::summary
     }
 
     //- Properties summary
-    {
-        Info<< " c-o Interprete chemistry setup (afcDict)\n" << endl;
+    //  TODO: Update and reactivate if needed
+    /*{
+        Info<< " c-o Interprete thermo-kinetic setup\n" << endl;
 
-        file.open("summary/properties.afc", std::ios::out);
+        file.open("summary/properties.tkc", std::ios::out);
 
         ostream data(&file);
 

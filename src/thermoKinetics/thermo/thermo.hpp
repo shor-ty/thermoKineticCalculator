@@ -69,7 +69,6 @@ class Thermo
 
         // Summary function
 
-            /*
             //- Build the output file that contains all data
             void summary(ostream&) const;
 
@@ -78,7 +77,6 @@ class Thermo
 
             //- Build thermoanalyse table (calcualte thermo properties)
             void thermoTable(ostream&) const;
-            */
 
 };
 

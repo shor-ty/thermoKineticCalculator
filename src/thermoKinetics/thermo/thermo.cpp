@@ -56,27 +56,26 @@ TKC::Thermo::~Thermo()
 
 // * * * * * * * * * * * * * * Summary Function  * * * * * * * * * * * * * * //
 
-/*
 void TKC::Thermo::summary(ostream& data) const
 {
     //- Header
     data<< Header() << "\n";
 
-    const wordList& species = thermoData_.species();
-    const wordList& formula = thermoData_.formula();
+    const wordList& tspecies = species();
+    const wordList& tformula = formula();
 
     data<< " c-o Thermodynamic summary:\n"
         << " ==========================\n\n"
-        << " Species in thermo: " << species.size() << "\n";
+        << " Species in thermo: " << tspecies.size() << "\n";
 
     data<< " \n\n Species used:\n";
     data<< std::left;
 
-    forEach(species, s)
+    forEach(tspecies, s)
     {
         data<< "    |--> "
-            << std::setw(20) <<  species[s]
-            << "(" << formula[s] << ")\n";
+            << std::setw(20) <<  tspecies[s]
+            << "(" << tformula[s] << ")\n";
     }
 
     //- Build table with all NASA coeffs for all species
@@ -120,27 +119,27 @@ void TKC::Thermo::NASAPolynomials(ostream& data, const word coeff) const
         << "----------------\n";
 
     //- Species of Thermodynamic Data
-    const wordList& species = thermoData_.species();
+    const wordList& tspecies = species();
 
     //- Build Table
-    forEach(species, s)
+    forEach(tspecies, s)
     {
 
         List<scalar> NASA(7, 0);
 
         if (coeff == "LOW")
         {
-            NASA = thermoData_.NASACoeffsLT(species[s]);
+            NASA = NASACoeffsLT(tspecies[s]);
         }
         else if (coeff == "HIGH")
         {
-            NASA = thermoData_.NASACoeffsHT(species[s]);
+            NASA = NASACoeffsHT(tspecies[s]);
         }
 
         //- For species number + name
         std::ostringstream oss;
 
-        oss << " (" << toStr(s+1) << ") " << species[s];
+        oss << " (" << toStr(s+1) << ") " << tspecies[s];
 
         data<< std::left << std::setw(22) << oss.str()
             << "  |" << std::right
@@ -163,25 +162,24 @@ void TKC::Thermo::NASAPolynomials(ostream& data, const word coeff) const
 void TKC::Thermo::thermoTable(ostream& data) const
 {
     //- Species of Thermodynamic Data
-    const wordList& species = thermoData_.species();
-    const wordList& formula = thermoData_.formula();
+    const wordList& tspecies = species();
+    const wordList& tformula = formula();
 
     //_ Build the thermoanalyse table
-    forEach(species, s)
+    forEach(tspecies, ts)
     {
-        const word& phase = thermoData_.phase(species[s]);
+        const word& tphase = phase(tspecies[ts]);
 
         data<< "==========================================================="
             << "=========================================================\n"
-            << " c-o Thermo analyses for " << species[s] << "\n"
+            << " c-o Thermo analyses for " << tspecies[ts] << "\n"
             << "==========================================================="
             << "=========================================================\n"
-            << " Phase: " << phase << "\n"
-            << " Formula: " << formula[s] << "\n"
-            << " Composition: \n   |\n";
+            << " Phase: " << tphase << "\n"
+            << " Formula: " << tformula[ts] << "\n"
+            << " Composition:\n   |\n";
 
-        const map<word, scalar>& elements =
-            thermoData_.elementFactorsMap(species[s]);
+        const map<word, scalar>& elements = elementAtomsMap(tspecies[ts]);
 
         forAll(elements, a)
         {
@@ -192,15 +190,15 @@ void TKC::Thermo::thermoTable(ostream& data) const
         data<< "\n" << std::setw(40) << std::left
             <<" Molecular weight:   "
             << std::setw(14) << std::right
-            << MW(species[s]) << " [g/mol]\n"
+            << MW(tspecies[ts]) << " [g/mol]\n"
             << std::setw(40) << std::left
             << " Formation enthalpy (298K):   "
             << std::setw(14) << std::right
-            << Hf(species[s]) << " [J/mol]\n"
+            << hf(tspecies[ts]) << " [J/mol]\n"
             << std::setw(40) << std::left
             <<" Frormation free Gibbs energy (298K):   "
             << std::setw(14) << std::right
-            << Gf(species[s]) << " [J/mol]\n";
+            << gf(tspecies[ts]) << " [J/mol]\n";
 
 
         data<< std::right << "\n";
@@ -208,21 +206,21 @@ void TKC::Thermo::thermoTable(ostream& data) const
         data<< "\n\n-----------------------------------------------------------"
             << "---------------------------------------------------------\n"
             << "      T    |         cp              H               S       "
-            << "        G              dHf            dGf          | \n"
+            << "        G              dHf            dGf          |\n"
             << "     [K]   |      [J/molK]        [J/mol]         [J/molK]   "
-            << "     [J/mol]         [J/molK]       [J/mol]        | \n"
+            << "     [J/mol]         [J/molK]       [J/mol]        |\n"
             << "-----------------------------------------------------------"
             << "---------------------------------------------------------\n";
 
         for(int i=300; i<=3000; i+=100)
         {
             data<< "  " << std::setw(6) << i << "   |"
-                << "  " << std::setw(13) << cp(species[s], i)
-                << "  " << std::setw(14) << H(species[s], i)
-                << "  " << std::setw(14) << S(species[s], i)
-                << "  " << std::setw(14) << G(species[s], i)
-                << "  " << std::setw(14) << dHf(species[s], i)
-                << "  " << std::setw(14) << dGf(species[s], i)
+                << "  " << std::setw(13) << cp(tspecies[ts], i)
+                << "  " << std::setw(14) << h(tspecies[ts], i)
+                << "  " << std::setw(14) << s(tspecies[ts], i)
+                << "  " << std::setw(14) << g(tspecies[ts], i)
+                << "  " << std::setw(14) << dhf(tspecies[ts], i)
+                << "  " << std::setw(14) << dgf(tspecies[ts], i)
                 << "     |\n";
         }
 
@@ -232,6 +230,5 @@ void TKC::Thermo::thermoTable(ostream& data) const
     }
 }
 
-*/
 
 // ************************************************************************* //

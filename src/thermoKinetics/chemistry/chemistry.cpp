@@ -77,7 +77,7 @@ void TKC::Chemistry::checkSpecies() const
     }
 
     //- If passed everything is fine
-    Info<< "      >> Everything is fine. Proceed...\n" << endl;
+    Info<< "     >> Everything is fine. Proceed...\n" << endl;
 }
 
 
@@ -172,7 +172,6 @@ void TKC::Chemistry::buildSpeciesInReactionTable()
 
 // * * * * * * * * * * * * * * * Summary Functions * * * * * * * * * * * * * //
 
-/*
 void TKC::Chemistry::summary(ostream& data) const
 {
 
@@ -193,7 +192,7 @@ void TKC::Chemistry::summary(ostream& data) const
     unsigned int tENH{0};
     unsigned int tTBR{0};
 
-    unsigned int tDUB = nDublicated();
+    unsigned int tDUB = nDuplicated();
     unsigned int tIGN = nIgnored();
 
     forEach(treactions, r)
@@ -245,30 +244,30 @@ void TKC::Chemistry::summary(ostream& data) const
         << "   |--> Number of TROE reactions          " << tTROE << "\n"
         << "   |--> Number of SRI reactions           " << tSRI << "\n";
 
-    data<< "\n\n Elements used: \n   | \n";
+    data<< "\n\n Elements used:\n   |\n";
 
     forEach(telements, e)
     {
         data<< "   |-->  (" << e+1 << ")  " << telements[e] << "\n";
     }
 
-    data<< "\n\n Species used:\n   | \n";
+    data<< "\n\n Species used:\n   |\n";
 
-    forEach(species, s)
+    forEach(tspecies, s)
     {
         data<< "   |-->  (" << s+1 << ")  " << tspecies[s] << "\n";
     }
 
-    data<< "\n\n Reactions used: \n   | \n";
+    data<< "\n\n Reactions used:\n   |\n";
 
-    forEach(reactions, r)
+    forEach(treactions, r)
     {
         data<< "   |-->  (" << r+1 << ")  " << treactions[r] << "\n";
     }
 
-    data<< "\n\n Reactions ignored: \n   | \n";
+    data<< "\n\n Reactions ignored:\n   |\n";
 
-    forEach(ignoredReactions, r)
+    forEach(tignoredReactions, r)
     {
         data<< "   |-->  (" << r+1 << ")  " << tignoredReactions[r] << "\n";
     }
@@ -346,10 +345,8 @@ void TKC::Chemistry::chemicalTable(ostream& data) const
             << "\n\n"
             << "   Arrhenius coefficients\n"
             << "--------------------------------------------------\n   |\n"
-            << "   |-->  A:  " << std::setw(14) << tarrCoeffs[0] << " "
-            << "\n"
-            << "   |-->  n:  " << std::setw(14) << tarrCoeffs[1] << " "
-            << "\n"
+            << "   |-->  A:  " << std::setw(14) << tarrCoeffs[0] << "\n"
+            << "   |-->  n:  " << std::setw(14) << tarrCoeffs[1] << "\n"
             << "   |-->  Ea: " << std::setw(14) << tarrCoeffs[2] << " "
             << "cal/mol\n\n";
 
@@ -445,11 +442,13 @@ void TKC::Chemistry::buildTablekf
         << "-----------------------------------------------------\n"
         << "";
 
+    const map<word, scalar> tmp;
+
     for (int i=300; i<=3000; i+=100)
     {
         data<< "  " << std::setw(6) << i << "   |"
-            << "  " << std::setw(13) << kf(r, i, LOW) << ""
-            << "  " << std::setw(13) << kb(r, i, LOW)
+            << "  " << std::setw(13) << kf(r, i, tmp, LOW) << ""
+            << "  " << std::setw(13) << kb(r, i, tmp)
             << "  " << std::setw(13) << keq(r, i)
             << "  " << std::setw(13) << dh(r, i)
             << "  " << std::setw(13) << dg(r, i)
@@ -479,9 +478,7 @@ void TKC::Chemistry::buildTROETable(const int r, ostream& data) const
     }
 
     data<< "--------------------------------------------------\n\n";
-
-
 }
-*/
+
 
 // ************************************************************************* //

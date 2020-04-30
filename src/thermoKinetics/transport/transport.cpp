@@ -95,18 +95,31 @@ void TKC::Transport::summary(ostream& data) const
 {
     data<< Header() << "\n";
 
+    //- Just use the species that are used in chemistry
+    const wordList& species_ = chemistrySpecies();
+    const wordList& chemFormula = chemicalFormula();
+
     data<< " c-o Transport summary:\n"
         << "=======================\n\n"
-        << "======================================================"
+        << " Species in transport: " << species().size() << "\n\n\n"
+        << " Species used:\n";
+
+    data<< std::left;
+
+    forEach(species_, s)
+    {
+        data<< "   |--> "
+            << std::setw(20) << species_[s] << "\n";
+            //<< "(" << chemFormula[s] << ")\n";
+    }
+    data<< "\n\n";
+    
+    data<< "======================================================"
         << "===================================================\n"
         << "       Species      |   Geo. Config.    eps/kb    "
         << "    sigma          mu        alpha      zRot293    |\n"
         << "======================================================"
         << "===================================================\n";
-
-    //  TODO switch to plot all or onyl the needed
-    //- Just use the species that are used in chemistry
-    const wordList& species_ = chemistrySpecies();
 
     data<<std::fixed;
     data.precision(4);
